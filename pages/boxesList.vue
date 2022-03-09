@@ -26,7 +26,10 @@ b-container
         b-dropdown
           b-dropdown-item(@click='editBox(row.item)') Edit
           b-dropdown-item(@click='deleteBox([row.item.id])') Delete
-  BoxModal(:box='boxSelected', v-on:handleUpdate='updateBox($event)')
+  BoxModal(
+    :box='boxSelected ? boxSelected : null',
+    v-on:handleSubmitModal='submitModal($event)'
+  )
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
@@ -34,7 +37,7 @@ import { Component, Vue } from 'nuxt-property-decorator'
 class ProductsList extends Vue {
   itemChecked: any = []
   items: any = []
-  boxSelected = {}
+  boxSelected: any = null
   fields = [
     { key: 'select', label: '' },
     { key: 'id', label: 'No' },
@@ -57,7 +60,7 @@ class ProductsList extends Vue {
       },
       {
         id: 2,
-        name: 'Box 1',
+        name: 'Box 2',
         code: '1PDXl@3',
         category: 'sample',
         supplier: 'Babyshark',
@@ -65,7 +68,7 @@ class ProductsList extends Vue {
       },
       {
         id: 3,
-        name: 'Box 1',
+        name: 'Box 3',
         code: '1PDXl@3',
         category: 'sample',
         supplier: 'Babyshark',
@@ -85,18 +88,39 @@ class ProductsList extends Vue {
     }
   }
   createBox() {
-    // console.log(this.listItems)
+    this.boxSelected = null
+    this.$bvModal.show('box-modal')
   }
   editBox(box: any) {
     this.boxSelected = box
-    this.$bvModal.show('box-detail')
+    this.$bvModal.show('box-modal')
   }
   deleteBox(ids: any) {
     this.items = this.items.filter((item: any) => !ids.includes(item.id))
   }
   onRowSelected(record: any) {}
-  updateBox(boxUpdate: any) {
-    console.log(boxUpdate)
+  submitModal(box: any) {
+    if (this.boxSelected) {
+      const newListBox = [...this.items]
+      if (newListBox) {
+        const index = newListBox.findIndex((x) => x.id === box?.id)
+        if (index === -1) return
+        newListBox.splice(index, 1, box)
+        this.items = newListBox
+        this.$nextTick(() => {
+        this.$bvModal.hide('box-modal')
+      })
+      }
+    } else {
+      this.items.push({
+        ...box,
+        id:
+          this.items.length > 0 ? this.items[this.items.length - 1].id + 1 : 1,
+      })
+      this.$nextTick(() => {
+        this.$bvModal.hide('box-modal')
+      })
+    }
   }
 }
 export default ProductsList
