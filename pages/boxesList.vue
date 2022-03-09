@@ -26,7 +26,7 @@ b-container
         b-dropdown
           b-dropdown-item(@click='editBox(row.item)') Edit
           b-dropdown-item(@click='deleteBox([row.item.id])') Delete
-  BoxModal(:box='boxSelected')
+  BoxModal(:box='boxSelected', v-on:handleUpdate='updateBox($event)')
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
@@ -74,27 +74,30 @@ class ProductsList extends Vue {
     ]
   }
   async searchBox({ target }: { target: any }) {
-    console.log(target.value);
+    console.log(target.value)
   }
 
   selectBox(itemId: any) {
     if (this.itemChecked.indexOf(itemId) !== -1) {
-      this.itemChecked.splice(this.itemChecked.indexOf(itemId), 1);
+      this.itemChecked.splice(this.itemChecked.indexOf(itemId), 1)
     } else {
-      this.itemChecked.push(itemId);
+      this.itemChecked.push(itemId)
     }
   }
   createBox() {
     // console.log(this.listItems)
   }
   editBox(box: any) {
-    this.boxSelected = box;
+    this.boxSelected = box
     this.$bvModal.show('box-detail')
   }
   deleteBox(ids: any) {
-    this.items = this.items.filter((item: any) => !ids.includes(item.id));
+    this.items = this.items.filter((item: any) => !ids.includes(item.id))
   }
   onRowSelected(record: any) {}
+  updateBox(boxUpdate: any) {
+    console.log(boxUpdate)
+  }
 }
 export default ProductsList
 </script>
