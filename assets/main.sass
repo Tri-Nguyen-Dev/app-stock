@@ -1,4 +1,15 @@
-$primary-color: #BB2428
-$primary-color-2: #979491
-$text-color: #1F1F1F
-$text-color-yellow: #F7CC47
+// Custom variables
+// -- Color variables
+$primary:       #335AFF
+$primary-black: #363853
+
+// -- Font variables
+$font-family: "Google-Sans"
+
+// Override css
+@import '~bootstrap/scss/bootstrap.scss'
+@import '~bootstrap-vue/src/index.scss'
+
+body
+  font-family: $font-family
+  color:       $primary-black

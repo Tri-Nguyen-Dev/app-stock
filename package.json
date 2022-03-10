@@ -41,7 +41,7 @@
     "prettier": "^2.3.2",
     "pug": "^3.0.2",
     "pug-plain-loader": "^1.1.0",
-    "sass": "^1.43.2",
+    "sass": "~1.32.12",
     "sass-loader": "10",
     "vuex-module-decorators": "^1.0.1"
   }

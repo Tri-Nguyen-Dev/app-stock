@@ -4,7 +4,7 @@ export default {
   target: 'static',
 
   head: {
-    title: 'Airtag CRM',
+    title: 'AirTag Management System',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -13,16 +13,16 @@ export default {
     ],
     link: [
       {
-        href: 'https://fonts.googleapis.com/css?family=Source+Sans+Pro',
+        href: 'https://fonts.googleapis.com/css?family=Google+Sans',
         rel: 'stylesheet',
         type: 'text/css'
       }
     ]
   },
 
-  css: [
-    '@/assets/main.sass'
-  ],
+  // css: [
+  //   '@/assets/main.sass'
+  // ],
 
   plugins: [
     '~/plugins/vuelidate.ts'
@@ -53,7 +53,26 @@ export default {
   },
 
   auth: {
-    // Options
+    rewriteRedirects: true,
+    strategies: {
+      local: {
+        token: {
+          property: 'token',
+          global:   true,
+          required: true
+        },
+        user: {
+          property: 'user',
+          autoFetch: false
+        },
+        endpoints: {
+          login:  { url: '/api/auth/login',  method: 'post' },
+          logout: { url: '/api/auth/logout', method: 'post' },
+          user:   false // { url: '/api/auth/user',   method: 'get' }
+        }
+      }
+    },
+    plugins: ['~/plugins/auth.ts']
   },
 
   styleResources: {
@@ -62,7 +81,7 @@ export default {
 
   proxy: {
     '/api/': {
-      target: 'http://localhost:3000',
+      target: process.env.API_URL,
       pathRewrite: { '^/api/': '' },
       changeOrigin: true
     }
