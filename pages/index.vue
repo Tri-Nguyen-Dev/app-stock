@@ -2,6 +2,8 @@
 Loading
   b-container(fluid)
     h1.text-center WELCOME!
+    div.table
+
 </template>
 
 <script lang='ts'>
@@ -25,4 +27,3 @@ export default Pages
 body
   font-family: 'Source Sans Pro', sans-serif
 </style>
-
