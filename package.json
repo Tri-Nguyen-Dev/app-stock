@@ -14,13 +14,12 @@
     "@nuxtjs/auth-next": "5.0.0-1624817847.21691f1",
     "@nuxtjs/axios": "^5.13.6",
     "@types/moment": "^2.13.0",
-    "bootstrap": "^4.6.0",
-    "bootstrap-vue": "^2.21.2",
-    "chart.js": "^3.7.0",
     "cookie-universal-nuxt": "^2.1.5",
     "core-js": "^3.15.1",
-    "moment": "^2.29.1",
+    "dayjs": "^1.10.8",
     "nuxt": "^2.15.7",
+    "primeicons": "^5.0.0",
+    "primevue": "2.9.0",
     "vuelidate": "^0.7.6"
   },
   "devDependencies": {
