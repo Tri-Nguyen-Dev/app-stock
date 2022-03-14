@@ -13,16 +13,16 @@ export default {
     ],
     link: [
       {
-        href: 'https://fonts.googleapis.com/css?family=Google+Sans',
-        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Google+Sans:wght@100;200;300;400;500;700;900&display=swap',
+        rel:  'stylesheet',
         type: 'text/css'
       }
     ]
   },
 
-  // css: [
-  //   '@/assets/main.sass'
-  // ],
+  css: [
+    '@/assets/styles/main.sass'
+  ],
 
   plugins: [
     '~/plugins/vuelidate.ts'
@@ -35,7 +35,7 @@ export default {
   ],
 
   modules: [
-    'bootstrap-vue/nuxt',
+    'primevue/nuxt',
     'cookie-universal-nuxt',
     '@nuxtjs/axios',
     '@nuxtjs/auth-next',
@@ -43,9 +43,20 @@ export default {
     '@nuxtjs/proxy',
     '@nuxtjs/style-resources'
   ],
-
-  bootstrapVue: {
-    icons: true
+  // PrimeVue Config
+  primevue: {
+    theme:      'bootstrap4-light-blue',
+    ripple:     true,
+    components: [
+      'InputText',
+      'Button',
+      'DataTable',
+      'Dialog'
+    ],
+    directives: [
+      'Tooltip',
+      'Badge'
+    ]
   },
 
   axios: {
@@ -76,7 +87,8 @@ export default {
   },
 
   styleResources: {
-    sass: ['./assets/**.sass']
+    sass: ['@/assets/styles/common/**.sass'],
+    hoistUseStatements: true
   },
 
   proxy: {
