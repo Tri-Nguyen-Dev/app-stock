@@ -50,6 +50,7 @@ export default {
     components: [
       'InputText',
       'Button',
+      'Checkbox',
       'DataTable',
       'Dialog',
       'Dropdown',
