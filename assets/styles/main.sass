@@ -1,14 +1,18 @@
-//@use 'variables' as vars
-//@use 'colors'    as colors
-//@use 'mixins'    as mixins
-//@use 'fonts'     as fonts
-
 // Override css
-//@import 'primevue/resources/themes/bootstrap4-light-blue'     //theme
-//@import 'primevue/resources/primevue.min.css'                 //core css
-//@import 'primeicons/primeicons.css'                           //icons
-@import 'primeflex/primeflex.css'                            //primeflex
+@import 'primeflex/primeflex.css'                                    //primeflex
+
+// Reset and global css
+html
+  height:      100%
+  font-size:   14px
+  font-family: $font-family-primary
+  color:       $text-color-900
 
 body
-  font-family: $font-family-primary
-  color:       $primary-black
+  margin:          0
+  padding:         0
+  border:          0
+  outline:         0
+  text-decoration: none
+  list-style:      none
+
