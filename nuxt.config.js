@@ -51,7 +51,10 @@ export default {
       'InputText',
       'Button',
       'DataTable',
-      'Dialog'
+      'Dialog',
+      'Dropdown',
+      'InputText',
+      'TieredMenu',
     ],
     directives: [
       'Tooltip',
