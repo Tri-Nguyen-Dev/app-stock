@@ -51,7 +51,12 @@ export default {
       'InputText',
       'Button',
       'DataTable',
-      'Dialog'
+      'Dialog',
+      'Dropdown',
+      'MultiSelect',
+      'Column',
+      'Paginator',
+      'Tag'
     ],
     directives: [
       'Tooltip',
