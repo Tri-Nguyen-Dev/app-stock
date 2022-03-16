@@ -1,0 +1,18 @@
+// - Custom css classes for icons
+// -- List name of icons
+$icons: house-2
+
+// -- List name of icons
+.icon:before
+  content: ''
+  position: absolute
+  width:    20px
+  height:   20px
+
+
+@each $i in $icons
+  .icon-#{$i}:before
+    background-color: red
+    mask-image:      url('~/assets/icons/#{$i}.svg')
+    mask-size: cover
+

@@ -6,23 +6,23 @@
         img(:src='require("assets/images/logo-text-airtag.png")')
       .w-full
         //- Input Email
-        label.block.text-900.text-sm.font-semibold.mb-2(for="inputEmail") Email
+        label.block.font-bold.mb-2(for="inputEmail") Email
         span.p-input-icon-left.mb-3.w-full
-          i.base.pi.pi-envelope
+          i.pi.icon.icon-house-2
           InputText#inputEmail.w-full(v-model="loginUser.userName")
         //- Input Password
-        label.block.text-900.text-sm.font-semibold.mb-2(for="inputPassword") Password
+        label.block.font-bold.mb-2(for="inputPassword") Password
         span.p-input-icon-left.mb-5.w-full
           i.base.pi.pi-unlock
           InputText#inputPassword.w-full(type="password", v-model="loginUser.password")
         //- Action block
-        Button.w-full.p-3.text-sm.mb-5(type="button", @click='callLogin') Login
+        Button.bg-primary.w-full.p-3.mb-5(type="button", label="Sign In", @click='callLogin')
         //- Remember block
         .flex.align-items-center.justify-content-between.mb-5
           .flex.align-items-center
             Checkbox#rememberCheck.mr-2(v-model="checked", :binary="true")
-            label(for="rememberCheck") Remember me
-          a.font-semibold.no-underline.ml-2.text-right.cursor-pointer Forgot password?
+            label.text-sm(for="rememberCheck") Save password
+          a.ml-5.text-sm.text-right.text-primary.cursor-pointer Forgot password?
 
 </template>
 <script lang='ts'>
