@@ -57,7 +57,8 @@ export default {
       'MultiSelect',
       'Column',
       'Paginator',
-      'Tag'
+      'Tag',
+      'ConfirmDialog'
     ],
     directives: [
       'Tooltip',

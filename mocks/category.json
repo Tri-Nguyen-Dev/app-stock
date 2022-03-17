@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Audi",
+    "value": "Audi"
+  },
+  {
+    "name": "BMW",
+    "value": "BMW"
+  },
+  {
+    "name": "Fiat",
+    "value": "Fiat"
+  },
+  {
+    "name": "Honda",
+    "value": "Honda"
+  },
+  {
+    "name": "Jaguar",
+    "value": "Jaguar"
+  },
+  {
+    "name": "Mercedes",
+    "value": "Mercedes"
+  },
+  {
+    "name": "Renault",
+    "value": "Renault"
+  },
+  {
+    "name": "Volkswagen",
+    "value": "Volkswagen"
+  },
+  {
+    "name": "Volvo",
+    "value": "Volvo"
+  }
+]
