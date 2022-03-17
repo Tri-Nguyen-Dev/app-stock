@@ -1,6 +1,6 @@
 <template lang="pug">
  .grid.p-4.surface-300.h-srceen
-    .col-4.p-0.surface-0.border-round.left__information--stock.h-screen.overflow-auto
+    .col-4.p-0.surface-0.border-round.left__information--stock.h-screen.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
         Button(icon="pi pi-arrow-left" @click='backToStockList').p-button-link
@@ -14,17 +14,17 @@
           .col(class='xl:col-4').stock__information--image
             img(:src='require("~/assets/images/sample.png")').border-round
           .col
-            Tag(severity="success").uppercase available
+            Tag(severity="success").uppercase {{stockDetail.status}}
             h1.font-bold.my-2 Apple Macbook Pro
             div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 code:
-              span.uppercase.font-semibold.text-blue-600 abcd69
+              span.uppercase.font-semibold.text-blue-600 {{stockDetail.code}}
             div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 sku:
-              span.uppercase.font-semibold.text-blue-600 quandeptrai
+              span.uppercase.font-semibold.text-blue-600 {{stockDetail.sku}}
             div
               p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-              span.uppercase.font-semibold.text-blue-600 long
+              span.uppercase.font-semibold.text-blue-600 {{stockDetail.unit}}
         .grid.mb-3
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -33,7 +33,7 @@
                 img(:src='require("~/assets/images/icons/icon__location.svg")')
               .col
                 div.text-500 Location
-                span.font-semibold NTH001
+                span.font-semibold.mr-1 {{stockDetail.location}}
                 img(:src='require("~/assets/images/icons/icon__arrow--export.svg")')
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -42,7 +42,7 @@
                 img(:src='require("~/assets/images/icons/icon__warehouse.svg")')
               .col
                 div.text-500 Warehouse
-                span.font-semibold NTH001
+                span.font-semibold.mr-1 {{stockDetail.warehouse}}
                 img(:src='require("~/assets/images/icons/icon__arrow--export.svg")')
         .grid.mb-3
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
@@ -52,7 +52,7 @@
                 img(:src='require("~/assets/images/icons/icon__size.svg")')
               .col
                 div.text-500 Size (cm)
-                span.font-semibold 180x180x180
+                span.font-semibold {{stockDetail.size}}x{{stockDetail.size}}x{{stockDetail.size}}
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
@@ -60,7 +60,7 @@
                 img(:src='require("~/assets/images/icons/icon__weight.svg")')
               .col
                 div.text-500 Weight (Kg)
-                span.font-semibold  2.8
+                span.font-semibold  {{stockDetail.weight}}
         .grid
           .col
             .surface-hover.p-3
@@ -69,7 +69,8 @@
                   img(:src='require("~/assets/images/icons/icon__barcode.svg")')
                 .col
                   div.text-500 Boxcode
-                  span.font-semibold  180x180x180
+                  span.font-semibold.mr-1   {{stockDetail.boxcode}}x{{stockDetail.boxcode}}x{{stockDetail.boxcode}}
+                  img(:src='require("~/assets/images/icons/icon__arrow--export.svg")')
       .sender__information.p-4
         .grid.mb-3
           .col
@@ -81,7 +82,7 @@
               img(:src='require("~/assets/images/icons/icon__sender--name.svg")')
             .col
               div.text-500 Sender
-              span.font-semibold Quan handsome
+              span.font-semibold {{stockDetail.senderName}}
         .grid
           .col-fixed.col-6(class='xl:col-6 lg:col-12').mb-3.sender__information--logs
             .surface-hover
@@ -90,7 +91,7 @@
                   img(:src='require("~/assets/images/icons/icon__sender--email.svg")')
                 .col.sender__email
                   div.text-500 Email Address
-                  .font-semibold.text-overflow-ellipsis.white-space-nowrap.overflow-hidden(v-tooltip.top='"damdaubairac_timxacnguoiyeu@yahoo.com"') damdaubairac_timxacnguoiyeu@yahoo.com
+                  .font-semibold.text-overflow-ellipsis.white-space-nowrap.overflow-hidden(v-tooltip.top='"stockDetail.senderEmail"') {{stockDetail.senderEmail}}
           .col-fixed.col-6(class='xl:col-6 lg:col-12').sender__information--logs
             .surface-hover
               .grid.p-3.align-items-center
@@ -98,7 +99,7 @@
                   img(:src='require("~/assets/images/icons/icon__sender--phone.svg")')
                 .col
                   div.text-500 Phone number
-                  span.font-semibold 6969696969
+                  span.font-semibold {{stockDetail.senderPhone}}
     .col-8.px-5.h-screen.right__information--stock
       .grid.mb-5
         .col
@@ -126,9 +127,9 @@ class StockDetail extends Vue {
     this.$router.push('/stock')
   }
 
-  mounted() {
-    this.actGetStockDetail({ id: 4 })
-    console.log(this.stockDetail)
+  async mounted() {
+    await this.actGetStockDetail({ id: 4 })
+    console.log('stock id page', this.stockDetail)
   }
 }
 export default StockDetail

@@ -82,7 +82,7 @@ export default {
   },
 
   styleResources: {
-    sass: ['@/assets/styles/common/**.sass'],
+    sass: ['@/assets/styles/main.sass'],
     hoistUseStatements: true,
   },
 

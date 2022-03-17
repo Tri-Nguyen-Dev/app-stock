@@ -28,7 +28,7 @@ export default class StoreStock extends VuexModule {
   @Action({ commit: 'getStockDetail', rawError: true })
   async actGetStockDetail(params: Stock.StockDetailId): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStock.STATE_URL.GET_STOCK_DETAIL, params)
-    const response: SuccessResponse<string> = await $api.get(url)
-    return response.content
+    const response: any = await $api.get(url)
+    return response
   }
 }

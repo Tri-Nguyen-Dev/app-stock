@@ -29,7 +29,7 @@
             .col-fixed
               img(:src='require("~/assets/images/icons/icon__box--inventoryQuantity.svg")')
             .col
-              div.font-semibold.text-lg Initial Quantity
+              div.font-semibold.text-lg Inventory Quantity
               span.font-bold.text-lg 100
 </template>
 <script lang="ts">
