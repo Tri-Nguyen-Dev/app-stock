@@ -5,33 +5,33 @@
       .stock
         .stock__header.flex.align-items-center.justify-content-between
           .stock__header-left
-            h1.stock__header-title.text-900.font-bold.text-header Stock list
-            span.stock__header-info.text-color-secondary 1280 product found
-          .stock__header-right
-            .stock__header-search
-              span.p-input-icon-left
-                i.pi.pi-search
-                InputText(type='text' v-model='filter.search' placeholder='Search')
-            div(:class="{active: isShowFilter, 'stock__header-toggle-filter': true,}" @click='toggleShowFilter')
+            h1.text-900.font-bold.text-header.m-0 Stock list
+            span.text-700.font-normal.stock__header-info 1280 product found
+          .stock__header-right.flex.align-items-center.justify-content-between
+            .stock__header-search.h-3rem.w-18rem
+              span.p-input-icon-left.h-full.w-full
+                .icon.icon--left.icon-search
+                InputText.h-full.border-0.w-full.stock__header-search(type='text' v-model='filter.search' placeholder='Search')
+            div.flex.align-items-center.bg-white.h-3rem.stock__header-filter(:class="{active: isShowFilter}" @click='toggleShowFilter')
               img(v-if='!isShowFilter' :src="require('~/assets/icons/filter.svg')" alt='')
-              img(v-else='' :src="require('~/assets/icons/arrow-up.svg')" alt='')
+              img(v-else='' :src="require('~/assets/icons/chevron-up.svg')" alt='')
               span Filter
-            .stock__header-add
+            .stock__header-add.bg-primary.h-3rem.flex.align-items-center
               img(:src="require('~/assets/icons/plus.svg')" alt='')
-              span Add Items
+              span.text-white Add Items
         div(:class='{ active: isShowFilter, stock__filter: true }')
-          .stock__filter-item.filter-warehouse
+          .stock__filter-item.bg-white
             .stock__filter-title Warehouse
             Dropdown(v-model='filter.warehouse' :options='warehouseList' optionLabel="name" placeholder='Select')
-          .stock__filter-item.filter-category
+          .stock__filter-item.bg-white
             .stock__filter-title Category
-            MultiSelect(v-model='filter.category' :options='categoryList' optionLabel="name" placeholder='Select Brands' :filter='true')
-          .stock__filter-item.filter-code
+            MultiSelect(v-model='filter.category' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+          .stock__filter-item.bg-white
             .stock__filter-title Code
             span.p-input-icon-right
               InputText(type='text' v-model='filter.code')
               i.pi.pi-search
-          .stock__filter-item.filter-status
+          .stock__filter-item.bg-white
             .stock__filter-title Status
             Dropdown(v-model='filter.status' :options='statusList' optionLabel="name" placeholder='Select')
         .stock-table
@@ -100,6 +100,7 @@ export default Stock
 body
   background: #e8eaef
 
+
 .sidebar
   width: 270px
 
@@ -107,6 +108,30 @@ body
   padding: 32px
   margin-left: 270px
 
+.stock__header
+  margin-bottom: 31px
+  &-info
+    font-size: $font-size-small
+    line-height: calc(24 / 12)
+
+  &-right
+    gap: 0 16px
+
+  &-search::placeholder
+    color: #D2D2E0
+    font-size: 14px
+    font-weight: 400
+    line-height: calc(24 / 14)
+
+  &-filter, &-add
+    padding: 0 32px 0 16px
+    gap: 0 18px
+    cursor: pointer
+    border-radius: 4px
+
+  &-filter.active
+    border: 1.5px solid $primary
+    color: $primary
 
 
 .stock__filter
@@ -119,18 +144,36 @@ body
   max-height: 0
   transition: all 0.25s ease-in-out
 
-  .p-multiselect-panel .p-multiselect-header .p-checkbox
-    position: absolute !important
-    z-index: 1
-    margin-left: 18px
-    margin-right: 0
+  &-title
+    padding-left: 8px
+    margin-bottom: 6px
+    color: $text-color-secondary
+    font-size: 12px
 
+  &-item
+    padding: 8px
+    .p-dropdown-label.p-placeholder, .p-multiselect-label.p-placeholder, .p-dropdown-label .p-inputtext
+      padding-left: 8px !important
+
+    .p-dropdown .p-dropdown-label.p-placeholder, .p-multiselect .p-multiselect-label.p-placeholder
+      color: $text-color-secondary
+      font-weight: 400
+      font-size: 14px
+      line-height: calc(24 / 14)
+
+  &-item
+   .p-dropdown-trigger-icon:before, .p-multiselect-trigger-icon::before
+      content: url('~/assets/icons/chevron-down.svg')
+
+   .p-multiselect-panel .p-multiselect-header .p-checkbox
+      position: absolute !important
+      z-index: 1
+      margin-left: 18px
+      margin-right: 0
 
   .p-multiselect-filter-container
     input
       padding: 14px 0 14px 56px
-
-
 
   .p-dropdown
     width: 100%
@@ -182,7 +225,6 @@ body
       height: 160px
 
 
-
   .p-dropdown-items-wrapper .p-dropdown-items,
   .p-multiselect-items
     border: none !important
@@ -190,15 +232,9 @@ body
     box-shadow: none
 
 
-  .p-dropdown-panel
-    .p-dropdown-items
-    .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
-  .p-multiselect-panel
-    .p-multiselect-items
-    .p-multiselect-item:not(.p-highlight):not(.p-disabled):hover
+  .p-dropdown-panel.p-dropdown-items.p-dropdown-item:not(.p-highlight):not(.p-disabled):hover, .p-multiselect-panel.p-multiselect-items.p-multiselect-item:not(.p-highlight):not(.p-disabled):hover
     color: $text-color-base
-    background: #e8eaef
-
+      background: #e8eaef
 
   .p-dropdown-item.p-highlight,
   .p-multiselect-item.p-highlight
@@ -236,17 +272,6 @@ body
     margin-bottom: 24px
 
 
-  &-item
-    padding: 12px 16px
-    border-radius: 4px
-    background: #ffffff
-
-
-  &-title
-    margin-bottom: 6px
-    color: $text-color-secondary
-    font-size: 12px
-
 
 
 .p-checkbox .p-checkbox-box
@@ -258,12 +283,6 @@ body
 .p-multiselect-trigger-icon
   &:before
     content: url('~/assets/icons/arrow-down.svg')
-
-
-
-.p-dropdown-item,
-.p-multiselect-item
-  padding: 12px 0 16px 18px !important
 
 
 .filter .p-multiselect-header
