@@ -1,18 +1,5 @@
-// Override css
-@import 'primeflex/primeflex.css'                                    //primeflex
+// - Use global variables
+@use 'variables' as *
 
-// Reset and global css
-html
-  height:      100%
-  font-size:   14px
-  font-family: $font-family-primary
-  color:       $text-color-900
-
-body
-  margin:          0
-  padding:         0
-  border:          0
-  outline:         0
-  text-decoration: none
-  list-style:      none
-
+// - Custom theme
+@import 'theming'

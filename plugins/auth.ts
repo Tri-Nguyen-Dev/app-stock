@@ -18,11 +18,6 @@ declare module 'vue/types/vue' {
 const auth: Plugin = ({ $auth, store }) => {
   const axiosInstance = axios.create()
 
-  $auth.onError((error, name, endpoint) => {
-    console.info(endpoint)
-    console.error(name, error)
-  })
-
   axiosInstance.interceptors.request.use((config) => {
     return config
   }, (error) => {
