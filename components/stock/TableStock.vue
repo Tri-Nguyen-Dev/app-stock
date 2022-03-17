@@ -45,20 +45,19 @@
         template(#body='{ data }')
           .table-action
             span
-              img(:src="require('~/assets/icon/pencil.svg')" alt='')
+              img(:src="require('~/assets/icons/pencil.svg')" alt='')
             span(@click="handleDeleteStock(data)")
-              img(:src="require('~/assets/icon/trash.svg')" alt='')
+              img(:src="require('~/assets/icons/trash.svg')" alt='')
     .table-footer
       .table-footer-info(v-if='!selectedProduct.length > 0')
-        img(:src="require('~/assets/icon/filter-left.svg')" alt='')
+        img(:src="require('~/assets/icons/filter-left.svg')" alt='')
         span Showing 01 - 100 of 1280
       .table-btn-delete(v-else='')
-        img(:src="require('~/assets/icon/trash-white.svg')" alt='')
+        img(:src="require('~/assets/icons/trash-white.svg')" alt='')
         span Delete {{ selectedProduct.length }} items selected
       .table-footer-paginate
         Paginator(:rows='10' :totalRecords='totalRecords' @page="onPage($event)")
     ConfirmDialog
-    div {{ currentPage }}
 </template>
 
 <script lang="ts">
@@ -86,220 +85,176 @@ class Table extends Vue {
     this.currentPage = event.page + 1
   }
 
-  handleDeleteStock(data: any) {
-    this.$confirm.require({
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      acceptClass: 'p-button-danger',
-      accept: () => {
-        console.log(data.id)
-      },
-      reject: () => {},
-    })
-  }
+  handleDeleteStock() {}
 }
 export default Table
 </script>
 
-<style lang="scss">
-$primary-color: #486ae2;
-$white-color: #fff;
+<style lang="sass">
+$primary-color: #486ae2
+$white-color: #fff
 
-.p-datatable-wrapper {
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
+.p-datatable-wrapper
+  &::-webkit-scrollbar
+    height: 6px
+  &::-webkit-scrollbar-thumb
+    background: #979aa4
+    border-radius: 10px
+    min-height: 40px
 
-  &::-webkit-scrollbar-thumb {
-    background: #979aa4;
-    border-radius: 10px;
-    min-height: 40px;
-  }
-}
+table thead tr
+  height: 56px
+  background: #f9f9fc
 
-table thead tr {
-  height: 56px;
-  background: #f9f9fc;
-}
+table tbody tr.p-highlight
+  .table-name
+    color: #fff
+  .table-box-code
+    color: $white-color
+    path
+      fill: $white-color
 
-table tbody tr.p-highlight {
-  .table-name {
-    color: #fff;
-  }
-  .table-box-code {
-    color: $white-color;
 
-    path {
-      fill: $white-color;
-    }
-  }
-}
+table thead tr th
+  font-weight: 700 !important
+  font-size: 12px
+  line-height: calc(24 / 12)
+  letter-spacing: 1px
+  text-transform: uppercase
+  color: $text-color-800 !important
+  white-space: nowrap
+  border: none !important
+  padding: 14px 26px !important
 
-table thead tr th {
-  font-weight: 700 !important;
-  font-size: 12px;
-  line-height: calc(24 / 12);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: #464d64 !important;
-  white-space: nowrap;
-  border: none !important;
-  padding: 14px 26px !important;
-}
+table tbody tr td
+  white-space: nowrap
+  border: 1px solid rgba(21, 22, 34, 0.05)
+  padding: 14px 26px !important
 
-table tbody tr td {
-  white-space: nowrap;
-  border: 1px solid rgba(21, 22, 34, 0.05);
-  padding: 14px 26px !important;
-}
+.p-datatable-resizable > .p-datatable-wrapper
+  &::-webkit-scrollbar
+    width: 6px
 
-.p-datatable-resizable > .p-datatable-wrapper {
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
+  &::-webkit-scrollbar-thumb
+    background: #979aa4
+    border-radius: 10px
+    min-height: 40px
 
-  &::-webkit-scrollbar-thumb {
-    background: #979aa4;
-    border-radius: 10px;
-    min-height: 40px;
-  }
-}
 
-.p-datatable .p-datatable-tbody > tr.p-highlight {
-  background: $primary-color;
-}
+.p-datatable .p-datatable-tbody > tr.p-highlight
+  background: $primary-color
 
-table > tbody > tr {
-  max-height: 66px;
-}
+
+table > tbody > tr
+  max-height: 66px
 
 .p-datatable.p-datatable-hoverable-rows
   .p-datatable-tbody
-  > tr:not(.p-highlight):hover {
-  background: #e8eaef;
-}
+  > tr:not(.p-highlight):hover
+  background: #e8eaef
 
-.table {
-  &-level {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    justify-content: flex-end;
-    align-items: center;
-  }
+.table
+  &-level
+    display: flex
+    width: 100%
+    height: 100%
+    justify-content: flex-end
+    align-items: center
 
-  &-name {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: calc(24 / 12);
-    color: #151622;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 138px;
-  }
+  &-name
+    font-weight: 400
+    font-size: 14px
+    line-height: calc(24 / 12)
+    color: #151622
+    overflow: hidden
+    text-overflow: ellipsis
+    width: 138px
 
-  &-action {
-    display: flex;
-    align-items: center;
-    gap: 0 8px;
+  &-action
+    display: flex
+    align-items: center
+    gap: 0 8px
 
-    span {
-      cursor: pointer;
-      width: 34px;
-      height: 34px;
-      background: #f1f3f6;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
+    span
+      cursor: pointer
+      width: 34px
+      height: 34px
+      background: #f1f3f6
+      border-radius: 4px
+      display: flex
+      align-items: center
+      justify-content: center
 
-  &-image {
-    img {
-      width: 34px;
-      height: 34px;
-      object-fit: cover;
-      border-radius: 4px;
-    }
-  }
+  &-image
+    img
+      width: 34px
+      height: 34px
+      object-fit: cover
+      border-radius: 4px
 
-  &-footer {
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 66px;
-    background-color: $white-color;
-    padding: 0 24px;
-  }
+  &-footer
+    left: 0
+    display: flex
+    align-items: center
+    justify-content: space-between
+    height: 66px
+    background-color: $white-color
+    padding: 0 24px
 
-  &-footer-info {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0 19px;
+  &-footer-info
+    display: flex
+    align-items: center
+    justify-content: center
+    gap: 0 19px
 
-    span {
-      font-weight: 400;
-      font-size: 12px;
-      line-height: calc(24 / 12);
-      color: #d2d2e0;
-    }
-  }
+    span
+      font-weight: 400
+      font-size: 12px
+      line-height: calc(24 / 12)
+      color: $text-color-500
 
-  &-box-code {
-    display: flex;
-    align-items: center;
-    color: $primary-color;
-    font-size: 12px;
-    line-height: calc(24 / 12);
-    font-weight: 700;
-    gap: 0 4px;
-    cursor: pointer;
+  &-box-code
+    display: flex
+    align-items: center
+    color: $primary-color
+    font-size: 12px
+    line-height: calc(24 / 12)
+    font-weight: 700
+    gap: 0 4px
+    cursor: pointer
 
-    img {
-      width: 16px;
-      height: 16px;
-    }
-  }
+    img
+      width: 16px
+      height: 16px
 
-  &-btn-delete {
-    padding: 5px 10px;
-    display: flex;
-    background: #ff7171;
+  &-btn-delete
+    padding: 5px 10px
+    display: flex
+    background: #ff7171
 
-    border: 1.5px solid $white-color;
-    box-sizing: border-box;
-    border-radius: 4px;
-    color: $white-color;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: calc(24 / 14);
-    gap: 0 19px;
-    cursor: pointer;
-  }
-}
+    border: 1.5px solid $white-color
+    box-sizing: border-box
+    border-radius: 4px
+    color: $white-color
+    font-weight: 400
+    font-size: 14px
+    line-height: calc(24 / 14)
+    gap: 0 19px
+    cursor: pointer
 
-.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-  background: $primary-color;
-  border-color: $primary-color;
-}
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight
+  background: $primary-color
+  border-color: $primary-color
 
-.p-paginator .p-paginator-pages .p-paginator-page {
-  color: $primary-color;
-}
+.p-paginator .p-paginator-pages .p-paginator-page
+  color: $primary-color
 
-.pi-sort-alt:before {
-  content: url('~/assets/icon/icon-sort.svg');
-}
+.pi-sort-alt:before
+  content: url('~/assets/icons/icon-sort.svg')
 
-.pi-sort-amount-up-alt:before {
-  content: url('~/assets/icon/icon-sortDesc.svg');
-}
+.pi-sort-amount-up-alt:before
+  content: url('~/assets/icons/icon-sortDesc.svg')
 
-.pi-sort-amount-down:before {
-  content: url('~/assets/icon/icon-sortAsc.svg');
-}
+.pi-sort-amount-down:before
+  content: url('~/assets/icons/icon-sortAsc.svg')
 </style>
