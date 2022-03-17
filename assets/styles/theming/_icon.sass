@@ -1,18 +1,40 @@
 // - Custom css classes for icons
-// -- List name of icons
-$icons: house-2
+// -- Variables
 
-// -- List name of icons
-.icon:before
+$icon-size-small:  16px !default
+$icon-size-base:   18px !default
+$icon-size-medium: 20px !default
+$icon-size-large:  24px !default
+
+$icon-padding-base: 16px
+
+// --- List name of icons
+$icons: house-2, lock-open, sms
+
+// -- custom css
+.icon
+  @include size($icon-size-base)
+  @include centerAbsolute(top)
   content: ''
-  position: absolute
-  width:    20px
-  height:   20px
 
+  &--left
+    left: $icon-padding-base
+
+  &--right
+    right: $icon-padding-base
+
+  &--center
+    @include centerAbsolute(both)
+
+  &--small
+    @include size($icon-size-small)
+
+  &--large
+    @include size($icon-size-large)
 
 @each $i in $icons
-  .icon-#{$i}:before
-    background-color: red
-    mask-image:      url('~/assets/icons/#{$i}.svg')
-    mask-size: cover
+  .icon-#{$i}
+    background-color: $text-color-base
+    mask-image:       url('~/assets/icons/#{$i}.svg')
+    mask-size:        cover
 
