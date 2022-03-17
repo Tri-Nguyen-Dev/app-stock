@@ -13,16 +13,12 @@ export default {
     ],
     link: [
       {
-        href: 'https://fonts.googleapis.com/css2?family=Google+Sans:wght@100;200;300;400;500;700;900&display=swap',
+        href: 'https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700;900&display=swap',
         rel:  'stylesheet',
         type: 'text/css'
       }
     ]
   },
-
-  css: [
-    '@/assets/styles/main.sass'
-  ],
 
   plugins: [
     '~/plugins/vuelidate.ts'
@@ -91,7 +87,7 @@ export default {
   },
 
   styleResources: {
-    sass: ['@/assets/styles/common/**.sass'],
+    sass: ['@/assets/styles/main.sass'],
     hoistUseStatements: true
   },
 

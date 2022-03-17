@@ -1,28 +1,28 @@
 <template lang='pug'>
   section.surface-0.flex.align-items-center.justify-content-center.min-h-screen.min-w-screen.overflow-hidden.p-2
-    .grid.justify-content-center.col-12(class='md:col-4')
+    .grid.justify-content-center.col-12(class='md:col-6 lg:col-4')
       .logo-block.w-full.mb-5
-        img(:src='require("assets/images/tag-user.png")')
-        img(:src='require("assets/images/logo-text-airtag.png")')
+        img.pr-1(:src='require("assets/images/tag-user.png")')
+        img.pt-2(:src='require("assets/images/logo-text-airtag.png")')
       .w-full
         //- Input Email
-        label.block.text-900.text-sm.font-semibold.mb-2(for="inputEmail") Email
+        label.block.font-bold.mb-2(for="inputEmail") Email
         span.p-input-icon-left.mb-3.w-full
-          i.base.pi.pi-envelope
+          .icon.icon--left.icon-sms.bg-primary
           InputText#inputEmail.w-full(v-model="loginUser.userName")
         //- Input Password
-        label.block.text-900.text-sm.font-semibold.mb-2(for="inputPassword") Password
-        span.p-input-icon-left.mb-5.w-full
-          i.base.pi.pi-unlock
+        label.block.font-bold.mb-2(for="inputPassword") Password
+        span.p-input-icon-left.mb-6.w-full
+          .icon.icon--left.icon-lock-open.bg-primary
           InputText#inputPassword.w-full(type="password", v-model="loginUser.password")
         //- Action block
-        Button.w-full.p-3.text-sm.mb-5(type="button", @click='callLogin') Login
+        Button.bg-primary.w-full.p-3.mb-3(type="button", label="Sign In", @click='callLogin')
         //- Remember block
         .flex.align-items-center.justify-content-between.mb-5
           .flex.align-items-center
             Checkbox#rememberCheck.mr-2(v-model="checked", :binary="true")
-            label(for="rememberCheck") Remember me
-          a.font-semibold.no-underline.ml-2.text-right.cursor-pointer Forgot password?
+            label.text-sm(for="rememberCheck") Save password
+          a.ml-5.text-sm.text-right.text-primary.cursor-pointer Forgot password?
 
 </template>
 <script lang='ts'>
@@ -61,5 +61,4 @@ export default Login
   height: 54px
   img
     height: 100%
-    padding-bottom: 10px
 </style>
