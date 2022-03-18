@@ -52,6 +52,11 @@ export default {
       'Dropdown',
       'InputText',
       'TieredMenu',
+      'DataTable',
+      'Column',
+      'Tag',
+      'Paginator',
+      'Calendar'
     ],
     directives: [
       'Tooltip',
