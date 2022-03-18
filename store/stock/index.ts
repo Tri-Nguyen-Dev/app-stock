@@ -42,7 +42,7 @@ export default class Stock extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async deleteStockById(
+  async deleteStock(
     params: StockModel.DeleteStockParams
   ): Promise<string | undefined> {
     try {

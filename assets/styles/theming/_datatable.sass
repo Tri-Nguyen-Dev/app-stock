@@ -1,0 +1,47 @@
+$heading-table-color: #F9F9FC
+$td-hover-color: #E8EAEF
+$bottom-td-color: rgb(21, 22, 34, 0.05)
+
+.p-datatable
+    border-radius: 4px
+    overflow: hidden
+    font-size: 14px
+
+    .p-checkbox .p-checkbox-box
+        border: 1.5px solid #d2d2e0
+        border-radius: 2px
+
+.p-datatable .p-datatable-tbody > tr.p-highlight
+    background-color: $primary !important
+
+.p-datatable .p-datatable-thead tr:not(.p-highlight):hover
+    background: $td-hover-color !important
+
+.p-datatable .p-datatable-thead > tr > th
+    background: $heading-table-color !important
+    font-weight: $font-weight-bold !important
+    font-size: 12px
+    letter-spacing: 1px
+    text-transform: uppercase
+    color: $text-color-800 !important
+    white-space: nowrap
+    border: none !important
+    padding: 18px 26px !important
+
+    .pi-sort-alt:before
+        content: url('~/assets/icons/sort-alt.svg')
+
+    .pi-sort-amount-up-alt:before
+        content: url('~/assets/icons/sort-alt-up.svg')
+
+    .pi-sort-amount-down
+        transform: rotate(180deg) !important
+        &:before
+            content: url('~/assets/icons/sort-alt-up.svg')
+
+        
+.p-datatable .p-datatable-tbody > tr > td 
+    padding: 18px 26px !important
+    white-space: nowrap
+    border-top: 1px solid $bottom-td-color
+

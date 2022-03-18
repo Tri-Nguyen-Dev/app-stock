@@ -3,10 +3,10 @@
     .sidebar
     .main
       .stock
-        .stock__header.flex.align-items-center.justify-content-between
+        .stock__header.flex.align-items-center.justify-content-between.mb-5
           .stock__header-left
             h1.text-900.font-bold.text-header.m-0 Stock list
-            span.text-700.font-normal.stock__header-info 1280 product found
+            span.text-700.font-normal.text-sm.stock__header-info 1280 product found
           .stock__header-right.flex.align-items-center.justify-content-between
             .stock__header-search.h-3rem.w-18rem
               span.p-input-icon-left.h-full.w-full
@@ -108,11 +108,6 @@ body
   margin-left: 270px
 
 .stock__header
-  margin-bottom: 31px
-  
-  &-info
-    font-size: $font-size-small
-    line-height: calc(24 / 12)
 
   &-right
     gap: 0 16px
@@ -120,13 +115,10 @@ body
   &-search::placeholder
     color: #D2D2E0
     font-size: 14px
-    font-weight: 400
-    line-height: calc(24 / 14)
 
   &-filter, &-add
     padding: 0 32px 0 16px
     gap: 0 18px
-    cursor: pointer
     border-radius: 4px
 
   &-filter.active
@@ -136,7 +128,6 @@ body
 .stock__filter
   display: grid
   grid-template-columns: 1fr 1fr 1fr 1fr
-  margin-bottom: 0
   grid-gap: 0 16px
   visibility: hidden
   opacity: 0
@@ -253,9 +244,6 @@ body
     visibility: visible
     margin-bottom: 24px
 
-.p-checkbox .p-checkbox-box
-  border: 1.5px solid #d2d2e0
-  border-radius: 2px
 
 .p-dropdown-trigger-icon,
 .p-multiselect-trigger-icon
