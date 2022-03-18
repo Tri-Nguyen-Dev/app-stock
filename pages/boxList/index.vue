@@ -68,22 +68,22 @@
         Column(field="warehouse" header="WAREHOUSE" sortable)
           template(#body="slotProps")
             span.text-primary.font-bold {{slotProps.data.warehouse}}
-            img.ml-1(:src='require("~/assets/images/icon-arrow-up-right.svg")')
+            img.ml-1(:src='require("~/assets/icons/arrow-up-right.svg")')
         Column(field="location" header="LOCATION" sortable)
           template(#body="slotProps")
             span.text-primary.font-bold {{slotProps.data.location}}
-            img.ml-1(:src='require("~/assets/images/icon-arrow-up-right.svg")')
+            img.ml-1(:src='require("~/assets/icons/arrow-up-right.svg")')
         Column(field="status" header="STATUS" sortable)
           template(#body="slotProps")
             Tag.px-3.bg-green-100.text-green-400.text-sm(severity="success" :value="slotProps.data.status.toUpperCase()")
         Column(:exportable="false" header="ACTION" :styles="{'min-width':'8rem'}" sortable)
           template(#body="slotProps")
             Button.border-0.p-0.bg-white
-              img(:src='require("~/assets/images/btn-icon-edit.svg")')
+              img(:src='require("~/assets/icons/btn-edit.svg")')
             Button.border-0.p-0.ml-1.bg-white
-              img(:src='require("~/assets/images/btn-icon-delete.svg")')
+              img(:src='require("~/assets/icons/btn-delete.svg")')
         template(#paginatorstart)
-          img(:src='require("~/assets/images/icon-footer-paginator.svg")')
+          img(:src='require("~/assets/icons/footer-paginator.svg")')
           span.ml-3.text-400.text-sm Showing 01 - 100 of 1280
     </template>
 </template>
@@ -140,17 +140,17 @@ body
   background: #E8EAEF
 .box-page-container
   .pi-sort-alt:before
-    content: url('~/assets/images/icon-sort.svg')
+    content: url('~/assets/icons/sort.svg')
   .pi-sort-amount-up-alt:before
-    content: url('~/assets/images/icon-sortDesc.svg')
+    content: url('~/assets/icons/sortDesc.svg')
   .pi-sort-amount-down:before 
-    content: url('~/assets/images/icon-sortAsc.svg')
+    content: url('~/assets/icons/sortAsc.svg')
   .p-datatable .p-datatable-thead > tr > th
     background: #F9F9FC
     border: none
     color: #464D64
   .pi-calendar:before
-    content: url('~/assets/images/icon-calendar.svg')
+    content: url('~/assets/icons/calendar.svg')
   .p-calendar-w-btn
     .p-button
       background: none
