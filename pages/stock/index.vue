@@ -100,7 +100,6 @@ export default Stock
 body
   background: #e8eaef
 
-
 .sidebar
   width: 270px
 
@@ -110,6 +109,7 @@ body
 
 .stock__header
   margin-bottom: 31px
+  
   &-info
     font-size: $font-size-small
     line-height: calc(24 / 12)
@@ -132,7 +132,6 @@ body
   &-filter.active
     border: 1.5px solid $primary
     color: $primary
-
 
 .stock__filter
   display: grid
@@ -183,7 +182,6 @@ body
     box-shadow: none
     border: none
 
-
   .p-dropdown-label,
   .p-multiselect-label
     padding: 8px 0
@@ -192,16 +190,13 @@ body
     font-size: 14px
     line-height: calc(24 / 14)
 
-
   .p-multiselect-label
     max-width: 240px
-
 
   .p-dropdown:not(.p-disable).p-focus,
   .p-multiselect:not(.p-disable).p-focus
     box-shadow: none
     border-color: none
-
 
   .p-dropdown-items-wrapper,
   .p-multiselect-items-wrapper
@@ -211,7 +206,6 @@ body
 
     &::-webkit-scrollbar
       width: 6px
-
 
     &::-webkit-scrollbar-thumb
       background: $text-color-secondary
@@ -226,7 +220,6 @@ body
     padding: 0
     box-shadow: none
 
-
   .p-dropdown-panel.p-dropdown-items.p-dropdown-item:not(.p-highlight):not(.p-disabled):hover, .p-multiselect-panel.p-multiselect-items.p-multiselect-item:not(.p-highlight):not(.p-disabled):hover
     color: $text-color-base
       background: #e8eaef
@@ -235,30 +228,24 @@ body
   .p-multiselect-item.p-highlight
     background-color: $primary !important
 
-
   .p-dropdown,
   .p-multiselect
     width: 100%
     border: none
 
-
   .p-input-icon-right,
   .p-inputtext
     width: 100%
 
-
   .p-multiselect-panel .p-multiselect-items .p-multiselect-item .p-checkbox
     margin-right: 18px
-
 
   .p-multiselect-header
     padding: 0 !important
     background-color: #fff
 
-
   .p-multiselect-close
     display: none
-
 
   &.active
     max-height: 80px
@@ -270,16 +257,13 @@ body
   border: 1.5px solid #d2d2e0
   border-radius: 2px
 
-
 .p-dropdown-trigger-icon,
 .p-multiselect-trigger-icon
   &:before
     content: url('~/assets/icons/arrow-down.svg')
 
-
 .filter .p-multiselect-header
   padding: 0 !important
-
 
 .p-inputtext:enabled:focus
   outline: none
@@ -287,14 +271,11 @@ body
   box-shadow: none
   border-color: $primary
 
-
 .p-inputtext:enabled:focus + .p-multiselect-filter-icon
   color: $primary !important
 
-
 .p-inputtext:enabled:focus + .pi-search
   color: $primary !important
-
 
 .filter-code .p-inputtext
   padding: 8px
