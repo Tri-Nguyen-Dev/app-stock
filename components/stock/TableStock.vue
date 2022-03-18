@@ -8,37 +8,36 @@
         template(#body='{ data }')
           .table-image
             img(:src='data.image' alt='' width='100%')
-      Column(field='name' header='Name' sortable='')
+      Column(field='name' header='Name' sortable)
         template(#body='{ data }')
           .table-name
             | {{ data.name }}
-      Column(field='inventory_level' header='Inventory Level' sortable='')
+      Column(field='inventory_level' header='Inventory Level' sortable)
         template(#body='{ data }')
-          .table-level
-            | {{ data.inventory_level }}
-      Column(field='box_code' header='Box code')
+          .flex.align-items-center.justify-content-end {{ data.inventory_level }}
+      Column(field='box_code' header='Box code' sortable)
         template(#body='{ data }')
           .table-box-code
             span {{ data.box_code }}
             svg(width='16' height='16' viewbox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg')
               path(d='M9.21877 5.94271H5.49544C5.31863 5.94271 5.14906 5.87247 5.02404 5.74745C4.89901 5.62242 4.82877 5.45286 4.82877 5.27604C4.82877 5.09923 4.89901 4.92966 5.02404 4.80464C5.14906 4.67962 5.31863 4.60938 5.49544 4.60938H10.8288C10.9164 4.60911 11.0032 4.62618 11.0842 4.65959C11.1652 4.693 11.2388 4.74209 11.3008 4.80405C11.3627 4.86601 11.4118 4.93961 11.4452 5.02061C11.4786 5.10161 11.4957 5.18842 11.4954 5.27604V10.6094C11.4954 10.7862 11.4252 10.9558 11.3002 11.0808C11.1752 11.2058 11.0056 11.276 10.8288 11.276C10.652 11.276 10.4824 11.2058 10.3574 11.0808C10.2323 10.9558 10.1621 10.7862 10.1621 10.6094V6.88538L5.64277 11.4047C5.51768 11.5297 5.34805 11.5999 5.1712 11.5998C4.99436 11.5998 4.82478 11.5295 4.69977 11.4044C4.57477 11.2793 4.50458 11.1097 4.50464 10.9328C4.5047 10.756 4.57501 10.5864 4.70011 10.4614L9.21877 5.94271V5.94271Z' fill='#1838BD')
-      Column(field='warehouse' header='Warehouse')
+      Column(field='warehouse' header='Warehouse' sortable)
         template(#body='{ data }')
           .table-box-code
             span {{ data.warehouse }}
             svg(width='16' height='16' viewbox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg')
               path(d='M9.21877 5.94271H5.49544C5.31863 5.94271 5.14906 5.87247 5.02404 5.74745C4.89901 5.62242 4.82877 5.45286 4.82877 5.27604C4.82877 5.09923 4.89901 4.92966 5.02404 4.80464C5.14906 4.67962 5.31863 4.60938 5.49544 4.60938H10.8288C10.9164 4.60911 11.0032 4.62618 11.0842 4.65959C11.1652 4.693 11.2388 4.74209 11.3008 4.80405C11.3627 4.86601 11.4118 4.93961 11.4452 5.02061C11.4786 5.10161 11.4957 5.18842 11.4954 5.27604V10.6094C11.4954 10.7862 11.4252 10.9558 11.3002 11.0808C11.1752 11.2058 11.0056 11.276 10.8288 11.276C10.652 11.276 10.4824 11.2058 10.3574 11.0808C10.2323 10.9558 10.1621 10.7862 10.1621 10.6094V6.88538L5.64277 11.4047C5.51768 11.5297 5.34805 11.5999 5.1712 11.5998C4.99436 11.5998 4.82478 11.5295 4.69977 11.4044C4.57477 11.2793 4.50458 11.1097 4.50464 10.9328C4.5047 10.756 4.57501 10.5864 4.70011 10.4614L9.21877 5.94271V5.94271Z' fill='#1838BD')
-      Column(field='localtion' header='Localtion')
+      Column(field='localtion' header='Localtion' sortable)
         template(#body='{ data }')
           .table-box-code
             span {{ data.warehouse }}
             svg(width='16' height='16' viewbox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg')
               path(d='M9.21877 5.94271H5.49544C5.31863 5.94271 5.14906 5.87247 5.02404 5.74745C4.89901 5.62242 4.82877 5.45286 4.82877 5.27604C4.82877 5.09923 4.89901 4.92966 5.02404 4.80464C5.14906 4.67962 5.31863 4.60938 5.49544 4.60938H10.8288C10.9164 4.60911 11.0032 4.62618 11.0842 4.65959C11.1652 4.693 11.2388 4.74209 11.3008 4.80405C11.3627 4.86601 11.4118 4.93961 11.4452 5.02061C11.4786 5.10161 11.4957 5.18842 11.4954 5.27604V10.6094C11.4954 10.7862 11.4252 10.9558 11.3002 11.0808C11.1752 11.2058 11.0056 11.276 10.8288 11.276C10.652 11.276 10.4824 11.2058 10.3574 11.0808C10.2323 10.9558 10.1621 10.7862 10.1621 10.6094V6.88538L5.64277 11.4047C5.51768 11.5297 5.34805 11.5999 5.1712 11.5998C4.99436 11.5998 4.82478 11.5295 4.69977 11.4044C4.57477 11.2793 4.50458 11.1097 4.50464 10.9328C4.5047 10.756 4.57501 10.5864 4.70011 10.4614L9.21877 5.94271V5.94271Z' fill='#1838BD')
-      Column(field='code' header='Code')
-      Column(field='sku' header='Sku')
-      Column(field='category' header='Category')
-      Column(field='sender' header='Quantity')
-      Column(field='status' header='Status')
+      Column(field='code' header='Code' sortable)
+      Column(field='sku' header='Sku' sortable)
+      Column(field='category' header='Category' sortable)
+      Column(field='sender' header='Quantity' sortable)
+      Column(field='status' header='Status' sortable)
         template(#body='{ data }')
           tag(:value='data.status' success='')
       Column(field='action' header='Action')
@@ -148,18 +147,10 @@ table tbody tr td
 table > tbody > tr
   max-height: 66px
 
-.p-datatable.p-datatable-hoverable-rows
-  .p-datatable-tbody
-  > tr:not(.p-highlight):hover
+.p-datatable.p-datatable-hoverable-rows  .p-datatable-tbody > tr:not(.p-highlight):hover
   background: #e8eaef
 
 .table
-  &-level
-    display: flex
-    width: 100%
-    height: 100%
-    justify-content: flex-end
-    align-items: center
 
   &-name
     font-weight: 400
@@ -250,11 +241,13 @@ table > tbody > tr
   color: $primary-color
 
 .pi-sort-alt:before
-  content: url('~/assets/icons/icon-sort.svg')
+  content: url('~/assets/icons/sort-alt.svg')
 
 .pi-sort-amount-up-alt:before
-  content: url('~/assets/icons/icon-sortDesc.svg')
+  content: url('~/assets/icons/sort-alt-up.svg')
 
-.pi-sort-amount-down:before
-  content: url('~/assets/icons/icon-sortAsc.svg')
+.pi-sort-amount-down
+  transform: rotate(180deg) !important
+  &:before
+    content: url('~/assets/icons/sort-alt-up.svg')
 </style>

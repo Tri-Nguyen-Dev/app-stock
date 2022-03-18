@@ -9,8 +9,8 @@ import { $api, PathBind } from '~/utils'
 })
 export default class Stock extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK: '/stock',
-    DELETE_STOCK: '/stock/:id',
+    GET_STOCK: '/product/list',
+    DELETE_STOCK: '/product/delete',
   }
 
   public stockList: [] = []
@@ -51,7 +51,7 @@ export default class Stock extends VuexModule {
         Stock.STATE_URL.DELETE_STOCK,
         params
       )
-      const response: SuccessResponse<any> = await $api.delete(url)
+      const response: SuccessResponse<any> = await $api.post(url)
       return response.content
     } catch (error) {}
   }

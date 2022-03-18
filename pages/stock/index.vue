@@ -179,11 +179,6 @@ body
     width: 100%
     border: none
 
-
-  .p-dropdown-trigger
-    justify-content: end
-
-
   .p-inputwrapper-focus
     box-shadow: none
     border: none
@@ -270,9 +265,6 @@ body
     opacity: 1
     visibility: visible
     margin-bottom: 24px
-
-
-
 
 .p-checkbox .p-checkbox-box
   border: 1.5px solid #d2d2e0
