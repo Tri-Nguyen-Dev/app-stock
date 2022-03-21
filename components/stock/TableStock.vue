@@ -27,23 +27,20 @@
               img(:src="require('~/assets/icons/pencil.svg')" alt='')
             span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="handleDeleteStockById(data.id)")
               img(:src="require('~/assets/icons/trash.svg')" alt='')
-
     div.flex.align-items-center.justify-content-center.flex-column.h-full
       img(:srcset="`${require('~/assets/images/stock-table-empty.png')} 2x`")
       p.text-900.font-bold.mt-3 List is empty!, Click 
        span.text-primary.underline here 
        span to add item.
-       
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Watch, Prop } from 'nuxt-property-decorator'
 const nsStoreStock = namespace('stock')
 
 @Component
 class Table extends Vue {
-  @nsStoreStock.State
-  stockList!: any[]
+  @Prop() stockList!: any[]
 
   @nsStoreStock.Action
   actGetProductList!: () => Promise<void>

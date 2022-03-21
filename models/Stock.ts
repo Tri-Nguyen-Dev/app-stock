@@ -1,14 +1,8 @@
 export namespace StockModel {
   export interface GetStockParams {
-    offset?: number,
-    limit?: number,
-    keyword: string,
-    warehouseId: number,
-    code: string,
-    status: string,
-    categoryId: number,
+    pageNumber?: number
+    pageSize?: number
   }
-
   export interface DeleteStockParams {
     stockIds?: string[]
   }

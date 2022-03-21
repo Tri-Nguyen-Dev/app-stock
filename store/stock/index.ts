@@ -14,6 +14,7 @@ export default class Stock extends VuexModule {
   }
 
   public stockList: [] = []
+  public stockTotal: number = 0
 
   @Mutation
   setProductList(data: []) {
@@ -21,7 +22,9 @@ export default class Stock extends VuexModule {
   }
 
   @Action({ commit: 'setProductList', rawError: true })
-  async actGetProductList(params?: any): Promise<string | undefined> {
+  async actGetProductList(
+    params?: StockModel.GetStockParams
+  ): Promise<string | undefined> {
     const stockList = require('~/mocks/products.json')
     try {
       const url = PathBind.transform(
@@ -39,20 +42,5 @@ export default class Stock extends VuexModule {
     } catch (error) {
       return stockList
     }
-  }
-
-  @Action({ rawError: true })
-  async deleteStock(
-    params: StockModel.DeleteStockParams
-  ): Promise<string | undefined> {
-    try {
-      const url = PathBind.transform(
-        this.context,
-        Stock.STATE_URL.DELETE_STOCK,
-        params
-      )
-      const response: SuccessResponse<any> = await $api.post(url)
-      return response.content
-    } catch (error) {}
   }
 }

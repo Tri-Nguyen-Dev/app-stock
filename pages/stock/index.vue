@@ -1,7 +1,7 @@
 <template lang="pug">
   .wapper
     .sidebar
-    .main.pt-5.px-5.min-h-screen.overflow-hidden
+    .main.pt-5.px-5.max-h-screen.overflow-hidden
       .stock
         .stock__header.h-4rem.mb-5.flex.align-items-center.justify-content-between
           div
@@ -39,21 +39,22 @@
                 .text-700.font-normal.text-sm.px-3 Status
                 Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
         .stock__table
-          TableStock(@getProductSelected="getProductSelected")
+          TableStock(@getProductSelected="getProductSelected" :stockList="stockList")
         .stock__footer.absolute.px-3.h-4rem.bg-white.bottom-0.w-full.flex.align-items-center.justify-content-between
           .flex.align-items-center(v-if='!selectedStock.length > 0')
             img(:src="require('~/assets/icons/filter-left.svg')")
             span.text-xs.ml-2.text-500 Showing 01 - 100 of 1280
           .stock__footer--mutidelete.flex.cursor-pointer.py-2.px-2.border-round.text-white.text-sm(v-else)
             img(:src="require('~/assets/icons/trash-white.svg')")
-            span.ml-2 Delete 4 items selected
-          Paginator(:rows="10" :totalRecords="50") 
+            span.ml-2 Delete {{ selectedStock.length }} items selected
+          Paginator(:rows="filter.pageSize" :totalRecords="stockTotal" @page="onPage($event)") 
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import TableStock from '~/components/stock/TableStock.vue'
 const nsCategoryStock = namespace('category')
 const nsWarehouseStock = namespace('warehouse')
+const nsStoreStock = namespace('stock')
 
 @Component({
   components: {
@@ -61,6 +62,12 @@ const nsWarehouseStock = namespace('warehouse')
   },
 })
 class Stock extends Vue {
+  @nsStoreStock.State
+  stockList!: any[]
+
+  @nsStoreStock.State
+  stockTotal!: number
+
   @nsCategoryStock.State
   categoryList!: any
 
@@ -79,6 +86,8 @@ class Stock extends Vue {
     code: null,
     status: null,
     search: null,
+    pageNumber: 1,
+    pageSize: 10,
   }
 
   statusList: any = [
@@ -106,6 +115,10 @@ class Stock extends Vue {
 
   getProductSelected(data: any[]) {
     this.selectedStock = data
+  }
+
+  onPage(event: any) {
+    this.filter.pageNumber = event.page + 1
   }
 }
 export default Stock
@@ -157,7 +170,6 @@ body
 
     #datatable--stock-list .p-checkbox-box.p-highlight
       background-color: $primary
-
 
   &__footer--mutidelete
     background-color: #FF7171
