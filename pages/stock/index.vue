@@ -1,41 +1,53 @@
 <template lang="pug">
   .wapper
     .sidebar
-    .main
+    .main.pt-5.px-5.min-h-screen.overflow-hidden
       .stock
-        .stock__header.flex.align-items-center.justify-content-between.mb-5
-          .stock__header-left
+        .stock__header.h-4rem.mb-5.flex.align-items-center.justify-content-between
+          div
             h1.text-900.font-bold.text-header.m-0 Stock list
-            span.text-700.font-normal.text-sm.stock__header-info 1280 product found
-          .stock__header-right.flex.align-items-center.justify-content-between
-            .stock__header-search.h-3rem.w-18rem
-              span.p-input-icon-left.h-full.w-full
+            span.text-700.font-normal.text-sm 1280 product found
+          .flex.align-items-center
+            div
+              span.p-input-icon-left
                 .icon.icon--left.icon-search
-                InputText.h-full.border-0.w-full.stock__header-search(type='text' v-model='filter.search' placeholder='Search')
-            div.flex.align-items-center.bg-white.h-3rem.stock__header-filter(:class="{active: isShowFilter}" @click='toggleShowFilter')
-              img(v-if='!isShowFilter' :src="require('~/assets/icons/filter.svg')" alt='')
-              img(v-else='' :src="require('~/assets/icons/chevron-up.svg')" alt='')
-              span Filter
-            .stock__header-add.bg-primary.h-3rem.flex.align-items-center
+                InputText#inputSearch.h-full.border-none.w-full.text-900.text-sm(type='text' v-model='filter.search' placeholder='Search')
+            .ml-3.flex.align-items-center.bg-white.border-round.cursor-pointer.p-2.pr-5
+              img(:src="require('~/assets/icons/filter.svg')" alt='')
+              span.ml-3.white-space-nowrap Filter
+            .ml-3.flex.align-items-center.bg-primary.border-round.cursor-pointer.p-2.pr-5
               img(:src="require('~/assets/icons/plus.svg')" alt='')
-              span.text-white Add Items
-        div(:class='{ active: isShowFilter, stock__filter: true }')
-          .stock__filter-item.bg-white
-            .stock__filter-title Warehouse
-            Dropdown(v-model='filter.warehouse' :options='warehouseList' optionLabel="name" placeholder='Select')
-          .stock__filter-item.bg-white
-            .stock__filter-title Category
-            MultiSelect(v-model='filter.category' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
-          .stock__filter-item.bg-white
-            .stock__filter-title Code
-            span.p-input-icon-right
-              InputText(type='text' v-model='filter.code')
-              i.pi.pi-search
-          .stock__filter-item.bg-white
-            .stock__filter-title Status
-            Dropdown(v-model='filter.status' :options='statusList' optionLabel="name" placeholder='Select')
-        .stock-table
-          TableStock
+              span.ml-3.white-space-nowrap Add Items
+        .stock__filter.h-5rem.mb-4
+          .grid
+            div(class='col-12 md:col-3 lg:col-3') 
+              .bg-white.border-round
+                .text-700.font-normal.text-sm.px-3 Warehouse
+                Dropdown#dropdownWarehouse.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select") 
+            div(class='col-12 md:col-3 lg:col-3')
+              .bg-white.border-round
+                .text-700.font-normal.text-sm.px-3 Catagory
+                MultiSelect#mutiselectCategory.w-full.border-0(v-model='filter.category' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+            div(class='col-12 md:col-3 lg:col-3')
+              .bg-white.border-round
+                .text-700.font-normal.text-sm.px-3 Code
+                span#inputCode.p-input-icon-right.w-full
+                  InputText.w-full(type='text' v-model='filter.code')
+                  .icon.icon-search
+            div(class='col-12 md:col-3 lg:col-3')
+              .bg-white.border-round
+                .text-700.font-normal.text-sm.px-3 Status
+                Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
+        .stock__table
+          TableStock(@getProductSelected="getProductSelected")
+        .stock__footer.absolute.px-3.h-4rem.bg-white.bottom-0.w-full.flex.align-items-center.justify-content-between
+          .flex.align-items-center(v-if='!selectedStock.length > 0')
+            img(:src="require('~/assets/icons/filter-left.svg')")
+            span.text-xs.ml-2.text-500 Showing 01 - 100 of 1280
+          .stock__footer--mutidelete.flex.cursor-pointer.py-2.px-2.border-round.text-white.text-sm(v-else)
+            img(:src="require('~/assets/icons/trash-white.svg')")
+            span.ml-2 Delete 4 items selected
+          Paginator(:rows="10" :totalRecords="50") 
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
@@ -79,7 +91,7 @@ class Stock extends Vue {
 
   warehouse: any = null
 
-  selectedStock: any = null
+  selectedStock: any[] = []
 
   isShowFilter: boolean = false
 
@@ -90,6 +102,10 @@ class Stock extends Vue {
   mounted() {
     this.actCategoryList()
     this.actWarehouseList()
+  }
+
+  getProductSelected(data: any[]) {
+    this.selectedStock = data
   }
 }
 export default Stock
@@ -104,167 +120,45 @@ body
   width: 270px
 
 .main
-  padding: 32px
   margin-left: 270px
 
-.stock__header
+.stock
+  position: relative
 
-  &-right
-    gap: 0 16px
-
-  &-search::placeholder
-    color: #D2D2E0
-    font-size: 14px
-
-  &-filter, &-add
-    padding: 0 32px 0 16px
-    gap: 0 18px
-    border-radius: 4px
-
-  &-filter.active
-    border: 1.5px solid $primary
-    color: $primary
-
-.stock__filter
-  display: grid
-  grid-template-columns: 1fr 1fr 1fr 1fr
-  grid-gap: 0 16px
-  visibility: hidden
-  opacity: 0
-  max-height: 0
-  transition: all 0.25s ease-in-out
-
-  &-title
-    padding-left: 8px
-    margin-bottom: 6px
-    color: $text-color-secondary
-    font-size: 12px
-
-  &-item
-    padding: 8px
-    .p-dropdown-label.p-placeholder, .p-multiselect-label.p-placeholder, .p-dropdown-label .p-inputtext
-      padding-left: 8px !important
-
-    .p-dropdown .p-dropdown-label.p-placeholder, .p-multiselect .p-multiselect-label.p-placeholder
-      color: $text-color-secondary
-      font-weight: 400
+  &__filter
+    #inputSearch.p-inputtext::placeholder
       font-size: 14px
-      line-height: calc(24 / 14)
+      color: #D2D2E0
 
-  &-item
-   .p-dropdown-trigger-icon:before, .p-multiselect-trigger-icon::before
+    #dropdownWarehouse .p-dropdown-trigger-icon::before, #mutiselectCategory .p-multiselect-trigger-icon::before
       content: url('~/assets/icons/chevron-down.svg')
 
-   .p-multiselect-panel .p-multiselect-header .p-checkbox
-      position: absolute !important
-      z-index: 1
-      margin-left: 18px
-      margin-right: 0
+    #inputCode .icon
+      right: 0.75rem
 
-  .p-multiselect-filter-container
-    input
-      padding: 14px 0 14px 56px
-
-  .p-dropdown
-    width: 100%
-    border: none
-
-  .p-inputwrapper-focus
-    box-shadow: none
-    border: none
-
-  .p-dropdown-label,
-  .p-multiselect-label
-    padding: 8px 0
-    color: $text-color-base
-    font-weight: 400
-    font-size: 14px
-    line-height: calc(24 / 14)
-
-  .p-multiselect-label
-    max-width: 240px
-
-  .p-dropdown:not(.p-disable).p-focus,
-  .p-multiselect:not(.p-disable).p-focus
-    box-shadow: none
-    border-color: none
-
-  .p-dropdown-items-wrapper,
-  .p-multiselect-items-wrapper
-    max-height: 288px !important
-    border-radius: 4px
-    box-shadow: none
-
-    &::-webkit-scrollbar
-      width: 6px
-
-    &::-webkit-scrollbar-thumb
-      background: $text-color-secondary
-      border-radius: 10px
-      width: 6px
-      height: 160px
-
-
-  .p-dropdown-items-wrapper .p-dropdown-items,
-  .p-multiselect-items
-    border: none !important
-    padding: 0
-    box-shadow: none
-
-  .p-dropdown-panel.p-dropdown-items.p-dropdown-item:not(.p-highlight):not(.p-disabled):hover, .p-multiselect-panel.p-multiselect-items.p-multiselect-item:not(.p-highlight):not(.p-disabled):hover
-    color: $text-color-base
-      background: #e8eaef
-
-  .p-dropdown-item.p-highlight,
-  .p-multiselect-item.p-highlight
-    background-color: $primary !important
-
-  .p-dropdown,
-  .p-multiselect
-    width: 100%
-    border: none
-
-  .p-input-icon-right,
-  .p-inputtext
-    width: 100%
-
-  .p-multiselect-panel .p-multiselect-items .p-multiselect-item .p-checkbox
-    margin-right: 18px
-
-  .p-multiselect-header
-    padding: 0 !important
+  &__table
     background-color: #fff
+    height: calc(100vh - 14.5rem)
 
-  .p-multiselect-close
-    display: none
+    #datatable--stock-list .p-datatable-wrapper
+      max-height: calc(100vh - 18.5rem)
 
-  &.active
-    max-height: 80px
-    opacity: 1
-    visibility: visible
-    margin-bottom: 24px
+    #datatable--stock-list .p-datatable-wrapper::-webkit-scrollbar
+      width: 6px
+      height: 6px
+
+    #datatable--stock-list .p-datatable-wrapper::-webkit-scrollbar-thumb
+        border-radius: 10px
+        background-color: $text-color-700
+
+    #datatable--stock-list .p-checkbox-box
+      border: 1.5px solid $text-color-500
+      border-radius: 2px
+
+    #datatable--stock-list .p-checkbox-box.p-highlight
+      background-color: $primary
 
 
-.p-dropdown-trigger-icon,
-.p-multiselect-trigger-icon
-  &:before
-    content: url('~/assets/icons/arrow-down.svg')
-
-.filter .p-multiselect-header
-  padding: 0 !important
-
-.p-inputtext:enabled:focus
-  outline: none
-  outline-offset: 0
-  box-shadow: none
-  border-color: $primary
-
-.p-inputtext:enabled:focus + .p-multiselect-filter-icon
-  color: $primary !important
-
-.p-inputtext:enabled:focus + .pi-search
-  color: $primary !important
-
-.filter-code .p-inputtext
-  padding: 8px
+  &__footer--mutidelete
+    background-color: #FF7171
 </style>
