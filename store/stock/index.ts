@@ -23,7 +23,7 @@ export default class Stock extends VuexModule {
 
   @Action({ commit: 'setProductList', rawError: true })
   async actGetProductList(
-    params?: StockModel.GetStockParams
+    params?: StockModel.GetStockParams,
   ): Promise<string | undefined> {
     const stockList = require('~/mocks/products.json')
     try {

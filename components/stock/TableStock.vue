@@ -63,12 +63,14 @@ class Table extends Vue {
     this.currentPage = event.page + 1
   }
 
-  handleDeleteStockById(id: number) {}
+  handleDeleteStockById() {}
 
   handelDelete() {
     const productIds = this.selectedProduct.map(
       (item: { id?: number }) => item.id
     )
+
+    console.log(productIds)
   }
 }
 export default Table
