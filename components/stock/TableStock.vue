@@ -19,7 +19,8 @@
       Column(field='category' header='Category' sortable)
       Column(field='status' header='Status' sortable)
         template(#body='{ data }')
-          span.stock__table--status Available
+          span.stock__table--status(v-if="data.status === '1'") Available
+          span.stock__table--status.text-gray-500(v-else) Disable
       Column(field='action' header='Action')
         template(#body='{ data }')
           .table__action.flex.align-items-center
@@ -64,6 +65,7 @@ export default Table
 #datatable--stock-list .p-datatable-tbody > tr.p-highlight
   .stock__table--no, .stock__table--name, .stock__table--level
     color: #fff !important
+    
 .stock__table
   &--name
     max-width: 138px

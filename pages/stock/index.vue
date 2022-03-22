@@ -12,12 +12,12 @@
               span.p-input-icon-left.h-3rem
                 .icon.icon--left.icon-search
                 InputText#inputSearch.h-full.border-none.w-full.text-900.text-sm(type='text' v-model='filter.name' placeholder='Search')
-            .ml-3.flex.align-items-center.bg-white.border-round.cursor-pointer.pl-2.pr-5.h-3rem(@click="toggleShowFilter" :class="{'border-primary border-2 text-primary': isShowFilter}")
+            .ml-3.flex.align-items-center.bg-white.border-round.cursor-pointer.pl-2.pr-5.h-3rem(@click="toggleShowFilter" :class="{'border-primary border-1 text-primary': isShowFilter}")
               .icon-btn.icon-filter( v-if="!isShowFilter")
               .icon-btn.icon-chevron-up.bg-primary(v-else)
               span.ml-3.white-space-nowrap Filter
             .ml-3.flex.align-items-center.bg-primary.border-round.cursor-pointer.pl-2.pr-5.h-3rem
-              .icon-btn.icon-plus.bg-white
+              .icon-btn.icon-add-items.bg-white
               span.ml-3.white-space-nowrap Add Items
         .stock__filter.h-6rem(:class='{ active: isShowFilter }')
           .grid
@@ -33,7 +33,7 @@
               .bg-white.border-round.p-2
                 .text-700.font-normal.text-sm.stock__filter--title Code
                 span#inputCode.p-input-icon-right.w-full
-                  InputText.w-full.border-none(type='text' v-model='filter.barcode')
+                  InputText.w-full(type='text' v-model='filter.barcode')
                   .icon.icon-search
             div(class='col-12 md:col-3 lg:col-3')
               .bg-white.border-round.p-2
@@ -174,9 +174,6 @@ body
       font-size: 14px
       color: #D2D2E0
 
-    #inputCode .icon
-      right: 0.75rem
-
   &__filter--title
     padding-left: 12px
 
@@ -242,8 +239,6 @@ body
   #mutiselectCategory .p-multiselect-item.p-highlight
       background-color: $primary
 
-  #paginationStock .p-paginator-page
-      color: $primary
 
   #mutiselectCategory .p-input-icon-right,
   #mutiselectCategory .p-inputtext
@@ -269,22 +264,26 @@ body
     border: 1.5px solid $text-color-500
     border-radius: 2px
 
-  #mutiselectCategory .p-inputtext:enabled:focus,
-  #inputCode .p-inputtext:enabled:focus
+  #mutiselectCategory .p-inputtext:enabled:focus, #inputCode .p-inputtext:enabled:focus
     box-shadow: none
     border: 1.5px solid $primary
-
   #mutiselectCategory .p-multiselect-header
     border-bottom: none
 
   #mutiselectCategory .p-multiselect-filter-container .p-inputtext
     padding-left: 46px
 
-
   // custom pagination
   #paginationStock .p-paginator-page.p-highlight
     background: $primary
     border-color: $primary
     color: #fff
+
+  #paginationStock .p-paginator-page
+    color: $primary
+
+  // custom inputCode
+  #inputCode .icon
+    right: 0.75rem
 
 </style>
