@@ -27,7 +27,7 @@
               img(:src="require('~/assets/icons/pencil.svg')" alt='')
             span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="handleDeleteStockById(data.id)")
               img(:src="require('~/assets/icons/trash.svg')" alt='')
-    div.flex.align-items-center.justify-content-center.flex-column.h-full
+    div.flex.align-items-center.justify-content-center.flex-column.h-full(v-if="!stockList.length > 0")
       img(:srcset="`${require('~/assets/images/stock-table-empty.png')} 2x`")
       p.text-900.font-bold.mt-3 List is empty!, Click 
        span.text-primary.underline here 
@@ -42,9 +42,6 @@ const nsStoreStock = namespace('stock')
 class Table extends Vue {
   @Prop() stockList!: any[]
 
-  @nsStoreStock.Action
-  actGetProductList!: () => Promise<void>
-
   selectedProduct: any[] = []
 
   currentPage: number = 1
@@ -53,10 +50,6 @@ class Table extends Vue {
   @Watch('selectedProduct')
   emitSelectedProduct() {
     this.$emit('getProductSelected', this.selectedProduct)
-  }
-
-  mounted() {
-    this.actGetProductList()
   }
 
   onPage(event: any) {

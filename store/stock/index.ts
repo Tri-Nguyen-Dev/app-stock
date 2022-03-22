@@ -32,7 +32,8 @@ export default class Stock extends VuexModule {
         Stock.STATE_URL.GET_STOCK,
         params
       )
-      const response: SuccessResponse<any> = await $api.get(url)
+
+      const response: SuccessResponse<any> = await $api.get(url, { params })
 
       if (!response.content) {
         return stockList
