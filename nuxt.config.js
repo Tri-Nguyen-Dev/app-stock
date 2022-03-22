@@ -56,7 +56,8 @@ export default {
       'Column',
       'Tag',
       'Paginator',
-      'Calendar'
+      'Calendar',
+      'ScrollPanel'
     ],
     directives: [
       'Tooltip',

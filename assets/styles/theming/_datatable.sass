@@ -1,0 +1,22 @@
+$header-table-color: #F9F9FC
+  
+.table
+  &--header 
+    background: $header-table-color !important
+    thead th
+      background: $header-table-color !important
+      font-weight: $font-weight-bold !important
+      font-size: $font-size-small
+      letter-spacing: 1px
+      border: unset !important
+      text-transform: uppercase
+      color: $text-color-800 !important
+      white-space: nowrap
+      .pi-sort-alt:before
+        content: url('~/assets/icons/sort.svg')
+      .pi-sort-amount-up-alt:before
+        content: url('~/assets/icons/sortDesc.svg')
+      .pi-sort-amount-down
+        transform: rotate(180deg) !important
+        &:before
+            content: url('~/assets/icons/sortDesc.svg')

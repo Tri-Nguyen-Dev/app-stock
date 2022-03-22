@@ -9,11 +9,12 @@ $icon-size-large:  24px !default
 $icon-padding-base: 16px
 
 // --- List name of icons
-$icons: house-2, lock-open, sms, search-input, filter-btn
+$icons: house-2, lock-open, sms, search-input, filter-btn, plus, delete, edit, arrow-up-right, chevron-up, footer-paginator
 
 // -- custom css
 .icon
   @include size($icon-size-base)
+  @include centerAbsolute(top)
   content: ''
 
   &--left
@@ -25,15 +26,14 @@ $icons: house-2, lock-open, sms, search-input, filter-btn
   &--center
     @include centerAbsolute(both)
 
+  &--base
+    @include size($icon-size-base)
+
   &--small
     @include size($icon-size-small)
 
   &--large
     @include size($icon-size-large)
-
-  &--absolute
-    @include centerAbsolute(top)
-
 
 @each $i in $icons
   .icon-#{$i}
