@@ -10,7 +10,6 @@ import { $api, PathBind } from '~/utils'
 export default class Stock extends VuexModule {
   private static readonly STATE_URL = {
     GET_STOCK: '/product/list',
-    DELETE_STOCK: '/product/delete',
   }
 
   public stockList: [] = []
@@ -23,17 +22,16 @@ export default class Stock extends VuexModule {
 
   @Action({ commit: 'setProductList', rawError: true })
   async actGetProductList(
-    params?: StockModel.GetStockParams,
+    data?: StockModel.StockBody
   ): Promise<string | undefined> {
-    const stockList = require('~/mocks/products.json')
+    const stockList = require('~/mocks/products.json')  
     try {
       const url = PathBind.transform(
         this.context,
         Stock.STATE_URL.GET_STOCK,
-        params
+        data?.params
       )
-
-      const response: SuccessResponse<any> = await $api.get(url, { params })
+      const response: SuccessResponse<any> = await $api.post(url, data?.filter, { params: data?.params })
 
       if (!response.content) {
         return stockList

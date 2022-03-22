@@ -1,38 +1,38 @@
 [
   {
     "name": "Audi",
-    "value": "Audi"
+    "id": "0"
   },
   {
     "name": "BMW",
-    "value": "BMW"
+    "id": "1"
   },
   {
     "name": "Fiat",
-    "value": "Fiat"
+    "id": "2"
   },
   {
     "name": "Honda",
-    "value": "Honda"
+    "id": "3"
   },
   {
     "name": "Jaguar",
-    "value": "Jaguar"
+    "id": "4"
   },
   {
     "name": "Mercedes",
-    "value": "Mercedes"
+    "id": "5"
   },
   {
     "name": "Renault",
-    "value": "Renault"
+    "id": "6"
   },
   {
     "name": "Volkswagen",
-    "value": "Volkswagen"
+    "id": "7"
   },
   {
     "name": "Volvo",
-    "value": "Volvo"
+    "id": "8"
   }
 ]

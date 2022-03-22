@@ -3,12 +3,17 @@ export namespace StockModel {
     pageNumber?: number
     pageSize?: number
   }
-  export class GetStockBody {
-    keyword?: string
-    warehouseId?: number
-    code?: string
+  export class Filter {
+    name?: string
+    warehouseId?: string
+    barcode?: string
     status?: number
-    categoryId?: number
+    categoryId?: string
+  }
+
+  export class StockBody {
+    params?: StockModel.GetStockParams
+    filter?: StockModel.Filter
   }
 
   export interface DeleteStockParams {

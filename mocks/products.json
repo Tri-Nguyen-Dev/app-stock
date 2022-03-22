@@ -148,35 +148,5 @@
     "category": "Technology",
     "sender": "Hungnk@gmail.com",
     "status": "New"
-  },
-  {
-    "id": 11,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "New"
-  },
-  {
-    "id": 12,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "New"
   }
 ]

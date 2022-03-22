@@ -9,7 +9,7 @@ import { $api } from '~/utils'
 })
 export default class Category extends VuexModule {
   private static readonly STATE_URL = {
-    GET_CATEGORIES: '/categories',
+    GET_CATEGORIES: '/category/list',
   }
 
   public categoryList: [] = []
@@ -20,13 +20,12 @@ export default class Category extends VuexModule {
   }
 
   @Action({ commit: 'setCategoryList', rawError: true })
-  async actCategoryList(params?: any): Promise<string | undefined> {
+  async actCategoryList(): Promise<string | undefined> {
     const categoryList = require('~/mocks/category.json')
     try {
       const url = PathBind.transform(
         this.context,
-        Category.STATE_URL.GET_CATEGORIES,
-        params
+        Category.STATE_URL.GET_CATEGORIES
       )
       const response: SuccessResponse<any> = await $api.get(url)
 

@@ -4,7 +4,7 @@
       Column(selectionMode='multiple')
       Column(field='no' header='NO')
         template(#body='{ index }')
-          span.text-900.font-bold {{ index + 1 }}
+          span.stock__table--no.text-900.font-bold {{ index + 1 }}
       Column(field='image' header='Image')
         template(#body='{ data }')
           .stock__table--image.w-2rem.h-2rem.overflow-hidden
@@ -14,7 +14,7 @@
           .stock__table--name.text-sm.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
       Column(field='inventory_level' header='Inventory Level' sortable)
         template(#body='{ data }')
-          .flex.align-items-center.justify-content-end.text-sm.text-900  {{ data.inventory_level }}
+          .stock__table--level.flex.align-items-center.justify-content-end.text-sm.text-900  {{ data.inventory_level }}
       Column(field='code' header='Code' sortable)
       Column(field='category' header='Category' sortable)
       Column(field='status' header='Status' sortable)
@@ -24,9 +24,9 @@
         template(#body='{ data }')
           .table__action.flex.align-items-center
             span.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem
-              img(:src="require('~/assets/icons/pencil.svg')" alt='')
+              .icon-btn.icon-pencil
             span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="handleDeleteStockById(data.id)")
-              img(:src="require('~/assets/icons/trash.svg')" alt='')
+              .icon-btn.icon-trash
     div.flex.align-items-center.justify-content-center.flex-column.h-full(v-if="!stockList.length > 0")
       img(:srcset="`${require('~/assets/images/stock-table-empty.png')} 2x`")
       p.text-900.font-bold.mt-3 List is empty!, Click 
@@ -35,8 +35,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace, Watch, Prop } from 'nuxt-property-decorator'
-const nsStoreStock = namespace('stock')
+import { Component, Vue, Watch, Prop } from 'nuxt-property-decorator'
 
 @Component
 class Table extends Vue {
@@ -44,16 +43,9 @@ class Table extends Vue {
 
   selectedProduct: any[] = []
 
-  currentPage: number = 1
-  totalRecords: number = 50
-
   @Watch('selectedProduct')
   emitSelectedProduct() {
     this.$emit('getProductSelected', this.selectedProduct)
-  }
-
-  onPage(event: any) {
-    this.currentPage = event.page + 1
   }
 
   handleDeleteStockById() {}
@@ -62,8 +54,6 @@ class Table extends Vue {
     const productIds = this.selectedProduct.map(
       (item: { id?: number }) => item.id
     )
-
-    console.log(productIds)
   }
 }
 export default Table
@@ -71,6 +61,9 @@ export default Table
 
 <style lang="sass">
 
+#datatable--stock-list .p-datatable-tbody > tr.p-highlight
+  .stock__table--no, .stock__table--name, .stock__table--level
+    color: #fff !important
 .stock__table
   &--name
     max-width: 138px
@@ -80,4 +73,7 @@ export default Table
     background: #EAF3EB
     border-radius: 3px
     padding: 2px 8px
+
+
+ 
 </style>

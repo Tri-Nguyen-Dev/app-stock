@@ -9,7 +9,7 @@ import { $api } from '~/utils'
 })
 export default class Warehouse extends VuexModule {
   private static readonly STATE_URL = {
-    GET_WAREHOUSE: '/warehouse',
+    GET_WAREHOUSE: '/warehouse/list',
   }
 
   public warehouseList: [] = []
@@ -20,17 +20,16 @@ export default class Warehouse extends VuexModule {
   }
 
   @Action({ commit: 'setCategoryList', rawError: true })
-  async actWarehouseList(params?: any): Promise<string | undefined> {
+  async actWarehouseList(): Promise<string | undefined> {
+    const warehouseList = require('~/mocks/warehouse.json')
     try {
       const url = PathBind.transform(
         this.context,
         Warehouse.STATE_URL.GET_WAREHOUSE,
-        params
       )
       const response: SuccessResponse<any> = await $api.get(url)
 
       if (!response.content) {
-        const warehouseList = require('~/mocks/warehouse.json')
         return warehouseList
       }
 
