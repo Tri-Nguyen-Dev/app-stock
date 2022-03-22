@@ -73,7 +73,4 @@ export default Table
     background: #EAF3EB
     border-radius: 3px
     padding: 2px 8px
-
-
- 
 </style>

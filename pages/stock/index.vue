@@ -205,7 +205,6 @@ body
   #datatable--stock-list .p-checkbox-box.p-highlight
     background-color: $primary
 
-
   // custom dropdown and multiselect style
   #dropdownWarehouse .p-dropdown-items-wrapper, #mutiselectCategory .p-multiselect-items-wrapper
     max-height: 288px !important
@@ -235,21 +234,19 @@ body
   #dropdownWarehouse .p-dropdown-item, #mutiselectCategory .p-multiselect-item
       padding: 12px 0 12px 16px
 
-  #dropdownWarehouse .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover, #mutiselectCategory .p-multiselect-items.p-multiselect-item:not(.p-highlight):not(.p-disabled):hover
+  #dropdownWarehouse .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
+  #mutiselectCategory .p-multiselect-items.p-multiselect-item:not(.p-highlight):not(.p-disabled):hover
       background-color: #E8EAEF
 
-  #dropdownWarehouse .p-dropdown-items .p-dropdown-item.p-highlight, #mutiselectCategory .p-multiselect-item.p-highlight
+  #dropdownWarehouse .p-dropdown-items .p-dropdown-item.p-highlight,
+  #mutiselectCategory .p-multiselect-item.p-highlight
       background-color: $primary
-
-  #paginationStock .p-paginator-page.p-highlight
-      background: $primary
-      border-color: $primary
-      color: #fff
 
   #paginationStock .p-paginator-page
       color: $primary
 
-  #mutiselectCategory .p-input-icon-right, #mutiselectCategory .p-inputtext
+  #mutiselectCategory .p-input-icon-right,
+  #mutiselectCategory .p-inputtext
     width: 100%
 
   #mutiselectCategory .p-multiselect-item .p-checkbox
@@ -272,7 +269,8 @@ body
     border: 1.5px solid $text-color-500
     border-radius: 2px
 
-  #mutiselectCategory .p-inputtext:enabled:focus, #inputCode .p-inputtext:enabled:focus
+  #mutiselectCategory .p-inputtext:enabled:focus,
+  #inputCode .p-inputtext:enabled:focus
     box-shadow: none
     border: 1.5px solid $primary
 
@@ -281,5 +279,12 @@ body
 
   #mutiselectCategory .p-multiselect-filter-container .p-inputtext
     padding-left: 46px
+
+
+  // custom pagination
+  #paginationStock .p-paginator-page.p-highlight
+    background: $primary
+    border-color: $primary
+    color: #fff
 
 </style>
