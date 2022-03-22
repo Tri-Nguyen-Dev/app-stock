@@ -1,15 +1,15 @@
 // - Custom css classes for icons
 // -- Variables
 
-$icon-size-small:  16px !default
-$icon-size-base:   18px !default
+$icon-size-small: 16px !default
+$icon-size-base: 18px !default
 $icon-size-medium: 20px !default
-$icon-size-large:  24px !default
+$icon-size-large: 24px !default
 
 $icon-padding-base: 16px
 
 // --- List name of icons
-$icons: house-2, lock-open, sms
+$icons: house-2, lock-open, sms, history, size, weight, price, search, filter, footer-paginator, btn-edit, btn-delete, box-info, location, warehouse, boxcode, price, export, sender-info, sender-name, sender-email, sender-phone, calendar, btn-back, chevron-up
 
 // -- custom css
 .icon
@@ -32,9 +32,11 @@ $icons: house-2, lock-open, sms
   &--large
     @include size($icon-size-large)
 
+.icon-btn
+  @include size($icon-size-base)
+
 @each $i in $icons
   .icon-#{$i}
     background-color: $text-color-base
-    mask-image:       url('~/assets/icons/#{$i}.svg')
-    mask-size:        cover
-
+    mask-image: url('~/assets/icons/#{$i}.svg')
+    mask-size: cover
