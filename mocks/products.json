@@ -1,152 +1,23 @@
-[
-  {
-    "id": 1,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple Apple Apple Apple Hello My Friend",
-    "inventory_level": 2,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "1"
-  },
-  {
-    "id": 2,
-    "no": "",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "0"
-  },
-  {
-    "id": 3,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "0"
-  },
-  {
-    "id": 4,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "0"
-  },
-  {
-    "id": 5,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "0"
-  },
-  {
-    "id": 6,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "0"
-  },
-  {
-    "id": 7,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "0"
-  },
-  {
-    "id": 8,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "0"
-  },
-  {
-    "id": 9,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "0"
-  },
-  {
-    "id": 10,
-    "no": "1",
-    "image": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-    "name": "Apple",
-    "inventory_level": 1,
-    "box_code": "AB1358",
-    "warehouse": "NTH001",
-    "localtion": "NTH001",
-    "code": "AB1358",
-    "sku": "ADIWHIS40M",
-    "category": "Technology",
-    "sender": "Hungnk@gmail.com",
-    "status": "0"
+{
+  "content":  {
+    "data":  [
+      {
+        "id": "1",
+        "imageUrl": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
+        "name": "Apple Macbook Pro",
+        "barcode": "AB1358",
+        "sku": "ADIWHIS40M",
+        "category": {
+          "id": "1",
+          "name": "Apple"
+        },
+        "status": "0"
+      }
+    ],
+    "pagination": {
+      "pageNumber": 1,
+      "pageSize": 10,
+      "total": 50
+    }
   }
-]
+}

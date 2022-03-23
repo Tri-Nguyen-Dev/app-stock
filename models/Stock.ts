@@ -1,22 +1,24 @@
-export namespace StockModel {
-  export interface GetStockParams {
-    pageNumber?: number
-    pageSize?: number
-  }
-  export class Filter {
-    name?: string
-    warehouseId?: string
-    barcode?: string
-    status?: number
-    categoryId?: string
-  }
+export namespace Stock {
 
-  export class StockBody {
-    params?: StockModel.GetStockParams
-    filter?: StockModel.Filter
-  }
-
-  export interface DeleteStockParams {
-    stockIds?: string[]
+  export interface Model {
+    id: string,
+    name?: string,
+    description?: string,
+    imageUrl?: string,
+    barcode?: String
+    sku : String
+    category?: {
+      id: number
+      name: string
+    },
+    type?: {
+      id: number
+      name: string
+    },
+    status?: number,
+    createAt?: Date,
+    updateAt?: Date,
+    createBy?: String
+    updateBy?: String
   }
 }
