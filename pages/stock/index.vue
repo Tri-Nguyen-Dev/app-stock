@@ -11,35 +11,29 @@
             div
               span.stock__search.p-input-icon-left
                 .icon.icon--left.icon-search
-                InputText#inputSearch.h-full.border-none.w-full.text-900(type='text' v-model='filter.name' placeholder='Search')
+                InputText#inputSearch(type='text' v-model='filter.name' placeholder='Search')
             .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
               .icon-btn.icon-filter( v-if="!isShowFilter")
               .icon-btn.icon-chevron-up.bg-primary(v-else)
-              span.ml-3.white-space-nowrap.line-height-4 Filter
+              span Filter
             .stock__btn-add.flex.align-items-center.bg-primary.border-round.cursor-pointer
               .icon-btn.icon-add-items.bg-white
-              span.ml-3.white-space-nowrap.line-height-4 Add Items
-
-        .stock__filter(:class='{ "filter--active": isShowFilter }')
-          .grid
-            div(class='col-12 md:col-3 lg:col-3') 
-              .bg-white.border-round.p-3
-                .text-700.font-normal.text-sm.stock__filter-title Warehouse
-                Dropdown.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select") 
-            div(class='col-12 md:col-3 lg:col-3')
-              .bg-white.border-round.p-3
-                .text-700.font-normal.text-sm.stock__filter-title Catagory
-                MultiSelect#mutiselectCategory.w-full.border-0(v-model='filter.categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
-            div(class='col-12 md:col-3 lg:col-3')
-              .bg-white.border-round.p-3
-                .text-700.font-normal.text-sm.stock__filter-title Code
-                span.p-input-icon-right.w-full
-                    InputText.w-full(type="text" v-model="filter.barcode" placeholder="Enter code" )
-                    i.pi.pi-search
-            div(class='col-12 md:col-3 lg:col-3')
-              .bg-white.border-round.p-3
-                .text-700.font-normal.text-sm.stock__filter-title Status
-                Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
+              span Add Items
+        .stock__filter(:class='{ "active": isShowFilter }') 
+          .stock__filter-item.bg-white.border-round
+            .stock__filter-title Warehouse
+            Dropdown.stock__filter-action.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select") 
+          .stock__filter-item.bg-white.border-round
+            .text-sm.stock__filter-title Catagory
+            MultiSelect.stock__filter-action.w-full.border-0(v-model='filter.categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+          .stock__filter-item.bg-white.border-round
+            .text-sm.stock__filter-title Code
+            span.p-input-icon-right.w-full
+                InputText.w-full(type="text" v-model="filter.barcode" placeholder="Enter code" )
+                i.pi.pi-search
+          .stock__filter-item.bg-white.border-round
+            .text-sm.stock__filter-title Status
+            Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
         .stock__table.mt-5.bg-white.flex-1.border-round.overflow-hidden
           TableStock(@getProductSelected="getProductSelected" :stockList="stockList")
         .stock__footer.px-3.h-4rem.bg-white.w-full.flex.align-items-center.justify-content-between
@@ -178,44 +172,55 @@ body
   padding: 32px
 
 .stock
-  height: 100%
-
-  &__eader-info
-    font-size: $font-size-small
-
-  &__search
-    width: 300px
-    height: 48px
-
-  #inputSearch::placeholder
-    font-size: $font-size-base
-    color: $text-color-500
-    line-height: calc(24 - 14)
-  
-  #inputSearch.p-inputtext:enabled:focus
-    box-shadow: none
-    border: none
-
-  &__filter
-    visibility: hidden
-    max-height: 0
-    transition: all 0.25s ease-in-out
 
   &__btn-filter, &__btn-add
+    gap: 18px
     height: 48px
     padding: 0 32px 0 20px
+
+    span
+      line-height: calc(24 / 14)
 
   &__btn-filter.active
     color: $primary,
     border: 1.5px solid $primary
 
-  &__filter.filter--active
+  &__filter
+    visibility: hidden
+    max-height: 0
+    transition: all 0.25s ease-in-out
+    display: grid
+    grid-template-columns: repeat(4, 1fr)
+    grid-gap: 0 16px
+
+    &.active
       max-height: 6rem
       visibility: visible
 
-  &__filter-title
-    padding-left: 12px
-    margin-bottom: 5px
+    &-item
+      padding: 13px 0 13px 5.5px
+
+    &-title
+      font-size: 12px
+      color: $text-color-700
+      line-height: calc(16 / 12)
+      margin-bottom: 5px
+      padding-left: 10.5px
+
+  #inputSearch
+    height: 48px
+    border: none
+
+  #inputSearch::placeholder
+    font-size: $font-size-base
+    color: $text-color-500
+    line-height: calc(24 / 14)
+  
+  #inputSearch.p-inputtext:enabled:focus
+    box-shadow: none
+    border: none
+
+ 
 
   &__mutidelete
     background-color: #FF7171
