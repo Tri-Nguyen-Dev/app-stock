@@ -11,13 +11,8 @@ export default {
       { hid: 'description', name: 'description', content: '' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
-    link: [
-      {
-        href: 'https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;700;900&display=swap',
-        rel: 'stylesheet',
-        type: 'text/css'
-      }
-    ]
+    // custom links here
+    link: []
   },
 
   plugins: ['~/plugins/vuelidate.ts'],
@@ -33,7 +28,16 @@ export default {
     '@nuxtjs/auth-next',
     '@nuxtjs/dotenv',
     '@nuxtjs/proxy',
-    '@nuxtjs/style-resources'
+    '@nuxtjs/style-resources',
+
+    ['@nuxtjs/google-fonts', {
+      families: {
+        'Google+Sans': {
+          wght: [300, 400, 500, 700, 900]
+        }
+      },
+      display: 'swap'
+    }]
   ],
   // PrimeVue Config
   primevue: {
