@@ -19,6 +19,7 @@
             .ml-3.stock__btn-add.flex.align-items-center.bg-primary.border-round.cursor-pointer
               .icon-btn.icon-add-items.bg-white
               span.ml-3.white-space-nowrap.line-height-4 Add Items
+              
         .stock__filter(:class='{ "filter--active": isShowFilter }')
           .grid
             div(class='col-12 md:col-3 lg:col-3') 
