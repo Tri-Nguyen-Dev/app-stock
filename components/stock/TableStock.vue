@@ -4,18 +4,18 @@
       Column(selectionMode='multiple')
       Column(field='no' header='NO')
         template(#body='{ index }')
-          span.stock__table__no.text-900.font-bold {{ index + 1 }}
+          span.stock__table-no.text-900.font-bold {{ index + 1 }}
       Column(field='imageUrl' header='Image')
         template(#body='{ data }')
           .stock__table__image.w-2rem.h-2rem.overflow-hidden
             img.w-full.h-full.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
       Column(field='name' header='Name' sortable)
         template(#body='{ data }')
-          .stock__table__name.text-sm.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
+          .stock__table__name.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
       Column(field='barcode' header='Code' sortable)
       Column(field='category' header='Category' sortable)
           template(#body='{ data }') {{ data.category.name }}
-      Column(field='status' header='Status' sortable)
+      Column(field='status' header='Status')
         template(#body='{ data }')
           span.stock__status.stock__status--available(v-if="data.status === '1'") Available
           span.stock__status.stock__status--disable(v-if="data.status === '0'") Disable
@@ -58,17 +58,21 @@ export default Table
 <style lang="sass">
 
 #datatable--stock-list .p-datatable-tbody > tr.p-highlight
-  .stock__table__name, .stock__table__no
+  .stock__table__name, .stock__table-no
     color: #fff !important
     
 .stock__table
   &__name
     max-width: 138px
 
+  &-no
+    font-size: $font-size-medium
+
 .stock__status
   background: #EAF3EB
   border-radius: 3px
   padding: 2px 8px
+  font-size: $font-size-small
 
   &--available
     color: #00A469
