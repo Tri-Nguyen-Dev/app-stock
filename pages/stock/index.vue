@@ -41,7 +41,6 @@
                 Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
         .stock__table.mt-4.bg-white.flex-1.border-round
           TableStock(@getProductSelected="getProductSelected" :stockList="stockList")
-
         .stock__footer.px-3.h-4rem.bg-white.w-full.flex.align-items-center.justify-content-between
           .flex.align-items-center(v-if='!selectedStock.length > 0')
             img(:src="require('~/assets/icons/filter-left.svg')")
