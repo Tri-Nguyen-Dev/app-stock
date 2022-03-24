@@ -19,33 +19,33 @@
             .ml-3.flex.align-items-center.bg-primary.border-round.cursor-pointer.pl-2.pr-5.h-3rem
               .icon-btn.icon-add-items.bg-white
               span.ml-3.white-space-nowrap Add Items
-        .stock__filter(:class='{ active: isShowFilter }')
+        .stock__filter(:class='{ "filter--active": isShowFilter }')
           .grid
             div(class='col-12 md:col-3 lg:col-3') 
               .bg-white.border-round.p-2
-                .text-700.font-normal.text-sm.stock__filter--title Warehouse
+                .text-700.font-normal.text-sm.stock__filter__title Warehouse
                 Dropdown.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select") 
             div(class='col-12 md:col-3 lg:col-3')
               .bg-white.border-round.p-2
-                .text-700.font-normal.text-sm.stock__filter--title Catagory
+                .text-700.font-normal.text-sm.stock__filter__title Catagory
                 MultiSelect#mutiselectCategory.w-full.border-0(v-model='filter.categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
             div(class='col-12 md:col-3 lg:col-3')
               .bg-white.border-round.p-2
-                .text-700.font-normal.text-sm.stock__filter--title Code
+                .text-700.font-normal.text-sm.stock__filter__title Code
                 span.p-input-icon-right.w-full
                     InputText.w-full(type="text" v-model="filter.barcode" placeholder="Enter code" )
                     i.pi.pi-search
             div(class='col-12 md:col-3 lg:col-3')
               .bg-white.border-round.p-2
-                .text-700.font-normal.text-sm.stock__filter--title Status
+                .text-700.font-normal.text-sm.stock__filter__title Status
                 Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
-        .stock__table.mt-4.bg-white.flex-1.border-round
+        .stock__table.mt-4.bg-white.flex-1.border-round.overflow-hidden
           TableStock(@getProductSelected="getProductSelected" :stockList="stockList")
         .stock__footer.px-3.h-4rem.bg-white.w-full.flex.align-items-center.justify-content-between
           .flex.align-items-center(v-if='!selectedStock.length > 0')
             img(:src="require('~/assets/icons/filter-left.svg')")
             span.text-xs.ml-2.text-500 Showing 01 - 100 of 1280
-          .stock__footer--mutidelete.flex.cursor-pointer.py-2.px-2.border-round.text-white.text-sm(v-else)
+          .stock__mutidelete.flex.cursor-pointer.py-2.px-2.border-round.text-white.text-sm(v-else)
             img(:src="require('~/assets/icons/trash-white.svg')")
             span.ml-2 Delete {{ selectedStock.length }} items selected
           Paginator#paginationStock(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="220" @page="onPage($event)")
@@ -181,13 +181,14 @@ body
     max-height: 0
     transition: all 0.25s ease-in-out
 
-    &.active
+  &__filter.filter--active
       max-height: 6rem
       visibility: visible
-  &__filter--title
+
+  &__filter__title
     padding-left: 12px
 
-  &__footer--mutidelete
+  &__mutidelete
     background-color: #FF7171
 
 </style>

@@ -4,21 +4,21 @@
       Column(selectionMode='multiple')
       Column(field='no' header='NO')
         template(#body='{ index }')
-          span.stock__table--no.text-900.font-bold {{ index + 1 }}
+          span.stock__table__no.text-900.font-bold {{ index + 1 }}
       Column(field='imageUrl' header='Image')
         template(#body='{ data }')
-          .stock__table--image.w-2rem.h-2rem.overflow-hidden
+          .stock__table__image.w-2rem.h-2rem.overflow-hidden
             img.w-full.h-full.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
       Column(field='name' header='Name' sortable)
         template(#body='{ data }')
-          .stock__table--name.text-sm.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
+          .stock__table__name.text-sm.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
       Column(field='barcode' header='Code' sortable)
       Column(field='category' header='Category' sortable)
           template(#body='{ data }') {{ data.category.name }}
       Column(field='status' header='Status' sortable)
         template(#body='{ data }')
-          span.stock__table--status(v-if="data.status === '1'") Available
-          span.stock__table--status(v-else) Disable
+          span.stock__status.stock__status--available(v-if="data.status === '1'") Available
+          span.stock__status.stock__status--disable(v-if="data.status === '0'") Disable
       Column(field='action' header='Action')
         template(#body='{ data }')
           .table__action.flex.align-items-center
@@ -27,7 +27,7 @@
             span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="handleDeleteStockById(data.id)")
               .icon-btn.icon-trash(:class="{ 'surface-400': data.status === '0' }")
     div.flex.align-items-center.justify-content-center.flex-column.h-full(v-if="!stockList.length > 0")
-      img(:srcset="`${require('~/assets/images/stock-table-empty.png')} 2x`")
+      img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
       p.text-900.font-bold.mt-3 List is empty!, Click 
        span.text-primary.underline here 
        span to add item.
@@ -58,16 +58,22 @@ export default Table
 <style lang="sass">
 
 #datatable--stock-list .p-datatable-tbody > tr.p-highlight
-  .stock__table--no, .stock__table--name, .stock__table--level
+  .stock__table__name, .stock__table__no
     color: #fff !important
     
 .stock__table
-  &--name
+  &__name
     max-width: 138px
 
-  &--status
+.stock__status
+  background: #EAF3EB
+  border-radius: 3px
+  padding: 2px 8px
+
+  &--available
     color: #00A469
-    background: #EAF3EB
-    border-radius: 3px
-    padding: 2px 8px
+
+  &--disable
+    color: #979AA4
+
 </style>
