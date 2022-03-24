@@ -5,7 +5,7 @@ h1 Stock list
 import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component({
-  layout: 'dashboard',
+  layout: 'dashboard'
 })
 class Stock extends Vue {}
 export default Stock

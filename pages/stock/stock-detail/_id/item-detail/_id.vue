@@ -130,7 +130,7 @@ import { Stock } from '~/store/stock/stockDetail'
 const nsStoreStock = namespace('stock/stockDetail')
 
 @Component({
-  layout: 'dashboard',
+  layout: 'dashboard'
 })
 class ItemDetail extends Vue {
   @nsStoreStock.State
