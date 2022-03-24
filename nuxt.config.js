@@ -48,7 +48,10 @@ export default {
       'Button',
       'Checkbox',
       'DataTable',
-      'Dialog'
+      'Dialog', 
+      'column',
+      'dropdown',
+      'Paginator'
     ],
     directives: ['Tooltip', 'Badge']
   },

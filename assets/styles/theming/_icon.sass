@@ -5,16 +5,16 @@ $icon-size-small:  16px !default
 $icon-size-base:   18px !default
 $icon-size-medium: 20px !default
 $icon-size-large:  24px !default
-
 $icon-padding-base: 16px
 
 // --- List name of icons
-$icons: house-2, lock-open, sms, shopping-cart
+$icons: house-2, lock-open, sms, warehouse, location , calendar , frame , box-info , dollar-square, search-input , filter-btn , arrow-left , arrow-up-right , receipt, tag-user , btn-edit
 
 // -- custom css
 .icon
   @include size($icon-size-base)
   @include centerAbsolute(top)
+  content: ''
 
   &--left
     left: $icon-padding-base
@@ -27,9 +27,15 @@ $icons: house-2, lock-open, sms, shopping-cart
 
   &--small
     @include size($icon-size-small)
-
   &--large
     @include size($icon-size-large)
+  &--base
+    @include size($icon-size-base)
+
+
+.icon-size-large 
+  width: #{$icon-size-large}
+  height: #{$icon-size-large}
 
 @each $i in $icons
   .icon-#{$i}
