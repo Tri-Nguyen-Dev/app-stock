@@ -1,10 +1,10 @@
-<template lang='pug'>
+<template lang="pug">
   .container
     h1(v-if='error.statusCode === 404') {{ pageNotFound }}
     template(v-else) {{ otherError }}
     NuxtLink(to='/') Home page
 </template>
-<script lang='ts'>
+<script lang="ts">
 import { Component, Prop, Provide, Vue } from 'nuxt-property-decorator'
 
 interface ErrorObject {
@@ -13,14 +13,14 @@ interface ErrorObject {
 
 @Component({
   head(this: ErrorLayout): object {
-    const title = this.error.statusCode === 404 ? this.pageNotFound : this.otherError
+    const title =
+      this.error.statusCode === 404 ? this.pageNotFound : this.otherError
     return {
       title
     }
   }
 })
 class ErrorLayout extends Vue {
-
   @Prop()
   error!: ErrorObject
 
@@ -29,12 +29,11 @@ class ErrorLayout extends Vue {
 
   @Provide()
   otherError: string = 'An error occurred'
-
 }
 
 export default ErrorLayout
 </script>
-<style lang='sass' scoped>
+<style lang="sass" scoped>
 h1
   font-size: 20px
 </style>

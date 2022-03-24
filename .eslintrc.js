@@ -9,8 +9,11 @@ module.exports = {
     'plugin:nuxt/recommended',
     'prettier'
   ],
-  plugins: [
-  ],
-  // add your custom rules here
-  rules: {}
+  plugins: ['prettier'],
+  rules: {
+    'no-console': 'error',
+    'no-debugger': 'error',
+    'comma-dangle': ['error', 'never'],
+    quotes: ['error', 'single']
+  }
 }

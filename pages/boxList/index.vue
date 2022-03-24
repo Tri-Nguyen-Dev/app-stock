@@ -3,7 +3,7 @@
   .grid.justify-content-between
     .col-fixed
       h1.font-bold.m-0.font-size-4xlarge.line-height-1 Box list
-      span.text-600.font-size-small(v-if="boxData") {{boxData.length}} products found
+      span.text-600.font-sm(v-if="boxData") {{boxData.length}} products found
     .col-fixed
       .grid
         .col-fixed
@@ -24,36 +24,36 @@
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
-              span.text-600.font-size-small Warehouse
+              span.text-600.font-sm Warehouse
             Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" :options="masterData.warehouse" optionLabel="name" placeholder="Select")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
-              span.text-600.font-size-small Size
+              span.text-600.font-sm Size
             Dropdown.w-full.border-0.mb-1(v-model="selectedSize" :options="masterData.size" optionLabel="name" placeholder="Select")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
-              span.text-600.font-size-small Code
+              span.text-600.font-sm Code
             span.p-input-icon-right.w-full
               .icon.icon--right.icon-search-input.surface-900.icon--absolute
               InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
-              span.text-600.font-size-small Location
+              span.text-600.font-sm Location
             Dropdown.w-full.border-0.mb-1(v-model="selectedLocation" :options="masterData.location" optionLabel="name" placeholder="Select")
     .col-3
       .grid.grid-nogutter
         .col
           .bg-white.border-round-left
             div.pt-2.pl-3.pb-1
-              span.text-600.font-size-small From
+              span.text-600.font-sm From
             Calendar.w-full.mb-1(v-model="dateFrom" :showIcon="true" inputClass="border-0" placeholder="Select")
         .col.ml-1
           .bg-white.border-round-right
             div.pt-2.pl-3.pb-1
-              span.text-600.font-size-small To
+              span.text-600.font-sm To
             Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0
@@ -74,20 +74,20 @@
         Column(field="warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-size-small {{data.warehouse.name}}
+              span.text-primary.font-bold.font-sm {{data.warehouse.name}}
               .icon--small.icon-arrow-up-right.bg-primary
         Column(field="location.name" header="LOCATION" sortable className="p-text-right")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-size-small {{data.location.name}}
+              span.text-primary.font-bold.font-sm {{data.location.name}}
               .icon--small.icon-arrow-up-right.bg-primary
         Column(field="status" header="STATUS" sortable className="p-text-right")
           template(#body="{data}")
             div
               Tag(v-if="data.status").px-2.bg-green-100(severity="success")
-                span.font-bold.text-green-400.font-size-small AVAILABLE
+                span.font-bold.text-green-400.font-sm AVAILABLE
               Tag(v-else).px-2.surface-200(severity="success")
-                span.font-bold.text-400.font-size-small DISABLE
+                span.font-bold.text-400.font-sm DISABLE
         Column(:exportable="false" header="ACTION" sortable className="p-text-right")
           template(#body="{data}")
             Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.status")
@@ -98,7 +98,7 @@
           div
             .flex.align-items-center(v-if="selectedBoxes.length <= 0")
               .icon--large.icon-footer-paginator.surface-400
-              span.ml-3.text-400.font-size-small Showing 01 - 100 of 1280
+              span.ml-3.text-400.font-sm Showing 01 - 100 of 1280
             Button(@click="deleteBoxById(null)" v-if="selectedBoxes.length>0").p-button-danger.opacity-70
               .icon--small.icon-delete.bg-white
               span.ml-3 Delete {{selectedBoxes.length}} items selected
@@ -107,12 +107,12 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Box } from '~/models/Box'
 const nsStoreBox = namespace('box/store-box')
 const nsStoreMasterData = namespace('box/master-data')
-import { Box } from '~/models/Box'
 
 @Component({
-  layout: 'dashboard',
+  layout: 'dashboard'
 })
 class BoxList extends Vue {
   selectedBoxes=[];
@@ -160,7 +160,6 @@ export default BoxList
 <style lang="sass">
 body
   background: #E8EAEF
-  // overflow: hidden
 .box-page-container
   height: calc(100vh - 1rem)
   .p-component
