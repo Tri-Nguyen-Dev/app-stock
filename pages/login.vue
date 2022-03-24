@@ -44,8 +44,6 @@ class Login extends Vue {
 
   callLogin() {
     this.$auth.loginWith('local', { data: this.loginUser }).catch(() => {
-      debugger
-      debugger
       const userLogin = require('~/mocks/user.json')
       this.$auth.setUser(userLogin)
       this.$store.commit('commons/store-token/setToken', userLogin)
