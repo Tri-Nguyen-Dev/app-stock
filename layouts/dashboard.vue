@@ -1,9 +1,9 @@
 <template lang="pug">
-  div
-    .col.fixed.sideMenu
-      Sidemenu
-    .col.mainContent
-      Nuxt
+.layout-wrapper.layout-static
+  .layout-sidebar
+    Sidebar
+  .layout-main-container
+    Nuxt
 </template>
 
 <script lang="ts">
@@ -16,8 +16,6 @@ export default Dashboard
 </script>
 
 <style lang="sass">
-.sideMenu
-  min-height: 100vh
-.mainContent
-  margin-left: 250px
+.layout-main-container
+  background-color: $bg-body-base
 </style>
