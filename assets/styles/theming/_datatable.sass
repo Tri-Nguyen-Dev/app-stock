@@ -1,22 +1,53 @@
 $header-table-color: #F9F9FC
+$table-bg-color: #FFFFFF
   
-.table
-  &--header 
+.airtag-datatable
+  background: $header-table-color !important
+  .p-datatable-thead > tr > th
     background: $header-table-color !important
-    thead th
-      background: $header-table-color !important
-      font-weight: $font-weight-bold !important
-      font-size: $font-size-small
-      letter-spacing: 1px
-      border: unset !important
-      text-transform: uppercase
-      color: $text-color-800 !important
-      white-space: nowrap
-      .pi-sort-alt:before
-        content: url('~/assets/icons/sort.svg')
-      .pi-sort-amount-up-alt:before
-        content: url('~/assets/icons/sortDesc.svg')
-      .pi-sort-amount-down
-        transform: rotate(180deg) !important
-        &:before
-            content: url('~/assets/icons/sortDesc.svg')
+    font-weight: $font-weight-bold !important
+    font-size: $font-size-small
+    letter-spacing: 1px
+    border: unset !important
+    text-transform: uppercase
+    color: $text-color-800 !important
+    white-space: nowrap
+    .pi-sort-alt:before
+      content: url('~/assets/icons/sort.svg')
+    .pi-sort-amount-up-alt:before
+      content: url('~/assets/icons/sortDesc.svg')
+    .pi-sort-amount-down
+      transform: rotate(180deg) !important
+      &:before
+          content: url('~/assets/icons/sortDesc.svg')
+  .p-datatable-wrapper
+    flex: 1
+    background: $table-bg-color
+    .p-datatable-table
+      position: relative
+      .p-text-right
+        text-align: right
+        .p-column-header-content
+          justify-content: end
+      .p-datatable-thead
+        position: sticky
+        top: 0
+        z-index: 1
+  .p-datatable-footer
+    background-color: $table-bg-color
+    min-height: 65px
+    display: flex
+    align-items: center
+    justify-content: space-between
+    .p-paginator 
+      > button
+        border: none
+        color: #151622
+      .p-paginator-pages > button
+        border: none
+        font-size: $font-size-base
+        font-weight: 700
+        color: #D2D2E0
+      .p-highlight
+        background: $table-bg-color
+        color: $primary !important
