@@ -1,4 +1,5 @@
 <template lang="pug">
+ScrollPanel.item__detail--table
   DataTable(v-if="boxData" :value="boxData" responsiveLayout="scroll" :selection.sync="selectedProducts" dataKey="id"
             :resizableColumns="true" :paginator="true" :rows="100")
             Column(field="no" header="NO" sortable)
@@ -32,4 +33,25 @@ class StockDetailHistoryTable extends Vue {
 
 export default StockDetailHistoryTable
 </script>
-<style lang="sass"></style>
+<style lang="sass">
+.item__detail--table
+  height: calc(100vh - 87px)
+
+.p-paginator.p-component.p-paginator-bottom
+  .p-paginator-left-content
+    display: flex
+
+  .p-paginator-element
+    border: none !important
+
+  .p-paginator-first,
+  .p-paginator-last
+    display: none
+
+  .p-link
+    background: #fff
+    color: #ced4da
+
+  .p-highlight
+    color: #000
+</style>

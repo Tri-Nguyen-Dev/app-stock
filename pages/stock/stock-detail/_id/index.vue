@@ -38,12 +38,18 @@
           .col
             div.text-500 Weight (Kg)
             span.font-semibold.mr-1.uppercase 2.8
-        .grid.surface-hover
+        .grid.surface-hover.mb-3
           .col-2.flex.align-items-center
-            .icon-btn.icon-price.bg-blue-700
+            .icon-btn.icon-inventory-quantity.bg-blue-700
           .col
-            div.text-500 Value
-            span.font-semibold.mr-1.uppercase 200 $
+            div.text-500 Inventory quantity
+            span.font-semibold.mr-1.uppercase 2
+        .grid.surface-hover.mb-3
+          .col-2.flex.align-items-center
+            .icon-btn.icon-total-inventory.bg-blue-700
+          .col
+            div.text-500 Total inventory quantity
+            span.font-semibold.mr-1.uppercase 80
     .col-9.pl-5.h-screen.py-0
       .grid
         .col
@@ -99,7 +105,7 @@
             div.pt-2.pl-3.pb-1
               span.text-600.text-sm Status
             Dropdown.w-full.border-0.mb-1(v-model="selectStatus" :options="status" optionLabel="name" placeholder="Select")
-      ScrollPanel
+      ScrollPanel.stock__detail--table
         DataTable(v-if="boxData" :value="boxData" responsiveLayout="scroll" :selection.sync="selectedProducts" dataKey="id"
           :resizableColumns="true" :paginator="true" :rows="100")
           Column(selectionMode="multiple" :styless="{width: '3rem'}" :exportable="false")
@@ -118,7 +124,7 @@
               span.text-primary.font-bold {{slotProps.data.location}}
           Column(field="status" header="STATUS" sortable)
             template(#body="slotProps")
-              Tag.px-3.bg-green-100.text-green-400.text-sm(severity="success" :value="slotProps.data.status.toUpperCase()")
+              Tag.px-3.bg-green-100.text-green-400.text-sm(severity="success" )
           Column(:exportable="false" header="ACTION" :styles="{'min-width':'8rem'}" sortable)
             template(#body="slotProps")
               Button.border-0.p-0.surface-200.p-2
@@ -134,7 +140,7 @@ import { Component, Vue, namespace } from 'nuxt-property-decorator'
 const nsStoreStockTable = namespace('stock/stockDetail')
 
 @Component({
-  layout: 'dashboard',
+  layout: 'dashboard'
 })
 class StockDetail extends Vue {
   selectedWarehouse = null
@@ -150,14 +156,14 @@ class StockDetail extends Vue {
     { name: 'Rome', code: 'RM' },
     { name: 'London', code: 'LDN' },
     { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' },
+    { name: 'Paris', code: 'PRS' }
   ]
 
   status = [
     { name: 'New', id: 1 },
     { name: 'Delivery', id: 2 },
     { name: 'Available', id: 3 },
-    { name: 'Lost', id: 4 },
+    { name: 'Lost', id: 4 }
   ]
 
   @nsStoreStockTable.State
@@ -190,6 +196,9 @@ body
 .p-dropdown,
 .p-button
   box-shadow: none !important
+
+.stock__detail--table
+  height: calc(100vh - 148px)
 
 .p-paginator.p-component.p-paginator-bottom
   .p-paginator-left-content

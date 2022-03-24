@@ -9,18 +9,11 @@ export default {
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' },
+      { name: 'format-detection', content: 'telephone=no' }
     ],
-    link: [
-      {
-        href: 'https://fonts.googleapis.com/css2?family=Google+Sans:wght@100;200;300;400;500;700;900&display=swap',
-        rel: 'stylesheet',
-        type: 'text/css',
-      },
-    ],
+    // custom links here
+    link: []
   },
-
-  css: ['@/assets/styles/main.sass'],
 
   plugins: ['~/plugins/vuelidate.ts'],
 
@@ -36,6 +29,18 @@ export default {
     '@nuxtjs/dotenv',
     '@nuxtjs/proxy',
     '@nuxtjs/style-resources',
+
+    [
+      '@nuxtjs/google-fonts',
+      {
+        families: {
+          'Google+Sans': {
+            wght: [300, 400, 500, 700, 900]
+          }
+        },
+        display: 'swap'
+      }
+    ]
   ],
   // PrimeVue Config
   primevue: {
@@ -55,13 +60,13 @@ export default {
       'Column',
       'ColumnGroup',
       'DropDown',
-      'ScrollPanel',
+      'ScrollPanel'
     ],
-    directives: ['Tooltip', 'Badge'],
+    directives: ['Tooltip', 'Badge']
   },
 
   axios: {
-    proxy: process.env.NODE_ENV === 'development',
+    proxy: process.env.NODE_ENV === 'development'
   },
 
   auth: {
@@ -71,45 +76,45 @@ export default {
         token: {
           property: 'token',
           global: true,
-          required: true,
+          required: true
         },
         user: {
           property: 'user',
-          autoFetch: false,
+          autoFetch: false
         },
         endpoints: {
           login: { url: '/api/auth/login', method: 'post' },
           logout: { url: '/api/auth/logout', method: 'post' },
-          user: false, // { url: '/api/auth/user',   method: 'get' }
-        },
-      },
+          user: false // { url: '/api/auth/user',   method: 'get' }
+        }
+      }
     },
-    plugins: ['~/plugins/auth.ts'],
+    plugins: ['~/plugins/auth.ts']
   },
 
   styleResources: {
     sass: ['@/assets/styles/main.sass'],
-    hoistUseStatements: true,
+    hoistUseStatements: true
   },
 
   proxy: {
     '/api/': {
       target: process.env.API_URL,
       pathRewrite: { '^/api/': '' },
-      changeOrigin: true,
-    },
+      changeOrigin: true
+    }
   },
 
   server: {
-    port: process.env.SERVER_PORT,
+    port: process.env.SERVER_PORT
   },
 
   build: {
     babel: {
       compact: true,
       plugins: [
-        ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
-      ],
-    },
-  },
+        ['@babel/plugin-proposal-private-property-in-object', { loose: true }]
+      ]
+    }
+  }
 }

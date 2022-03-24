@@ -1,5 +1,5 @@
 <template lang="pug">
-  .stockLogInformation.bg-white.border-round.p-3
+  .stock__log--information.bg-white.border-round.p-3
     .isChangeDate.pb-3.flex
       div.flex.mr-4
         .icon-btn.icon-calendar
@@ -41,7 +41,7 @@ class StockLogInformation extends Vue {}
 export default StockLogInformation
 </script>
 <style lang="sass">
-.stockLogInformation
+.stock__log--information
   .isChangeDate
     border-bottom: 1px solid #eeeff2
 

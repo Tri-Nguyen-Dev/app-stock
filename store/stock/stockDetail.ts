@@ -1,6 +1,5 @@
-import { namespace } from 'nuxt-property-decorator'
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
-import { $api, PathBind, SuccessResponse } from '~/utils'
+import { $api, PathBind } from '~/utils'
 
 export namespace Stock {
   export class StockDetailId {
@@ -15,10 +14,18 @@ export namespace Stock {
 
 export default class StoreStock extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK_DETAIL: 'https://622701772dfa52401811d3d2.mockapi.io/api/v1/productList/:id'
+    GET_STOCK_DETAIL: 'https://622701772dfa52401811d3d2.mockapi.io/api/v1/productList/:id',
+    GET_ALL_BOX: '/submission/user/:userId/get-all-master-data'
   }
 
   public stockDetail: {} = {}
+
+  public boxData: any = null
+
+  @Mutation
+  setBoxData(boxData: {}) {
+    this.boxData = boxData
+  }
 
   @Mutation
   getStockDetail(stockDetail: {}) {
@@ -31,4 +38,13 @@ export default class StoreStock extends VuexModule {
     const response: any = await $api.get(url)
     return response
   }
+
+  @Action({ commit: 'setBoxData', rawError: true })
+  async actGetBoxData(): Promise<string | undefined> {
+    // const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_ALL_BOX)
+    const url = 'https://62315a6305f5f4d40d7871ae.mockapi.io/box'
+    const response: any = await $api.get(url)
+    return response
+  }
+
 }
