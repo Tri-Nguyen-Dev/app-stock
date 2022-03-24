@@ -11,7 +11,7 @@
           .icon.icon--left.icon-sms.bg-primary
           InputText#inputEmail.w-full(v-model="loginUser.userName")
         //- Input Password
-        label.block.font-bold.mb-2(for="inputPassword") Password
+        label.mt-10.block.font-bold.mb-2(for="inputPassword") Password
         span.p-input-icon-left.mb-6.w-full
           .icon.icon--left.icon-lock-open.bg-primary
           InputText#inputPassword.w-full(type="password", v-model="loginUser.password")
@@ -21,8 +21,8 @@
         .flex.align-items-center.justify-content-between.mb-5
           .flex.align-items-center
             Checkbox#rememberCheck.mr-2(v-model="checked", :binary="true")
-            label.text-sm(for="rememberCheck") Save password
-          a.ml-5.text-sm.text-right.text-primary.cursor-pointer Forgot password?
+            label.font-sm(for="rememberCheck") Save password
+          a.ml-5.font-sm.text-right.text-primary.cursor-pointer Forgot password?
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
