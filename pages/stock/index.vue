@@ -1,25 +1,25 @@
 <template lang="pug">
   .wapper
     .sidebar
-    .main.px-5.pt-5.h-screen.max-h-screen
-      .stock.flex.flex-column
-        .stock__header.mb-5.grid
-          div(class='col-12 md:col-6 lg:col-6')
+    .main
+      .stock
+        .stock__header.flex.align-items-center.justify-content-between
+          div
             h1.text-heading Stock list
             span.text-subheading 1280 product found
-          .flex.align-items-center.justify-content-end(class='col-12 md:col-6 lg:col-6')
+          div.stock__header-action.flex.align-items-center.justify-content-between
             div
               span.stock__search.p-input-icon-left
                 .icon.icon--left.icon-search
                 InputText#inputSearch.h-full.border-none.w-full.text-900(type='text' v-model='filter.name' placeholder='Search')
-            .stock__btn-filter.ml-3.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
+            .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
               .icon-btn.icon-filter( v-if="!isShowFilter")
               .icon-btn.icon-chevron-up.bg-primary(v-else)
               span.ml-3.white-space-nowrap.line-height-4 Filter
-            .ml-3.stock__btn-add.flex.align-items-center.bg-primary.border-round.cursor-pointer
+            .stock__btn-add.flex.align-items-center.bg-primary.border-round.cursor-pointer
               .icon-btn.icon-add-items.bg-white
               span.ml-3.white-space-nowrap.line-height-4 Add Items
-              
+
         .stock__filter(:class='{ "filter--active": isShowFilter }')
           .grid
             div(class='col-12 md:col-3 lg:col-3') 
@@ -174,12 +174,13 @@ export default Stock
 body
   background: #e8eaef
 
-
+.main
+  padding: 32px
 
 .stock
   height: 100%
 
-  &__header-info
+  &__eader-info
     font-size: $font-size-small
 
   &__search
@@ -218,5 +219,10 @@ body
 
   &__mutidelete
     background-color: #FF7171
+
+.stock__header
+  margin-bottom: 31px
+  &-action
+    gap: 0 16px
 
 </style>
