@@ -1,15 +1,15 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
 import { PathBind } from '../../utils/commons/path-bind'
-import { SuccessResponse } from '~/utils/response/success-response'
 import { $api } from '~/utils'
 
 @Module({
   stateFactory: true,
-  namespaced: true,
+  namespaced: true
 })
+
 export default class Warehouse extends VuexModule {
   private static readonly STATE_URL = {
-    GET_WAREHOUSE: '/warehouse/list',
+    GET_WAREHOUSE: '/warehouse/list'
   }
 
   public warehouseList: [] = []
@@ -25,15 +25,15 @@ export default class Warehouse extends VuexModule {
     try {
       const url = PathBind.transform(
         this.context,
-        Warehouse.STATE_URL.GET_WAREHOUSE,
+        Warehouse.STATE_URL.GET_WAREHOUSE
       )
-      const response: SuccessResponse<any> = await $api.get(url)
+      const response = await $api.get(url)
 
-      if (!response.content) {
+      if (!response.data) {
         return warehouseList
       }
 
-      return response.content
+      return response.data
     } catch (error) {}
   }
 }

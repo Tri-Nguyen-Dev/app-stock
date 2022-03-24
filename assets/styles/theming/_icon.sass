@@ -15,7 +15,6 @@ $icons: house-2, lock-open, sms, search, arrow-up-right, filter, chevron-up, add
 .icon
   @include size($icon-size-base)
   @include centerAbsolute(top)
-  content: ''
 
   &--left
     left: $icon-padding-base
@@ -40,4 +39,12 @@ $icons: house-2, lock-open, sms, search, arrow-up-right, filter, chevron-up, add
     background-color: $text-color-base
     mask-image:       url('~/assets/icons/#{$i}.svg')
     mask-size:        cover
+    &.active
+      background-color: $primary
 
+// -- override css
+.p-input-icon-left > i:first-of-type
+  left: $icon-padding-base
+
+.p-input-icon-left > .p-inputtext
+  padding-left: $icon-size-base + 2 * $icon-padding-base

@@ -1,6 +1,5 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
-import { Stock } from '~/models/Stock';
-import { SuccessResponse } from '~/utils/response/success-response'
+import { Stock } from '~/models/Stock'
 import { $api, PathBind } from '~/utils'
 
 
@@ -36,12 +35,12 @@ export namespace StockStoreModel {
 
 @Module({
   stateFactory: true,
-  namespaced: true,
+  namespaced: true
 })
 
 export default class StoreStock extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK: '/product/list',
+    GET_STOCK: '/product/list'
   }
 
   public stockList?: Stock.Model[] = []
@@ -64,13 +63,12 @@ export default class StoreStock extends VuexModule {
         StoreStock.STATE_URL.GET_STOCK,
         data?.params
       )
-      const response: SuccessResponse<any> = await $api.post(url, data?.filter, { params: data?.params })
+      const response = await $api.post(url, data?.filter, { params: data?.params })
 
-      if (!response.content) {
-        return stockList.content
+      if (!response.data) {
+        return stockList
       }
-
-      return response.content
+      return response.data
     } catch (error) {
       return stockList
     }

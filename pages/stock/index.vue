@@ -28,7 +28,7 @@
             div(class='col-12 md:col-3 lg:col-3')
               .bg-white.border-round.p-2
                 .text-700.font-normal.text-sm.stock__filter--title Catagory
-                MultiSelect#mutiselectCategory.w-full.border-0(v-model='filter.category' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+                MultiSelect#mutiselectCategory.w-full.border-0(v-model='filter.categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
             div(class='col-12 md:col-3 lg:col-3')
               .bg-white.border-round.p-2
                 .text-700.font-normal.text-sm.stock__filter--title Code
@@ -50,8 +50,6 @@
             img(:src="require('~/assets/icons/trash-white.svg')")
             span.ml-2 Delete {{ selectedStock.length }} items selected
           Paginator#paginationStock(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="220" @page="onPage($event)")
-
-          div {{ filter.category }} 
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
@@ -64,8 +62,8 @@ const nsStoreStock = namespace('stock')
 
 @Component({
   components: {
-    TableStock,
-  },
+    TableStock
+  }
 })
 class Stock extends Vue {
   @nsStoreStock.State
@@ -91,20 +89,20 @@ class Stock extends Vue {
 
   paginate: any = {
     pageNumber: 1,
-    pageSize: 10,
+    pageSize: 10
   }
 
   filter: any = {
-    name: "",
+    name: null,
     warehouse: null,
     categories: [],
-    barcode: "",
-    status: null,
+    barcode: null,
+    status: null
   }
 
   statusList: any = [
-    { name: 'Disable', value: "0" },
-    { name: 'Available', value: "1" },
+    { name: 'Disable', value: 0 },
+    { name: 'Available', value: 1 }
   ]
 
   selectedStock: StockModel.Model[] = []
@@ -132,7 +130,7 @@ class Stock extends Vue {
     this.getProductList()
   }
 
-  @Watch('filter.category')
+  @Watch('filter.categories')
   categoryChange() {
     this.getProductList()
   }
@@ -153,9 +151,9 @@ class Stock extends Vue {
     const filter = {
       name: this.filter.name,
       warehouseId: this.filter.warehouse?.id,
-      categoryIds: this.filter.categories,
+      categoryIds: this.filter.categories.map((item: any) => item?.id),
       barcode: this.filter.barcode,
-      status: this.filter.status?.value,
+      status: this.filter.status?.value
     }
     await this.actGetProductList({ filter, params})
   }
