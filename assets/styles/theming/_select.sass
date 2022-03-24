@@ -1,0 +1,31 @@
+// custom dropdown
+.p-dropdown-items-wrapper
+    max-height: 288px !important
+    box-shadow: none
+
+.p-dropdown-trigger-icon::before
+    content: url('~/assets/icons/chevron-down.svg')
+
+.p-dropdown-items
+    padding: 0 !important
+
+.p-dropdown-items-wrapper::-webkit-scrollbar
+    width: 6px
+
+.p-dropdown-items-wrapper::-webkit-scrollbar-thumb
+    background: $text-color-secondary
+    border-radius: 10px
+    width: 6px
+
+.p-dropdown:not(.p-disable).p-focus
+    box-shadow: none !important
+    border-color: none !important
+
+.p-dropdown-item
+    padding: 12px 0 12px 16px !important
+
+.p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover
+    background-color: #E8EAEF
+
+.p-dropdown-items .p-dropdown-item.p-highlight
+    background-color: $primary !important

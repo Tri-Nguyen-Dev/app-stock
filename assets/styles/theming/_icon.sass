@@ -9,7 +9,7 @@ $icon-size-large:  24px !default
 $icon-padding-base: 16px
 
 // --- List name of icons
-$icons: house-2, lock-open, sms, shopping-cart
+$icons: house-2, lock-open, sms, search, arrow-up-right, filter, chevron-up, add-items, pencil, trash
 
 // -- custom css
 .icon
@@ -30,6 +30,9 @@ $icons: house-2, lock-open, sms, shopping-cart
 
   &--large
     @include size($icon-size-large)
+
+.icon-btn
+  @include size($icon-size-base)
 
 @each $i in $icons
   .icon-#{$i}

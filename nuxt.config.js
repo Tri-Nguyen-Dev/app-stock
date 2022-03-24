@@ -44,7 +44,13 @@ export default {
       'Button',
       'Checkbox',
       'DataTable',
-      'Dialog'
+      'Dialog',
+      'Dropdown',
+      'MultiSelect',
+      'Column',
+      'Paginator',
+      'Tag',
+      'ConfirmDialog'
     ],
     directives: ['Tooltip', 'Badge']
   },
