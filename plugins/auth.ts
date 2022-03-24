@@ -15,7 +15,7 @@ declare module 'vue/types/vue' {
   }
 }
 
-const auth: Plugin = ({ $auth, store }) => {
+const auth: Plugin = ({ store }) => {
   const axiosInstance = axios.create()
 
   axiosInstance.interceptors.request.use((config) => {
