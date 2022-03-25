@@ -12,9 +12,12 @@
             .icon-btn.icon-box-info.inline-block.mr-1.bg-blue-700
             span.uppercase.font-bold Item Detail
           .col.flex.justify-content-end
-            .surface-hover.border-round.cursor-pointer.p-2
+            .surface-hover.border-round.cursor-pointer.p-2(@click='editItemDetail' :class='isEditItemDetail ? "hidden" : " "')
               .icon-btn.icon-btn-edit
-        .grid.mb-3
+            Button(:class='isEditItemDetail ? " " : "hidden"' @click='saveEditItemDetail')
+              .icon-btn.icon-check-lg.bg-white.mr-1
+              span.uppercase save
+        .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-4').stock__information--image
             img(:src='require("~/assets/images/sample.png")').border-round
           .col
@@ -30,16 +33,7 @@
               p.uppercase.inline.font-semibold.text-400.mr-2 unit:
               span.uppercase.font-semibold.text-blue-700 Piece
         .grid.mb-3
-          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
-           div.surface-hover.p-3
-            .grid.align-items-center
-              .col-3
-                .icon-btn.icon-location.bg-blue-700
-              .col
-                div.text-500 Location
-                span.font-semibold.mr-1.uppercase MHI45
-                .icon-btn.icon-export.inline-block
-          .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
+          .col(:class='isEditItemDetail ? "opacity-40" : "opacity-100"' class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
               .col-3
@@ -48,7 +42,15 @@
                 div.text-500 Warehouse
                 span.font-semibold.mr-1.uppercase NTH001
                 .icon-btn.icon-export.inline-block
-        .grid.mb-3
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
+           div.surface-hover.p-3
+            .grid.align-items-center
+              .col-3
+                .icon-btn.icon-location.bg-blue-700
+              .col
+                div.text-500 Location
+                InputText(:disabled='isEditItemDetail == 0')
+        .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
@@ -66,7 +68,7 @@
                 div.text-500 Weight (Kg)
                 span.font-semibold  20.8
         .grid
-          .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
+          .col(:class='isEditItemDetail ? "opacity-40" : "opacity-100"' class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
             .surface-hover.p-3
               .grid.align-items-center
                 .col-3
@@ -82,8 +84,8 @@
                   .icon-btn.icon-price.bg-blue-700
                 .col
                   div.text-500 Value
-                  span.font-semibold.mr-1.uppercase $200
-      .sender__information.p-4
+                  InputText( :disabled='isEditItemDetail == 0')
+      .sender__information.p-4(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
         .grid.mb-3
           .col
             .icon-btn.icon-sender-info.inline-block.mr-2.bg-blue-700
@@ -126,13 +128,15 @@
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { Stock } from '~/store/stock/stockDetail'
-const nsStoreStock = namespace('stock/stockDetail')
+import { Stock } from '~/store/stock/stock-detail'
+const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
   layout: 'dashboard'
 })
 class ItemDetail extends Vue {
+  isEditItemDetail: boolean = false
+
   @nsStoreStock.State
   stockDetail!: {}
 
@@ -141,6 +145,14 @@ class ItemDetail extends Vue {
 
   backToStockList() {
     this.$router.push('/stock/stock-detail/id')
+  }
+
+  editItemDetail() {
+    this.isEditItemDetail = true
+  }
+
+  saveEditItemDetail() {
+    this.isEditItemDetail = false
   }
 
   async mounted() {
@@ -157,8 +169,15 @@ $small: 1025px
   .stock__information
     border-bottom: 1px solid #eeeff2
 
-  .sender__email
-    max-width: 70%
+    .p-disabled, .p-component:disabled
+      opacity: 1
+
+    .p-inputtext
+      border: none
+      background: transparent
+      padding: 0
+      color: #000
+      font-weight: 600
 
 .right__information--stock
   display: flex

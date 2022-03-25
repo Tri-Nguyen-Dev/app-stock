@@ -16,7 +16,7 @@ ScrollPanel.item__detail--table
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-const nsStoreStock = namespace('stock/stockDetail')
+const nsStoreStock = namespace('stock/stock-detail')
 
 @Component
 class StockDetailHistoryTable extends Vue {

@@ -8,43 +8,46 @@
         span.font-semibold.text-base Stock list / Stock Detail
       .stock__information--gerenal.p-4
         .grid.mb-3
-          .col-10.pl-0.flex
+          .col-9.pl-0.flex
             .icon-btn.icon-box-info.inline-block.mr-1.bg-blue-700
             span.uppercase.font-bold.text-sm general infomation
           .col.flex.justify-content-end
-            .surface-hover.border-round.cursor-pointer.p-2
+            .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon-btn.icon-btn-edit
-        .grid.mb-3
+            Button(:class='isEditStockDetail ? " " : "hidden"' @click='saveEditStockDetail')
+              .icon-btn.icon-check-lg.bg-white.mr-1
+              span.uppercase save
+        .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           img(:src='require("~/assets/images/sample.png")').border-round.w-full
-        .grid.my-2
+        .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           Tag(severity="success").uppercase Available
-        .grid.mb-2
+        .grid.mb-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           h5.font-bold.my-2 Apple Macbook Pro
-        .grid
+        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           p.uppercase.inline.font-semibold.text-400.mr-2 code:
           span.uppercase.font-semibold.text-blue-700 ABH123
-        .grid
+        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700 piece
         .grid.surface-hover.mb-3
           .col-2.flex.align-items-center
             .icon-btn.icon-size.bg-blue-700
           .col
-            div.text-500 Size(cm)
-            span.font-semibold.mr-1.uppercase 180*180*180
+            div.text-500 Size (cm)
+            InputText( :disabled='isEditStockDetail == 0')
         .grid.surface-hover.mb-3
           .col-2.flex.align-items-center
             .icon-btn.icon-weight.bg-blue-700
           .col
-            div.text-500 Weight (Kg)
-            span.font-semibold.mr-1.uppercase 2.8
-        .grid.surface-hover.mb-3
+            div.text-500 Weight (kg)
+            InputText( :disabled='isEditStockDetail == 0')
+        .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center
             .icon-btn.icon-inventory-quantity.bg-blue-700
           .col
             div.text-500 Inventory quantity
             span.font-semibold.mr-1.uppercase 2
-        .grid.surface-hover.mb-3
+        .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center
             .icon-btn.icon-total-inventory.bg-blue-700
           .col
@@ -137,7 +140,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-const nsStoreStockTable = namespace('stock/stockDetail')
+const nsStoreStockTable = namespace('stock/stock-detail')
 
 @Component({
   layout: 'dashboard'
@@ -148,6 +151,8 @@ class StockDetail extends Vue {
   selectedStatus = null
 
   isShowFilter: boolean = false
+
+  isEditStockDetail: boolean = false
 
   selectedProducts = null
 
@@ -180,6 +185,14 @@ class StockDetail extends Vue {
     this.isShowFilter = !this.isShowFilter
   }
 
+  editStockDetail() {
+    this.isEditStockDetail = true
+  }
+
+  saveEditStockDetail() {
+    this.isEditStockDetail = false
+  }
+
   async mounted() {
     await this.actGetBoxData()
   }
@@ -191,6 +204,18 @@ export default StockDetail
 
 body
   background: #e8eaef
+
+.stock__information-detail
+  .stock__information--gerenal
+    .p-disabled, .p-component:disabled
+        opacity: 1
+
+    .p-inputtext
+      border: none
+      background: transparent
+      padding: 0
+      color: #000
+      font-weight: 600
 
 .p-inputtext,
 .p-dropdown,
