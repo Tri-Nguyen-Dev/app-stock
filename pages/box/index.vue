@@ -84,9 +84,9 @@
         Column(field="status" header="STATUS" sortable className="p-text-right")
           template(#body="{data}")
             div
-              Tag(v-if="data.status").px-2.bg-green-100(severity="success")
+              Tag(v-if="data.status" severity="success").px-2.bg-green-100
                 span.font-bold.text-green-400.font-sm AVAILABLE
-              Tag(v-else).px-2.surface-200(severity="success")
+              Tag(v-else severity="success").px-2.surface-200
                 span.font-bold.text-400.font-sm DISABLE
         Column(:exportable="false" header="ACTION" sortable className="p-text-right")
           template(#body="{data}")
@@ -108,7 +108,7 @@
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
-const nsStoreBox = namespace('box/store-box')
+const nsStoreBox = namespace('box/box-list')
 const nsStoreMasterData = namespace('box/master-data')
 
 @Component({

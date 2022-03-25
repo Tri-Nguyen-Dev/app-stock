@@ -25,7 +25,7 @@ export default class StoreBox extends VuexModule {
 
   @Action({ rawError: true })
   async actDeleteBoxById(ids: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, "http://localhost:3000/delete", ids)
+    const url = PathBind.transform(this.context, 'http://localhost:3000/delete', ids)
     const response: any = await $api.post(url, ids)
     return response
   }
