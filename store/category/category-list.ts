@@ -1,5 +1,5 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
-import { PathBind } from '../../utils/commons/path-bind'
+import { PathBind } from '~/utils/commons/path-bind'
 import { $api } from '~/utils'
 
 @Module({
