@@ -22,7 +22,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         z-index: 1
 
     .p-datatable-tbody > tr.p-highlight
-        background-color: $primary !important
+        background-color: $primary
 
     .p-datatable-thead tr:not(.p-highlight):hover
         background: $td-hover-color !important
@@ -82,12 +82,15 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             border: 1.5px solid $text-color-500 !important
 
     tr.row-disable
+        background-color: #fff !important
         .p-checkbox
             cursor: auto !important
             pointer-events: none !important
 
             .p-checkbox-box
                 border: 1.5px solid #F1F3F6 !important
+                &.p-highlight
+                    background-color: #fff !important
 
 // custom pagination
 .p-paginator

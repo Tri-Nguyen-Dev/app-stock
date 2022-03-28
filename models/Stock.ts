@@ -15,7 +15,7 @@ export namespace Stock {
       id: number
       name: string
     },
-    status?: number,
+    status?: string,
     createAt?: Date,
     updateAt?: Date
   }

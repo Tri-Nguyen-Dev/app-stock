@@ -50,7 +50,7 @@ class Table extends Vue {
 
   @Watch('selectedProduct')
   emitSelectedProduct() {
-    this.$emit('getProductSelected', this.selectedProduct)
+    this.$emit('getProductSelected', this.selectedProduct.filter(item => item.status === '1'))
   }
 
   showModalDelete(id: string) {
@@ -58,6 +58,7 @@ class Table extends Vue {
   }
 
   checkSelectedProduct(id: string) {
+
     const isCheck = this.selectedProduct.some(item => item.id === id)
 
     return isCheck
@@ -66,8 +67,6 @@ class Table extends Vue {
   rowClass(data: any) {  
     return data.status === '0' ? 'row-disable': ''
   }
-
-
 }
 export default Table
 </script>
