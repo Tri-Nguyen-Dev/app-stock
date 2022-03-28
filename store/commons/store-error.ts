@@ -1,11 +1,5 @@
 import { Module, Mutation, VuexModule } from 'vuex-module-decorators'
-
-export namespace Error {
-  export interface Model {
-    code?: string
-    message?: string
-  }
-}
+import { ErrorResponse } from '~/utils'
 
 @Module({
   stateFactory: true,
@@ -13,11 +7,10 @@ export namespace Error {
 })
 export default class StoreError extends VuexModule {
 
-  public error: Error.Model = {}
+  public error: ErrorResponse = {}
 
   @Mutation
-  setError(error: Error.Model) {
+  setError(error: ErrorResponse) {
     this.error = { ...this.error, ...error }
   }
-
 }

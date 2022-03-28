@@ -4,48 +4,56 @@ export default {
   target: 'static',
 
   head: {
-    title: 'Airtag CRM',
+    title: 'AirTag Management System',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
-    link: [
-      {
-        href: 'https://fonts.googleapis.com/css?family=Source+Sans+Pro',
-        rel: 'stylesheet',
-        type: 'text/css'
-      }
-    ]
+    // custom links here
+    link: []
   },
 
-  css: [
-    '@/assets/main.sass'
-  ],
-
-  plugins: [
-    '~/plugins/vuelidate.ts'
-  ],
+  plugins: ['~/plugins/vuelidate.ts'],
 
   components: true,
 
-  buildModules: [
-    '@nuxt/typescript-build'
-  ],
+  buildModules: ['@nuxt/typescript-build'],
 
   modules: [
-    'bootstrap-vue/nuxt',
+    'primevue/nuxt',
     'cookie-universal-nuxt',
     '@nuxtjs/axios',
     '@nuxtjs/auth-next',
     '@nuxtjs/dotenv',
     '@nuxtjs/proxy',
-    '@nuxtjs/style-resources'
-  ],
+    '@nuxtjs/style-resources',
 
-  bootstrapVue: {
-    icons: true
+    ['@nuxtjs/google-fonts', {
+      families: {
+        'Google+Sans': {
+          wght: [300, 400, 500, 700, 900]
+        }
+      },
+      display: 'swap'
+    }]
+  ],
+  // PrimeVue Config
+  primevue: {
+    theme: 'bootstrap4-light-blue',
+    ripple: true,
+    components: [
+      'InputText',
+      'Button',
+      'Checkbox',
+      'DataTable',
+      'Dialog', 
+      'column',
+      'dropdown',
+      'Paginator'
+    ],
+    directives: ['Tooltip', 'Badge']
   },
 
   axios: {
@@ -53,16 +61,36 @@ export default {
   },
 
   auth: {
-    // Options
+    rewriteRedirects: true,
+    strategies: {
+      local: {
+        token: {
+          property: 'token',
+          global: true,
+          required: true
+        },
+        user: {
+          property: 'user',
+          autoFetch: false
+        },
+        endpoints: {
+          login: { url: '/api/auth/login', method: 'post' },
+          logout: { url: '/api/auth/logout', method: 'post' },
+          user: false // { url: '/api/auth/user',   method: 'get' }
+        }
+      }
+    },
+    plugins: ['~/plugins/auth.ts']
   },
 
   styleResources: {
-    sass: ['./assets/**.sass']
+    sass: ['@/assets/styles/main.sass'],
+    hoistUseStatements: true
   },
 
   proxy: {
     '/api/': {
-      target: 'http://localhost:3000',
+      target: process.env.API_URL,
       pathRewrite: { '^/api/': '' },
       changeOrigin: true
     }
@@ -76,7 +104,7 @@ export default {
     babel: {
       compact: true,
       plugins: [
-        ['@babel/plugin-proposal-private-property-in-object', { 'loose': true }]
+        ['@babel/plugin-proposal-private-property-in-object', { loose: true }]
       ]
     }
   }

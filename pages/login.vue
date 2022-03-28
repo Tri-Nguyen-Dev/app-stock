@@ -1,54 +1,61 @@
-<template lang='pug'>
-b-container
-  section.vh-100
-    .container-fluid.h-custom
-      .row.d-flex.justify-content-center.align-items-center.h-100
-
-        .col-md-9.col-lg-6.col-xl-5
-          img.img-fluid(src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp")
-        form.col-md-8.col-lg-6.col-xl-4.offset-xl-1
-          h4.mt-1.mb-5.pb-1 AIRTAG CRMS
-          .form-outline.mb-4
-            input.form-c.form-control-lg(v-model="userName", placeholder="Enter user name")
-          .form-outline.mb-3
-            input.form-c.form-control-lg(type="password", placeholder="Enter password")
-
-          .text-lg-start.mt-4.pt-2
-            button.btn.btn-primary.btn-lg(type="button", @click='callLogin') Login
+<template lang="pug">
+  section.surface-0.flex.align-items-center.justify-content-center.min-h-screen.min-w-screen.overflow-hidden.p-2
+    .grid.justify-content-center.col-12(class='md:col-6 lg:col-4')
+      .logo-block.w-full.mb-5
+        img.pr-1(:src='require("assets/images/tag-user.png")')
+        img.pt-2(:src='require("assets/images/logo-text-airtag.png")')
+      .w-full
+        //- Input Email
+        label.block.font-bold.mb-2(for="inputEmail") Email
+        span.p-input-icon-left.mb-3.w-full
+          .icon.icon--left.icon-sms.bg-primary
+          InputText#inputEmail.w-full(v-model="loginUser.userName")
+        //- Input Password
+        label.mt-10.block.font-bold.mb-2(for="inputPassword") Password
+        span.p-input-icon-left.mb-6.w-full
+          .icon.icon--left.icon-lock-open.bg-primary
+          InputText#inputPassword.w-full(type="password", v-model="loginUser.password")
+        //- Action block
+        Button.bg-primary.w-full.p-3.mb-3(type="button", label="Sign In", @click='callLogin')
+        //- Remember block
+        .flex.align-items-center.justify-content-between.mb-5
+          .flex.align-items-center
+            Checkbox#rememberCheck.mr-2(v-model="checked", :binary="true")
+            label.font-sm(for="rememberCheck") Save password
+          a.ml-5.font-sm.text-right.text-primary.cursor-pointer Forgot password?
 </template>
-<script lang='ts'>
-import {Component, Provide, Vue} from 'nuxt-property-decorator'
+<script lang="ts">
+import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component({
   fetch({ redirect, $auth }): Promise<void> | void {
-    if ($auth.loggedIn) {
+    if ($auth.user) {
       redirect('/')
     }
-  },
+  }
 })
 class Login extends Vue {
-  @Provide()
-  userName: string = ''
+  checked = false
+
+  loginUser = {
+    userName: null,
+    password: null
+  }
 
   callLogin() {
-    console.log(this.userName)
+    this.$auth.loginWith('local', { data: this.loginUser }).catch(() => {
+      const userLogin = require('~/mocks/user.json')
+      this.$auth.setUser(userLogin)
+      this.$store.commit('commons/store-token/setToken', userLogin)
+    })
   }
 }
 
 export default Login
 </script>
-<style lang='sass'>
-.divider:after,
-.divider:before
-  content: ""
-  flex: 1
-  height: 1px
-  background: #eee
-
-.h-custom
-  height: calc(100% - 73px)
-
-@media (max-width: 450px)
-.h-custom
-  height: 100%
+<style lang="sass">
+.logo-block
+  height: 54px
+  img
+    height: 100%
 </style>
