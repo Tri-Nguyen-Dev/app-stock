@@ -1,5 +1,5 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
-import { PathBind } from '../../utils/commons/path-bind'
+import { PathBind } from '~/utils/commons/path-bind'
 import { $api } from '~/utils'
 
 @Module({
@@ -26,7 +26,7 @@ export default class Category extends VuexModule {
         this.context,
         Category.STATE_URL.GET_CATEGORIES
       )
-      const response = await $api.get(url)
+      const response = await $api.post(url)
 
       if (!response.data) {
         return categoryList

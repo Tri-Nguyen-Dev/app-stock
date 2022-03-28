@@ -12,7 +12,7 @@ export namespace Stock {
   namespaced: true
 })
 
-export default class StoreStock extends VuexModule {
+export default class StoreStockDetail extends VuexModule {
   private static readonly STATE_URL = {
     GET_STOCK_DETAIL: 'https://622701772dfa52401811d3d2.mockapi.io/api/v1/productList/:id',
     GET_ALL_BOX: '/submission/user/:userId/get-all-master-data'
@@ -28,13 +28,13 @@ export default class StoreStock extends VuexModule {
   }
 
   @Mutation
-  getStockDetail(stockDetail: {}) {
+  setStockDetail(stockDetail: {}) {
     this.stockDetail = stockDetail
   }
 
-  @Action({ commit: 'getStockDetail', rawError: true })
+  @Action({ commit: 'setStockDetail', rawError: true })
   async actGetStockDetail(params: Stock.StockDetailId): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreStock.STATE_URL.GET_STOCK_DETAIL, params)
+    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_STOCK_DETAIL, params)
     const response: any = await $api.get(url)
     return response
   }

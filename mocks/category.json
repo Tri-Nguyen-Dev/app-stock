@@ -1,38 +1,22 @@
 [
   {
-    "name": "Audi",
+    "name": "Technology",
     "id": "0"
   },
   {
-    "name": "BMW",
+    "name": "Fashion",
     "id": "1"
   },
   {
-    "name": "Fiat",
+    "name": "Food",
     "id": "2"
   },
   {
-    "name": "Honda",
+    "name": "Drinks",
     "id": "3"
   },
   {
-    "name": "Jaguar",
+    "name": "Others",
     "id": "4"
-  },
-  {
-    "name": "Mercedes",
-    "id": "5"
-  },
-  {
-    "name": "Renault",
-    "id": "6"
-  },
-  {
-    "name": "Volkswagen",
-    "id": "7"
-  },
-  {
-    "name": "Volvo",
-    "id": "8"
   }
 ]

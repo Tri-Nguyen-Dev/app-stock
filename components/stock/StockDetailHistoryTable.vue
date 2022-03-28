@@ -1,6 +1,6 @@
 <template lang="pug">
 ScrollPanel.item__detail--table
-  DataTable(v-if="boxData" :value="boxData" responsiveLayout="scroll" :selection.sync="selectedProducts" dataKey="id"
+  DataTable(v-if="boxData" :value="boxData" responsiveLayout="scroll" dataKey="id"
             :resizableColumns="true" :paginator="true" :rows="100")
             Column(field="no" header="NO" sortable)
               template(#body="slotProps")
@@ -9,7 +9,6 @@ ScrollPanel.item__detail--table
             Column(field="sender" header="ORIGINAL LOCATION" sortable)
             Column(field="size" header="NEW LOCATION" sortable bodyClass="font-semibold")
             Column(field="weight" header="CREATOR ID" sortable bodyClass="font-semibold")
-            Column(field="location" header="LOCATION" sortable)
             template(#paginatorstart)
               //- img(:src='require("~/assets/icons/footer-paginator.svg")')
               span.ml-3.text-400.text-sm Showing 01 - 50 of 80

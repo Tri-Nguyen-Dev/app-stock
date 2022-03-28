@@ -17,8 +17,6 @@ export namespace Stock {
     },
     status?: number,
     createAt?: Date,
-    updateAt?: Date,
-    createBy?: String
-    updateBy?: String
+    updateAt?: Date
   }
 }

@@ -2,30 +2,55 @@ $heading-table-color: #F9F9FC
 $td-hover-color: #E8EAEF
 $bottom-td-color: rgb(21, 22, 34, 0.05)
 
-.p-datatable .p-datatable-wrapper::-webkit-scrollbar
-    width: 6px
-    height: 6px
+// custom table
+.p-datatable
+    font-family: $font-family-primary
+    font-size: $font-size-base !important
 
-.p-datatable .p-datatable-thead
-    position: sticky
-    top: 0
-    z-index: 1
+    .p-datatable-wrapper
+        &::-webkit-scrollbar
+            width: 6px
+            height: 6px
+        
+        &::-webkit-scrollbar-thumb
+            border-radius: 10px
+            background-color: $text-color-700
 
-.p-datatable .p-datatable-tbody > tr.p-highlight
-    background-color: $primary !important
+    .p-datatable-thead
+        position: sticky
+        top: 0
+        z-index: 1
 
-.p-datatable .p-datatable-thead tr:not(.p-highlight):hover
-    background: $td-hover-color !important
+    .p-datatable-tbody > tr.p-highlight
+        background-color: $primary !important
 
-.p-datatable .p-datatable-thead > tr > th
-    background: $heading-table-color !important
-    font-weight: $font-weight-bold !important
-    font-size: $font-size-small
-    letter-spacing: 1px
-    text-transform: uppercase
-    color: $text-color-800 !important
-    white-space: nowrap
-    border: none !important
+    .p-datatable-thead tr:not(.p-highlight):hover
+        background: $td-hover-color !important
+
+    .p-datatable-thead > tr > th
+        background: $heading-table-color !important
+        font-weight: $font-weight-bold !important
+        font-size: $font-size-small
+        letter-spacing: 1px
+        text-transform: uppercase
+        color: $text-color-800 !important
+        white-space: nowrap
+        border: none !important
+
+        &:focus
+            box-shadow: none !important
+
+        .p-column-resizer
+            width: 2.23px !important
+            border: none !important
+
+            &:hover
+                background-color: $primary
+
+    .p-column-resizer-helper
+        width: 2.23px !important
+        border: none !important
+        background-color: $primary
 
     .pi-sort-alt:before
         content: url('~/assets/icons/sort-alt.svg')
@@ -38,47 +63,49 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         &:before
             content: url('~/assets/icons/sort-alt-up.svg')
         
-.p-datatable .p-datatable-tbody > tr > td 
-    white-space: nowrap
-    border-top: 1px solid $bottom-td-color
+    .p-datatable-tbody > tr > td 
+        white-space: nowrap
+        border-top: 1px solid $bottom-td-color
 
-.p-datatable-emptymessage
-    display: none
+    .p-datatable-emptymessage
+        display: none
+        
+    .p-checkbox-box
+        border: 1.5px solid $text-color-500
+        border-radius: 2px
 
-.p-datatable .p-datatable-wrapper::-webkit-scrollbar
-    width: 6px
-    height: 6px
+        &.p-highlight
+            background-color: $primary
 
-.p-datatable .p-datatable-wrapper::-webkit-scrollbar-thumb
-    border-radius: 10px
-    background-color: $text-color-700
+        &.focus, &:not(.p-checkbox-disabled)
+            box-shadow: none !important
+            border: 1.5px solid $text-color-500 !important
 
-.p-datatable .p-checkbox-box
-    border: 1.5px solid $text-color-500
-    border-radius: 2px
+    tr.row-disable
+        .p-checkbox
+            cursor: auto !important
+            pointer-events: none !important
 
-.p-datatable .p-checkbox-box.p-highlight
-    background-color: $primary
-
+            .p-checkbox-box
+                border: 1.5px solid #F1F3F6 !important
 
 // custom pagination
-.p-paginator .p-paginator-page
-    background-color: #fff !important
-    color: $text-color-500 !important
-    font-weight: bold
-    border: none !important
+.p-paginator
+    .p-paginator-page
+        background-color: #fff !important
+        color: $text-color-500 !important
+        font-weight: bold
+        border: none !important
 
-.p-paginator .p-paginator-prev,
-.p-paginator .p-paginator-next
-    color: $text-color-900
-    border: none
+        &.p-highlight
+            color: $primary !important
 
-.p-paginator .p-paginator-page.p-highlight
-    color: $primary !important
+    .p-paginator-prev, .p-paginator-next
+        color: $text-color-900
+        border: none
 
-.p-paginator .p-paginator-first,
-.p-paginator .p-paginator-last
-    display: none
+    .p-paginator-first, .p-paginator-last
+        display: none
 
-.p-paginator .p-link:focus
-    box-shadow: none
+    .p-link:focus
+        box-shadow: none

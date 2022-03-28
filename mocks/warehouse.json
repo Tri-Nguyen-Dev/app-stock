@@ -1,14 +1,14 @@
 [
   {
-    "name": "Audi",
+    "name": "Ha Noi",
     "id": "0"
   },
   {
-    "name": "BMW",
+    "name": "Hai Phong",
     "id": "1"
   },
   {
-    "name": "Fiat",
+    "name": "Quang ninh",
     "id": "2"
   },
   {
@@ -18,21 +18,5 @@
   {
     "name": "Jaguar",
     "id": "4"
-  },
-  {
-    "name": "Mercedes",
-    "id": "5"
-  },
-  {
-    "name": "Renault",
-    "id": "6"
-  },
-  {
-    "name": "Volkswagen",
-    "id": "7"
-  },
-  {
-    "name": "Volvo",
-    "id": "8"
   }
 ]

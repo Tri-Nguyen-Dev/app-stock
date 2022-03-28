@@ -117,7 +117,7 @@
           template(#header)
             .icon-btn.icon-history.mr-2.surface-600
             span Stock history
-          .overflow-auto
+          .overflow-auto.stock__log--history
             StockLogInformation(v-for='item in 4' :key='item.index').mb-3
         TabPanel
           template(#header)
@@ -182,6 +182,9 @@ $small: 1025px
 .right__information--stock
   display: flex
   flex-direction: column
+
+  .stock__log--history
+    height: calc(100vh - 65px)
 
   .p-tabview .p-tabview-nav li
     .p-tabview-nav-link

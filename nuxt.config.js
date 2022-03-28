@@ -60,7 +60,9 @@ export default {
       'Column',
       'ColumnGroup',
       'DropDown',
-      'ScrollPanel'
+      'ScrollPanel',
+      'MultiSelect',
+      'Paginator'
     ],
     directives: ['Tooltip', 'Badge']
   },

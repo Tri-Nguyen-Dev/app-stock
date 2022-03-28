@@ -1,5 +1,5 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
-import { PathBind } from '../../utils/commons/path-bind'
+import { PathBind } from '~/utils/commons/path-bind'
 import { $api } from '~/utils'
 
 @Module({
@@ -27,7 +27,7 @@ export default class Warehouse extends VuexModule {
         this.context,
         Warehouse.STATE_URL.GET_WAREHOUSE
       )
-      const response = await $api.get(url)
+      const response = await $api.post(url)
 
       if (!response.data) {
         return warehouseList
