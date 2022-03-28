@@ -1,6 +1,6 @@
 <template lang="pug">
   div.h-full
-    DataTable#datatable--stock-list.text-sm(:value='stockList' responsiveLayout="scroll" :selection.sync='selectedProduct' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
+    DataTable#datatable__stock-list(:value='stockList' responsiveLayout="scroll" :selection.sync='selectedProduct' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
       Column(selectionMode='multiple')
       Column(field='no' header='NO')
         template(#body='{ index }')
@@ -11,7 +11,7 @@
             img.w-full.h-full.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
       Column(field='name' header='Name' sortable)
         template(#body='{ data }')
-          .stock__table__name.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
+          .stock__table-name.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
       Column(field='barcode' header='Code' sortable)
       Column(field='category' header='Category' sortable)
           template(#body='{ data }') {{ data.category.name }}
@@ -23,14 +23,15 @@
         template(#body='{ data }')
           .table__action.flex.align-items-center
             span.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem
-              .icon-btn.icon-pencil(:class="{ 'surface-400': data.status === '0' }")
-            span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="handleDeleteStockById(data.id)")
-              .icon-btn.icon-trash(:class="{ 'surface-400': data.status === '0' }")
+              .icon-btn.icon-pencil
+            span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="showModalDelete(data.id)")
+              .icon-btn.icon-trash
     div.flex.align-items-center.justify-content-center.flex-column.h-full(v-if="!stockList.length > 0")
       img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
       p.text-900.font-bold.mt-3 List is empty!, Click 
        span.text-primary.underline here 
        span to add item.
+  
 </template>
 
 <script lang="ts">
@@ -48,21 +49,22 @@ class Table extends Vue {
     this.$emit('getProductSelected', this.selectedProduct)
   }
 
-  handleDeleteStockById() {}
-
-  handelDelete() {}
+  showModalDelete(id: string) {
+    this.$emit('showModalDelete', id)
+  }
 }
 export default Table
 </script>
 
 <style lang="sass">
 
-#datatable--stock-list .p-datatable-tbody > tr.p-highlight
-  .stock__table__name, .stock__table-no
-    color: #fff !important
-    
+#datatable__stock-list  
+  tr.p-highlight
+    .stock__table-name, .stock__table-no
+      color: #fff !important
+
 .stock__table
-  &__name
+  &-name
     max-width: 138px
 
   &-no
@@ -79,5 +81,4 @@ export default Table
 
   &--disable
     color: #979AA4
-
 </style>

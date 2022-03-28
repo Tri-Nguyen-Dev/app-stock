@@ -6,30 +6,31 @@ import { $api } from '~/utils'
   stateFactory: true,
   namespaced: true
 })
-export default class Category extends VuexModule {
+
+export default class Warehouse extends VuexModule {
   private static readonly STATE_URL = {
-    GET_CATEGORIES: '/category/list'
+    GET_WAREHOUSE: '/warehouse/list'
   }
 
-  public categoryList: [] = []
+  public warehouseList: [] = []
 
   @Mutation
   setCategoryList(data: []) {
-    this.categoryList = data
+    this.warehouseList = data
   }
 
   @Action({ commit: 'setCategoryList', rawError: true })
-  async actCategoryList(): Promise<string | undefined> {
-    const categoryList = require('~/mocks/category.json')
+  async actWarehouseList(): Promise<string | undefined> {
+    const warehouseList = require('~/mocks/warehouse.json')
     try {
       const url = PathBind.transform(
         this.context,
-        Category.STATE_URL.GET_CATEGORIES
+        Warehouse.STATE_URL.GET_WAREHOUSE
       )
-      const response = await $api.get(url)
+      const response = await $api.post(url)
 
       if (!response.data) {
-        return categoryList
+        return warehouseList
       }
 
       return response.data

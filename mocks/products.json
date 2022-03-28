@@ -1,9 +1,9 @@
 {
-  "data":  [
+  "data": [
     {
       "id": "1",
       "imageUrl": "http://www.elle.vn/wp-content/uploads/2017/07/25/hinh-anh-dep-1.jpg",
-      "name": "Apple Macbook Pro",
+      "name": "Apple Macbook Pro Apple Macbook Pro",
       "barcode": "AB1358",
       "sku": "ADIWHIS40M",
       "category": {
@@ -34,7 +34,7 @@
         "id": "1",
         "name": "Apple"
       },
-      "status": "1"
+      "status": "0"
     },
     {
       "id": "4",
@@ -58,7 +58,7 @@
         "id": "1",
         "name": "Apple"
       },
-      "status": "1"
+      "status": "0"
     },
     {
       "id": "6",
