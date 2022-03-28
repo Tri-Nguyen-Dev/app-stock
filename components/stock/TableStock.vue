@@ -1,7 +1,7 @@
 <template lang="pug">
   div.h-full
-    DataTable#datatable__stock-list(:value='stockList' responsiveLayout="scroll" :selection.sync='selectedProduct' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
-      Column(selectionMode='multiple')
+    DataTable#datatable__stock-list(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='selectedProduct' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
+      Column(selectionMode='multiple') 
       Column(field='no' header='NO')
         template(#body='{ index }')
           span.stock__table-no.text-900.font-bold {{ index + 1 }}
@@ -21,16 +21,18 @@
           span.stock__status.stock__status--disable(v-if="data.status === '0'") Disable
       Column(field='action' header='Action')
         template(#body='{ data }')
-          .table__action.flex.align-items-center
+          .table__action.flex.align-items-center(:class="{'action-disabled': data.status === '0'}")
             span.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem
               .icon-btn.icon-pencil
             span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="showModalDelete(data.id)")
               .icon-btn.icon-trash
     div.flex.align-items-center.justify-content-center.flex-column.h-full(v-if="!stockList.length > 0")
-      img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
-      p.text-900.font-bold.mt-3 List is empty!, Click 
+      img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
+      img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+      p.text-900.font-bold.mt-3(v-if="!isFilter") List is empty!, Click 
        span.text-primary.underline here 
        span to add item.
+      p.text-900.font-bold.mt-3(v-else) Item not found!
   
 </template>
 
@@ -42,6 +44,8 @@ import { Stock } from '~/models/Stock'
 class Table extends Vue {
   @Prop() stockList!: Stock.Model[]
 
+  @Prop() isFilter!: boolean
+
   selectedProduct: Stock.Model[] = []
 
   @Watch('selectedProduct')
@@ -52,6 +56,18 @@ class Table extends Vue {
   showModalDelete(id: string) {
     this.$emit('showModalDelete', id)
   }
+
+  checkSelectedProduct(id: string) {
+    const isCheck = this.selectedProduct.some(item => item.id === id)
+
+    return isCheck
+  }
+
+  rowClass(data: any) {  
+    return data.status === '0' ? 'row-disable': ''
+  }
+
+
 }
 export default Table
 </script>
@@ -70,6 +86,13 @@ export default Table
   &-no
     font-size: $font-size-medium
 
+.table__action
+  &.action-disabled
+    span
+      pointer-events: none !important
+    .icon-btn
+      background-color: #D2D2E0 !important
+
 .stock__status
   background: #EAF3EB
   border-radius: 3px
@@ -81,4 +104,5 @@ export default Table
 
   &--disable
     color: #979AA4
+
 </style>

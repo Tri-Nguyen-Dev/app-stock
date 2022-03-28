@@ -34,8 +34,10 @@
           .stock__filter-item.bg-white.border-round
             .text-sm.stock__filter-title Status
             Dropdown.dropdownStock.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
+
         .stock__table.bg-white.border-round.overflow-hidden
-          TableStock(@getProductSelected="getProductSelected" :stockList="stockList" @showModalDelete="showModalDelete")
+          TableStock(@getProductSelected="getProductSelected" :stockList="stockList" @showModalDelete="showModalDelete" :isFilter="isFilter")
+
         .stock__footer.px-3.h-4rem.bg-white.w-full.flex.align-items-center.justify-content-between
           .flex.align-items-center(v-if='!selectedStock.length > 0')
             img(:src="require('~/assets/icons/filter-left.svg')")
@@ -53,6 +55,7 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
+
 </template>
 <script lang="ts">
 import { debounce } from 'debounce'
@@ -126,6 +129,8 @@ class Stock extends Vue {
 
   loadingSubmit: boolean = false
 
+  isFilter: boolean = false
+
   toggleShowFilter() {
     this.isShowFilter = !this.isShowFilter
   }
@@ -133,6 +138,8 @@ class Stock extends Vue {
   @Watch('filter', { deep: true })
   filterChange() {
     this.getProductList()
+
+    this.isFilter = true
   }
 
   mounted() {
@@ -189,8 +196,8 @@ class Stock extends Vue {
     this.isModalDelete = false
   }
 
-  debounceSearchName = debounce((e: any) => {
-    this.filter.name = e
+  debounceSearchName = debounce((value: any) => {
+    this.filter.name = value
   }, 500)
 }
 export default Stock
