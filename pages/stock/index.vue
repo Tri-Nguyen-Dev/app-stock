@@ -29,14 +29,14 @@
           .stock__filter-item.bg-white.border-round
             .text-sm.stock__filter-title Code
             span.p-input-icon-right.w-full
-                InputText#inputSearchCode.w-full(type="text" v-model="filter.barcode" placeholder="Search code" )
+                InputText#inputSearchCode.w-full(type="text" @input="debounceSearchCode" placeholder="Search code" )
                 i.icon.icon-search.mt-0
           .stock__filter-item.bg-white.border-round
             .text-sm.stock__filter-title Status
             Dropdown.dropdownStock.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
 
         .stock__table.bg-white.border-round.overflow-hidden
-          TableStock(@getProductSelected="getProductSelected" :stockList="stockList" @showModalDelete="showModalDelete" :isFilter="isFilter")
+          TableStock(@getProductSelected="getProductSelected" :stockList="stockList" @showModalDelete="showModalDelete" :filter="filter")
 
         .stock__footer.px-3.h-4rem.bg-white.w-full.flex.align-items-center.justify-content-between
           .flex.align-items-center(v-if='!selectedStock.length > 0')
@@ -55,7 +55,6 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
-
 </template>
 <script lang="ts">
 import { debounce } from 'debounce'
@@ -74,6 +73,7 @@ const nsStoreStock = namespace('stock/stock-list')
     ConfirmDialogCustom
   }
 })
+
 class Stock extends Vue {
   @nsStoreStock.State
   stockList!: StockModel.Model[]
@@ -107,7 +107,7 @@ class Stock extends Vue {
   filter: any = {
     name: null,
     warehouse: null,
-    categories: [],
+    categories: null,
     barcode: null,
     status: null
   }
@@ -138,8 +138,6 @@ class Stock extends Vue {
   @Watch('filter', { deep: true })
   filterChange() {
     this.getProductList()
-
-    this.isFilter = true
   }
 
   mounted() {
@@ -153,7 +151,7 @@ class Stock extends Vue {
     const filter = {
       name: this.filter.name,
       warehouseId: this.filter.warehouse?.id,
-      categoryIds: this.filter.categories.map((item: any) => item?.id),
+      categoryIds: this.filter.categories && this.filter.categories.map((item: any) => item?.id),
       barcode: this.filter.barcode,
       status: this.filter.status?.value
     }
@@ -199,6 +197,11 @@ class Stock extends Vue {
   debounceSearchName = debounce((value: any) => {
     this.filter.name = value
   }, 500)
+
+  debounceSearchCode = debounce((value: any) => {
+    this.filter.barcode = value
+  }, 500)
+
 }
 export default Stock
 </script>

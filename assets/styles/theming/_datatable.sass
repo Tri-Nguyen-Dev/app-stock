@@ -47,21 +47,23 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             &:hover
                 background-color: $primary
 
+        .pi-sort-alt:before
+            content: url('~/assets/icons/sort-alt.svg')
+
+        .pi-sort-amount-up-alt:before
+            content: url('~/assets/icons/sort-alt-up.svg')
+
+        .pi-sort-amount-down
+            transform: rotate(180deg) !important
+            &:before
+                content: url('~/assets/icons/sort-alt-up.svg')
+
     .p-column-resizer-helper
         width: 2.23px !important
         border: none !important
         background-color: $primary
 
-    .pi-sort-alt:before
-        content: url('~/assets/icons/sort-alt.svg')
-
-    .pi-sort-amount-up-alt:before
-        content: url('~/assets/icons/sort-alt-up.svg')
-
-    .pi-sort-amount-down
-        transform: rotate(180deg) !important
-        &:before
-            content: url('~/assets/icons/sort-alt-up.svg')
+    
         
     .p-datatable-tbody > tr > td 
         white-space: nowrap
@@ -82,15 +84,12 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             border: 1.5px solid $text-color-500 !important
 
     tr.row-disable
-        background-color: #fff !important
         .p-checkbox
             cursor: auto !important
             pointer-events: none !important
 
             .p-checkbox-box
                 border: 1.5px solid #F1F3F6 !important
-                &.p-highlight
-                    background-color: #fff !important
 
 // custom pagination
 .p-paginator

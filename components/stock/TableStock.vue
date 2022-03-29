@@ -1,6 +1,6 @@
 <template lang="pug">
   div.h-full
-    DataTable#datatable__stock-list(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='selectedProduct' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
+    DataTable#datatable__stock-list(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='getFilterSelectedProduct' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
       Column(selectionMode='multiple') 
       Column(field='no' header='NO')
         template(#body='{ index }')
@@ -27,13 +27,12 @@
             span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="showModalDelete(data.id)")
               .icon-btn.icon-trash
     div.flex.align-items-center.justify-content-center.flex-column.h-full(v-if="!stockList.length > 0")
-      img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
+      img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
       img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-      p.text-900.font-bold.mt-3(v-if="!isFilter") List is empty!, Click 
+      p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click 
        span.text-primary.underline here 
        span to add item.
       p.text-900.font-bold.mt-3(v-else) Item not found!
-  
 </template>
 
 <script lang="ts">
@@ -44,24 +43,29 @@ import { Stock } from '~/models/Stock'
 class Table extends Vue {
   @Prop() stockList!: Stock.Model[]
 
-  @Prop() isFilter!: boolean
+  @Prop() filter!: any
 
   selectedProduct: Stock.Model[] = []
 
+  get getFilterSelectedProduct() {
+    return this.selectedProduct
+  }
+
+  set getFilterSelectedProduct(newValue) {
+    this.selectedProduct = newValue.filter(item => item.status === '1')
+  }
+
+  get checkIsFilter () {   
+    return Object.values(this.filter).some(item => item)
+  }
+
   @Watch('selectedProduct')
   emitSelectedProduct() {
-    this.$emit('getProductSelected', this.selectedProduct.filter(item => item.status === '1'))
+    this.$emit('getProductSelected', this.selectedProduct)
   }
 
   showModalDelete(id: string) {
     this.$emit('showModalDelete', id)
-  }
-
-  checkSelectedProduct(id: string) {
-
-    const isCheck = this.selectedProduct.some(item => item.id === id)
-
-    return isCheck
   }
 
   rowClass(data: any) {  
