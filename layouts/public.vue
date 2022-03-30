@@ -1,12 +1,12 @@
 <template lang="pug">
-  h1 Side Menu
+  Nuxt
 </template>
+
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
-class Sidemenu extends Vue {}
+class Dashboard extends Vue {}
 
-export default Sidemenu
+export default Dashboard
 </script>
-<style lang="sass"></style>

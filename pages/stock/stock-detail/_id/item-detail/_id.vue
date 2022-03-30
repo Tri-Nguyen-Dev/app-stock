@@ -1,5 +1,5 @@
 <template lang="pug">
- .grid.p-4.surface-300.h-srceen
+ .grid.h-srceen
     .col-4.p-0.surface-0.border-round.left__information--stock.h-screen.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
@@ -32,12 +32,30 @@
             div
               p.uppercase.inline.font-semibold.text-400.mr-2 unit:
               span.uppercase.font-semibold.text-blue-700 Piece
-        .grid.mb-3
-          .col(:class='isEditItemDetail ? "opacity-40" : "opacity-100"' class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
+        .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
+           div.surface-hover.p-3
+            .grid.align-items-center
+              .col-3.flex.justify-content-end
+                .icon--large.icon-receipt-note.bg-blue-700
+              .col
+                div.text-500 Receipt note ID
+                span.font-semibold 030133333
+                .icon-btn.icon-export.inline-block
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
+           div.surface-hover.p-3
+            .grid.align-items-center
+              .col-3.flex.justify-content-end
+                .icon--large.icon-tag-user.bg-blue-700
+              .col
+                div.text-500 Creator ID
+                span.font-semibold NVN030133
+        .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
+          .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
               .col-3
-                .icon-btn.icon-warehouse.bg-blue-700
+                .icon--large.icon-warehouse.bg-blue-700
               .col
                 div.text-500 Warehouse
                 span.font-semibold.mr-1.uppercase NTH001
@@ -46,16 +64,17 @@
            div.surface-hover.p-3
             .grid.align-items-center
               .col-3
-                .icon-btn.icon-location.bg-blue-700
+                .icon--large.icon-location-2.bg-blue-700
               .col
                 div.text-500 Location
-                InputText(:disabled='isEditItemDetail == 0')
+                span.font-semibold.mr-1.uppercase NTH001
+                .icon-btn.icon-export.inline-block
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
               .col-3
-                .icon-btn.icon-size.bg-blue-700
+                .icon--large.icon-size.bg-blue-700
               .col
                 div.text-500 Size (cm)
                 span.font-semibold 180x180x180
@@ -63,7 +82,7 @@
            div.surface-hover.p-3
             .grid.align-items-center
               .col-3
-                .icon-btn.icon-weight.bg-blue-700
+                .icon--large.icon-weight.bg-blue-700
               .col
                 div.text-500 Weight (Kg)
                 span.font-semibold  20.8
@@ -72,7 +91,7 @@
             .surface-hover.p-3
               .grid.align-items-center
                 .col-3
-                  .icon-btn.icon-boxcode.bg-blue-700
+                  .icon--large.icon-boxcode.bg-blue-700
                 .col
                   div.text-500 Boxcode
                   span.font-semibold.mr-1.uppercase hgn78
@@ -81,10 +100,10 @@
             .surface-hover.p-3
               .grid.align-items-center
                 .col-3
-                  .icon-btn.icon-price.bg-blue-700
+                  .icon--large.icon-price.bg-blue-700
                 .col
                   div.text-500 Value
-                  InputText( :disabled='isEditItemDetail == 0')
+                  InputText(:disabled='isEditItemDetail == 0').w-6
       .sender__information.p-4(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
         .grid.mb-3
           .col
@@ -93,21 +112,21 @@
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
-              .icon-btn.icon-sender-name.bg-blue-700
+              .icon--large.icon-sender-name.bg-blue-700
             .col
               div.text-500 Sender
               span.font-semibold {{stockDetail.senderName}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
-              .icon-btn.icon-sender-email.bg-blue-700
+              .icon--large.icon-sender-email.bg-blue-700
             .col
               div.text-500 Email Address
               span.font-semibold {{stockDetail.senderName}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
-              .icon-btn.icon-sender-phone.bg-blue-700
+              .icon--large.icon-sender-phone.bg-blue-700
             .col
               div.text-500 Phone number
               span.font-semibold {{stockDetail.senderName}}
@@ -121,7 +140,7 @@
             StockLogInformation(v-for='item in 4' :key='item.index').mb-3
         TabPanel
           template(#header)
-            .icon-btn.icon-location.mr-2.surface-600
+            .icon-btn.icon-location-2.mr-2.surface-600
             span Location history
           StockDetailHistoryTable
 
@@ -188,12 +207,12 @@ $small: 1025px
 
   .p-tabview .p-tabview-nav li
     .p-tabview-nav-link
-      background: #dee2e6
+      background: #e9ecef
       border: none
       box-shadow: none !important
 
   .p-tabview .p-tabview-panels
-    background: #dee2e6
+    background: #e9ecef
     padding: 1.25rem 0 0 0
 
   .p-highlight .p-tabview-nav-link

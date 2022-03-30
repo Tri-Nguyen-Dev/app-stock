@@ -1,5 +1,5 @@
 <template lang="pug">
-  .grid.p-4.surface-300.h-srceen.stock__information-detail
+  .grid.h-srceen.stock__information-detail
     .col-3.p-0.surface-0.border-round.h-screen.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
@@ -31,25 +31,25 @@
           span.uppercase.font-semibold.text-blue-700 piece
         .grid.surface-hover.mb-3
           .col-2.flex.align-items-center
-            .icon-btn.icon-size.bg-blue-700
+            .icon--large.icon-size.bg-blue-700
           .col
             div.text-500 Size (cm)
             InputText( :disabled='isEditStockDetail == 0')
         .grid.surface-hover.mb-3
           .col-2.flex.align-items-center
-            .icon-btn.icon-weight.bg-blue-700
+            .icon--large.icon-weight.bg-blue-700
           .col
             div.text-500 Weight (kg)
             InputText( :disabled='isEditStockDetail == 0')
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center
-            .icon-btn.icon-inventory-quantity.bg-blue-700
+            .icon--large.icon-inventory-quantity.bg-blue-700
           .col
             div.text-500 Inventory quantity
             span.font-semibold.mr-1.uppercase 2
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center
-            .icon-btn.icon-total-inventory.bg-blue-700
+            .icon--large.icon-total-inventory.bg-blue-700
           .col
             div.text-500 Total inventory quantity
             span.font-semibold.mr-1.uppercase 80
@@ -57,13 +57,21 @@
       StockDetailTable
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Stock } from '~/store/stock/stock-detail'
+const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
   layout: 'dashboard'
 })
 class StockDetail extends Vue {
   isEditStockDetail: boolean = false
+
+  @nsStoreStock.State
+  stockDetail!: {}
+
+  @nsStoreStock.Action
+  actGetStockDetail!: (params: Stock.StockDetailId) => Promise<void>
 
   backToStockList() {
     this.$router.push('/stock')
@@ -80,15 +88,15 @@ class StockDetail extends Vue {
   buttonEditItemDetail() {
     this.$router.push('/stock')
   }
+
+  async mounted() {
+    await this.actGetStockDetail({ id: 4 })
+  }
 }
 export default StockDetail
 </script>
 
 <style lang="sass">
-
-body
-  background: #e8eaef
-
 .stock__information-detail
   .stock__information--gerenal
     .p-disabled, .p-component:disabled

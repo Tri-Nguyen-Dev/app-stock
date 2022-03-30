@@ -11,23 +11,40 @@
     .informationChange.pt-3
       .grid
         .col.border-right-1.border-black-alpha-10
-          .grid
-            .col-fixed
-
+          .grid(v-show='transferring')
+            .col-fixed.flex.align-items-center
+              div.surface-200.p-2.border-round
+                .icon--large.icon-transferring.bg-green-400
+            .col
+              div.font-semibold.text-lg Transferring quantity
+              span.font-bold.text-lg 20
+          .grid(v-show='outgoing')
+            .col-fixed.flex.align-items-center
+              div.surface-200.p-2.border-round
+                .icon--large.icon-outgoing.bg-orange-400
+            .col
+              div.font-semibold.text-lg Outgoing Quantity
+              span.font-bold.text-lg 20
+          .grid(v-show='incoming')
+            .col-fixed.flex.align-items-center
+              div.surface-200.p-2.border-round
+                .icon--large.icon-incoming.bg-blue-500
             .col
               div.font-semibold.text-lg Incoming Quantity
               span.font-bold.text-lg 20
         .col.border-right-1.border-black-alpha-10
           .grid
-            .col-fixed
-
+            .col-fixed.flex.align-items-center
+              div.surface-200.p-2.border-round
+                .icon--large.icon-initial-quantity
             .col
               div.font-semibold.text-lg Initial Quantity
               span.font-bold.text-lg 100
         .col
           .grid
-            .col-fixed
-
+            .col-fixed.flex.align-items-center
+              div.surface-200.p-2.border-round
+                .icon--large.icon-inventory-quantity
             .col
               div.font-semibold.text-lg Inventory Quantity
               span.font-bold.text-lg 100
@@ -36,7 +53,9 @@
 import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
-class StockLogInformation extends Vue {}
+class StockLogInformation extends Vue {
+  outgoing: boolean = true
+}
 
 export default StockLogInformation
 </script>

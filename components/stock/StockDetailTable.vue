@@ -55,7 +55,7 @@
             span.text-600.text-sm Status
           Dropdown.w-full.border-0.mb-1( :options="status" optionLabel="name" placeholder="Select")
     ScrollPanel.stock__detail--table
-      DataTable(v-if="boxData" :value="boxData" responsiveLayout="scroll" :selection.sync="selectedProducts" dataKey="id"
+      DataTable(v-if="boxData" :value="boxData" responsiveLayout="scroll" :selection.sync="selectedStock" dataKey="id"
         :resizableColumns="true" :paginator="true" :rows="100")
         Column(selectionMode="multiple" :styless="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO" sortable)
@@ -78,17 +78,33 @@
           template(#body="slotProps")
             Button.border-0.p-0.surface-200.p-2
               .icon-btn.icon-btn-edit
-            Button.border-0.p-0.ml-1.surface-200.p-2
+            Button.border-0.p-0.ml-1.surface-200.p-2(@click="showModalDelete()")
               .icon-btn.icon-btn-delete
         template(#paginatorstart)
-          .icon-btn.icon-footer-paginator.inline-block.surface-400
-          span.ml-3.text-400.text-sm Showing 01 - 50 of 80
+          div(v-if='!selectedStock.length > 0')
+            .icon-btn.icon-footer-paginator.inline-block.surface-400
+            span.ml-3.text-400.text-sm Showing 01 - 50 of 80
+          .stock__mutidelete.flex.cursor-pointer.py-2.px-2.border-round.text-white.text-sm(v-else @click="showModalDelete()")
+            img(:src="require('~/assets/icons/trash-white.svg')")
+            span.ml-2 Delete {{ selectedStock.length }} items selected
+    ConfirmDialogCustom(
+      title="Confirm delete"
+      :message="`Are you sure you want to delete ${ids.length} in this list stock?`"
+      image="confirm-delete"
+      :isShow="isModalDelete"
+      :onOk="handleDeleteStock"
+      :onCancel="handleCancel"
+      :loading="loadingSubmit"
+    )
 </template>
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue,Watch } from 'nuxt-property-decorator'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreStockTable = namespace('stock/stock-detail')
 
-@Component
+@Component({
+  components: {ConfirmDialogCustom}
+})
 class StockDetailTable extends Vue {
   isShowFilter: boolean = false
 
@@ -96,7 +112,15 @@ class StockDetailTable extends Vue {
 
   selectedStatus = null
 
-  selectedProducts = null
+  selectedStock = []
+
+  deleteStockList = []
+
+  isModalDelete: boolean = false
+
+  ids: string[] = []
+
+  loadingSubmit: boolean = false
 
   warehouse = [
     { name: 'New York', code: 'NY' },
@@ -123,10 +147,46 @@ class StockDetailTable extends Vue {
     this.isShowFilter = !this.isShowFilter
   }
 
+  @Watch('selectedStock')
+  getSelectedStock() {
+    this.deleteStockList = [...this.selectedStock]
+  }
+
+  showModalDelete(id?: string) {
+    if (id) {
+      this.ids = [id]
+    } else {
+      this.ids = this.selectedStock.map((item: any) => {
+        return item.id
+      })
+    }
+    this.isModalDelete = true
+  }
+
+  handleCancel() {
+    this.isModalDelete = false
+  }
+
+  handleDeleteStock() {
+    try {
+      // this.loadingSubmit = true
+      // await this.actDeleteStockByIds(this.ids)
+      // this.getProductList()
+      this.loadingSubmit = false
+      this.isModalDelete = false
+    } catch (error) {
+      this.loadingSubmit = false
+    }
+  }
+
   async mounted() {
     await this.actGetBoxData()
   }
 }
 export default StockDetailTable
 </script>
-<style lang="sass"></style>
+<style lang="sass">
+.stock__mutidelete
+  background-color: #FF7171
+
+</style>
