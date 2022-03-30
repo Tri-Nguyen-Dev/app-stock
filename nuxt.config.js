@@ -73,16 +73,16 @@ export default {
         token: {
           property: 'token',
           global: true,
-          required: true
+          required: false
         },
         user: {
           property: 'user',
-          autoFetch: false
+          autoFetch: true
         },
         endpoints: {
           login: { url: '/api/auth/login', method: 'post' },
           logout: { url: '/api/auth/logout', method: 'post' },
-          user: false // { url: '/api/auth/user',   method: 'get' }
+          user: { url: '/api/auth/user', method: 'get' }
         }
       }
     },
@@ -96,7 +96,7 @@ export default {
 
   proxy: {
     '/api/': {
-      target: process.env.API_URL,
+      target: process.env.BE_API_URL,
       pathRewrite: { '^/api/': '' },
       changeOrigin: true
     }
