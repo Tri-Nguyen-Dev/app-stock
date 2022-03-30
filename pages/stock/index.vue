@@ -42,9 +42,9 @@
           div.pagination__info(v-if='!selectedStock.length > 0')
             img(:src="require('~/assets/icons/filter-left.svg')")
             span.pagination__total Showing 01 - 100 of 30
-          .stock__mutidelete.flex.cursor-pointer.py-2.px-2.border-round.text-white.text-sm(v-else @click="showModalDelete()")
+          div.pagination__delete(v-else @click="showModalDelete()")
             img(:src="require('~/assets/icons/trash-white.svg')")
-            span.ml-2 Delete {{ selectedStock.length }} items selected
+            span Delete {{ selectedStock.length }} items selected
           Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="220" @page="onPage($event)")
 
     ConfirmDialogCustom(
@@ -275,6 +275,4 @@ body
       line-height: calc(16 / 12)
       margin-bottom: 5px
       padding-left: 10.5px
-  &__mutidelete
-    background-color: #FF7171
 </style>
