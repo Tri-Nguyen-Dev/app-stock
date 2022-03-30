@@ -14,10 +14,8 @@ server.use(
   jsonServer.rewriter({
     '/api/*': '/$1',
     '/:page/list*': '/:page$2',
-    '*?pageSize*': '$1?_limit$2',
-    '*&pageSize*': '$1&_limit$2',
-    '*?pageNumber*': '$1?_page$2',
-    '*&pageNumber*': '$1&_page$2',
+    '*pageSize*': '$1_limit$2',
+    '*pageNumber*': '$1_page$2',
     '/:page/create': '/:page',
     '/:page/:id/detail': '/:page/:id',
     '/:page/:id/update': '/:page/:id',
