@@ -63,7 +63,6 @@
         Column(field="no" header="NO" sortable)
           template(#body="slotProps")
             span.font-semibold {{slotProps.index +1}} 
-        Column(field="id" header="ID" sortable bodyClass="font-semibold")
         Column(field="barCode" header="CODE" sortable bodyClass="font-semibold")
         Column(field="seller.email" header="SELLER EMAIL" sortable className="w-3")
         Column(field="createdAt" header="CREATE TIME" sortable className="p-text-right")
