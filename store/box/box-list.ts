@@ -1,32 +1,30 @@
-import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
-import { $api, PathBind} from '~/utils'
+import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
 import { Box } from '~/models/Box'
-
+import { $api, PathBind } from '~/utils'
 @Module({
   stateFactory: true,
   namespaced: true
 })
 
 export default class StoreBox extends VuexModule {
+  private static readonly STATE_URL = {
+    GET_BOX: '/api/box/list',
+    DELETE_BOX: '/box/delete'
+  }
 
-  public boxData: Box.Model[] = []
+  public boxList?: Box.Model[] = []
+  public totalBoxRecords?: number = 0
 
   @Mutation
-  setBoxData(boxData: []) {
-    this.boxData = boxData
+  setBoxList(data: any) {
+    this.boxList = data.items
+    this.totalBoxRecords = data.total
   }
 
-  @Action({ commit: 'setBoxData', rawError: true })
-  async actGetBoxData(): Promise<any | undefined> {
-    const url = 'https://62315a6305f5f4d40d7871ae.mockapi.io/box'
-    const response: Array<Box.Model[]> = await $api.get(url)
-    return response
-  }
-
-  @Action({ rawError: true })
-  async actDeleteBoxById(ids: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, 'http://localhost:3000/delete', ids)
-    const response: any = await $api.post(url, ids)
-    return response
+  @Action({ commit: 'setBoxList', rawError: true })
+  async actGetBoxList(params?: any): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX, params)
+    const response: any = await $api.get(url, {params})
+    return response.data
   }
 }

@@ -1,9 +1,9 @@
 <template lang="pug">
-.box-page-container.mx-3.mt-3.flex.flex-column
+.box-page-container.flex.flex-column
   .grid.justify-content-between
     .col-fixed
       h1.font-bold.m-0.font-size-4xlarge.line-height-1 Box list
-      span.text-600.font-sm(v-if="boxData") {{boxData.length}} products found
+      span.text-600.font-sm(v-if="boxList") {{boxList.length}} products found
     .col-fixed
       .grid
         .col-fixed
@@ -17,7 +17,7 @@
         .col-fixed
           Button.w-9rem.h-3rem
             .icon--base.icon-plus.surface-900.bg-white
-            span.text-900.ml-3.text-white Add items
+            span.text-900.ml-3.text-white Add box
   .grid(v-if="isFilter")
     .col-9
       .grid
@@ -26,6 +26,11 @@
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm Warehouse
             Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" :options="masterData.warehouse" optionLabel="name" placeholder="Select")
+        .col
+          .bg-white.border-round
+            div.pt-2.pl-3.pb-1
+              span.text-600.font-sm Location
+            Dropdown.w-full.border-0.mb-1(v-model="selectedLocation" :options="masterData.location" optionLabel="name" placeholder="Select")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
@@ -38,11 +43,6 @@
             span.p-input-icon-right.w-full
               .icon.icon--right.icon-search-input.surface-900.icon--absolute
               InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code")
-        .col
-          .bg-white.border-round
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Location
-            Dropdown.w-full.border-0.mb-1(v-model="selectedLocation" :options="masterData.location" optionLabel="name" placeholder="Select")
     .col-3
       .grid.grid-nogutter
         .col
@@ -57,20 +57,21 @@
             Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0
-      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxData" :value="boxData" responsiveLayout="scroll" :selection.sync="selectedBoxes" 
-      dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false")
-        Column(selectionMode="multiple" :styless="{width: '3rem'}" :exportable="false")
+      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes" 
+      dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :class="boxList.length === 0 && 'datatable-empty'" :rowClass="rowClass")
+        Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO" sortable)
           template(#body="slotProps")
             span.font-semibold {{slotProps.index +1}} 
-        Column(field="code" header="CODE" sortable bodyClass="font-semibold")
-        Column(field="seller.email" header="SENDER EMAIL" sortable className="w-3")
-        Column(field="createAt" header="CREATE TIME" sortable className="p-text-right")
-          template(#body="{data}") {{new Date(data.createAt).toLocaleDateString("en-US")}}
-        Column(field="attribute" header="SIZE(CM)" sortable className="p-text-right" bodyClass="font-semibold")
-          template(#body="{data}") {{data.attribute.length}}*{{data.attribute.height}}*{{data.attribute.width}}
-        Column(field="attribute.weight" header="WEIGHT(KG)" sortable className="p-text-right" bodyClass="font-semibold")
-          template(#body="{data}") {{data.attribute.weight}}
+        Column(field="id" header="ID" sortable bodyClass="font-semibold")
+        Column(field="barCode" header="CODE" sortable bodyClass="font-semibold")
+        Column(field="seller.email" header="SELLER EMAIL" sortable className="w-3")
+        Column(field="createdAt" header="CREATE TIME" sortable className="p-text-right")
+          template(#body="{data}") {{new Date(data.createdAt).toLocaleDateString("en-US")}}
+        Column(field="attribute" header="SIZE(CM)" className="p-text-right" bodyClass="font-semibold")
+          template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
+        Column(field="attribute" header="WEIGHT(KG)" className="p-text-right" bodyClass="font-semibold")
+          template(#body="{data}") {{data.weight}}
         Column(field="warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
@@ -88,32 +89,36 @@
                 span.font-bold.text-green-400.font-sm AVAILABLE
               Tag(v-else severity="success").px-2.surface-200
                 span.font-bold.text-400.font-sm DISABLE
-        Column(:exportable="false" header="ACTION" sortable className="p-text-right")
+        Column(:exportable="false" header="ACTION" className="p-text-right")
           template(#body="{data}")
             Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.status")
               .icon--small.icon-edit
             Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="deleteBoxById(data.id)" :disabled="!data.status")
               .icon--small.icon-delete
+        template(#empty)
+          div.text-center
+            img(:src='require("~/assets/icons/empty-table.svg")')
+            h5.font-md.font-bold List is empty! Click 
+              a.text-primary(href="/box") here 
+              | to add item.
         template(#footer)
           div
             .flex.align-items-center(v-if="selectedBoxes.length <= 0")
               .icon--large.icon-footer-paginator.surface-400
-              span.ml-3.text-400.font-sm Showing 01 - 100 of 1280
+              span.ml-3.text-400.font-sm Showing 01 - {{pageSize}} of {{totalBoxRecords}}
             Button(@click="deleteBoxById(null)" v-if="selectedBoxes.length>0").p-button-danger.opacity-70
               .icon--small.icon-delete.bg-white
               span.ml-3 Delete {{selectedBoxes.length}} items selected
-          Paginator(:rows="20" :totalRecords="totalItemsCount").p-0
+          Paginator(:rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreMasterData = namespace('box/master-data')
 
-@Component({
-  layout: 'dashboard'
-})
+@Component
 class BoxList extends Vue {
   selectedBoxes=[];
   selectedWarehouse = null
@@ -122,13 +127,17 @@ class BoxList extends Vue {
   isFilter = false
   dateFrom = null
   dateTo = null
-  totalItemsCount = 50
+  pageNumber: number = 0
+  pageSize: number = 20
 
   @nsStoreBox.State
-  boxData!: Box.Model[]
+  boxList!: Box.Model[]
+
+  @nsStoreBox.State
+  totalBoxRecords!: number
 
   @nsStoreBox.Action
-  actGetBoxData!: () => Promise<void>
+  actGetBoxList!: (params: any) => Promise<void>
 
   @nsStoreMasterData.State
   masterData!: any
@@ -142,7 +151,7 @@ class BoxList extends Vue {
   ) => Promise<any>
 
   async mounted() {
-    await this.actGetBoxData()
+    await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
     await this.actGetMasterData()
   }
 
@@ -150,18 +159,34 @@ class BoxList extends Vue {
     const ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id)
     const result = await this.actDeleteBoxById({ids})
     if (result) {
-      await this.actGetBoxData()
+      await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
     }
+  }
+
+  @Watch('selectedSize')
+  @Watch('selectedWarehouse')
+  filterChange() {
+    // console.log("value");
+  }
+
+  rowSelect() {
+    this.$router.push('/search');
+  }
+
+  rowClass(data: Box.Model) {
+    return !data.status && 'row-disable';
+  }
+
+  async onPage(event: any) {
+    await this.actGetBoxList({ pageNumber: event.page + 1, pageSize: this.pageSize })
   }
 }
 export default BoxList
 </script>
 
 <style lang="sass">
-body
-  background: #E8EAEF
 .box-page-container
-  height: calc(100vh - 1rem)
+  height: calc(100vh - 32px)
   .p-component
     font-family: $font-family-primary
   .pi-calendar:before
