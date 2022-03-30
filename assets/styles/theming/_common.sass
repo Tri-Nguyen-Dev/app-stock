@@ -14,9 +14,50 @@
   font-weight: $font-weight-regular
   line-height: calc(24 / 12)
 
-$color-item-hover: #E8EAEF
+.pagination
+    display: flex
+    align-items: center
+    justify-content: space-between
+    background-color: #fff
+    padding: 21px 27px
+
+    &__info
+        display: flex
+        align-items: center
+        gap: 0 19px
+
+    &__total
+        font-size: $font-size-small
+        color: $text-color-500
+        line-height: calc(24 / 12)
+
+    .p-paginator
+        padding: 0 !important
+
+        .p-paginator-page
+            background-color: #fff !important
+            color: $text-color-500 !important
+            font-weight: bold
+            border: none !important
+
+            &.p-highlight
+                color: $primary !important
+
+        .p-paginator-prev, .p-paginator-next
+            color: $text-color-900
+            border: none
+
+        .p-paginator-first, .p-paginator-last
+            display: none
+
+        .p-link:focus
+            box-shadow: none
+
+
 
 // custom dropdown stock searh warehouse
+$color-item-hover: #E8EAEF
+
 .dropdownStock.p-dropdown
     font-family: $font-family-primary !important
     

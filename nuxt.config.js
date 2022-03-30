@@ -15,7 +15,7 @@ export default {
     link: []
   },
 
-  plugins: ['~/plugins/vuelidate.ts'],
+  plugins: ['~/plugins/vuelidate.ts', '~/plugins/toast.ts'],
 
   components: true,
 
@@ -54,7 +54,8 @@ export default {
       'Column',
       'Paginator',
       'Tag',
-      'ConfirmDialog'
+      'ConfirmDialog',
+      'Toast'
     ],
     directives: ['Tooltip', 'Badge']
   },

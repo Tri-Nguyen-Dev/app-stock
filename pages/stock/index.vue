@@ -38,14 +38,15 @@
         .stock__table.bg-white.border-round.overflow-hidden
           TableStock(@getProductSelected="getProductSelected" :stockList="stockList" @showModalDelete="showModalDelete" :filter="filter")
 
-        .stock__footer.px-3.h-4rem.bg-white.w-full.flex.align-items-center.justify-content-between
-          .flex.align-items-center(v-if='!selectedStock.length > 0')
+        .pagination
+          div.pagination__info(v-if='!selectedStock.length > 0')
             img(:src="require('~/assets/icons/filter-left.svg')")
-            span.text-xs.ml-2.text-500 Showing 01 - 100 of {{ pagination.total }}
+            span.pagination__total Showing 01 - 100 of 30
           .stock__mutidelete.flex.cursor-pointer.py-2.px-2.border-round.text-white.text-sm(v-else @click="showModalDelete()")
             img(:src="require('~/assets/icons/trash-white.svg')")
             span.ml-2 Delete {{ selectedStock.length }} items selected
-          Paginator#paginationStock(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="220" @page="onPage($event)")
+          Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="220" @page="onPage($event)")
+
     ConfirmDialogCustom(
       title="Confirm delete" 
       :message="`Are you sure you want to delete ${ids.length} in this list stock?`"
@@ -55,6 +56,8 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
+    Toast
+
 </template>
 <script lang="ts">
 import { debounce } from 'debounce'
@@ -62,7 +65,6 @@ import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import TableStock from '~/components/stock/TableStock.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
-import { StockStoreModel } from '~/store/stock/stock-list'
 const nsCategoryStock = namespace('category/category-list')
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStock = namespace('stock/stock-list')
@@ -79,7 +81,7 @@ class Stock extends Vue {
   stockList!: StockModel.Model[]
 
   @nsStoreStock.State
-  pagination!: StockStoreModel.Pagination
+  total!: number
 
   @nsCategoryStock.State
   categoryList!: any
@@ -88,7 +90,7 @@ class Stock extends Vue {
   warehouseList!: any
 
   @nsStoreStock.Action
-  actGetStockList!: (data?: StockStoreModel.GetStock) => Promise<void>
+  actGetStockList!: (data?: any) => Promise<void>
 
   @nsStoreStock.Action
   actDeleteStockByIds!: (ids: string[]) => Promise<void>
@@ -185,6 +187,8 @@ class Stock extends Vue {
       this.getProductList()
       this.loadingSubmit = false
       this.isModalDelete = false
+
+      this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order submitted', life: 3000})
     } catch (error) {
       this.loadingSubmit = false
     }
@@ -195,7 +199,7 @@ class Stock extends Vue {
   }
 
   debounceSearchName = debounce((value: any) => {
-    this.filter.name = value
+    this.filter.name = value.trim()
   }, 500)
 
   debounceSearchCode = debounce((value: any) => {
@@ -209,12 +213,6 @@ export default Stock
 <style lang="sass">
 body
   background: #e8eaef
-
-.main
-  padding: 32px
-
-  @include mobile
-    padding: 16px
 
 .stock
   &__header

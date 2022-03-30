@@ -8,15 +8,10 @@ export namespace Stock {
     barcode?: String
     sku : String
     category?: {
-      id: number
+      id: string
       name: string
     },
-    type?: {
-      id: number
-      name: string
-    },
-    status?: string,
-    createAt?: Date,
-    updateAt?: Date
+    type?: object,
+    delete?: boolean,
   }
 }

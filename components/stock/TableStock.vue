@@ -1,6 +1,6 @@
 <template lang="pug">
   div.h-full
-    DataTable#datatable__stock-list(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='getFilterSelectedProduct' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
+    DataTable#datatable__stock-list(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='selectedProduct' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
       Column(selectionMode='multiple') 
       Column(field='no' header='NO')
         template(#body='{ index }')
@@ -17,16 +17,16 @@
           template(#body='{ data }') {{ data.category.name }}
       Column(field='status' header='Status')
         template(#body='{ data }')
-          span.stock__status.stock__status--available(v-if="data.status === '1'") Available
-          span.stock__status.stock__status--disable(v-if="data.status === '0'") Disable
+          span.stock__status.stock__status--available(v-if="data.delete") Available
+          span.stock__status.stock__status--disable(v-if="!data.delete") Disable
       Column(field='action' header='Action')
         template(#body='{ data }')
-          .table__action.flex.align-items-center(:class="{'action-disabled': data.status === '0'}")
+          .table__action.flex.align-items-center(:class="{'action-disabled': !data.delete}")
             span.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem
               .icon-btn.icon-pencil
             span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="showModalDelete(data.id)")
               .icon-btn.icon-trash
-    div.flex.align-items-center.justify-content-center.flex-column.h-full(v-if="!stockList.length > 0")
+    div.flex.align-items-center.justify-content-center.flex-column.h-full(v-if="stockList && !stockList.length > 0")
       img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
       img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
       p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click 
@@ -47,21 +47,13 @@ class Table extends Vue {
 
   selectedProduct: Stock.Model[] = []
 
-  get getFilterSelectedProduct() {
-    return this.selectedProduct
-  }
-
-  set getFilterSelectedProduct(newValue) {
-    this.selectedProduct = newValue.filter(item => item.status === '1')
-  }
-
   get checkIsFilter () {   
     return Object.values(this.filter).some(item => item)
   }
 
   @Watch('selectedProduct')
   emitSelectedProduct() {
-    this.$emit('getProductSelected', this.selectedProduct)
+    this.$emit('getProductSelected', this.selectedProduct.filter(item => !item.delete))
   }
 
   showModalDelete(id: string) {
@@ -69,7 +61,7 @@ class Table extends Vue {
   }
 
   rowClass(data: any) {  
-    return data.status === '0' ? 'row-disable': ''
+    return !data.delete ? 'row-disable': ''
   }
 }
 export default Table
