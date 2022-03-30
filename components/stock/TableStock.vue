@@ -4,7 +4,7 @@
       Column(selectionMode='multiple') 
       Column(field='no' header='NO')
         template(#body='{ index }')
-          span.stock__table-no.text-900.font-bold {{ index + 1 }}
+          span.stock__table-no.text-900.font-bold {{ (index + 1) + (paginate.pageNumber - 1) * paginate.pageSize  }}
       Column(field='imageUrl' header='Image')
         template(#body='{ data }')
           .stock__table__image.w-2rem.h-2rem.overflow-hidden
@@ -44,6 +44,8 @@ class Table extends Vue {
   @Prop() stockList!: Stock.Model[]
 
   @Prop() filter!: any
+
+  @Prop() paginate!: any
 
   selectedProduct: Stock.Model[] = []
 

@@ -54,12 +54,13 @@
             &.p-highlight
                 color: $primary !important
 
-        .p-paginator-prev, .p-paginator-next
+        .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
             color: $text-color-900
             border: none
 
-        .p-paginator-first, .p-paginator-last
-            display: none
+            &:hover
+                border-radius: 4px
+                color: $primary
 
         .p-link:focus
             box-shadow: none

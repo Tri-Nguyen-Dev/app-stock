@@ -1,51 +1,48 @@
 <template lang="pug">
-  .wapper
-    .sidebar
-    .main
-      .stock
-        .stock__header.flex.align-items-center.justify-content-between
-          div
-            h1.text-heading Stock list
-            span.text-subheading 1280 product found
-          div.stock__header-action.flex.align-items-center.justify-content-between
-            div.stock__search
-              span.p-input-icon-left
-                .icon.icon--left.icon-search
-                InputText#inputSearch(type='text' placeholder='Search' @input="debounceSearchName")
-            .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
-              .icon-btn.icon-filter( v-if="!isShowFilter")
-              .icon-btn.icon-chevron-up.bg-primary(v-else)
-              span Filter
-            .stock__btn-add.flex.align-items-center.bg-primary.border-round.cursor-pointer
-              .icon-btn.icon-add-items.bg-white
-              span Add Stock
-        .stock__filter(:class='{ "active": isShowFilter }') 
-          .stock__filter-item.bg-white.border-round
-            .stock__filter-title Warehouse
-            Dropdown.dropdownStock.stock__filter-action.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select") 
-          .stock__filter-item.bg-white.border-round
-            .text-sm.stock__filter-title Catagory
-            MultiSelect#MultiSelectCatagory.stock__filter-action.w-full.border-0(v-model='filter.categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
-          .stock__filter-item.bg-white.border-round
-            .text-sm.stock__filter-title Code
-            span.p-input-icon-right.w-full
-                InputText#inputSearchCode.w-full(type="text" @input="debounceSearchCode" placeholder="Search code" )
-                i.icon.icon-search.mt-0
-          .stock__filter-item.bg-white.border-round
-            .text-sm.stock__filter-title Status
-            Dropdown.dropdownStock.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
+  .stock
+    .stock__header.flex.align-items-center.justify-content-between
+      div
+        h1.text-heading Stock list
+        span.text-subheading 1280 product found
+      div.stock__header-action.flex.align-items-center.justify-content-between
+        div.stock__search
+          span.p-input-icon-left
+            .icon.icon--left.icon-search
+            InputText#inputSearch(type='text' placeholder='Search' v-model="filter.name")
+        .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
+          .icon-btn.icon-filter( v-if="!isShowFilter")
+          .icon-btn.icon-chevron-up.bg-primary(v-else)
+          span Filter
+        .stock__btn-add.flex.align-items-center.bg-primary.border-round.cursor-pointer
+          .icon-btn.icon-add-items.bg-white
+          span Add Stock
+    .stock__filter(:class='{ "active": isShowFilter }') 
+      .stock__filter-item.bg-white.border-round
+        .stock__filter-title Warehouse
+        Dropdown.dropdownStock.stock__filter-action.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select") 
+      .stock__filter-item.bg-white.border-round
+        .text-sm.stock__filter-title Catagory
+        MultiSelect#MultiSelectCatagory.stock__filter-action.w-full.border-0(v-model='filter.categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+      .stock__filter-item.bg-white.border-round
+        .text-sm.stock__filter-title Code
+        span.p-input-icon-right.w-full
+            InputText#inputSearchCode.w-full(type="text" v-model="filter.barcode" placeholder="Search code" )
+            i.icon.icon-search.mt-0
+      .stock__filter-item.bg-white.border-round
+        .text-sm.stock__filter-title Status
+        Dropdown.dropdownStock.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
 
-        .stock__table.bg-white
-          TableStock(@getProductSelected="getProductSelected" :stockList="stockList" @showModalDelete="showModalDelete" :filter="filter")
+    .stock__table.bg-white
+      TableStock(@getProductSelected="getProductSelected" :stockList="stockList" @showModalDelete="showModalDelete" :filter="filter" :paginate="paginate")
 
-        .pagination
-          div.pagination__info(v-if='!selectedStock.length > 0')
-            img(:src="require('~/assets/icons/filter-left.svg')")
-            span.pagination__total Showing 01 - 100 of 30
-          div.pagination__delete(v-else @click="showModalDelete()")
-            img(:src="require('~/assets/icons/trash-white.svg')")
-            span Delete {{ selectedStock.length }} items selected
-          Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="220" @page="onPage($event)")
+    .pagination
+      div.pagination__info(v-if='!selectedStock.length > 0')
+        img(:src="require('~/assets/icons/filter-left.svg')")
+        span.pagination__total Showing {{ (paginate.pageNumber - 1) * paginate.pageSize + 1 }} - {{ paginate.pageSize * paginate.pageNumber  }} of {{ total }}
+      div.pagination__delete(v-else @click="showModalDelete()")
+        img(:src="require('~/assets/icons/trash-white.svg')")
+        span Delete {{ selectedStock.length }} items selected
+      Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)")
 
     ConfirmDialogCustom(
       title="Confirm delete" 
@@ -58,9 +55,9 @@
     )
     Toast
 
+      
 </template>
 <script lang="ts">
-import { debounce } from 'debounce'
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import TableStock from '~/components/stock/TableStock.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
@@ -78,10 +75,10 @@ const nsStoreStock = namespace('stock/stock-list')
 
 class Stock extends Vue {
   @nsStoreStock.State
-  stockList!: StockModel.Model[]
+  total!: number
 
   @nsStoreStock.State
-  total!: number
+  stockList!: StockModel.Model[]
 
   @nsCategoryStock.State
   categoryList!: any
@@ -90,7 +87,7 @@ class Stock extends Vue {
   warehouseList!: any
 
   @nsStoreStock.Action
-  actGetStockList!: (data?: any) => Promise<void>
+  actGetStockList!: (params?: any) => Promise<void>
 
   @nsStoreStock.Action
   actDeleteStockByIds!: (ids: string[]) => Promise<void>
@@ -149,7 +146,6 @@ class Stock extends Vue {
   }
 
   async getProductList() {
-    const params = this.paginate
     const filter = {
       name: this.filter.name,
       warehouseId: this.filter.warehouse?.id,
@@ -157,7 +153,13 @@ class Stock extends Vue {
       barcode: this.filter.barcode,
       status: this.filter.status?.value
     }
-    await this.actGetStockList({ filter, params })
+
+    const params = {
+      ...this.paginate,
+      ...filter
+    }
+    
+    await this.actGetStockList(params)
   }
 
   getProductSelected(data: any[]) {
@@ -188,7 +190,7 @@ class Stock extends Vue {
       this.loadingSubmit = false
       this.isModalDelete = false
 
-      this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order submitted', life: 3000})
+      this.$toast.add({severity:'success', summary: 'Success Message', detail:'Successfully deleted stock', life: 3000})
     } catch (error) {
       this.loadingSubmit = false
     }
@@ -197,30 +199,14 @@ class Stock extends Vue {
   handleCancel() {
     this.isModalDelete = false
   }
-
-  debounceSearchName = debounce((value: any) => {
-    this.filter.name = value.trim()
-  }, 500)
-
-  debounceSearchCode = debounce((value: any) => {
-    this.filter.barcode = value
-  }, 500)
-
 }
 export default Stock
 </script>
 
 <style lang="sass">
-body
-  background: #e8eaef
-
 .stock
   &__header
     margin-bottom: 31px
-
-    @include mobile
-      flex-direction: column
-      gap: 16px 0
 
     &-action
       gap: 0 16px
@@ -245,7 +231,6 @@ body
     display: grid
     grid-template-columns: repeat(4, 1fr)
     grid-gap: 0 16px
-
 
     @include mobile
       justify-content: flex-start

@@ -8,40 +8,31 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreStock extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK: '/stock/list',
-    DELETE_STOCK: '/stock/delete'
+    GET_STOCK: '/api/stock/list',
+    DELETE_STOCK: 'api/stock/delete'
   }
 
   public stockList?: Stock.Model[] = []
-  public total?: number
+  public total?: number = 0
 
   @Mutation
-  setStockList(data: any) {
-    this.stockList = data.data.items
-    this.total = data.data.total
+  setStockList(data: any) {  
+    this.total = data.total
+    this.stockList = data.items
   }
 
   @Action({ commit: 'setStockList', rawError: true })
   async actGetStockList(
-    data?: any
+    params?: any
   ): Promise<string | undefined> {
-    const stockList = require('~/mocks/products.json')  
-    try {
-      const url = PathBind.transform(
-        this.context,
-        StoreStock.STATE_URL.GET_STOCK,
-        data?.params
-      )
-      const response = await $api.get(url, { params: data?.params })
-
-      if (!response.data) {
-        return stockList
-      }
-
-      return response.data
-    } catch (error) {
-      return stockList
-    }
+  
+    const url = PathBind.transform(
+      this.context,
+      StoreStock.STATE_URL.GET_STOCK,
+      params
+    )
+    const response = await $api.get(url, { params })
+    return response.data
   }
 
   @Action({ rawError: true })
