@@ -12,8 +12,12 @@ server.use(postAsUpdate)
 // -- Rewriter
 server.use(
   jsonServer.rewriter({
-    '/:page/list': '/:page',
-    '/:page/list\\?pageSize=:limit\\&pageNumber=:offset': '/:page?_page=:offset&_limit=:limit',
+    '/api/*': '/$1',
+    '/:page/list*': '/:page$2',
+    '*?pageSize*': '$1?_limit$2',
+    '*&pageSize*': '$1&_limit$2',
+    '*?pageNumber*': '$1?_page$2',
+    '*&pageNumber*': '$1&_page$2',
     '/:page/create': '/:page',
     '/:page/:id/detail': '/:page/:id',
     '/:page/:id/update': '/:page/:id',

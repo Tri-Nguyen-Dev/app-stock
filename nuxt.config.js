@@ -71,9 +71,9 @@ export default {
           autoFetch: true
         },
         endpoints: {
-          login: { url: '/auth/login', method: 'post' },
-          logout: { url: '/auth/logout', method: 'post' },
-          user: { url: '/auth/user', method: 'get' }
+          login: { url: '/api/auth/login', method: 'post' },
+          logout: { url: '/api/auth/logout', method: 'post' },
+          user: { url: '/api/auth/user', method: 'get' }
         }
       }
     },
@@ -87,7 +87,7 @@ export default {
 
   proxy: {
     '/api/': {
-      target: process.env.API_URL,
+      target: process.env.BE_API_URL,
       pathRewrite: { '^/api/': '' },
       changeOrigin: true
     }
