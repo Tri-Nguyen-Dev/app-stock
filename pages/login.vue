@@ -30,7 +30,7 @@ import { Component, Vue } from 'nuxt-property-decorator'
 @Component({
   layout: 'public',
   fetch({ redirect, $auth }): Promise<void> | void {
-    if ($auth.user) {
+    if ($auth.loggedIn) {
       redirect('/')
     }
   }
@@ -44,11 +44,7 @@ class Login extends Vue {
   }
 
   callLogin() {
-    this.$auth.loginWith('local', { data: this.loginUser }).catch(() => {
-      const userLogin = require('~/mocks/user.json')
-      this.$auth.setUser(userLogin)
-      this.$store.commit('commons/store-token/setToken', userLogin)
-    })
+    this.$auth.loginWith('local', { data: this.loginUser })
   }
 }
 

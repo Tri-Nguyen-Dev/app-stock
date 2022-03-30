@@ -9,9 +9,9 @@ export const SIDEBAR_WIDTH_COLLAPSED = 90
 })
 export default class StoreSidebar extends VuexModule {
 
-  public collapsed = false
+  public collapsed: boolean = false
 
-  get sidebarWidth() {
+  get sidebarWidth(): string {
     return `${this.collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH}px`
   }
 

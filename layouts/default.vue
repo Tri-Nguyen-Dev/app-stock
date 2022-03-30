@@ -7,16 +7,13 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import Sidebar from '~/components/sidebar/Sidebar'
 
 const nsSidebar = namespace('layout/store-sidebar')
 
-@Component({
-  components: { Sidebar }
-})
+@Component
 class Dashboard extends Vue {
   @nsSidebar.Getter('sidebarWidth')
-  sidebarWidth
+  sidebarWidth!: string
 }
 
 export default Dashboard

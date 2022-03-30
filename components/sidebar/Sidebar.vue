@@ -1,47 +1,46 @@
 <template>
   <div class="sidebar" :style="{ width: sidebarWidth }">
-    <h1>
-      <span v-if="collapsed">
-        <div>V</div>
-        <div>S</div>
-      </span>
-      <span v-else>Vue Sidebar</span>
-    </h1>
+    <div class="menu-section sidebar-head">
+      <div
+        class="icon icon--large icon-menu-toggle bg-primary"
+        @click="toggleSidebar"
+      >
+      </div>
+    </div>
 
-    <SidebarItem to="/" icon="fas fa-home">Home</SidebarItem>
-    <SidebarItem to="/dashboard" icon="fas fa-columns">Dashboard</SidebarItem>
-    <SidebarItem to="/analytics" icon="fas fa-chart-bar">Analytics</SidebarItem>
-    <SidebarItem to="/friends" icon="fas fa-users">Friends</SidebarItem>
-    <SidebarItem to="/image" icon="fas fa-image">Images</SidebarItem>
+    <div class="menu-section sidebar-menu">
+      <SidebarItem to="/stock" icon="icon-shopping-cart">Stock</SidebarItem>
+      <SidebarItem to="/activity" icon="icon-activity">Activities</SidebarItem>
+      <SidebarItem to="/bin" icon="icon-location">Bin</SidebarItem>
+      <SidebarItem to="/role" icon="icon-award">Role</SidebarItem>
+      <SidebarItem to="/shipper" icon="icon-user-octagon">Shipper</SidebarItem>
+      <SidebarItem to="/tags" icon="icon-tag">Tags</SidebarItem>
+      <SidebarItem to="/seller" icon="icon-send-square">Seller</SidebarItem>
+      <SidebarItem to="/dashboard" icon="icon-dashboard">Dashboard</SidebarItem>
+      <SidebarItem to="/inventory" icon="icon-dollar-square">Inventory Fee</SidebarItem>
+    </div>
 
-    <span
-      class="collapse-icon"
-      :class="{ 'rotate-180': collapsed }"
-      @click="toggleSidebar"
-    >
-      <i class="fas fa-angle-double-left" />
-    </span>
+    <div class="menu-section sidebar-foot">
+      <SidebarItem to="/notification" icon="icon-notification">Notifications</SidebarItem>
+      <SidebarItem to="/setting" icon="icon-setting">Setting</SidebarItem>
+    </div>
   </div>
 </template>
 
 <script lang='ts'>
-import { Component, Mutation, namespace, Provide, Vue } from 'nuxt-property-decorator'
-import SidebarItem from './SidebarItem'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 
 const nsSidebar = namespace('layout/store-sidebar')
 
-@Component({
-  components: { SidebarItem }
-})
+@Component
 class Sidebar extends Vue {
   @nsSidebar.Getter('sidebarWidth')
-  sidebarWidth
+  sidebarWidth!: string
 
   @nsSidebar.State('collapsed')
-  @Provide()
-  collapsed
+  collapsed!: boolean
 
-  @Mutation
+  @nsSidebar.Mutation('toggleSidebar')
   toggleSidebar
 }
 export default  Sidebar
@@ -55,10 +54,30 @@ export default  Sidebar
   top: 0;
   left: 0;
   bottom: 0;
-  padding: 0.5em;
+  padding: 30px 16px 30px 18px;
   transition: 0.3s ease;
   display: flex;
   flex-direction: column;
+
+  &-head {
+    height: 48px;
+    border-bottom: 2px solid #E8EAEF;
+    padding-bottom: 16px;
+  }
+
+  &-menu {
+    padding-top: 16px;
+    border-bottom: 1px solid #E8EAEF;
+  }
+
+  &-foot {
+    height: 130px;
+    margin-top: auto;
+  }
+
+  .menu-section {
+    position: relative;
+  }
 }
 
 .collapse-icon {
@@ -68,11 +87,6 @@ export default  Sidebar
 
   color: rgba(255, 255, 255, 0.7);
 
-  transition: 0.2s linear;
-}
-
-.rotate-180 {
-  transform: rotate(180deg);
   transition: 0.2s linear;
 }
 </style>

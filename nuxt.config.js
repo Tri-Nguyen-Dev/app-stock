@@ -64,16 +64,16 @@ export default {
         token: {
           property: 'token',
           global: true,
-          required: true
+          required: false
         },
         user: {
           property: 'user',
-          autoFetch: false
+          autoFetch: true
         },
         endpoints: {
-          login: { url: '/api/auth/login', method: 'post' },
-          logout: { url: '/api/auth/logout', method: 'post' },
-          user: false // { url: '/api/auth/user',   method: 'get' }
+          login: { url: '/auth/login', method: 'post' },
+          logout: { url: '/auth/logout', method: 'post' },
+          user: { url: '/auth/user', method: 'get' }
         }
       }
     },

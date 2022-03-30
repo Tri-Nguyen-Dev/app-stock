@@ -1,18 +1,20 @@
 <template>
-  <router-link :to="to" class="link">
-    <i class="icon" :class="icon" />
-    <transition name="fade">
-      <span v-if="!collapsed">
-        <slot />
-      </span>
-    </transition>
-  </router-link>
+  <div class="menu-item">
+    <router-link :to="to" class="link">
+      <div class="icon icon--large icon--left" :class="icon"></div>
+      <transition name="fade">
+        <div v-if="!collapsed" class="item-label">
+          <slot />
+        </div>
+      </transition>
+    </router-link>
+  </div>
 </template>
 
 <script lang='ts'>
 
-import { Component, Inject, Prop, Vue } from 'nuxt-property-decorator'
-
+import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
+const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItem extends Vue {
@@ -20,7 +22,8 @@ class SidebarItem extends Vue {
 
   @Prop(String) readonly icon!: string | undefined
 
-  @Inject() readonly collapsed!: boolean
+  @nsSidebar.State('collapsed')
+  collapsed!: boolean
 
 }
 
@@ -28,7 +31,13 @@ export default SidebarItem
 </script>
 
 <style lang="sass" scoped>
-//@use "assets/styles/variables" as *;
+.menu-item
+  height: 56px
+  margin-bottom: 4px
+  font-size: 16px
+  font-weight: bold
+.item-label
+  padding-left: 48px
 .fade-enter-active,
 .fade-leave-active
   transition: opacity 0.1s

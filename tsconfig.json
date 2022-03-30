@@ -11,6 +11,8 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": false,
+    "noImplicitAny": false,
     "allowJs": true,
     "sourceMap": true,
     "strict": true,
