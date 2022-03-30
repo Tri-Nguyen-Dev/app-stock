@@ -53,7 +53,7 @@ class Table extends Vue {
 
   @Watch('selectedProduct')
   emitSelectedProduct() {
-    this.$emit('getProductSelected', this.selectedProduct.filter(item => !item.delete))
+    this.$emit('getProductSelected', this.selectedProduct.filter(item => item.delete))
   }
 
   showModalDelete(id: string) {

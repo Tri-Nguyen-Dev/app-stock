@@ -35,7 +35,7 @@
             .text-sm.stock__filter-title Status
             Dropdown.dropdownStock.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
 
-        .stock__table.bg-white.border-round.overflow-hidden
+        .stock__table.bg-white
           TableStock(@getProductSelected="getProductSelected" :stockList="stockList" @showModalDelete="showModalDelete" :filter="filter")
 
         .pagination

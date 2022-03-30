@@ -72,7 +72,7 @@
           "id": "1",
           "name": "Apple"
         },
-        "delete": false
+        "delete": true
       },
       {
         "id": "7",
