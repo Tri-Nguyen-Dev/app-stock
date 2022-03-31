@@ -1,14 +1,8 @@
 const { faker } = require('@faker-js/faker')
 const _ = require('lodash')
 
-function generateData () {
+function generateData (warehouseList, categoryList, typeList) {
   const stocks = []
-  const categoryList = Array.from({ length: 10 }, (_, i) => {
-    return { id: i, name: faker.commerce.product() }
-  })
-  const typeList = Array.from({ length: 10 }, (_, i) => {
-    return { id: i, name: faker.commerce.productMaterial() }
-  })
   for (let id = 1; id < 105; id++) {
     const name = faker.commerce.productName()
     const description = faker.commerce.productDescription()
@@ -16,10 +10,12 @@ function generateData () {
     const barcode = faker.random.alphaNumeric(5)
     const category = _.sample(categoryList)
     const type = _.sample(typeList)
-    const status = faker.datatype.number({ min: 0, max: 1 })
-    const size = faker.datatype.number({ min: 1, max: 500 })
-    const weight = faker.datatype.number({ min: 1, max: 500 })
-    const unit = faker.random.alphaNumeric(5)
+    const warehouse = _.sample(warehouseList)
+    const attributes = [
+      { id: 1, name: 'size', value: faker.datatype.number({ min: 1, max: 500 }) },
+      { id: 2, name: 'weight', value: faker.datatype.number({ min: 1, max: 500 }) },
+      { id: 3, name: 'unit', value: faker.random.alphaNumeric(5) }
+    ]
     const totalInventory = faker.datatype.number({ min: 1, max: 500 })
     const deleted = faker.datatype.boolean()
     const createdAt = faker.date.between('2022-03-01', '2022-03-15').toISOString().split('T')[0]
@@ -32,12 +28,10 @@ function generateData () {
       barcode,
       category,
       type,
-      status,
-      size,
-      weight,
-      unit,
+      warehouse,
       totalInventory,
-      delete: deleted,
+      attributes,
+      deleted,
       createdAt,
       updatedAt
     })

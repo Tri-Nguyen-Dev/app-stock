@@ -35,16 +35,14 @@ export default class StoreStockDetail extends VuexModule {
   @Action({ commit: 'setStockDetail', rawError: true })
   async actGetStockDetail(params: Stock.StockDetailId): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_STOCK_DETAIL,params)
-    const response: any = await $api.get(url)
-    return response
+    return await $api.get(url)
   }
 
   @Action({ commit: 'setBoxData', rawError: true })
   async actGetBoxData(): Promise<string | undefined> {
     // const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_ALL_BOX)
     const url = 'https://62315a6305f5f4d40d7871ae.mockapi.io/box'
-    const response: any = await $api.get(url)
-    return response
+    return await $api.get(url)
   }
 
 }

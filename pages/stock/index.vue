@@ -16,10 +16,10 @@
         .stock__btn-add.flex.align-items-center.bg-primary.border-round.cursor-pointer
           .icon-btn.icon-add-items.bg-white
           span Add Stock
-    .stock__filter(:class='{ "active": isShowFilter }') 
+    .stock__filter(:class='{ "active": isShowFilter }')
       .stock__filter-item.bg-white.border-round
         .stock__filter-title Warehouse
-        Dropdown.stock__filter-action.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select") 
+        Dropdown.stock__filter-action.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
       .stock__filter-item.bg-white.border-round
         .text-sm.stock__filter-title Catagory
         MultiSelect#MultiSelectCatagory.stock__filter-action.w-full.border-0(v-model='filter.categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
@@ -33,7 +33,7 @@
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
         DataTable.h-full.flex.flex-column(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
-          Column(selectionMode='multiple') 
+          Column(selectionMode='multiple')
           Column(field='no' header='NO')
             template(#body='{ index }')
               span.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + (paginate.pageNumber - 1) * paginate.pageSize  }}
@@ -51,11 +51,11 @@
               template(#body='{ data }') {{ data.category.name }}
           Column(field='status' header='Status')
             template(#body='{ data }')
-              span.table__status.table__status--available(v-if="data.delete") Available
+              span.table__status.table__status--available(v-if="data.deleted") Available
               span.table__status.table__status--disable(v-else) Disable
           Column(field='action' header='Action')
             template(#body='{ data }')
-              .table__action(:class="{'action-disabled': !data.delete}")
+              .table__action(:class="{'action-disabled': !data.deleted}")
                 span
                   .icon-btn.icon-btn-edit
                 span(@click="showModalDelete(data.id)")
@@ -69,17 +69,17 @@
                 img(:src="require('~/assets/icons/trash-white.svg')")
                 span Delete {{ selectedStockFilter.length }} items selected
               Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)")
-          template(#empty) 
+          template(#empty)
             div.flex.align-items-center.justify-content-center.flex-column
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-              p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click 
-                span.text-primary.underline here 
+              p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
+                span.text-primary.underline here
                 span to add item.
               p.text-900.font-bold.mt-3(v-else) Item not found!
-        
+
     ConfirmDialogCustom(
-      title="Confirm delete" 
+      title="Confirm delete"
       :message="`Are you sure you want to delete ${ids.length} in this list stock?`"
       image="confirm-delete"
       :isShow="isModalDelete"
@@ -177,12 +177,12 @@ class Stock extends Vue {
 
   isFilter: boolean = false
 
-  get checkIsFilter () {   
+  get checkIsFilter () {
     return Object.values(this.filter).some(item => item)
   }
 
-  rowClass(data: any) {  
-    return !data.delete ? 'row-disable': ''
+  rowClass(data: any) {
+    return !data.deleted ? 'row-disable': ''
   }
 
   toggleShowFilter() {
@@ -203,7 +203,7 @@ class Stock extends Vue {
     this.actWarehouseList()
   }
 
-  async getProductList() {    
+  async getProductList() {
     const filter = {
       name: this.filter.name,
       warehouseId: this.filter.warehouse?.id,
@@ -216,7 +216,7 @@ class Stock extends Vue {
       ...this.paginate,
       ...filter
     }
-    
+
     await this.actGetStockList(params)
   }
 

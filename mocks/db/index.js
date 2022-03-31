@@ -1,20 +1,19 @@
 const auth = require('./auth.json')
 const user = require('./user.json')
-const genStockList = require('./stock-list.js')
-const genBoxList = require('./box-list.js')
-const genCategoryList = require('./category-list.js')
-const genWareList = require('./warehouse-list.js')
-const genItemsList = require('./items-list.js')
-const genBoxDetail = require('./box-detail.js')
+const category = require('./category.json')
+const warehouse = require('./warehouse.json')
+const genStockList = require('./stock.js')
+const genBoxList = require('./box.js')
+const genStockBox = require('./stock-box.js')
+const genTypeList = require('./types.js')
 
 module.exports = {
   user,
   login: auth,
   logout: auth,
-  stock: genStockList(),
+  stock: genStockList(warehouse, category, genTypeList()),
+  category,
+  warehouse,
   box: genBoxList(),
-  category: genCategoryList(),
-  warehouse: genWareList(),
-  items: genItemsList(),
-  boxDetail: genBoxDetail()
+  items: genStockBox()
 }

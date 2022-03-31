@@ -10,10 +10,10 @@ function generateData () {
       email: faker.internet.email()
     }
     const createdAt = faker.date.between('2022-03-01', '2022-03-15').toISOString().split('T')[0]
-    const length = faker.random.number(100)
-    const width = faker.random.number(100)
-    const height = faker.random.number(100)
-    const weight = faker.random.float({ max: 100 })
+    const length = faker.datatype.number(100)
+    const width = faker.datatype.number(100)
+    const height = faker.datatype.number(100)
+    const weight = faker.datatype.float({ max: 100 })
     const warehouse = {
       id,
       name: faker.datatype.string(5)

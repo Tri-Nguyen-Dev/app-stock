@@ -57,12 +57,12 @@
             Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0
-      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes" 
+      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
       dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :class="boxList.length === 0 && 'datatable-empty'" :rowClass="rowClass")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO" sortable)
           template(#body="slotProps")
-            span.font-semibold {{slotProps.index +1}} 
+            span.font-semibold {{slotProps.index +1}}
         Column(field="barCode" header="CODE" sortable bodyClass="font-semibold")
         Column(field="seller.email" header="SELLER EMAIL" sortable className="w-3")
         Column(field="createdAt" header="CREATE TIME" sortable className="p-text-right")
@@ -97,8 +97,8 @@
         template(#empty)
           div.text-center
             img(:src='require("~/assets/icons/empty-table.svg")')
-            h5.font-md.font-bold List is empty! Click 
-              a.text-primary(href="/box") here 
+            h5.font-md.font-bold List is empty! Click
+              a.text-primary(href="/box") here
               | to add item.
         template(#footer)
           div
@@ -110,7 +110,7 @@
               span.ml-3 Delete {{selectedBoxes.length}} items selected
           Paginator(:rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
     ConfirmDialogCustom(
-      title="Confirm delete" 
+      title="Confirm delete"
       :message="`Are you sure you want to delete in this list stock?`"
       image="confirm-delete"
       :isShow="isModalDelete"
@@ -155,7 +155,7 @@ class BoxList extends Vue {
 
   @nsStoreMasterData.State
   masterData!: any
-  
+
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
 
@@ -169,7 +169,7 @@ class BoxList extends Vue {
 
   async mounted() {
     await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
-    await this.actGetMasterData()
+    // await this.actGetMasterData()
   }
 
   @Watch('selectedSize')
@@ -202,7 +202,7 @@ class BoxList extends Vue {
     this.ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id);
     this.isModalDelete = true
   }
-  
+
   rowClass(data: Box.Model) {
     return !data.status && 'row-disable';
   }

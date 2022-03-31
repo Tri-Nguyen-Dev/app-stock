@@ -29,7 +29,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         background-color: $primary
 
         .text-white-active
-            color: #fff !important
+            color: $color-white !important
 
     .p-datatable-thead tr:not(.p-highlight):hover
         background: $td-hover-color !important
@@ -92,7 +92,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
     .p-datatable-emptymessage
         &:hover
-            background-color: #fff !important
+            background-color: $color-white !important
 
     tr.row-disable
         .p-checkbox
@@ -107,7 +107,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     display: flex
     align-items: center
     justify-content: space-between
-    background-color: #fff
+    background-color: $color-white
     padding: 21px 26px
 
     &__info
@@ -124,8 +124,8 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         background-color: #FF7171
         display: flex
         align-items: center
-        color: #fff
-        border: 1.5px solid #FFFFFF
+        color: $color-white
+        border: 1.5px solid $color-white
         border-radius: 4px
         gap: 0 19px
         padding: 5px 10px
@@ -135,7 +135,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         padding: 0 !important
 
         .p-paginator-page
-            background-color: #fff !important
+            background-color: $color-white !important
             color: $text-color-500 !important
             font-weight: bold
             border: none !important
@@ -163,7 +163,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         width: 34px
         height: 34px
         border-radius: 4px
-        background-color: #F1F3F6
+        background-color: $text-color-300
         display: flex
         align-items: center
         justify-content: center
@@ -174,7 +174,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             pointer-events: none
 
         .icon-btn
-            background-color: #D2D2E0
+            background-color: $text-color-500
 
 .table__status
   background-color: #EAF3EB
@@ -182,8 +182,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   padding: 2px 8px
   font-size: $font-size-small
   text-transform: uppercase
-  font-weight: bold
-  font-size: $font-size-small
+  font-weight: $font-weight-bold
   line-height: calc(20 / 12)
 
   &--available
@@ -193,8 +192,8 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     color: #979AA4
 
 
-    $header-table-color: #F9F9FC
-$table-bg-color: #FFFFFF
+$header-table-color: #F9F9FC
+$table-bg-color: $color-white
 // TODO: Check css box list table
 .airtag-datatable
   background: $header-table-color !important
@@ -242,7 +241,7 @@ $table-bg-color: #FFFFFF
         border: none
         font-size: $font-size-base
         font-weight: 700
-        color: #D2D2E0
+        color: $text-color-500
       .p-highlight
         background: $table-bg-color
         color: $primary !important
