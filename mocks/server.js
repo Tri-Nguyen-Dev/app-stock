@@ -22,8 +22,7 @@ server.use(
     '/:page/:id/detail': '/:page/:id',
     '/:page/:id/update': '/:page/:id',
     '/:page/:id/delete': '/:page/:id',
-    '/auth/:page': '/:page',
-    '/:page/delete': '/:page'
+    '/auth/:page': '/:page'
   })
 )
 
