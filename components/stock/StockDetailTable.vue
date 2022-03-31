@@ -97,7 +97,7 @@
                 .icon--large.icon-footer-paginator.surface-400
                 span.ml-3.text-400.font-sm Showing 01 - {{pageSize}} of {{totalBoxRecords}}
               Button(@click="showModalDelete()" v-if="selectedStock.length>0").p-button-danger.opacity-70
-                .icon--small.icon-delete.bg-white
+                .icon--small.icon-trash-white.bg-white
                 span.ml-3 Delete {{selectedStock.length}} items selected
             Paginator(:rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
     ConfirmDialogCustom(
@@ -174,6 +174,7 @@ class StockDetailTable extends Vue {
       // this.getProductList()
       this.loadingSubmit = false
       this.isModalDelete = false
+      this.selectedStock = []
     } catch (error) {
       this.loadingSubmit = false
     }
