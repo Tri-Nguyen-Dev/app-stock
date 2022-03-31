@@ -104,7 +104,7 @@ export default StockDetail
       color: #000
       font-weight: 600
 
-::v-deep.p-paginator.p-component.p-paginator-bottom
+.p-paginator.p-component.p-paginator-bottom
   .p-paginator-left-content
     display: flex
 
