@@ -19,7 +19,7 @@
     .stock__filter(:class='{ "active": isShowFilter }') 
       .stock__filter-item.bg-white.border-round
         .stock__filter-title Warehouse
-        Dropdown.dropdownStock.stock__filter-action.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select") 
+        Dropdown.stock__filter-action.w-full.border-0(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select") 
       .stock__filter-item.bg-white.border-round
         .text-sm.stock__filter-title Catagory
         MultiSelect#MultiSelectCatagory.stock__filter-action.w-full.border-0(v-model='filter.categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
@@ -30,7 +30,7 @@
             i.icon.icon-search.mt-0
       .stock__filter-item.bg-white.border-round
         .text-sm.stock__filter-title Status
-        Dropdown.dropdownStock.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
+        Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
         DataTable.h-full.flex.flex-column(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
           Column(selectionMode='multiple') 
@@ -45,6 +45,8 @@
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
           Column(field='barcode' header='Code' sortable)
+            template(#body='{ data }')
+              .stock__table-barcode {{ data.barcode }}
           Column(field='category' header='Category' sortable)
               template(#body='{ data }') {{ data.category.name }}
           Column(field='status' header='Status')
@@ -185,11 +187,14 @@ class Stock extends Vue {
 
   toggleShowFilter() {
     this.isShowFilter = !this.isShowFilter
-  }
 
-  @Watch('filter', { deep: true })
-  filterChange() {
-    this.getProductList()
+    if(this.checkIsFilter) this.filter = {
+      name: null,
+      warehouse: null,
+      categories: null,
+      barcode: null,
+      status: null
+    }
   }
 
   mounted() {
@@ -198,13 +203,13 @@ class Stock extends Vue {
     this.actWarehouseList()
   }
 
-  async getProductList() {
+  async getProductList() {    
     const filter = {
       name: this.filter.name,
       warehouseId: this.filter.warehouse?.id,
       categoryIds: this.filter.categories && this.filter.categories.map((item: any) => item?.id),
       barcode: this.filter.barcode,
-      status: this.filter.status?.value
+      delete: this.filter.status?.value
     }
 
     const params = {
@@ -213,6 +218,11 @@ class Stock extends Vue {
     }
     
     await this.actGetStockList(params)
+  }
+
+  @Watch('filter', { deep: true })
+  getNewStock() {
+    this.getProductList()
   }
 
   getProductSelected(data: any[]) {
@@ -228,7 +238,7 @@ class Stock extends Vue {
     if (id) {
       this.ids = [id]
     } else {
-      this.ids = this.selectedStock.map((item: any) => {
+      this.ids = this.selectedStockFilter.map((item: any) => {
         return item.id
       })
     }
@@ -318,5 +328,8 @@ export default Stock
 
   &-no
     font-size: $font-size-medium
+
+  &-barcode
+    text-transform: uppercase
 
 </style>

@@ -25,5 +25,4 @@ function generateData () {
   return warehouse
 }
 
-module.exports = generateData
-
+module.exports = generateData;
