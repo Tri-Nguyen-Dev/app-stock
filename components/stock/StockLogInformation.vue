@@ -63,7 +63,7 @@ class StockLogInformation extends Vue {
 
 export default StockLogInformation
 </script>
-<style lang="sass">
+<style lang="sass" scoped>
 .stock__log--information
   .isChangeDate
     border-bottom: 1px solid #eeeff2

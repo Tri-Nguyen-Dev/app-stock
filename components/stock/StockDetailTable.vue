@@ -185,7 +185,7 @@ class StockDetailTable extends Vue {
 }
 export default StockDetailTable
 </script>
-<style lang="sass">
+<style lang="sass" scoped>
 .stock__mutidelete
   background-color: #FF7171
 
