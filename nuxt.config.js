@@ -15,7 +15,7 @@ export default {
     link: []
   },
 
-  plugins: ['~/plugins/vuelidate.ts'],
+  plugins: ['~/plugins/vuelidate.ts', '~/plugins/toast.ts'],
 
   components: true,
 
@@ -62,7 +62,9 @@ export default {
       'DropDown',
       'ScrollPanel',
       'MultiSelect',
-      'Paginator'
+      'Paginator',
+      'ConfirmDialog',
+      'Toast'
     ],
     directives: ['Tooltip', 'Badge']
   },

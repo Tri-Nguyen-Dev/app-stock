@@ -8,30 +8,27 @@ import { $api } from '~/utils'
 })
 export default class Category extends VuexModule {
   private static readonly STATE_URL = {
-    GET_CATEGORIES: '/category/list'
+    GET_CATEGORIES: '/api/category/list'
   }
 
-  public categoryList: [] = []
+  public categoryList: any = []
 
   @Mutation
-  setCategoryList(data: []) {
-    this.categoryList = data
+  setCategoryList(data: any) { 
+
+    this.categoryList = data.items
   }
 
   @Action({ commit: 'setCategoryList', rawError: true })
   async actCategoryList(): Promise<string | undefined> {
-    const categoryList = require('~/mocks/category.json')
     try {
       const url = PathBind.transform(
         this.context,
-        Category.STATE_URL.GET_CATEGORIES
+        Category.STATE_URL.GET_CATEGORIES,
+        { pageNumber: 1 }
       )
-      const response = await $api.post(url)
-
-      if (!response.data) {
-        return categoryList
-      }
-
+      const response = await $api.get(url, { params: { pageNumber: 1 }})      
+  
       return response.data
     } catch (error) {}
   }

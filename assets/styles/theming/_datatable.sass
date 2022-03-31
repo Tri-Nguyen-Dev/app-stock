@@ -6,8 +6,9 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 .p-datatable
     font-family: $font-family-primary
     font-size: $font-size-base !important
-
+    
     .p-datatable-wrapper
+        flex: 1
         &::-webkit-scrollbar
             width: 6px
             height: 6px
@@ -16,13 +17,19 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             border-radius: 10px
             background-color: $text-color-700
 
+        .p-datatable-table
+            height: 100%
+
     .p-datatable-thead
         position: sticky
         top: 0
         z-index: 1
 
     .p-datatable-tbody > tr.p-highlight
-        background-color: $primary !important
+        background-color: $primary
+
+        .text-white-active
+            color: #fff !important
 
     .p-datatable-thead tr:not(.p-highlight):hover
         background: $td-hover-color !important
@@ -36,6 +43,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         color: $text-color-800 !important
         white-space: nowrap
         border: none !important
+        padding: 18px 26px
 
         &:focus
             box-shadow: none !important
@@ -47,28 +55,26 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             &:hover
                 background-color: $primary
 
+        .pi-sort-alt:before
+            content: url('~/assets/icons/sort-alt.svg')
+
+        .pi-sort-amount-up-alt:before
+            content: url('~/assets/icons/sort-alt-up.svg')
+
+        .pi-sort-amount-down
+            transform: rotate(180deg) !important
+            &:before
+                content: url('~/assets/icons/sort-alt-up.svg')
+
     .p-column-resizer-helper
         width: 2.23px !important
         border: none !important
         background-color: $primary
 
-    .pi-sort-alt:before
-        content: url('~/assets/icons/sort-alt.svg')
-
-    .pi-sort-amount-up-alt:before
-        content: url('~/assets/icons/sort-alt-up.svg')
-
-    .pi-sort-amount-down
-        transform: rotate(180deg) !important
-        &:before
-            content: url('~/assets/icons/sort-alt-up.svg')
-        
     .p-datatable-tbody > tr > td 
         white-space: nowrap
         border-top: 1px solid $bottom-td-color
-
-    .p-datatable-emptymessage
-        display: none
+        padding: 23px 26px
         
     .p-checkbox-box
         border: 1.5px solid $text-color-500
@@ -81,6 +87,13 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             box-shadow: none !important
             border: 1.5px solid $text-color-500 !important
 
+    .p-datatable-footer
+        padding: 0
+
+    .p-datatable-emptymessage
+        &:hover
+            background-color: #fff !important
+
     tr.row-disable
         .p-checkbox
             cursor: auto !important
@@ -89,23 +102,93 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             .p-checkbox-box
                 border: 1.5px solid #F1F3F6 !important
 
-// custom pagination
-.p-paginator
-    .p-paginator-page
-        background-color: #fff !important
-        color: $text-color-500 !important
-        font-weight: bold
-        border: none !important
+// pagination
+.pagination
+    display: flex
+    align-items: center
+    justify-content: space-between
+    background-color: #fff
+    padding: 21px 26px
 
-        &.p-highlight
-            color: $primary !important
+    &__info
+        display: flex
+        align-items: center
+        gap: 0 19px
 
-    .p-paginator-prev, .p-paginator-next
-        color: $text-color-900
-        border: none
+    &__total
+        font-size: $font-size-small
+        color: $text-color-500
+        line-height: calc(24 / 12)
 
-    .p-paginator-first, .p-paginator-last
-        display: none
+    &__delete
+        background-color: #FF7171
+        display: flex
+        align-items: center
+        color: #fff
+        border: 1.5px solid #FFFFFF
+        border-radius: 4px
+        gap: 0 19px
+        padding: 5px 10px
+        cursor: pointer
 
-    .p-link:focus
-        box-shadow: none
+    .p-paginator
+        padding: 0 !important
+
+        .p-paginator-page
+            background-color: #fff !important
+            color: $text-color-500 !important
+            font-weight: bold
+            border: none !important
+
+            &.p-highlight
+                color: $primary !important
+
+        .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
+            color: $text-color-900
+            border: none
+
+            &:hover
+                border-radius: 4px
+                color: $primary
+
+        .p-link:focus
+            box-shadow: none
+
+.table__action
+    display: flex
+    align-items: center
+    gap: 0 8px
+
+    span
+        width: 34px
+        height: 34px
+        border-radius: 4px
+        background-color: #F1F3F6
+        display: flex
+        align-items: center
+        justify-content: center
+        cursor: pointer
+
+    &.action-disabled
+        span
+            pointer-events: none
+
+        .icon-btn
+            background-color: #D2D2E0
+
+.table__status
+  background-color: #EAF3EB
+  border-radius: 3px
+  padding: 2px 8px
+  font-size: $font-size-small
+  text-transform: uppercase
+  font-weight: bold
+  font-size: $font-size-small
+  line-height: calc(20 / 12)
+
+  &--available
+    color: #00A469
+
+  &--disable
+    color: #979AA4
+

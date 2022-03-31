@@ -13,7 +13,7 @@ function generateData () {
     const name = faker.commerce.productName()
     const description = faker.commerce.productDescription()
     const imageUrl = faker.image.business(480, 480, true)
-    const code = faker.random.alphaNumeric(5)
+    const barcode = faker.random.alphaNumeric(5)
     const category = _.sample(categoryList)
     const type = _.sample(typeList)
     const status = faker.datatype.number({ min: 0, max: 1 })
@@ -21,6 +21,7 @@ function generateData () {
     const weight = faker.datatype.number({ min: 1, max: 500 })
     const unit = faker.random.alphaNumeric(5)
     const totalInventory = faker.datatype.number({ min: 1, max: 500 })
+    const deleted = faker.datatype.boolean()
     const createdAt = faker.date.between('2022-03-01', '2022-03-15').toISOString().split('T')[0]
     const updatedAt = faker.date.between('2022-03-15', '2022-03-30').toISOString().split('T')[0]
     stocks.push({
@@ -28,7 +29,7 @@ function generateData () {
       name,
       description,
       imageUrl,
-      code,
+      barcode,
       category,
       type,
       status,
@@ -36,6 +37,7 @@ function generateData () {
       weight,
       unit,
       totalInventory,
+      delete: deleted,
       createdAt,
       updatedAt
     })
