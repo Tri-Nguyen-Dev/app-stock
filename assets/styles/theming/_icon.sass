@@ -5,21 +5,23 @@ $icon-size-small:  16px !default
 $icon-size-base:   18px !default
 $icon-size-medium: 20px !default
 $icon-size-large:  24px !default
+$icon-size-xlarge: 48px !default
 
 $icon-padding-base: 16px
 
 // --- List name of icons
-$icons: house-2, lock-open, sms, shopping-cart, activity, award, dashboard, dollar-square, location, menu-toggle, notification, send-square, setting, tag, user-octagon
+$icons: house-2, lock-open, sms, shopping-cart, activity, award, dashboard, dollar-square, location, menu-toggle, notification, send-square, setting, tag, user-octagon, chevron-down
 
 // -- custom css
 .icon
   @include size($icon-size-base)
-  @include centerAbsolute(top)
 
   &--left
+    @include centerAbsolute(top)
     left: $icon-padding-base
 
   &--right
+    @include centerAbsolute(top)
     right: $icon-padding-base
 
   &--center
@@ -30,6 +32,9 @@ $icons: house-2, lock-open, sms, shopping-cart, activity, award, dashboard, doll
 
   &--large
     @include size($icon-size-large)
+
+  &--xlarge
+    @include size($icon-size-xlarge)
 
 @each $i in $icons
   .icon-#{$i}

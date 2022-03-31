@@ -2,7 +2,7 @@
   <div class="sidebar" :style="{ width: sidebarWidth }">
     <div class="menu-section sidebar-head">
       <div
-        class="icon icon--large icon-menu-toggle bg-primary"
+        class="icon icon--xlarge icon-menu-toggle bg-primary"
         @click="toggleSidebar"
       >
       </div>
@@ -46,47 +46,39 @@ class Sidebar extends Vue {
 export default  Sidebar
 </script>
 
-<style lang="scss" scoped>
-.sidebar {
-  float: left;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  padding: 30px 16px 30px 18px;
-  transition: 0.3s ease;
-  display: flex;
-  flex-direction: column;
+<style lang="sass" scoped>
+.sidebar
+  @include flex-column
+  float: left
+  position: fixed
+  z-index: 1
+  top: 0
+  left: 0
+  bottom: 0
+  padding: 30px 16px 30px 18px
+  transition: 0.3s ease
 
-  &-head {
-    height: 48px;
-    border-bottom: 2px solid #E8EAEF;
-    padding-bottom: 16px;
-  }
+  &-head
+    @include flex-center-vert
+    height: 48px
+    border-bottom: 1px solid $text-color-400
+    padding-bottom: $space-size-16
 
-  &-menu {
-    padding-top: 16px;
-    border-bottom: 1px solid #E8EAEF;
-  }
+  &-menu
+    padding-top: $space-size-16
+    border-bottom: 1px solid $text-color-400
 
-  &-foot {
-    height: 130px;
-    margin-top: auto;
-  }
+  &-foot
+    height: 130px
+    margin-top: auto
 
-  .menu-section {
-    position: relative;
-  }
-}
+  .menu-section
+    position: relative
 
-.collapse-icon {
-  position: absolute;
-  bottom: 0;
-  padding: 0.75em;
-
-  color: rgba(255, 255, 255, 0.7);
-
-  transition: 0.2s linear;
-}
+.collapse-icon
+  position: absolute
+  bottom: 0
+  padding: 0.75em
+  color: rgba(255, 255, 255, 0.7)
+  transition: 0.2s linear
 </style>

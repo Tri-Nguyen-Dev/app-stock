@@ -1,10 +1,13 @@
 <template>
-  <div class="menu-item">
+  <div class="menu-item font-bold" :class="{ 'active': active }">
     <router-link :to="to" class="link">
-      <div class="icon icon--large icon--left" :class="icon"></div>
+      <div class="item-icon">
+        <div v-if="!!icon" class="icon icon--large" :class="icon"></div>
+      </div>
       <transition name="fade">
         <div v-if="!collapsed" class="item-label">
           <slot />
+          <span class="icon icon-chevron-down" :class="{ 'surface-500': !hasChild }"></span>
         </div>
       </transition>
     </router-link>
@@ -13,18 +16,21 @@
 
 <script lang='ts'>
 
-import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
-const nsSidebar = namespace('layout/store-sidebar')
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
 
 @Component
 class SidebarItem extends Vue {
   @Prop(String) readonly to!:   string | undefined
 
-  @Prop(String) readonly icon!: string | undefined
+  @Prop(String) readonly icon: string | undefined
 
-  @nsSidebar.State('collapsed')
-  collapsed!: boolean
+  @Prop(Boolean) readonly collapsed!: boolean | undefined
 
+  @Prop(Boolean) readonly active!: boolean | undefined
+
+  @Prop(Number) readonly level!: number | undefined
+
+  @Prop(Boolean) readonly hasChild: boolean = false
 }
 
 export default SidebarItem
@@ -32,50 +38,27 @@ export default SidebarItem
 
 <style lang="sass" scoped>
 .menu-item
-  height: 56px
-  margin-bottom: 4px
-  font-size: 16px
-  font-weight: bold
-.item-label
-  padding-left: 48px
-.fade-enter-active,
-.fade-leave-active
-  transition: opacity 0.1s
+  height: 60px
 
+  &:hover, &.active
+    border-radius: 4px
+    background-color: $text-color-300
 
-.fade-enter,
-.fade-leave-to
-  opacity: 0
-
-
-.link
-  display: flex
-  align-items: center
-
-  cursor: pointer
-  position: relative
-  font-weight: 400
-  user-select: none
-
-  margin: 0.1em 0
-  padding: 0.4em
-  border-radius: 0.25em
-  height: 1.5em
-
-  text-decoration: none
-
-
-.link:hover
-  background-color: $primary
-
-
-.link.active
-  background-color: $primary
-
-
-.link .icon
-  flex-shrink: 0
-  width: 25px
-  margin-right: 10px
-
+  .link
+    @include flex-center-vert
+    height: 100%
+    color: $text-color-base
+    font-size: $font-size-medium
+    font-weight: $font-weight-bold
+    padding: $space-size-16 $space-size-18
+    cursor: pointer
+    position: relative
+    user-select: none
+    text-decoration: none
+  .item-label
+    @include flex-center-space-between
+    width: 100%
+    margin-left: $space-size-16
+  .item-icon
+    margin-right: 2px
 </style>
