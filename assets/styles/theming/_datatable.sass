@@ -6,10 +6,9 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 .p-datatable
     font-family: $font-family-primary
     font-size: $font-size-base !important
-    border-radius: 4px
-    overflow: hidden
-
+    
     .p-datatable-wrapper
+        flex: 1
         &::-webkit-scrollbar
             width: 6px
             height: 6px
@@ -17,6 +16,9 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         &::-webkit-scrollbar-thumb
             border-radius: 10px
             background-color: $text-color-700
+
+        .p-datatable-table
+            height: 100%
 
     .p-datatable-thead
         position: sticky
@@ -38,6 +40,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         color: $text-color-800 !important
         white-space: nowrap
         border: none !important
+        padding: 18px 26px
 
         &:focus
             box-shadow: none !important
@@ -68,9 +71,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     .p-datatable-tbody > tr > td 
         white-space: nowrap
         border-top: 1px solid $bottom-td-color
-
-    .p-datatable-emptymessage
-        display: none
+        padding: 23px 26px
         
     .p-checkbox-box
         border: 1.5px solid $text-color-500
@@ -82,6 +83,13 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         &.focus, &:not(.p-checkbox-disabled)
             box-shadow: none !important
             border: 1.5px solid $text-color-500 !important
+
+    .p-datatable-footer
+        padding: 0
+
+    .p-datatable-emptymessage
+        &:hover
+            background-color: #fff !important
 
     tr.row-disable
         .p-checkbox
