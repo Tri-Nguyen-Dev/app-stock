@@ -54,7 +54,7 @@
           div.pt-2.pl-3.pb-1
             span.text-600.text-sm Status
           Dropdown.w-full.border-0.mb-1( :options="status" optionLabel="name" placeholder="Select")
-    ScrollPanel.stock__detail--table
+    .stock__detail--table
       DataTable(v-if="boxData" :value="boxData" responsiveLayout="scroll" :selection.sync="selectedStock" dataKey="id"
         :resizableColumns="true" :paginator="true" :rows="100")
         Column(selectionMode="multiple" :styless="{width: '3rem'}" :exportable="false")

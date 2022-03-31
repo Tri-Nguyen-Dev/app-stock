@@ -1,6 +1,6 @@
 <template lang="pug">
- .grid.h-srceen
-    .col-4.p-0.surface-0.border-round.left__information--stock.h-screen.overflow-y-auto.overflow-x-hidden
+ .grid.grid-nogutter.item__detail-container.overflow-hidden
+    .col-4.p-0.surface-0.border-round.left__information--stock.h-full.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
@@ -130,7 +130,7 @@
             .col
               div.text-500 Phone number
               span.font-semibold {{stockDetail.senderName}}
-    .col-8.px-5.h-screen.right__information--stock
+    .col-8.px-5.h-full.right__information--stock
       TabView.custom-tabview
         TabPanel
           template(#header)
@@ -183,44 +183,45 @@ export default ItemDetail
 <style lang="sass" scoped>
 $large: 1440px
 $small: 1025px
+.item__detail-container
+  height: calc(100vh - 64px)
+  .left__information--stock
+    .stock__information
+      border-bottom: 1px solid #eeeff2
 
-.left__information--stock
-  .stock__information
-    border-bottom: 1px solid #eeeff2
+      .p-disabled, .p-component:disabled
+        opacity: 1
 
-    .p-disabled, .p-component:disabled
-      opacity: 1
+      .p-inputtext
+        border: none
+        background: transparent
+        padding: 0
+        color: #000
+        font-weight: 600
 
-    .p-inputtext
-      border: none
-      background: transparent
-      padding: 0
-      color: #000
-      font-weight: 600
+  .right__information--stock
+    // display: flex
+    // flex-direction: column
 
-.right__information--stock
-  display: flex
-  flex-direction: column
+    .stock__log--history
+      height: calc(100vh - 65px)
 
-  .stock__log--history
-    height: calc(100vh - 65px)
+    ::v-deep.p-tabview .p-tabview-nav li
+      .p-tabview-nav-link
+        background: #e9ecef
+        border: none
+        box-shadow: none !important
 
-  ::v-deep.p-tabview .p-tabview-nav li
-    .p-tabview-nav-link
+    ::v-deep.p-tabview .p-tabview-panels
       background: #e9ecef
-      border: none
-      box-shadow: none !important
+      padding: 1.25rem 0 0 0
 
-  ::v-deep.p-tabview .p-tabview-panels
-    background: #e9ecef
-    padding: 1.25rem 0 0 0
+    ::v-deep.p-highlight .p-tabview-nav-link
+      color: #000 !important
+      border-bottom: 2px solid #486AE2 !important
 
-  ::v-deep.p-highlight .p-tabview-nav-link
-    color: #000 !important
-    border-bottom: 2px solid #486AE2 !important
-
-    .icon-btn
-      background-color: #094db1 !important
+      .icon-btn
+        background-color: #094db1 !important
 
 ::-webkit-scrollbar
  width: 7px

@@ -1,6 +1,6 @@
 <template lang="pug">
-  .grid.h-srceen.stock__information-detail
-    .col-3.p-0.surface-0.border-round.h-screen.overflow-y-auto.overflow-x-hidden
+  .grid.grid-nogutter.stock__information-detail
+    .col-3.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
@@ -47,7 +47,7 @@
           .col
             div.text-500 Total inventory quantity
             span.font-semibold.mr-1.uppercase {{stockDetail.totalInventory}}
-    .col-9.pl-5.h-screen.py-0
+    .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
 </template>
 <script lang="ts">
@@ -92,6 +92,7 @@ export default StockDetail
 
 <style lang="sass" scoped>
 .stock__information-detail
+  height: calc(100vh - 64px)
   .stock__information--gerenal
     ::v-deep.p-disabled, .p-component:disabled
         opacity: 1
@@ -102,9 +103,6 @@ export default StockDetail
       padding: 0
       color: #000
       font-weight: 600
-
-.stock__detail--table
-  height: calc(100vh - 148px)
 
 ::v-deep.p-paginator.p-component.p-paginator-bottom
   .p-paginator-left-content
