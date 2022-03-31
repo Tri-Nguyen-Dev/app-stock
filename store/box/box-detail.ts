@@ -1,41 +1,30 @@
-import { Mutation, VuexModule, Action, Module } from 'vuex-module-decorators'
-import { $api } from '~/utils'
-
-export namespace Submission {
-  export class SubmissionModel {
-    id?: number
-    image?: string
-    barcode?: string
-    sku?: string
-    name?: string
-    quantity?: number
-    size?: number
-    weight?: number
-    category?: string
-  }
-}
-
+import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
+import { Box } from '~/models/Box'
+import { $api, PathBind } from '~/utils'
 @Module({
   stateFactory: true,
   namespaced: true
 })
-export default class StoreSubmission extends VuexModule {
+
+export default class StoreBox extends VuexModule {
   private static readonly STATE_URL = {
-    GET_MASTER_DATA: 'https://6232bf088364d63035c2e14e.mockapi.io/boxtest'
+    GET_BOX: '/api/boxDetail/list',
+    DELETE_BOX: '/boxDetail/delete'
   }
 
-  public boxTest: any = []
+  public boxDetail?: Box.Model[] = []
+  public totalBoxRecords?: number = 0
 
   @Mutation
-  getMasterDataBoxList(getMasterData: []) {
-    this.boxTest = getMasterData
+  setBoxList(data: any) {
+    this.boxDetail = data
+    // this.totalBoxRecords = data?.total
   }
 
-  @Action({ commit: 'getMasterDataBoxList', rawError: true })
-  async actGetMasterData(): Promise<string | undefined> {
-    //   const url = PathBind.transform(this.context, StoreSubmission.STATE_URL.GET_MASTER_DATA, submission)
-    const url = 'https://6232bf088364d63035c2e14e.mockapi.io/boxtest'
-    const response: any = await $api.get(url)
+  @Action({ commit: 'setBoxList', rawError: true })
+  async actGetBoxList(params?: any): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX, params)
+    const response: any = await $api.get(url, {params})
     return response
   }
 }
