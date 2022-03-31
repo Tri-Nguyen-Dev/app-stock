@@ -36,14 +36,14 @@
           Column(selectionMode='multiple') 
           Column(field='no' header='NO')
             template(#body='{ index }')
-              span.stock__table-no.text-900.font-bold {{ (index + 1) + (paginate.pageNumber - 1) * paginate.pageSize  }}
+              span.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + (paginate.pageNumber - 1) * paginate.pageSize  }}
           Column(field='imageUrl' header='Image')
             template(#body='{ data }')
               .stock__table__image.w-2rem.h-2rem.overflow-hidden
                 img.w-full.h-full.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
           Column(field='name' header='Name' sortable)
             template(#body='{ data }')
-              .stock__table-name.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
+              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
           Column(field='barcode' header='Code' sortable)
           Column(field='category' header='Category' sortable)
               template(#body='{ data }') {{ data.category.name }}
@@ -256,7 +256,7 @@ class Stock extends Vue {
 export default Stock
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped >
 
 .stock
   display: flex
