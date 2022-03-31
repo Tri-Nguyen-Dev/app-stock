@@ -39,6 +39,7 @@
     "@nuxtjs/eslint-module": "^3.0.2",
     "@nuxtjs/proxy": "^2.1.0",
     "@nuxtjs/style-resources": "^1.2.1",
+    "@types/debounce": "^1.2.1",
     "@types/vuelidate": "^0.7.15",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.5.0",
