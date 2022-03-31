@@ -30,14 +30,17 @@ export default {
     '@nuxtjs/proxy',
     '@nuxtjs/style-resources',
 
-    ['@nuxtjs/google-fonts', {
-      families: {
-        'Google+Sans': {
-          wght: [300, 400, 500, 700, 900]
-        }
-      },
-      display: 'swap'
-    }]
+    [
+      '@nuxtjs/google-fonts',
+      {
+        families: {
+          'Google+Sans': {
+            wght: [300, 400, 500, 700, 900]
+          }
+        },
+        display: 'swap'
+      }
+    ]
   ],
   // PrimeVue Config
   primevue: {
@@ -49,11 +52,17 @@ export default {
       'Checkbox',
       'DataTable',
       'Dialog',
-      'Dropdown',
-      'MultiSelect',
-      'Column',
-      'Paginator',
       'Tag',
+      'Calendar',
+      'Tooltip',
+      'TabPanel',
+      'TabView',
+      'Column',
+      'ColumnGroup',
+      'DropDown',
+      'ScrollPanel',
+      'MultiSelect',
+      'Paginator',
       'ConfirmDialog',
       'Toast'
     ],
