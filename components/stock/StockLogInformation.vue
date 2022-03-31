@@ -55,6 +55,10 @@ import { Component, Vue } from 'nuxt-property-decorator'
 @Component
 class StockLogInformation extends Vue {
   outgoing: boolean = true
+
+  transferring: boolean = false
+
+  incoming: boolean = false
 }
 
 export default StockLogInformation

@@ -19,6 +19,7 @@ function generateData () {
     const status = faker.datatype.number({ min: 0, max: 1 })
     const size = faker.datatype.number({ min: 1, max: 500 })
     const weight = faker.datatype.number({ min: 1, max: 500 })
+    const unit = faker.random.alphaNumeric(5)
     const totalInventory = faker.datatype.number({ min: 1, max: 500 })
     const createdAt = faker.date.between('2022-03-01', '2022-03-15').toISOString().split('T')[0]
     const updatedAt = faker.date.between('2022-03-15', '2022-03-30').toISOString().split('T')[0]
@@ -33,6 +34,7 @@ function generateData () {
       status,
       size,
       weight,
+      unit,
       totalInventory,
       createdAt,
       updatedAt

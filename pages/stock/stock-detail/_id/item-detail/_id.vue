@@ -8,7 +8,7 @@
         span.font-semibold.text-lg Stock list / Stock Detail / Item Detail
       .stock__information.p-4
         .grid.mb-3
-          .col-10.flex
+          .col-9.flex
             .icon-btn.icon-box-info.inline-block.mr-1.bg-blue-700
             span.uppercase.font-bold Item Detail
           .col.flex.justify-content-end
@@ -54,7 +54,7 @@
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
-              .col-3
+              .col-3.flex.justify-content-end
                 .icon--large.icon-warehouse.bg-blue-700
               .col
                 div.text-500 Warehouse
@@ -63,7 +63,7 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
-              .col-3
+              .col-3.flex.justify-content-end
                 .icon--large.icon-location-2.bg-blue-700
               .col
                 div.text-500 Location
@@ -73,7 +73,7 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
-              .col-3
+              .col-3.flex.justify-content-end
                 .icon--large.icon-size.bg-blue-700
               .col
                 div.text-500 Size (cm)
@@ -81,7 +81,7 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
-              .col-3
+              .col-3.flex.justify-content-end
                 .icon--large.icon-weight.bg-blue-700
               .col
                 div.text-500 Weight (Kg)
@@ -90,7 +90,7 @@
           .col(:class='isEditItemDetail ? "opacity-40" : "opacity-100"' class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
             .surface-hover.p-3
               .grid.align-items-center
-                .col-3
+                .col-3.flex.justify-content-end
                   .icon--large.icon-boxcode.bg-blue-700
                 .col
                   div.text-500 Boxcode
@@ -99,7 +99,7 @@
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
             .surface-hover.p-3
               .grid.align-items-center
-                .col-3
+                .col-3.flex.justify-content-end
                   .icon--large.icon-price.bg-blue-700
                 .col
                   div.text-500 Value
@@ -131,7 +131,7 @@
               div.text-500 Phone number
               span.font-semibold {{stockDetail.senderName}}
     .col-8.px-5.h-screen.right__information--stock
-      TabView
+      TabView.custom-tabview
         TabPanel
           template(#header)
             .icon-btn.icon-history.mr-2.surface-600
@@ -180,7 +180,7 @@ class ItemDetail extends Vue {
 }
 export default ItemDetail
 </script>
-<style lang="sass">
+<style lang="sass" scoped>
 $large: 1440px
 $small: 1025px
 
@@ -205,36 +205,22 @@ $small: 1025px
   .stock__log--history
     height: calc(100vh - 65px)
 
-  .p-tabview .p-tabview-nav li
+  ::v-deep.p-tabview .p-tabview-nav li
     .p-tabview-nav-link
       background: #e9ecef
       border: none
       box-shadow: none !important
 
-  .p-tabview .p-tabview-panels
+  ::v-deep.p-tabview .p-tabview-panels
     background: #e9ecef
     padding: 1.25rem 0 0 0
 
-  .p-highlight .p-tabview-nav-link
+  ::v-deep.p-highlight .p-tabview-nav-link
     color: #000 !important
     border-bottom: 2px solid #486AE2 !important
 
     .icon-btn
       background-color: #094db1 !important
-
-.stockLogInformation
-  flex-grow: 1
-
-.pi-sort-alt:before
-  content: url('~/assets/icons/sort.svg')
-.pi-sort-amount-up-alt:before
-    content: url('~/assets/icons/sort.svg')
-.pi-sort-amount-down:before
-  content: url('~/assets/icons/sort.svg')
-.p-datatable .p-datatable-thead > tr > th
-  background: #F9F9FC
-  border: none
-  color: #464D64
 
 ::-webkit-scrollbar
  width: 7px

@@ -20,44 +20,38 @@
         .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           img(:src='require("~/assets/images/sample.png")').border-round.w-full
         .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          Tag(severity="success").uppercase Available
+          Tag(severity="success").uppercase {{stockDetail.status ? 'Available' : 'Disable'}}
         .grid.mb-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          h5.font-bold.my-2 Apple Macbook Pro
+          h5.font-bold.my-2 {{stockDetail.name}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           p.uppercase.inline.font-semibold.text-400.mr-2 code:
-          span.uppercase.font-semibold.text-blue-700 ABH123
+          span.uppercase.font-semibold.text-blue-700 {{stockDetail.code}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 piece
+          span.uppercase.font-semibold.text-blue-700 {{stockDetail.unit}}
         .grid.surface-hover.mb-3
-          .col-2.flex.align-items-center
+          .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-size.bg-blue-700
           .col
             div.text-500 Size (cm)
-            InputText( :disabled='isEditStockDetail == 0')
+            InputText( :disabled='isEditStockDetail == 0' v-model='stockDetail.size')
         .grid.surface-hover.mb-3
-          .col-2.flex.align-items-center
+          .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-weight.bg-blue-700
           .col
             div.text-500 Weight (kg)
-            InputText( :disabled='isEditStockDetail == 0')
+            InputText( :disabled='isEditStockDetail == 0' v-model='stockDetail.weight')
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          .col-2.flex.align-items-center
-            .icon--large.icon-inventory-quantity.bg-blue-700
-          .col
-            div.text-500 Inventory quantity
-            span.font-semibold.mr-1.uppercase 2
-        .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          .col-2.flex.align-items-center
+          .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700
           .col
             div.text-500 Total inventory quantity
-            span.font-semibold.mr-1.uppercase 80
+            span.font-semibold.mr-1.uppercase {{stockDetail.totalInventory}}
     .col-9.pl-5.h-screen.py-0
       StockDetailTable
 </template>
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace} from 'nuxt-property-decorator'
 import { Stock } from '~/store/stock/stock-detail'
 const nsStoreStock = namespace('stock/stock-detail')
 
@@ -96,28 +90,23 @@ class StockDetail extends Vue {
 export default StockDetail
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .stock__information-detail
   .stock__information--gerenal
-    .p-disabled, .p-component:disabled
+    ::v-deep.p-disabled, .p-component:disabled
         opacity: 1
 
-    .p-inputtext
+    ::v-deep.p-inputtext
       border: none
       background: transparent
       padding: 0
       color: #000
       font-weight: 600
 
-.p-inputtext,
-.p-dropdown,
-.p-button
-  box-shadow: none !important
-
 .stock__detail--table
   height: calc(100vh - 148px)
 
-.p-paginator.p-component.p-paginator-bottom
+::v-deep.p-paginator.p-component.p-paginator-bottom
   .p-paginator-left-content
     display: flex
 
@@ -135,19 +124,6 @@ export default StockDetail
   .p-highlight
     color: #000
 
-.pi-sort-alt:before
-  content: url('~/assets/icons/sort.svg')
-.pi-sort-amount-up-alt:before
-    content: url('~/assets/icons/sort.svg')
-.pi-sort-amount-down:before
-  content: url('~/assets/icons/sort.svg')
-.p-datatable .p-datatable-thead > tr > th
-  background: #F9F9FC
-  border: none
-  color: #464D64
-
-.p-datatable .p-sortable-column:focus
-    box-shadow: none
 ::-webkit-scrollbar
  width: 7px
  height: 7px

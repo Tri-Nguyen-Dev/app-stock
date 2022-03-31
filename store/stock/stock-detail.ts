@@ -14,7 +14,7 @@ export namespace Stock {
 
 export default class StoreStockDetail extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK_DETAIL: '/stock/:id/detail',
+    GET_STOCK_DETAIL: '/api/stock/:id/detail',
     GET_ALL_BOX: '/submission/user/:userId/get-all-master-data'
   }
 

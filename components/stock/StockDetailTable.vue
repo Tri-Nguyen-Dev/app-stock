@@ -189,4 +189,8 @@ export default StockDetailTable
 .stock__mutidelete
   background-color: #FF7171
 
+::v-deep.p-inputtext,
+::v-deep.p-dropdown,
+::v-deep.p-button
+  box-shadow: none !important
 </style>
