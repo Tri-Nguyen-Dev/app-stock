@@ -63,7 +63,8 @@ export default {
       'ConfirmDialog',
       'Toast',
       'ScrollPanel',
-      'TieredMenu'
+      'TieredMenu',
+      'AutoComplete'
     ],
     directives: ['Tooltip', 'Badge']
   },

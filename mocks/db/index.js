@@ -5,6 +5,7 @@ const genBoxList = require('./box-list.js')
 const genCategoryList = require('./category-list.js')
 const genWareList = require('./warehouse-list.js')
 const genItemsList = require('./items-list.js')
+const genBoxDetail = require('./box-detail.js')
 
 module.exports = {
   user,
@@ -14,5 +15,6 @@ module.exports = {
   box: genBoxList(),
   category: genCategoryList(),
   warehouse: genWareList(),
-  items: genItemsList()
+  items: genItemsList(),
+  boxDetail: genBoxDetail()
 }
