@@ -1,17 +1,21 @@
 export namespace Box {
   export interface Model {
     id: string,
-    code: string,
+    barcode: string,
     seller: {
       id: string,
       name: string,
       email: string
     },
     createAt?: Date,
+    updatedAt?: Date,
     length: number,
     width: number,
     height: number
     weight: number,
+    attributes: [
+      { id: number, name: string, value: number},
+    ]
     warehouse: {
       id: string,
       name: string
@@ -20,6 +24,6 @@ export namespace Box {
       id:string,
       name:string
     },
-    status?: boolean
+    deleted?: boolean
   }
 }

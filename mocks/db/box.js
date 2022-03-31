@@ -1,40 +1,36 @@
 const { faker } = require('@faker-js/faker')
+const _ = require('lodash')
 
-function generateData () {
+function generateData (warehouseList, locationList) {
   const boxes = []
   for (let id = 1; id < 105; id++) {
-    const barCode = faker.random.alphaNumeric(5)
+    const barcode = faker.random.alphaNumeric(5)
     const seller = {
       id,
       name: faker.name.firstName(),
       email: faker.internet.email()
     }
+    const warehouse = _.sample(warehouseList)
+    const location = _.sample(locationList)
+    const attributes = [
+      { id: 1, name: 'length', value: faker.datatype.number({ min: 1, max: 100 }) },
+      { id: 2, name: 'width', value: faker.datatype.number({ min: 1, max: 100 }) },
+      { id: 3, name: 'height', value: faker.datatype.number({ min: 1, max: 100 }) },
+      { id: 3, name: 'weight', value: faker.datatype.float({ max: 100 }) }
+    ]
+    const deleted = faker.datatype.boolean()
     const createdAt = faker.date.between('2022-03-01', '2022-03-15').toISOString().split('T')[0]
-    const length = faker.datatype.number(100)
-    const width = faker.datatype.number(100)
-    const height = faker.datatype.number(100)
-    const weight = faker.datatype.float({ max: 100 })
-    const warehouse = {
-      id,
-      name: faker.datatype.string(5)
-    }
-    const location = {
-      id,
-      name: faker.phone.phoneNumber('501-###-###')
-    }
-    const status = faker.datatype.number({ min: 0, max: 1 })
+    const updatedAt = faker.date.between('2022-03-15', '2022-03-30').toISOString().split('T')[0]
     boxes.push({
       id,
-      barCode,
+      barcode,
       seller,
-      createdAt,
-      length,
-      width,
-      height,
-      weight,
+      attributes,
       warehouse,
       location,
-      status
+      deleted,
+      createdAt,
+      updatedAt
     })
   }
 

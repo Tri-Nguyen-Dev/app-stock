@@ -24,7 +24,8 @@ server.use(
     '/:page/:id/delete': '/:page/:id',
     '/auth/:page': '/:page',
     '*name*': '$1name_like$2',
-    '*barcode*': '$1barcode_like$2'
+    '*barcode*': '$1barcode_like$2',
+    '*email*': '$1seller.email_like$2'
   })
 )
 

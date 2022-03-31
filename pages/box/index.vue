@@ -8,15 +8,15 @@
       .grid
         .col-fixed
           span.p-input-icon-left
-            .icon.icon--left.icon-search-input.surface-900
-            InputText.w-21rem.h-3rem(type="text" placeholder="Search")
+            .icon.icon--left.icon-search.surface-900
+            InputText.w-21rem.h-3rem(type="text" placeholder="Search" v-model="textSearch")
         .col-fixed
           Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isFilter = !isFilter")
-            .icon--base.bg-primary(:class="isFilter ? 'icon-chevron-up' : 'icon-filter-btn'")
+            .icon.bg-primary(:class="isFilter ? 'icon-chevron-up' : 'icon-filter'")
             span.text-900.ml-3.text-primary Filter
         .col-fixed
           Button.w-9rem.h-3rem
-            .icon--base.icon-plus.surface-900.bg-white
+            .icon.icon-add-items.surface-900.bg-white
             span.text-900.ml-3.text-white Add box
   .grid(v-if="isFilter")
     .col-9
@@ -25,24 +25,24 @@
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm Warehouse
-            Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" :options="masterData.warehouse" optionLabel="name" placeholder="Select")
+            Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm Location
-            Dropdown.w-full.border-0.mb-1(v-model="selectedLocation" :options="masterData.location" optionLabel="name" placeholder="Select")
+            Dropdown.w-full.border-0.mb-1(v-model="selectedLocation" :options="locationList" optionLabel="name" placeholder="Select")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm Size
-            Dropdown.w-full.border-0.mb-1(v-model="selectedSize" :options="masterData.size" optionLabel="name" placeholder="Select")
+            Dropdown.w-full.border-0.mb-1(v-model="selectedSize" :options="sizeList" optionLabel="name" placeholder="Select")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Code
+              span.text-600.font-sm Code {{pageNumber}}
             span.p-input-icon-right.w-full
-              .icon.icon--right.icon-search-input.surface-900.icon--absolute
-              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code")
+              .icon.icon--right.icon-search.surface-900.icon--absolute
+              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code" v-model="textCode")
     .col-3
       .grid.grid-nogutter
         .col
@@ -57,54 +57,54 @@
             Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0
-      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
+      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="getDataTable" responsiveLayout="scroll" :selection.sync="selectedBoxes"
       dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :class="boxList.length === 0 && 'datatable-empty'" :rowClass="rowClass")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO" sortable)
           template(#body="slotProps")
-            span.font-semibold {{slotProps.index +1}}
-        Column(field="barCode" header="CODE" sortable bodyClass="font-semibold")
+            span.font-semibold {{(pageNumber - 1) * pageSize + slotProps.index +1}}
+        Column(field="barcode" header="CODE" sortable bodyClass="font-semibold")
         Column(field="seller.email" header="SELLER EMAIL" sortable className="w-3")
         Column(field="createdAt" header="CREATE TIME" sortable className="p-text-right")
           template(#body="{data}") {{new Date(data.createdAt).toLocaleDateString("en-US")}}
-        Column(field="attribute" header="SIZE(CM)" className="p-text-right" bodyClass="font-semibold")
-          template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
-        Column(field="attribute" header="WEIGHT(KG)" className="p-text-right" bodyClass="font-semibold")
-          template(#body="{data}") {{data.weight}}
+        Column(field="attributes" header="SIZE(CM)" className="p-text-right" bodyClass="font-semibold")
+          template(#body="{data}") {{data.attributes[0].value}}*{{data.attributes[1].value}}*{{data.attributes[2].value}}
+        Column(field="attributes" header="WEIGHT(KG)" className="p-text-right" bodyClass="font-semibold")
+          template(#body="{data}") {{data.attributes[3].value}}
         Column(field="warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm {{data.warehouse.name}}
-              .icon--small.icon-arrow-up-right.bg-primary
+              .icon.icon-arrow-up-right.bg-primary
         Column(field="location.name" header="LOCATION" sortable className="p-text-right")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm {{data.location.name}}
-              .icon--small.icon-arrow-up-right.bg-primary
+              .icon.icon-arrow-up-right.bg-primary
         Column(field="status" header="STATUS" sortable className="p-text-right")
           template(#body="{data}")
             div
-              Tag(v-if="data.status" severity="success").px-2.bg-green-100
+              Tag(v-if="data.deleted" severity="success").px-2.bg-green-100
                 span.font-bold.text-green-400.font-sm AVAILABLE
               Tag(v-else severity="success").px-2.surface-200
                 span.font-bold.text-400.font-sm DISABLE
         Column(:exportable="false" header="ACTION" className="p-text-right")
           template(#body="{data}")
-            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.status")
-              .icon--small.icon-edit
-            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="!data.status")
-              .icon--small.icon-delete
+            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.deleted")
+              .icon.icon-btn-edit
+            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="!data.deleted")
+              .icon.icon-btn-delete
         template(#empty)
           div.text-center
             img(:src='require("~/assets/icons/empty-table.svg")')
-            h5.font-md.font-bold List is empty! Click
-              a.text-primary(href="/box") here
+            h5.font-md.font-bold List is empty! Click 
+              a.text-primary(href="/box") here 
               | to add item.
         template(#footer)
           div
             .flex.align-items-center(v-if="selectedBoxes.length <= 0")
               .icon--large.icon-footer-paginator.surface-400
-              span.ml-3.text-400.font-sm Showing 01 - {{pageSize}} of {{totalBoxRecords}}
+              span.ml-3.text-400.font-sm Showing {{(pageNumber - 1) * pageSize}} - {{(pageNumber - 1) * pageSize + pageSize}} of {{totalBoxRecords}}
             Button(@click="showModalDelete(null)" v-if="selectedBoxes.length>0").p-button-danger.opacity-70
               .icon--small.icon-delete.bg-white
               span.ml-3 Delete {{selectedBoxes.length}} items selected
@@ -126,7 +126,9 @@ import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreBox = namespace('box/box-list')
-const nsStoreMasterData = namespace('box/master-data')
+const nsStoreLocation = namespace('location/location-list')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreSize = namespace('size/size-list')
 
 @Component({
   components: {
@@ -134,18 +136,20 @@ const nsStoreMasterData = namespace('box/master-data')
   }
 })
 class BoxList extends Vue {
-  selectedBoxes=[];
-  selectedWarehouse = null
-  selectedSize = null
-  selectedLocation = null
-  isFilter = false
+  selectedBoxes = [];
+  selectedWarehouse : any = null
+  selectedSize: any = null
+  selectedLocation: any = null
+  textSearch: any = null
+  textCode: any = null
   dateFrom = null
   dateTo = null
-  pageNumber: number = 0
+  pageNumber: number = 1
   pageSize: number = 20
   isModalDelete: boolean = false
   loadingSubmit: boolean = false
   ids: string[] = []
+  isFilter = false
 
   @nsStoreBox.State
   boxList!: Box.Model[]
@@ -153,33 +157,69 @@ class BoxList extends Vue {
   @nsStoreBox.State
   totalBoxRecords!: number
 
-  @nsStoreMasterData.State
-  masterData!: any
+  @nsStoreLocation.State
+  locationList!: any
+
+  @nsStoreWarehouse.State
+  warehouseList!: any
+
+  @nsStoreSize.State
+  sizeList!: any
+  
+  @nsStoreBox.State
+  boxListFilter!: Box.Model[]
 
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
-
-  @nsStoreMasterData.Action
-  actGetMasterData!: () => Promise<void>
 
   @nsStoreBox.Action
   actDeleteBoxById!: (
     params: any
   ) => Promise<any>
 
+  @nsStoreLocation.Action
+  actLocationList!: () => Promise<void>
+
+  @nsStoreWarehouse.Action
+  actWarehouseList!: () => Promise<void>
+
+  @nsStoreSize.Action
+  actSizeList!: () => Promise<void>
+
+  @nsStoreBox.Action
+  actGetBoxFilter!: (params: any) => Promise<void>
+
   async mounted() {
     await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
-    // await this.actGetMasterData()
+    this.actLocationList()
+    this.actWarehouseList()
+    this.actSizeList()
   }
 
-  @Watch('selectedSize')
   @Watch('selectedWarehouse')
-  filterChange() {
-    // console.log("value");
+  @Watch('selectedLocation')
+  @Watch('selectedSize')
+  @Watch('textSearch')
+  @Watch('textCode')
+  async filterChange() {
+    await this.actGetBoxFilter({
+      'email': this.textSearch,
+      'barcode': this.textCode,
+      'warehouse.id': this.selectedWarehouse?.id,
+      'location.id': this.selectedLocation?.id,
+      'size.id': this.selectedSize?.id
+      }
+    )
+  }
+
+  get getDataTable() {
+    const data = this.boxListFilter?this.boxListFilter: this.boxList
+    return data
   }
 
   async onPage(event: any) {
-    await this.actGetBoxList({ pageNumber: event.page + 1, pageSize: this.pageSize })
+    this.pageNumber = event.page + 1
+    await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
   }
 
   async handleDeleteStock() {
@@ -204,7 +244,7 @@ class BoxList extends Vue {
   }
 
   rowClass(data: Box.Model) {
-    return !data.status && 'row-disable';
+    return !data.deleted && 'row-disable';
   }
 }
 export default BoxList
