@@ -102,4 +102,93 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             .p-checkbox-box
                 border: 1.5px solid #F1F3F6 !important
 
+// pagination
+.pagination
+    display: flex
+    align-items: center
+    justify-content: space-between
+    background-color: #fff
+    padding: 21px 26px
+
+    &__info
+        display: flex
+        align-items: center
+        gap: 0 19px
+
+    &__total
+        font-size: $font-size-small
+        color: $text-color-500
+        line-height: calc(24 / 12)
+
+    &__delete
+        background-color: #FF7171
+        display: flex
+        align-items: center
+        color: #fff
+        border: 1.5px solid #FFFFFF
+        border-radius: 4px
+        gap: 0 19px
+        padding: 5px 10px
+        cursor: pointer
+
+    .p-paginator
+        padding: 0 !important
+
+        .p-paginator-page
+            background-color: #fff !important
+            color: $text-color-500 !important
+            font-weight: bold
+            border: none !important
+
+            &.p-highlight
+                color: $primary !important
+
+        .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
+            color: $text-color-900
+            border: none
+
+            &:hover
+                border-radius: 4px
+                color: $primary
+
+        .p-link:focus
+            box-shadow: none
+
+.table__action
+    display: flex
+    align-items: center
+    gap: 0 8px
+
+    span
+        width: 34px
+        height: 34px
+        border-radius: 4px
+        background-color: #F1F3F6
+        display: flex
+        align-items: center
+        justify-content: center
+        cursor: pointer
+
+    &.action-disabled
+        span
+            pointer-events: none
+
+        .icon-btn
+            background-color: #D2D2E0
+
+.table__status
+  background-color: #EAF3EB
+  border-radius: 3px
+  padding: 2px 8px
+  font-size: $font-size-small
+  text-transform: uppercase
+  font-weight: bold
+  font-size: $font-size-small
+  line-height: calc(20 / 12)
+
+  &--available
+    color: #00A469
+
+  &--disable
+    color: #979AA4
 

@@ -49,14 +49,14 @@
               template(#body='{ data }') {{ data.category.name }}
           Column(field='status' header='Status')
             template(#body='{ data }')
-              span.stock__status.stock__status--available(v-if="data.delete") Available
-              span.stock__status.stock__status--disable(v-else) Disable
+              span.table__status.table__status--available(v-if="data.delete") Available
+              span.table__status.table__status--disable(v-else) Disable
           Column(field='action' header='Action')
             template(#body='{ data }')
-              .table__action.flex.align-items-center(:class="{'action-disabled': !data.delete}")
-                span.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem
+              .table__action(:class="{'action-disabled': !data.delete}")
+                span
                   .icon-btn.icon-btn-edit
-                span.ml-2.cursor-pointer.bg-gray-200.flex.align-items-center.justify-content-center.border-round.w-2rem.h-2rem(@click="showModalDelete(data.id)")
+                span(@click="showModalDelete(data.id)")
                   .icon-btn.icon-btn-delete
           template(#footer)
             .pagination
@@ -256,7 +256,7 @@ class Stock extends Vue {
 export default Stock
 </script>
 
-<style lang="sass" scoped >
+<style lang="sass" scoped>
 
 .stock
   display: flex
@@ -318,24 +318,5 @@ export default Stock
 
   &-no
     font-size: $font-size-medium
-
-.table__action
-  &.action-disabled
-    span
-      pointer-events: none !important
-    .icon-btn
-      background-color: #D2D2E0 !important
-
-.stock__status
-  background: #EAF3EB
-  border-radius: 3px
-  padding: 2px 8px
-  font-size: $font-size-small
-
-  &--available
-    color: #00A469
-
-  &--disable
-    color: #979AA4
 
 </style>
