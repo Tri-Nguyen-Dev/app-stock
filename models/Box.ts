@@ -8,13 +8,10 @@ export namespace Box {
       email: string
     },
     createAt?: Date,
-    attribute: 
-      {
-        length: number,
-        width: number,
-        height: number
-        weight: number,
-      },
+    length: number,
+    width: number,
+    height: number
+    weight: number,
     warehouse: {
       id: string,
       name: string
@@ -23,6 +20,6 @@ export namespace Box {
       id:string,
       name:string
     },
-    status?: string
+    status?: boolean
   }
 }

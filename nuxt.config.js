@@ -57,7 +57,8 @@ export default {
       'Tag',
       'Paginator',
       'Calendar',
-      'ScrollPanel'
+      'ScrollPanel',
+      'Dialog'
     ],
     directives: ['Tooltip', 'Badge']
   },

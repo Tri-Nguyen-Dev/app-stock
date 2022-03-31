@@ -92,7 +92,7 @@
           template(#body="{data}")
             Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.status")
               .icon--small.icon-edit
-            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="deleteBoxById(data.id)" :disabled="!data.status")
+            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="!data.status")
               .icon--small.icon-delete
         template(#empty)
           div.text-center
@@ -105,19 +105,34 @@
             .flex.align-items-center(v-if="selectedBoxes.length <= 0")
               .icon--large.icon-footer-paginator.surface-400
               span.ml-3.text-400.font-sm Showing 01 - {{pageSize}} of {{totalBoxRecords}}
-            Button(@click="deleteBoxById(null)" v-if="selectedBoxes.length>0").p-button-danger.opacity-70
+            Button(@click="showModalDelete(null)" v-if="selectedBoxes.length>0").p-button-danger.opacity-70
               .icon--small.icon-delete.bg-white
               span.ml-3 Delete {{selectedBoxes.length}} items selected
           Paginator(:rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
+    ConfirmDialogCustom(
+      title="Confirm delete" 
+      :message="`Are you sure you want to delete in this list stock?`"
+      image="confirm-delete"
+      :isShow="isModalDelete"
+      :onOk="handleDeleteStock"
+      :onCancel="handleCancel"
+      :loading="loadingSubmit"
+    )
+
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreMasterData = namespace('box/master-data')
 
-@Component
+@Component({
+  components: {
+    ConfirmDialogCustom
+  }
+})
 class BoxList extends Vue {
   selectedBoxes=[];
   selectedWarehouse = null
@@ -128,6 +143,9 @@ class BoxList extends Vue {
   dateTo = null
   pageNumber: number = 0
   pageSize: number = 20
+  isModalDelete: boolean = false
+  loadingSubmit: boolean = false
+  ids: string[] = []
 
   @nsStoreBox.State
   boxList!: Box.Model[]
@@ -135,11 +153,11 @@ class BoxList extends Vue {
   @nsStoreBox.State
   totalBoxRecords!: number
 
-  @nsStoreBox.Action
-  actGetBoxList!: (params: any) => Promise<void>
-
   @nsStoreMasterData.State
   masterData!: any
+  
+  @nsStoreBox.Action
+  actGetBoxList!: (params: any) => Promise<void>
 
   @nsStoreMasterData.Action
   actGetMasterData!: () => Promise<void>
@@ -154,6 +172,24 @@ class BoxList extends Vue {
     await this.actGetMasterData()
   }
 
+  @Watch('selectedSize')
+  @Watch('selectedWarehouse')
+  filterChange() {
+    // console.log("value");
+  }
+
+  async onPage(event: any) {
+    await this.actGetBoxList({ pageNumber: event.page + 1, pageSize: this.pageSize })
+  }
+
+  async handleDeleteStock() {
+    // console.log(this.ids);
+  }
+
+  handleCancel() {
+    this.isModalDelete = false
+  }
+
   async deleteBoxById(id: any) {
     const ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id)
     const result = await this.actDeleteBoxById({ids})
@@ -162,35 +198,26 @@ class BoxList extends Vue {
     }
   }
 
-  @Watch('selectedSize')
-  @Watch('selectedWarehouse')
-  filterChange() {
-    // console.log("value");
+  showModalDelete(id?: string) {
+    this.ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id);
+    this.isModalDelete = true
   }
-
-  rowSelect() {
-    this.$router.push('/search');
-  }
-
+  
   rowClass(data: Box.Model) {
     return !data.status && 'row-disable';
-  }
-
-  async onPage(event: any) {
-    await this.actGetBoxList({ pageNumber: event.page + 1, pageSize: this.pageSize })
   }
 }
 export default BoxList
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .box-page-container
   height: calc(100vh - 32px)
-  .p-component
+  ::v-deep.p-component
     font-family: $font-family-primary
-  .pi-calendar:before
+  ::v-deep.pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
-  .p-calendar-w-btn
+  ::v-deep.p-calendar-w-btn
     .p-button
       background: none
       border: none
