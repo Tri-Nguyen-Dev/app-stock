@@ -1,5 +1,3 @@
-
-
 module.exports = function(req, res) {
   const headers = res.getHeaders();
   const totalCount = headers['x-total-count']
