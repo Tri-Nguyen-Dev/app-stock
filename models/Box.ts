@@ -13,9 +13,6 @@ export namespace Box {
     width: number,
     height: number
     weight: number,
-    attributes: [
-      { id: number, name: string, value: number},
-    ]
     warehouse: {
       id: string,
       name: string
@@ -24,6 +21,6 @@ export namespace Box {
       id:string,
       name:string
     },
-    deleted?: boolean
+    status?: boolean
   }
 }

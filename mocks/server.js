@@ -25,7 +25,9 @@ server.use(
     '/auth/:page': '/:page',
     '*name*': '$1name_like$2',
     '*barcode*': '$1barcode_like$2',
-    '*email*': '$1seller.email_like$2'
+    '*sellerName*': '$1seller.name_like$2',
+    '*&from*': '$1&createdAt_gte$2',
+    '*&to*': '$1?createdAt_lte$2'
   })
 )
 

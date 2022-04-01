@@ -7,7 +7,6 @@ const genBoxList = require('./box.js')
 const genStockBox = require('./stock-box.js')
 const genTypeList = require('./types.js')
 const location = require('./location.json')
-const size = require('./size.json')
 
 module.exports = {
   user,
@@ -17,7 +16,5 @@ module.exports = {
   category,
   warehouse,
   box: genBoxList(warehouse, location),
-  items: genStockBox(),
-  location,
-  size
+  items: genStockBox()
 }

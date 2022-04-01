@@ -1,195 +1,195 @@
-$heading-table-color: #F9F9FC
-$td-hover-color: #E8EAEF
-$bottom-td-color: rgb(21, 22, 34, 0.05)
+// $heading-table-color: #F9F9FC
+// $td-hover-color: #E8EAEF
+// $bottom-td-color: rgb(21, 22, 34, 0.05)
 
-// custom table
-.p-datatable
-    font-family: $font-family-primary
-    font-size: $font-size-base !important
+// // custom table
+// .p-datatable
+//     font-family: $font-family-primary
+//     font-size: $font-size-base !important
 
-    .p-datatable-wrapper
-        flex: 1
-        &::-webkit-scrollbar
-            width: 6px
-            height: 6px
+//     .p-datatable-wrapper
+//         flex: 1
+//         &::-webkit-scrollbar
+//             width: 6px
+//             height: 6px
 
-        &::-webkit-scrollbar-thumb
-            border-radius: 10px
-            background-color: $text-color-700
+//         &::-webkit-scrollbar-thumb
+//             border-radius: 10px
+//             background-color: $text-color-700
 
-        .p-datatable-table
-            height: 100%
+//         .p-datatable-table
+//             height: 100%
 
-    .p-datatable-thead
-        position: sticky
-        top: 0
-        z-index: 1
+//     .p-datatable-thead
+//         position: sticky
+//         top: 0
+//         z-index: 1
 
-    .p-datatable-tbody > tr.p-highlight
-        background-color: $primary
+//     .p-datatable-tbody > tr.p-highlight
+//         background-color: $primary
 
-        .text-white-active
-            color: $color-white !important
+//         .text-white-active
+//             color: $color-white !important
 
-    .p-datatable-thead tr:not(.p-highlight):hover
-        background: $td-hover-color !important
+//     .p-datatable-thead tr:not(.p-highlight):hover
+//         background: $td-hover-color !important
 
-    .p-datatable-thead > tr > th
-        background: $heading-table-color !important
-        font-weight: $font-weight-bold !important
-        font-size: $font-size-small
-        letter-spacing: 1px
-        text-transform: uppercase
-        color: $text-color-800 !important
-        white-space: nowrap
-        border: none !important
-        padding: 18px 26px
+//     .p-datatable-thead > tr > th
+//         background: $heading-table-color !important
+//         font-weight: $font-weight-bold !important
+//         font-size: $font-size-small
+//         letter-spacing: 1px
+//         text-transform: uppercase
+//         color: $text-color-800 !important
+//         white-space: nowrap
+//         border: none !important
+//         padding: 18px 26px
 
-        &:focus
-            box-shadow: none !important
+//         &:focus
+//             box-shadow: none !important
 
-        .p-column-resizer
-            width: 2.23px !important
-            border: none !important
+//         .p-column-resizer
+//             width: 2.23px !important
+//             border: none !important
 
-            &:hover
-                background-color: $primary
+//             &:hover
+//                 background-color: $primary
 
-        .pi-sort-alt:before
-            content: url('~/assets/icons/sort-alt.svg')
+//         .pi-sort-alt:before
+//             content: url('~/assets/icons/sort-alt.svg')
 
-        .pi-sort-amount-up-alt:before
-            content: url('~/assets/icons/sort-alt-up.svg')
+//         .pi-sort-amount-up-alt:before
+//             content: url('~/assets/icons/sort-alt-up.svg')
 
-        .pi-sort-amount-down
-            transform: rotate(180deg) !important
-            &:before
-                content: url('~/assets/icons/sort-alt-up.svg')
+//         .pi-sort-amount-down
+//             transform: rotate(180deg) !important
+//             &:before
+//                 content: url('~/assets/icons/sort-alt-up.svg')
 
-    .p-column-resizer-helper
-        width: 2.23px !important
-        border: none !important
-        background-color: $primary
+//     .p-column-resizer-helper
+//         width: 2.23px !important
+//         border: none !important
+//         background-color: $primary
 
-    .p-datatable-tbody > tr > td
-        white-space: nowrap
-        border-top: 1px solid $bottom-td-color
-        padding: 23px 26px
+//     .p-datatable-tbody > tr > td
+//         white-space: nowrap
+//         border-top: 1px solid $bottom-td-color
+//         padding: 23px 26px
 
-    .p-checkbox-box
-        border: 1.5px solid $text-color-500
-        border-radius: 2px
+//     .p-checkbox-box
+//         border: 1.5px solid $text-color-500
+//         border-radius: 2px
 
-        &.p-highlight
-            background-color: $primary
+//         &.p-highlight
+//             background-color: $primary
 
-        &.focus, &:not(.p-checkbox-disabled)
-            box-shadow: none !important
-            border: 1.5px solid $text-color-500 !important
+//         &.focus, &:not(.p-checkbox-disabled)
+//             box-shadow: none !important
+//             border: 1.5px solid $text-color-500 !important
 
-    .p-datatable-footer
-        padding: 0
+//     .p-datatable-footer
+//         padding: 0
 
-    .p-datatable-emptymessage
-        &:hover
-            background-color: $color-white !important
+//     .p-datatable-emptymessage
+//         &:hover
+//             background-color: $color-white !important
 
-    tr.row-disable
-        .p-checkbox
-            cursor: auto !important
-            pointer-events: none !important
+//     tr.row-disable
+//         .p-checkbox
+//             cursor: auto !important
+//             pointer-events: none !important
 
-            .p-checkbox-box
-                border: 1.5px solid #F1F3F6 !important
+//             .p-checkbox-box
+//                 border: 1.5px solid #F1F3F6 !important
 
-// pagination
-.pagination
-    display: flex
-    align-items: center
-    justify-content: space-between
-    background-color: $color-white
-    padding: 21px 26px
+// // pagination
+// .pagination
+//     display: flex
+//     align-items: center
+//     justify-content: space-between
+//     background-color: $color-white
+//     padding: 21px 26px
 
-    &__info
-        display: flex
-        align-items: center
-        gap: 0 19px
+//     &__info
+//         display: flex
+//         align-items: center
+//         gap: 0 19px
 
-    &__total
-        font-size: $font-size-small
-        color: $text-color-500
-        line-height: calc(24 / 12)
+//     &__total
+//         font-size: $font-size-small
+//         color: $text-color-500
+//         line-height: calc(24 / 12)
 
-    &__delete
-        background-color: #FF7171
-        display: flex
-        align-items: center
-        color: $color-white
-        border: 1.5px solid $color-white
-        border-radius: 4px
-        gap: 0 19px
-        padding: 5px 10px
-        cursor: pointer
+//     &__delete
+//         background-color: #FF7171
+//         display: flex
+//         align-items: center
+//         color: $color-white
+//         border: 1.5px solid $color-white
+//         border-radius: 4px
+//         gap: 0 19px
+//         padding: 5px 10px
+//         cursor: pointer
 
-    .p-paginator
-        padding: 0 !important
+//     .p-paginator
+//         padding: 0 !important
 
-        .p-paginator-page
-            background-color: $color-white !important
-            color: $text-color-500 !important
-            font-weight: bold
-            border: none !important
+//         .p-paginator-page
+//             background-color: $color-white !important
+//             color: $text-color-500 !important
+//             font-weight: bold
+//             border: none !important
 
-            &.p-highlight
-                color: $primary !important
+//             &.p-highlight
+//                 color: $primary !important
 
-        .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
-            color: $text-color-900
-            border: none
+//         .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
+//             color: $text-color-900
+//             border: none
 
-            &:hover
-                border-radius: 4px
-                color: $primary
+//             &:hover
+//                 border-radius: 4px
+//                 color: $primary
 
-        .p-link:focus
-            box-shadow: none
+//         .p-link:focus
+//             box-shadow: none
 
-.table__action
-    display: flex
-    align-items: center
-    gap: 0 8px
+// .table__action
+//     display: flex
+//     align-items: center
+//     gap: 0 8px
 
-    span
-        width: 34px
-        height: 34px
-        border-radius: 4px
-        background-color: $text-color-300
-        display: flex
-        align-items: center
-        justify-content: center
-        cursor: pointer
+//     span
+//         width: 34px
+//         height: 34px
+//         border-radius: 4px
+//         background-color: $text-color-300
+//         display: flex
+//         align-items: center
+//         justify-content: center
+//         cursor: pointer
 
-    &.action-disabled
-        span
-            pointer-events: none
+//     &.action-disabled
+//         span
+//             pointer-events: none
 
-        .icon-btn
-            background-color: $text-color-500
+//         .icon-btn
+//             background-color: $text-color-500
 
-.table__status
-  background-color: #EAF3EB
-  border-radius: 3px
-  padding: 2px 8px
-  font-size: $font-size-small
-  text-transform: uppercase
-  font-weight: $font-weight-bold
-  line-height: calc(20 / 12)
+// .table__status
+//   background-color: #EAF3EB
+//   border-radius: 3px
+//   padding: 2px 8px
+//   font-size: $font-size-small
+//   text-transform: uppercase
+//   font-weight: $font-weight-bold
+//   line-height: calc(20 / 12)
 
-  &--available
-    color: #00A469
+//   &--available
+//     color: #00A469
 
-  &--disable
-    color: #979AA4
+//   &--disable
+//     color: #979AA4
 
 
 $header-table-color: #F9F9FC

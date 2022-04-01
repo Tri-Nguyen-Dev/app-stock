@@ -22,11 +22,6 @@ export default class StoreBox extends VuexModule {
     this.totalBoxRecords = data.total
   }
 
-  @Mutation
-  setBoxListFilter(data: any) {
-    this.boxListFilter = data
-  }
-
   @Action({ commit: 'setBoxList', rawError: true })
   async actGetBoxList(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX, params)
@@ -34,10 +29,10 @@ export default class StoreBox extends VuexModule {
     return response.data
   }
 
-  @Action({ commit: 'setBoxListFilter', rawError: true })
+  @Action({ commit: 'setBoxList', rawError: true })
   async actGetBoxFilter(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX_FILTER, params)
     const response: any = await $api.get(url, {params})
-    return response
+    return response.data
   }
 }

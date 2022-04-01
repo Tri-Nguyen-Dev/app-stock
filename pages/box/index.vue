@@ -19,7 +19,7 @@
             .icon.icon-add-items.surface-900.bg-white
             span.text-900.ml-3.text-white Add box
   .grid(v-if="isFilter")
-    .col-9
+    .col-8
       .grid
         .col
           .bg-white.border-round
@@ -30,20 +30,17 @@
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm Location
-            Dropdown.w-full.border-0.mb-1(v-model="selectedLocation" :options="locationList" optionLabel="name" placeholder="Select")
+            span.p-input-icon-right.w-full
+              .icon.icon--right.icon-search.surface-900.icon--absolute
+              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model="textLocation")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Size
-            Dropdown.w-full.border-0.mb-1(v-model="selectedSize" :options="sizeList" optionLabel="name" placeholder="Select")
-        .col
-          .bg-white.border-round
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Code {{pageNumber}}
+              span.text-600.font-sm Code
             span.p-input-icon-right.w-full
               .icon.icon--right.icon-search.surface-900.icon--absolute
               InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code" v-model="textCode")
-    .col-3
+    .col-4
       .grid.grid-nogutter
         .col
           .bg-white.border-round-left
@@ -57,7 +54,7 @@
             Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0
-      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="getDataTable" responsiveLayout="scroll" :selection.sync="selectedBoxes"
+      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
       dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :class="boxList.length === 0 && 'datatable-empty'" :rowClass="rowClass")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO" sortable)
@@ -68,9 +65,9 @@
         Column(field="createdAt" header="CREATE TIME" sortable className="p-text-right")
           template(#body="{data}") {{new Date(data.createdAt).toLocaleDateString("en-US")}}
         Column(field="attributes" header="SIZE(CM)" className="p-text-right" bodyClass="font-semibold")
-          template(#body="{data}") {{data.attributes[0].value}}*{{data.attributes[1].value}}*{{data.attributes[2].value}}
-        Column(field="attributes" header="WEIGHT(KG)" className="p-text-right" bodyClass="font-semibold")
-          template(#body="{data}") {{data.attributes[3].value}}
+          template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
+        Column(field="weight" header="WEIGHT(KG)" className="p-text-right" bodyClass="font-semibold")
+          template(#body="{data}") {{data.weight}}
         Column(field="warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
@@ -84,15 +81,15 @@
         Column(field="status" header="STATUS" sortable className="p-text-right")
           template(#body="{data}")
             div
-              Tag(v-if="data.deleted" severity="success").px-2.bg-green-100
+              Tag(v-if="data.status" severity="success").px-2.bg-green-100
                 span.font-bold.text-green-400.font-sm AVAILABLE
               Tag(v-else severity="success").px-2.surface-200
                 span.font-bold.text-400.font-sm DISABLE
         Column(:exportable="false" header="ACTION" className="p-text-right")
           template(#body="{data}")
-            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.deleted")
+            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.status")
               .icon.icon-btn-edit
-            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="!data.deleted")
+            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="!data.status")
               .icon.icon-btn-delete
         template(#empty)
           div.text-center
@@ -104,11 +101,11 @@
           div
             .flex.align-items-center(v-if="selectedBoxes.length <= 0")
               .icon--large.icon-footer-paginator.surface-400
-              span.ml-3.text-400.font-sm Showing {{(pageNumber - 1) * pageSize}} - {{(pageNumber - 1) * pageSize + pageSize}} of {{totalBoxRecords}}
+              span.ml-3.text-400.font-sm Showing {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + pageSize}} of {{totalBoxRecords}}
             Button(@click="showModalDelete(null)" v-if="selectedBoxes.length>0").p-button-danger.opacity-70
               .icon--small.icon-delete.bg-white
               span.ml-3 Delete {{selectedBoxes.length}} items selected
-          Paginator(:rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
+          Paginator(:first.sync="firstPage" :rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
     ConfirmDialogCustom(
       title="Confirm delete"
       :message="`Are you sure you want to delete in this list stock?`"
@@ -139,17 +136,18 @@ class BoxList extends Vue {
   selectedBoxes = [];
   selectedWarehouse : any = null
   selectedSize: any = null
-  selectedLocation: any = null
+  textLocation: any = null
   textSearch: any = null
   textCode: any = null
-  dateFrom = null
-  dateTo = null
+  dateFrom: any = null
+  dateTo: any = null
   pageNumber: number = 1
   pageSize: number = 20
   isModalDelete: boolean = false
   loadingSubmit: boolean = false
   ids: string[] = []
   isFilter = false
+  firstPage = 1
 
   @nsStoreBox.State
   boxList!: Box.Model[]
@@ -191,35 +189,50 @@ class BoxList extends Vue {
 
   async mounted() {
     await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
-    this.actLocationList()
     this.actWarehouseList()
-    this.actSizeList()
   }
 
   @Watch('selectedWarehouse')
-  @Watch('selectedLocation')
+  @Watch('textLocation')
   @Watch('selectedSize')
   @Watch('textSearch')
   @Watch('textCode')
+  @Watch('dateFrom')
+  @Watch('dateTo')
   async filterChange() {
-    await this.actGetBoxFilter({
-      'email': this.textSearch,
+    this.firstPage = 1
+    this.pageNumber = 1
+    await this.actGetBoxFilter(this.getParamAPi())
+  }
+
+  getParamAPi(){
+    return {
+      pageNumber: this.pageNumber, pageSize: this.pageSize,
+      'sellerName': this.textSearch,
       'barcode': this.textCode,
       'warehouse.id': this.selectedWarehouse?.id,
-      'location.id': this.selectedLocation?.id,
-      'size.id': this.selectedSize?.id
-      }
-    )
+      'location.name': this.textLocation,
+      'size.id': this.selectedSize?.id,
+      'from': this.dateFrom ? this.formatDate(this.dateFrom): null,
+      'to': this.dateTo ? this.formatDate(this.dateTo): null
+    }
   }
 
-  get getDataTable() {
-    const data = this.boxListFilter?this.boxListFilter: this.boxList
-    return data
-  }
+  formatDate(date: any) {
+    const d = new Date(date);
+      let month = '' + (d.getMonth() + 1);
+      let day = '' + d.getDate();
+      const year = d.getFullYear();
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+    return [year, month, day].join('-');
+}
 
   async onPage(event: any) {
-    this.pageNumber = event.page + 1
-    await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
+    this.pageNumber = event.page + 1;
+    await this.actGetBoxList(this.getParamAPi())
   }
 
   async handleDeleteStock() {
@@ -244,7 +257,7 @@ class BoxList extends Vue {
   }
 
   rowClass(data: Box.Model) {
-    return !data.deleted && 'row-disable';
+    return !data.status && 'row-disable';
   }
 }
 export default BoxList
