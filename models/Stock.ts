@@ -12,6 +12,6 @@ export namespace Stock {
       name: string
     },
     type?: object,
-    delete?: boolean,
+    deleted?: boolean,
   }
 }

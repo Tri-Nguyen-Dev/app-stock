@@ -3,18 +3,18 @@
     .stock__header
       div
         h1.text-heading Stock list
-        span.text-subheading 1280 product found
+        span.text-subheading {{ total }} product found
       div.stock__header-action
         div.stock__search
           span.p-input-icon-left
             .icon.icon--left.icon-search
             InputText#inputSearch(type='text' placeholder='Search' v-model="filter.name")
         .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
-          .icon-btn.icon-filter( v-if="!isShowFilter")
-          .icon-btn.icon-chevron-up.bg-primary(v-else)
+          .icon.icon-filter( v-if="!isShowFilter")
+          .icon.icon-chevron-up.bg-primary(v-else)
           span Filter
         .stock__btn-add.flex.align-items-center.bg-primary.border-round.cursor-pointer
-          .icon-btn.icon-add-items.bg-white
+          .icon.icon-add-items.bg-white
           span Add Stock
     .stock__filter(:class='{ "active": isShowFilter }')
       .stock__filter-item.bg-white.border-round
@@ -27,12 +27,12 @@
         .text-sm.stock__filter-title Code
         span.p-input-icon-right.w-full
             InputText#inputSearchCode.w-full(type="text" v-model="filter.barcode" placeholder="Search code" )
-            i.icon.icon-search.mt-0
+            i.icon.icon-search
       .stock__filter-item.bg-white.border-round
         .text-sm.stock__filter-title Status
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
-        DataTable.h-full.flex.flex-column(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
+        DataTable.h-full.flex.flex-column(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStockFilter' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
           Column(selectionMode='multiple')
           Column(field='no' header='NO')
             template(#body='{ index }')
@@ -41,13 +41,25 @@
             template(#body='{ data }')
               .stock__table__image.w-2rem.h-2rem.overflow-hidden
                 img.w-full.h-full.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
-          Column(field='name' header='Name' sortable)
+          Column(field='name')
+            template(#header)
+              div.table-sort(@click="handleSort('name')")
+                span Name
+                img(:src="require('~/assets/icons/sort-alt.svg')")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-          Column(field='barcode' header='Code' sortable)
+          Column(field='barcode')
+            template(#header)
+              div.table-sort(@click="handleSort('barcode')")
+                span Code
+                img(:src="require('~/assets/icons/sort-alt.svg')")
             template(#body='{ data }')
               .stock__table-barcode {{ data.barcode }}
-          Column(field='category' header='Category' sortable)
+          Column(field='category' sortable)
+              template(#header)
+                div.table-sort(@click="handleSort('category')")
+                  span Code
+                  img(:src="require('~/assets/icons/sort-alt.svg')")
               template(#body='{ data }') {{ data.category.name }}
           Column(field='status' header='Status')
             template(#body='{ data }')
@@ -56,10 +68,10 @@
           Column(field='action' header='Action')
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': !data.deleted}")
-                span
-                  .icon-btn.icon-btn-edit
+                span(@click="handleEditStock(data.id)")
+                  .icon.icon-edit-btn
                 span(@click="showModalDelete(data.id)")
-                  .icon-btn.icon-btn-delete
+                  .icon.icon-btn-delete
           template(#footer)
             .pagination
               div.pagination__info(v-if='!selectedStockFilter.length > 0')
@@ -89,6 +101,7 @@
     )
 
     Toast
+
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
@@ -147,23 +160,12 @@ class Stock extends Vue {
     { name: 'Available', value: true }
   ]
 
+  sort: any = {
+    sortByColumn: null,
+    sortDescending: false
+  }
+
   selectedStock: StockModel.Model[] = []
-
-  get selectedStockFilter() {
-    return this.selectedStock.filter(item => item.delete)
-  }
-
-  get getInfoPaginate() {
-    const { pageNumber, pageSize } = this.paginate
-
-    const start = (pageNumber * pageSize) - (pageSize - 1)
-
-    const convertStart = ('0' + start).slice(-2)
-
-    const end = Math.min(start + pageSize - 1, this.total)
-
-    return `Showing ${convertStart} - ${end} of ${this.total}`
-  }
 
   isShowFilter: boolean = false
 
@@ -181,7 +183,27 @@ class Stock extends Vue {
     return Object.values(this.filter).some(item => item)
   }
 
-  rowClass(data: any) {
+  get selectedStockFilter() {
+    return this.selectedStock.filter(item => item.deleted)
+  }
+
+  set selectedStockFilter (newValue) {
+    this.selectedStock = newValue
+  }
+
+  get getInfoPaginate() {
+    const { pageNumber, pageSize } = this.paginate
+
+    const start = (pageNumber * pageSize) - (pageSize - 1)
+
+    const convertStart = ('0' + start).slice(-2)
+
+    const end = Math.min(start + pageSize - 1, this.total)
+
+    return `Showing ${convertStart} - ${end} of ${this.total}`
+  }
+
+  rowClass(data: any) {    
     return !data.deleted ? 'row-disable': ''
   }
 
@@ -209,7 +231,7 @@ class Stock extends Vue {
       warehouseId: this.filter.warehouse?.id,
       categoryIds: this.filter.categories && this.filter.categories.map((item: any) => item?.id),
       barcode: this.filter.barcode,
-      delete: this.filter.status?.value
+      deleted: this.filter.status?.value
     }
 
     const params = {
@@ -261,6 +283,21 @@ class Stock extends Vue {
 
   handleCancel() {
     this.isModalDelete = false
+  }
+
+  handleEditStock(id: any) {
+    this.$router.push(`/stock/stock-detail/${id}`)
+  }
+
+  rowdbClick({ data }) {
+    this.$router.push(`/stock/stock-detail/${data.id}`)
+  }
+
+  handleSort(field: any) {
+    this.sort = {
+      sortByColumn: field,
+      sortDescending: !this.sort.sortDescending
+    }
   }
 }
 export default Stock
@@ -331,5 +368,11 @@ export default Stock
 
   &-barcode
     text-transform: uppercase
+
+.table-sort
+  cursor: pointer
+  display: flex
+  align-items: center
+  gap: 0 7px
 
 </style>
