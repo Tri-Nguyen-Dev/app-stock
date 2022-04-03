@@ -32,7 +32,7 @@
         .text-sm.stock__filter-title Status
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
-        DataTable.h-full.flex.flex-column(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStockFilter' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
+        DataTable.h-full.flex.flex-column(:class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
           Column(selectionMode='multiple')
           Column(field='no' header='NO')
             template(#body='{ index }')
@@ -43,22 +43,22 @@
                 img.w-full.h-full.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
           Column(field='name')
             template(#header)
-              div.table-sort(@click="handleSort('name')")
+              div.table__sort(@click="handleSort('name')")
                 span Name
                 img(:src="require('~/assets/icons/sort-alt.svg')")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
           Column(field='barcode')
             template(#header)
-              div.table-sort(@click="handleSort('barcode')")
+              div.table__sort(@click="handleSort('barcode')")
                 span Code
                 img(:src="require('~/assets/icons/sort-alt.svg')")
             template(#body='{ data }')
               .stock__table-barcode {{ data.barcode }}
-          Column(field='category' sortable)
+          Column(field='category')
               template(#header)
-                div.table-sort(@click="handleSort('category')")
-                  span Code
+                div.table__sort(@click="handleSort('category')")
+                  span Category
                   img(:src="require('~/assets/icons/sort-alt.svg')")
               template(#body='{ data }') {{ data.category.name }}
           Column(field='status' header='Status')
@@ -102,6 +102,7 @@
 
     Toast
 
+   
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
@@ -116,7 +117,6 @@ const nsStoreStock = namespace('stock/stock-list')
     ConfirmDialogCustom
   }
 })
-
 class Stock extends Vue {
   @nsStoreStock.State
   total!: number
@@ -179,22 +179,18 @@ class Stock extends Vue {
 
   isFilter: boolean = false
 
-  get checkIsFilter () {
-    return Object.values(this.filter).some(item => item)
-  }
-
   get selectedStockFilter() {
-    return this.selectedStock.filter(item => item.deleted)
+    return this.selectedStock.filter((item) => item.deleted)
   }
 
-  set selectedStockFilter (newValue) {
-    this.selectedStock = newValue
+  get checkIsFilter() {
+    return Object.values(this.filter).some((item) => item)
   }
 
   get getInfoPaginate() {
     const { pageNumber, pageSize } = this.paginate
 
-    const start = (pageNumber * pageSize) - (pageSize - 1)
+    const start = pageNumber * pageSize - (pageSize - 1)
 
     const convertStart = ('0' + start).slice(-2)
 
@@ -203,20 +199,21 @@ class Stock extends Vue {
     return `Showing ${convertStart} - ${end} of ${this.total}`
   }
 
-  rowClass(data: any) {    
-    return !data.deleted ? 'row-disable': ''
+  rowClass(data: any) {
+    return !data.deleted ? 'row-disable' : ''
   }
 
   toggleShowFilter() {
     this.isShowFilter = !this.isShowFilter
 
-    if(this.checkIsFilter) this.filter = {
-      name: null,
-      warehouse: null,
-      categories: null,
-      barcode: null,
-      status: null
-    }
+    if (this.checkIsFilter)
+      this.filter = {
+        name: null,
+        warehouse: null,
+        categories: null,
+        barcode: null,
+        status: null
+      }
   }
 
   mounted() {
@@ -229,7 +226,9 @@ class Stock extends Vue {
     const filter = {
       name: this.filter.name,
       warehouseId: this.filter.warehouse?.id,
-      categoryIds: this.filter.categories && this.filter.categories.map((item: any) => item?.id),
+      categoryIds:
+        this.filter.categories &&
+        this.filter.categories.map((item: any) => item?.id),
       barcode: this.filter.barcode,
       deleted: this.filter.status?.value
     }
@@ -275,7 +274,12 @@ class Stock extends Vue {
       this.loadingSubmit = false
       this.isModalDelete = false
 
-      this.$toast.add({severity:'success', summary: 'Success Message', detail:'Successfully deleted stock', life: 3000})
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted stock',
+        life: 3000
+      })
     } catch (error) {
       this.loadingSubmit = false
     }
@@ -368,11 +372,4 @@ export default Stock
 
   &-barcode
     text-transform: uppercase
-
-.table-sort
-  cursor: pointer
-  display: flex
-  align-items: center
-  gap: 0 7px
-
 </style>
