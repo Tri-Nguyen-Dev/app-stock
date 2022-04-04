@@ -10,7 +10,9 @@ import { Component, namespace, Vue } from 'nuxt-property-decorator'
 
 const nsSidebar = namespace('layout/store-sidebar')
 
-@Component
+@Component({
+  middleware: 'authenticate'
+})
 class Dashboard extends Vue {
   @nsSidebar.Getter('sidebarWidth')
   sidebarWidth!: string
@@ -23,5 +25,5 @@ export default Dashboard
 .main-container
   background-color: $bg-body-base
   height: 100vh
-  padding: $space-size-32 $space-size-32 0
+  padding: $space-size-32
 </style>
