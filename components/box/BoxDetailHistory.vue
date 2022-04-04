@@ -2,7 +2,7 @@
     DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable(
       responsiveLayout="scroll" 
       dataKey="id" 
-      :value='boxDetail'
+      :value='stockList'
       :resizableColumns="true" 
       :paginator="false" :rows="100"
       )
@@ -23,24 +23,12 @@
 
 </template>
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { Box } from '~/models/Box'
-const nsStoreSubmission = namespace('box/box-detail')
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class BoxDetailHistory extends Vue {
+@Prop() stockList!: () => any
   totalItemsCount = 32
-  @nsStoreSubmission.State
-  boxDetail!: Box.Model[]
-
-  @nsStoreSubmission.Action
-  actGetBoxList!: () => Promise<void>
-
-  async mounted() {
-    await this.actGetBoxList()
-
-  }
-
 }
 
 export default BoxDetailHistory

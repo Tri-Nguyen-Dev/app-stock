@@ -2,7 +2,7 @@
     DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable(
       :resizableColumns='true',
       :rows='15',
-      :value='boxDetail'
+      :value='stockList'
       dataKey='id',
       :paginator='false',
       :row-hover='true',
@@ -98,17 +98,17 @@
         div
           .flex.align-items-center
             span.ml-3.text-400.font-size-small Showing 01 - 100 of 1280
-        Paginator(:rows="20" :totalRecords="totalItemsCount").p-0
-
+        Paginator(:rows="20" :totalRecords="totalItemsCount" @page="onPage($event)").p-0
 </template>
 
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
 const nsStoreSubmission = namespace('box/box-detail')
 @Component
 class BoxDetailHistory extends Vue {
+  @Prop() stockList!: () => any
   totalItemsCount = 32
   @nsStoreSubmission.State
   boxDetail!: Box.Model[]
@@ -118,9 +118,10 @@ class BoxDetailHistory extends Vue {
 
   async mounted() {
     await this.actGetBoxList()
-
-
   }
+  // onPage(event: any) {
+  //   // console.log(event.page);
+  // }
 
 }
 
@@ -157,9 +158,6 @@ export default BoxDetailHistory
         font-weight:  bold
         border: none
         color: var(--surface-500)
-  ::-webkit-input-placeholder
-    color: $text-color-900
-  .p-disabled, .p-component:disabled
-    opacity: 1
+
 
 </style>

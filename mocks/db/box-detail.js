@@ -1,7 +1,7 @@
 const { faker } = require('@faker-js/faker')
 const _ = require('lodash')
 
-function generateData () {
+function generateData (locationList) {
   const stocks = []
   const categoryList = Array.from({ length: 10 }, (_, i) => {
     return { id: i, name: faker.commerce.product() }
@@ -22,6 +22,8 @@ function generateData () {
     const length = faker.datatype.number(100)
     const weight = faker.datatype.float({ max: 100 })
     const quantity = faker.datatype.number(100)
+    const location = _.sample(locationList)
+
 
     stocks.push({
       id,
@@ -38,7 +40,8 @@ function generateData () {
       status,
       createdAt,
       updatedAt,
-      barcode
+      barcode,
+      location
     })
   }
 

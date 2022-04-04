@@ -6,6 +6,8 @@ const genStockList = require('./stock.js')
 const genBoxList = require('./box.js')
 const genStockBox = require('./stock-box.js')
 const genTypeList = require('./types.js')
+const gentBoxDetail = require('./box-detail')
+const location = require('./location')
 
 module.exports = {
   user,
@@ -14,6 +16,8 @@ module.exports = {
   stock: genStockList(warehouse, category, genTypeList()),
   category,
   warehouse,
+  location,
   box: genBoxList(),
-  items: genStockBox()
+  items: genStockBox(),
+  boxDetail: gentBoxDetail( location)
 }
