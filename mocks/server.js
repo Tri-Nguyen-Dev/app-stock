@@ -29,7 +29,10 @@ server.use(
     '*&from*': '$1&createdAt_gte$2',
     '*&to*': '$1&createdAt_lte$2',
     '*&warehouseId*': '$1&warehouse.id$2',
-    '*&binName*': '$1&location.name$2'
+    '*&binName*': '$1&location.name$2',
+    '*&sort*': '$1&_sort$2',
+    '*&order=desc*': '$1&_order=desc$2',
+    '*&order=asc*': '$1&_order=asc$2'
   })
 )
 

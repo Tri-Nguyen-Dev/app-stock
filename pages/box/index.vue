@@ -55,32 +55,31 @@
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0
       DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
-      dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :class="boxList.length === 0 && 'datatable-empty'" :rowClass="rowClass")
+      dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :class="boxList.length === 0 && 'datatable-empty'" :rowClass="rowClass" @sort="sortData($event)")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
-        Column(field="no" header="NO" sortable)
+        Column(field="no" header="NO")
           template(#body="slotProps")
             span.font-semibold {{(pageNumber - 1) * pageSize + slotProps.index +1}}
-        Column(field="barCode" header="CODE" bodyClass="font-semibold")
-          template(#header)
-            h5 Custom
-        Column(field="seller.email" header="SELLER EMAIL" sortable className="w-3")
-        Column(field="createdAt" header="CREATE TIME" sortable className="p-text-right")
+        Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold")
+        Column(field="id" header="ID" :sortable="true" bodyClass="font-semibold")
+        Column(field="seller.email" header="SELLER EMAIL" :sortable="true" className="w-3")
+        Column(field="createdAt" header="CREATE TIME" :sortable="true" className="p-text-right")
           template(#body="{data}") {{new Date(data.createdAt).toLocaleDateString("en-US")}}
         Column(field="attributes" header="SIZE(CM)" className="p-text-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
         Column(field="weight" header="WEIGHT(KG)" className="p-text-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.weight}}
-        Column(field="warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
+        Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" className="p-text-right")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm {{data.warehouse.name}}
               .icon.icon-arrow-up-right.bg-primary
-        Column(field="location.name" header="LOCATION" sortable className="p-text-right")
+        Column(field="location.name" header="LOCATION" :sortable="true" className="p-text-right")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm {{data.location.name}}
               .icon.icon-arrow-up-right.bg-primary
-        Column(field="status" header="STATUS" sortable className="p-text-right")
+        Column(field="status" header="STATUS" :sortable="true" className="p-text-right")
           template(#body="{data}")
             div
               Tag(v-if="data.status" severity="success").px-2.bg-green-100
@@ -147,6 +146,8 @@ class BoxList extends Vue {
   ids: number[] = []
   isFilter = false
   firstPage = 1
+  sort: string|null = null
+  order: string|null = null
 
   @nsStoreBox.State
   boxList!: Box.Model[]
@@ -188,7 +189,9 @@ class BoxList extends Vue {
       'warehouseId': this.selectedWarehouse?.id,
       'binName': this.textLocation === '' ? null : this.textLocation,
       'from': this.dateFrom ? this.formatDate(this.dateFrom): null,
-      'to': this.dateTo ? this.formatDate(this.dateTo): null
+      'to': this.dateTo ? this.formatDate(this.dateTo): null,
+      'sort': this.sort === '' ? null : this.sort,
+      'order': this.order
     }
   }
 
@@ -210,7 +213,6 @@ class BoxList extends Vue {
   }
 
   async handleDeleteStock() {
-    // console.log(this.ids);
     const result = await this.actDeleteBoxById({ ids: this.ids })
     if(result) {
       // console.log("success");
@@ -238,6 +240,12 @@ class BoxList extends Vue {
     await this.actGetBoxList(this.getParamAPi())
   }, 500);
 
+  async sortData(e: any){
+    const {sortField, sortOrder} = e;
+    this.sort = sortField
+    this.order = sortOrder === 1 ? 'asc' : 'desc'
+    await this.actGetBoxList(this.getParamAPi())
+  }
 }
 export default BoxList
 </script>
