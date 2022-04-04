@@ -8,7 +8,7 @@
         div.stock__search
           span.p-input-icon-left
             .icon.icon--left.icon-search
-            InputText#inputSearch(type='text' placeholder='Search' v-on:input="debounceSearch")
+            InputText#inputSearch(type='text' placeholder='Search' v-model="filter.name")
         .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
           .icon.icon-filter( v-if="!isShowFilter")
           .icon.icon-chevron-up.bg-primary(v-else)
@@ -110,7 +110,6 @@
     Toast
 </template>
 <script lang="ts">
-import _ from 'lodash'
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
@@ -309,10 +308,6 @@ class Stock extends Vue {
     } 
     this.getProductList()
   }
-
-  debounceSearch = _.debounce((value) => {
-    this.filter.name = value
-  }, 500)
 }
 export default Stock
 </script>
