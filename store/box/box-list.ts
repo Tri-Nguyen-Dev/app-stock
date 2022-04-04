@@ -9,7 +9,7 @@ import { $api, PathBind } from '~/utils'
 export default class StoreBox extends VuexModule {
   private static readonly STATE_URL = {
     GET_BOX: '/api/box/list',
-    GET_BOX_FILTER: '/api/box'
+    DELETE_BOX: '/api/box/list'
   }
 
   public boxList?: Box.Model[] = []
@@ -29,10 +29,10 @@ export default class StoreBox extends VuexModule {
     return response.data
   }
 
-  @Action({ commit: 'setBoxList', rawError: true })
-  async actGetBoxFilter(params?: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX_FILTER, params)
-    const response: any = await $api.get(url, {params})
-    return response.data
+  @Action({ rawError: true })
+  async actDeleteBoxById(params: {ids: number[]}): Promise<any | undefined> {
+    const url = PathBind.transform(this.context, StoreBox.STATE_URL.DELETE_BOX, params)
+    const response: any = await $api.delete(url, {params})
+    return response
   }
 }

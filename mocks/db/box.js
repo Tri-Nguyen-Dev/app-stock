@@ -4,7 +4,7 @@ const _ = require('lodash')
 function generateData (warehouseList, locationList) {
   const boxes = []
   for (let id = 1; id < 105; id++) {
-    const barcode = faker.random.alphaNumeric(5)
+    const barCode = faker.random.alphaNumeric(5)
     const seller = {
       id,
       name: faker.name.firstName(),
@@ -21,7 +21,7 @@ function generateData (warehouseList, locationList) {
     const updatedAt = faker.date.between('2022-03-15', '2022-03-30').toISOString().split('T')[0]
     boxes.push({
       id,
-      barcode,
+      barCode,
       seller,
       warehouse,
       location,

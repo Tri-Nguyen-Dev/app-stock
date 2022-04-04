@@ -1,7 +1,7 @@
 export namespace Box {
   export interface Model {
     id: string,
-    barcode: string,
+    barCode: string,
     seller: {
       id: string,
       name: string,

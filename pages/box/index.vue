@@ -3,19 +3,19 @@
   .grid.justify-content-between
     .col-fixed
       h1.font-bold.m-0.font-size-4xlarge.line-height-1 Box list
-      span.text-600.font-sm(v-if="boxList") {{boxList.length}} products found
+      span.text-600.font-sm(v-if="boxList") {{totalBoxRecords}} products found
     .col-fixed
       .grid
         .col-fixed
           span.p-input-icon-left
             .icon.icon--left.icon-search.surface-900
-            InputText.w-21rem.h-3rem(type="text" placeholder="Search" v-model="textSearch")
+            InputText.w-21rem.h-3rem(type="text" placeholder="Search" v-model="textSearch" v-on:input="validateText")
         .col-fixed
           Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isFilter = !isFilter")
             .icon.bg-primary(:class="isFilter ? 'icon-chevron-up' : 'icon-filter'")
             span.text-900.ml-3.text-primary Filter
         .col-fixed
-          Button.w-9rem.h-3rem
+          Button.w-9rem.h-3rem.bg-primary
             .icon.icon-add-items.surface-900.bg-white
             span.text-900.ml-3.text-white Add box
   .grid(v-if="isFilter")
@@ -32,26 +32,26 @@
               span.text-600.font-sm Location
             span.p-input-icon-right.w-full
               .icon.icon--right.icon-search.surface-900.icon--absolute
-              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model="textLocation")
+              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model="textLocation" v-on:input="validateText")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm Code
             span.p-input-icon-right.w-full
               .icon.icon--right.icon-search.surface-900.icon--absolute
-              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code" v-model="textCode")
+              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code" v-model="textCode" v-on:input="validateText")
     .col-4
       .grid.grid-nogutter
         .col
           .bg-white.border-round-left
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm From
-            Calendar.w-full.mb-1(v-model="dateFrom" :showIcon="true" inputClass="border-0" placeholder="Select")
+            Calendar.w-full.mb-1(v-model="dateFrom" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
         .col.ml-1
           .bg-white.border-round-right
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm To
-            Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select")
+            Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0
       DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
@@ -60,7 +60,9 @@
         Column(field="no" header="NO" sortable)
           template(#body="slotProps")
             span.font-semibold {{(pageNumber - 1) * pageSize + slotProps.index +1}}
-        Column(field="barcode" header="CODE" sortable bodyClass="font-semibold")
+        Column(field="barCode" header="CODE" bodyClass="font-semibold")
+          template(#header)
+            h5 Custom
         Column(field="seller.email" header="SELLER EMAIL" sortable className="w-3")
         Column(field="createdAt" header="CREATE TIME" sortable className="p-text-right")
           template(#body="{data}") {{new Date(data.createdAt).toLocaleDateString("en-US")}}
@@ -101,10 +103,10 @@
           div
             .flex.align-items-center(v-if="selectedBoxes.length <= 0")
               .icon--large.icon-footer-paginator.surface-400
-              span.ml-3.text-400.font-sm Showing {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + pageSize}} of {{totalBoxRecords}}
+              span.ml-3.text-400.font-sm Showing {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + boxList.length}} of {{totalBoxRecords}}
             Button(@click="showModalDelete(null)" v-if="selectedBoxes.length>0").p-button-danger.opacity-70
               .icon--small.icon-delete.bg-white
-              span.ml-3 Delete {{selectedBoxes.length}} items selected
+              span.ml-3 Delete {{itemBoxDelete.length}} items selected
           Paginator(:first.sync="firstPage" :rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
     ConfirmDialogCustom(
       title="Confirm delete"
@@ -115,7 +117,6 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
-
 </template>
 
 <script lang="ts">
@@ -123,9 +124,8 @@ import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreBox = namespace('box/box-list')
-const nsStoreLocation = namespace('location/location-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
-const nsStoreSize = namespace('size/size-list')
+const _ = require('lodash')
 
 @Component({
   components: {
@@ -135,7 +135,6 @@ const nsStoreSize = namespace('size/size-list')
 class BoxList extends Vue {
   selectedBoxes = [];
   selectedWarehouse : any = null
-  selectedSize: any = null
   textLocation: any = null
   textSearch: any = null
   textCode: any = null
@@ -145,7 +144,7 @@ class BoxList extends Vue {
   pageSize: number = 20
   isModalDelete: boolean = false
   loadingSubmit: boolean = false
-  ids: string[] = []
+  ids: number[] = []
   isFilter = false
   firstPage = 1
 
@@ -155,37 +154,17 @@ class BoxList extends Vue {
   @nsStoreBox.State
   totalBoxRecords!: number
 
-  @nsStoreLocation.State
-  locationList!: any
-
   @nsStoreWarehouse.State
   warehouseList!: any
-
-  @nsStoreSize.State
-  sizeList!: any
-  
-  @nsStoreBox.State
-  boxListFilter!: Box.Model[]
 
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
 
-  @nsStoreBox.Action
-  actDeleteBoxById!: (
-    params: any
-  ) => Promise<any>
-
-  @nsStoreLocation.Action
-  actLocationList!: () => Promise<void>
-
   @nsStoreWarehouse.Action
   actWarehouseList!: () => Promise<void>
 
-  @nsStoreSize.Action
-  actSizeList!: () => Promise<void>
-
   @nsStoreBox.Action
-  actGetBoxFilter!: (params: any) => Promise<void>
+  actDeleteBoxById!: (params: {ids: number[]}) => Promise<any>
 
   async mounted() {
     await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
@@ -193,26 +172,21 @@ class BoxList extends Vue {
   }
 
   @Watch('selectedWarehouse')
-  @Watch('textLocation')
-  @Watch('selectedSize')
-  @Watch('textSearch')
-  @Watch('textCode')
   @Watch('dateFrom')
   @Watch('dateTo')
   async filterChange() {
     this.firstPage = 1
     this.pageNumber = 1
-    await this.actGetBoxFilter(this.getParamAPi())
+    await this.actGetBoxList(this.getParamAPi())
   }
 
   getParamAPi(){
     return {
       pageNumber: this.pageNumber, pageSize: this.pageSize,
-      'sellerName': this.textSearch,
-      'barcode': this.textCode,
-      'warehouse.id': this.selectedWarehouse?.id,
-      'location.name': this.textLocation,
-      'size.id': this.selectedSize?.id,
+      'sellerName': this.textSearch === '' ? null : this.textSearch,
+      'barCode': this.textCode === '' ? null : this.textCode,
+      'warehouseId': this.selectedWarehouse?.id,
+      'binName': this.textLocation === '' ? null : this.textLocation,
       'from': this.dateFrom ? this.formatDate(this.dateFrom): null,
       'to': this.dateTo ? this.formatDate(this.dateTo): null
     }
@@ -228,7 +202,7 @@ class BoxList extends Vue {
     if (day.length < 2) 
         day = '0' + day;
     return [year, month, day].join('-');
-}
+  }
 
   async onPage(event: any) {
     this.pageNumber = event.page + 1;
@@ -237,28 +211,33 @@ class BoxList extends Vue {
 
   async handleDeleteStock() {
     // console.log(this.ids);
+    const result = await this.actDeleteBoxById({ ids: this.ids })
+    if(result) {
+      // console.log("success");
+    }
   }
 
   handleCancel() {
     this.isModalDelete = false
   }
-
-  async deleteBoxById(id: any) {
-    const ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id)
-    const result = await this.actDeleteBoxById({ids})
-    if (result) {
-      await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
-    }
+  
+  get itemBoxDelete(){
+    return _.filter(this.selectedBoxes, function(box: Box.Model) { return box.status });
   }
 
   showModalDelete(id?: string) {
-    this.ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id);
+    this.ids = id? [id] : this.itemBoxDelete;
     this.isModalDelete = true
   }
 
   rowClass(data: Box.Model) {
     return !data.status && 'row-disable';
   }
+
+  validateText =  _.debounce(async ()=>{
+    await this.actGetBoxList(this.getParamAPi())
+  }, 500);
+
 }
 export default BoxList
 </script>
