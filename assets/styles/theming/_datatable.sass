@@ -198,6 +198,9 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   align-items: center
   gap: 0 7px
 
+.sortDes
+  transform: rotate(180deg) !important
+
 
 $header-table-color: $text-color-100 
 $table-bg-color: $color-white
@@ -216,11 +219,11 @@ $table-bg-color: $color-white
     .pi-sort-alt:before
       content: url('~/assets/icons/sort.svg')
     .pi-sort-amount-up-alt:before
-      content: url('~/assets/icons/sortDesc.svg')
+      // content: url('~/assets/icons/sortDesc.svg')
     .pi-sort-amount-down
       transform: rotate(180deg) !important
       &:before
-        content: url('~/assets/icons/sortDesc.svg')
+        // content: url('~/assets/icons/sortDesc.svg')
   .p-datatable-wrapper
     flex: 1
     background: $table-bg-color

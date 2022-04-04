@@ -45,21 +45,24 @@
             template(#header)
               div.table__sort(@click="handleSort('name')")
                 span Name
-                img(:src="require('~/assets/icons/sort-alt.svg')")
+                img(:src="require(`~/assets/icons/sort-alt-up.svg`)" v-if="sort.sortByColumn && sort.sortByColumn === 'name'" :class="{ 'sortDes': sort.sortDescending }")
+                img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
           Column(field='barcode')
             template(#header)
               div.table__sort(@click="handleSort('barcode')")
                 span Code
-                img(:src="require('~/assets/icons/sort-alt.svg')")
+                img(:src="require(`~/assets/icons/sort-alt-up.svg`)" v-if="sort.sortByColumn && sort.sortByColumn === 'barcode'" :class="{ 'sortDes': sort.sortDescending }")
+                img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
             template(#body='{ data }')
               .stock__table-barcode {{ data.barcode }}
           Column(field='category')
               template(#header)
-                div.table__sort(@click="handleSort('category')")
+                div.table__sort(@click="handleSort('category.name')")
                   span Category
-                  img(:src="require('~/assets/icons/sort-alt.svg')")
+                  img(:src="require(`~/assets/icons/sort-alt-up.svg`)" v-if="sort.sortByColumn && sort.sortByColumn === 'category.name'" :class="{ 'sortDes': sort.sortDescending }")
+                  img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
               template(#body='{ data }') {{ data.category.name }}
           Column(field='status' header='Status')
             template(#body='{ data }')
@@ -101,7 +104,6 @@
     )
 
     Toast
-
    
 </template>
 <script lang="ts">
@@ -230,7 +232,9 @@ class Stock extends Vue {
         this.filter.categories &&
         this.filter.categories.map((item: any) => item?.id),
       barcode: this.filter.barcode,
-      deleted: this.filter.status?.value
+      deleted: this.filter.status?.value,
+      sortByColumn: this.sort?.sortByColumn,
+      sortDescending: this.sort?.sortDescending
     }
 
     const params = {
@@ -302,6 +306,8 @@ class Stock extends Vue {
       sortByColumn: field,
       sortDescending: !this.sort.sortDescending
     }
+
+    this.getProductList()
   }
 }
 export default Stock
