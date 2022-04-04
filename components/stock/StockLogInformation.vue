@@ -2,12 +2,12 @@
   .stock__log--information.bg-white.border-round.p-3
     .isChangeDate.pb-3.flex
       div.flex.mr-4
-        .icon-btn.icon-calendar
+        .icon.icon-calendar
         span.font-semibold 11:00, 10 January 2022
       div.flex
         span.uppercase.text-500.font-semibold boxcode:&nbsp;
         span.uppercase.font-semibold.text-blue-700.mr-1 ef9999
-        .icon-btn.icon-export
+        .icon.icon-arrow-up-right
     .informationChange.pt-3
       .grid
         .col.border-right-1.border-black-alpha-10

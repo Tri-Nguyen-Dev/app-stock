@@ -8,6 +8,8 @@ function generateData (warehouseList, categoryList, typeList) {
     const description = faker.commerce.productDescription()
     const imageUrl = faker.image.business(480, 480, true)
     const barcode = faker.random.alphaNumeric(5)
+    const sku = faker.random.alphaNumeric(5)
+
     const category = _.sample(categoryList)
     const type = _.sample(typeList)
     const warehouse = _.sample(warehouseList)
@@ -28,10 +30,11 @@ function generateData (warehouseList, categoryList, typeList) {
       barcode,
       category,
       type,
+      sku,
       warehouse,
-      totalInventory,
       attributes,
       deleted,
+      totalInventory,
       createdAt,
       updatedAt
     })

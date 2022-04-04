@@ -9,38 +9,38 @@
       .stock__information--gerenal.p-4
         .grid.mb-3
           .col-9.pl-0.flex
-            .icon-btn.icon-box-info.inline-block.mr-1.bg-blue-700
+            .icon.icon-box-info.mr-1.bg-blue-700
             span.uppercase.font-bold.text-sm general infomation
           .col.flex.justify-content-end
             .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
-              .icon-btn.icon-btn-edit
+              .icon.icon-btn-edit
             Button(:class='isEditStockDetail ? " " : "hidden"' @click='saveEditStockDetail')
               .icon-btn.icon-check-lg.bg-white.mr-1
               span.uppercase save
         .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           img(:src='require("~/assets/images/sample.png")').border-round.w-full
         .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          Tag(severity="success").uppercase {{stockDetail.status ? 'Available' : 'Disable'}}
+          Tag(severity="success").uppercase {{stockDetail.deleted ? 'Available' : 'Disable'}}
         .grid.mb-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          h5.font-bold.my-2 {{stockDetail.name}}
-        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+          h3.font-bold.my-2 {{stockDetail.name}}
+        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 code:
-          span.uppercase.font-semibold.text-blue-700 {{stockDetail.code}}
-        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+          span.uppercase.font-semibold.text-blue-700 {{stockDetail.barcode}}
+        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 {{stockDetail.unit}}
+          span.uppercase.font-semibold.text-blue-700 {{ unitAttribute }}
         .grid.surface-hover.mb-3
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-size.bg-blue-700
           .col
             div.text-500 Size (cm)
-            InputText( :disabled='isEditStockDetail == 0' v-model='stockDetail.size')
+            InputText(:disabled='isEditStockDetail == 0' v-model='sizeAttribute')
         .grid.surface-hover.mb-3
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-weight.bg-blue-700
           .col
             div.text-500 Weight (kg)
-            InputText( :disabled='isEditStockDetail == 0' v-model='stockDetail.weight')
+            InputText(:disabled='isEditStockDetail == 0' v-model='weightAttribute')
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700
@@ -52,7 +52,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace} from 'nuxt-property-decorator'
-import { Stock } from '~/store/stock/stock-detail'
+import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
@@ -60,12 +60,14 @@ const nsStoreStock = namespace('stock/stock-detail')
 })
 class StockDetail extends Vue {
   isEditStockDetail: boolean = false
+  sizeAttribute: string = ''
+  weightAttribute: string = ''
 
   @nsStoreStock.State
-  stockDetail!: {}
+  stockDetail!: StockModel.ModelDetail
 
   @nsStoreStock.Action
-  actGetStockDetail!: (params: Stock.StockDetailId) => Promise<void>
+  actGetStockDetail
 
   backToStockList() {
     this.$router.push('/stock')
@@ -83,8 +85,14 @@ class StockDetail extends Vue {
     this.$router.push('/stock')
   }
 
+  get unitAttribute() {
+    return this.stockDetail.attributes?.find((x: { name: string }) => x.name === 'unit')?.value || ''
+  }
+
   async mounted() {
-    await this.actGetStockDetail({ id: 4 })
+    await this.actGetStockDetail({ id: Number.parseInt(this.$route.params.id) })
+    this.sizeAttribute = this.stockDetail.attributes?.find((x: { name: string }) => x.name === 'size')?.value || ''
+    this.weightAttribute = this.stockDetail.attributes?.find((x: { name: string }) => x.name === 'weight')?.value || ''
   }
 }
 export default StockDetail

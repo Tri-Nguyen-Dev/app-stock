@@ -32,7 +32,7 @@
         .text-sm.stock__filter-title Status
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
-        DataTable.h-full.flex.flex-column(:rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
+        DataTable.h-full.flex.flex-column(@row-click='redirectToDetail' :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
           Column(selectionMode='multiple')
           Column(field='no' header='NO')
             template(#body='{ index }')
@@ -56,7 +56,7 @@
           Column(field='action' header='Action')
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': !data.deleted}")
-                span
+                span(@click='editStockDetail(data.id)')
                   .icon-btn.icon-btn-edit
                 span(@click="showModalDelete(data.id)")
                   .icon-btn.icon-btn-delete
@@ -91,7 +91,7 @@
     Toast
 </template>
 <script lang="ts">
-import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Watch} from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
 const nsCategoryStock = namespace('category/category-list')
@@ -128,6 +128,8 @@ class Stock extends Vue {
 
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
+
+  isEditStockDetail: any
 
   paginate: any = {
     pageNumber: 1,
@@ -195,6 +197,14 @@ class Stock extends Vue {
       barcode: null,
       status: null
     }
+  }
+
+  redirectToDetail({ data }) {
+    this.$router.push(`stock/${data.id}`)
+  }
+
+  editStockDetail(id:any) {
+    this.$router.push(`stock/${id}`)
   }
 
   mounted() {

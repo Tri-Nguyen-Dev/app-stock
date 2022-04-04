@@ -24,7 +24,10 @@ server.use(
     '/:page/:id/delete': '/:page/:id',
     '/auth/:page': '/:page',
     '*name*': '$1name_like$2',
-    '*barcode*': '$1barcode_like$2'
+    '*barcode*': '$1barcode_like$2',
+    '*sellerName*': '$1seller.name_like$2',
+    '/stock/:stockId/box/list': '/stockbox?stockId=:stockId',
+    '/stock/:stockId/box/:boxId/detail': '/stockbox/:boxId?stockId=:stockId'
   })
 )
 

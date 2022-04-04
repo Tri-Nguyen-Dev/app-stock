@@ -14,4 +14,25 @@ export namespace Stock {
     type?: object,
     delete?: boolean,
   }
+
+  export interface ModelDetail {
+    id: string,
+    name?: string,
+    description?: string,
+    imageUrl?: string,
+    barcode?: string
+    unit?: string
+    sku? : string
+    attributes: [{
+      id: string
+      name: string
+      value: string
+    }]
+    category?: {
+      id: string
+      name: string
+    },
+    type?: object,
+    deleted?: boolean,
+  }
 }

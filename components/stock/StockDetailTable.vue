@@ -3,16 +3,16 @@
     .grid.justify-content-between
       .col-fixed
         h1.font-bold.m-0.font-size-4xlarge.line-height-1 Stock detail
-        span.text-600.font-sm(v-if="boxData") {{boxData.length}} results found
+        span.text-600.font-sm(v-if="itemsList") {{itemsList.length}} results found
       .col-fixed
         .grid
           .col-fixed
             span.p-input-icon-left
               .icon.icon--left.icon-search.surface-900
-              InputText.w-21rem.h-3rem(type="text" placeholder="Search")
+              InputText.w-21rem.h-3rem(type="text" placeholder="Search" v-model='filter.name')
           .col-fixed
             Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isShowFilter = !isShowFilter")
-              .icon--base.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
+              .icon.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
               span.text-900.ml-3.text-primary Filter
     .grid(v-show="isShowFilter")
       .col
@@ -40,7 +40,7 @@
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
             span.text-600.font-sm Warehouse
-          Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" :options="warehouse" optionLabel="name" placeholder="Select")
+          Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" optionLabel="name" placeholder="Select")
       .col
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
@@ -52,22 +52,19 @@
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
             span.text-600.font-sm Status
-          Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" :options="status" optionLabel="name" placeholder="Select")
+          Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" optionLabel="name" placeholder="Select")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
-        DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxData" :value="boxData" responsiveLayout="scroll" :selection.sync="selectedStock"
+        DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="itemsList" :value="itemsList" responsiveLayout="scroll" :selection.sync="selectedStock"
         dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" )
           Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
           Column(field="no" header="NO" sortable)
             template(#body="slotProps")
               span.font-semibold {{slotProps.index +1}}
           Column(field="seller.email" header="SELLER EMAIL" sortable className="w-3")
-          Column(field="createdAt" header="SKU" sortable className="p-text-right")
-            template(#body="{data}") {{new Date(data.createdAt).toLocaleDateString("en-US")}}
-          Column(field="attribute" header="INVENTORY QUANTITY" className="p-text-right" bodyClass="font-semibold")
-            template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
-          Column(field="attribute" header="BOX CODE" className="p-text-right" bodyClass="font-semibold")
-            template(#body="{data}") {{data.weight}}
+          Column(field="sku" header="SKU" sortable className="p-text-right")
+          Column(field="inventoryQuantity" header="INVENTORY QUANTITY" className="p-text-right" bodyClass="font-semibold")
+          Column(field="boxCode" header="BOX CODE" className="p-text-right" bodyClass="font-semibold")
           Column(field="warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
@@ -78,7 +75,7 @@
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.font-sm {{data.location.name}}
                 .icon--small.icon-arrow-up-right.bg-primary
-          Column(field="status" header="STATUS" sortable className="p-text-right")
+          Column(field="deleted" header="STATUS" sortable className="p-text-right")
             template(#body="{data}")
               div
                 Tag(v-if="data.status" severity="success").px-2.bg-green-100
@@ -96,7 +93,7 @@
               .flex.align-items-center(v-if="selectedStock.length <= 0")
                 .icon--large.icon-footer-paginator.surface-400
                 span.ml-3.text-400.font-sm Showing 01 - {{pageSize}} of {{totalBoxRecords}}
-              Button(@click="showModalDelete()" v-if="selectedStock.length>0").p-button-danger.opacity-70
+              Button(@click="showModalDelete()" v-if="selectedStock.length>0").p-button-danger.opacity-70.ml-1
                 .icon--small.icon-trash-white.bg-white
                 span.ml-3 Delete {{selectedStock.length}} items selected
             Paginator(:rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
@@ -141,11 +138,21 @@ class StockDetailTable extends Vue {
 
   totalBoxRecords: number = 100
 
+  filter: any = {
+    name: null,
+    sellerEmail: null,
+    boxCode: null,
+    warehouse: null,
+    location: null,
+    status: null
+  }
+
+
   @nsStoreStockTable.State
-  boxData!: any
+  itemsList!: {}
 
   @nsStoreStockTable.Action
-  actGetBoxData!: () => Promise<void>
+  actGetItemsList!: (params:any) => Promise<void>
 
   @Watch('selectedStock')
   getSelectedStock() {
@@ -180,8 +187,24 @@ class StockDetailTable extends Vue {
     }
   }
 
-  async mounted() {
-    await this.actGetBoxData()
+  async getItemsList() {
+    const filter = {
+      sellerName: this.filter.name
+    }
+    const params = {
+      filter,
+      id: this.$route.params.id
+    }
+    await this.actGetItemsList(params)
+  }
+
+  @Watch('filter', { deep: true })
+  getFilterList() {
+    this.getItemsList()
+  }
+
+  mounted() {
+    this.getItemsList()
   }
 }
 export default StockDetailTable

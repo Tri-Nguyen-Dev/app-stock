@@ -1,17 +1,17 @@
 <template lang="pug">
     DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable(
-      responsiveLayout="scroll" 
-      dataKey="id" 
+      responsiveLayout="scroll"
+      dataKey="id"
       :value='boxDetail'
-      :resizableColumns="true" 
+      :resizableColumns="true"
       :paginator="false" :rows="100"
       )
       Column(field="no" header="NO" sortable)
         template(#body='{data}')
-          span.font-bold {{data.length  + 1 }} 
+          span.font-bold {{data.length  + 1 }}
       Column(field="" header="TIME" sortable bodyClass="font-semibold" style=" width: 700px")
         template(#body='{data}')
-          span.font-bold {{data.createdAt}} 
+          span.font-bold {{data.createdAt}}
       Column(field="" header="ORIGINAL LOCATION" sortable)
       Column(field="" header="NEW LOCATION" sortable bodyClass="font-semibold")
       Column(field="" header="CREATOR ID" sortable bodyClass="font-semibold")
@@ -20,7 +20,6 @@
           .flex.align-items-center
             span.ml-3.text-400.font-size-small Showing 01 - 100 of 1280
         Paginator(:rows="20" :totalRecords="totalItemsCount").p-0
-
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'

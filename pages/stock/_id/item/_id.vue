@@ -9,11 +9,11 @@
       .stock__information.p-4
         .grid.mb-3
           .col-9.flex
-            .icon-btn.icon-box-info.inline-block.mr-1.bg-blue-700
+            .icon.icon-box-info.inline-block.mr-1.bg-blue-700
             span.uppercase.font-bold Item Detail
           .col.flex.justify-content-end
             .surface-hover.border-round.cursor-pointer.p-2(@click='editItemDetail' :class='isEditItemDetail ? "hidden" : " "')
-              .icon-btn.icon-btn-edit
+              .icon.icon-btn-edit
             Button(:class='isEditItemDetail ? " " : "hidden"' @click='saveEditItemDetail')
               .icon-btn.icon-check-lg.bg-white.mr-1
               span.uppercase save
@@ -59,7 +59,7 @@
               .col
                 div.text-500 Warehouse
                 span.font-semibold.mr-1.uppercase NTH001
-                .icon-btn.icon-export.inline-block
+                .icon-btn.icon-arrow-up-right.inline-block
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
@@ -68,7 +68,7 @@
               .col
                 div.text-500 Location
                 span.font-semibold.mr-1.uppercase NTH001
-                .icon-btn.icon-export.inline-block
+                .icon-btn.icon-arrow-up-right.inline-block
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -107,7 +107,7 @@
       .sender__information.p-4(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
         .grid.mb-3
           .col
-            .icon-btn.icon-sender-info.inline-block.mr-2.bg-blue-700
+            .icon.icon-sender-info.mr-2.bg-blue-700.inline-block
             span.uppercase.font-bold Seller information
         .surface-hover.mb-5
           .grid.p-3.align-items-center
@@ -130,24 +130,24 @@
             .col
               div.text-500 Phone number
               span.font-semibold {{stockDetail.senderName}}
-    .col-8.px-5.h-full.right__information--stock
-      TabView.custom-tabview
+    .col-8.px-5.right__information--stock
+      TabView
         TabPanel
           template(#header)
-            .icon-btn.icon-history.mr-2.surface-600
+            .icon.icon-history.mr-2.surface-600
             span Stock history
           .overflow-auto.stock__log--history
             StockLogInformation(v-for='item in 4' :key='item.index').mb-3
         TabPanel
           template(#header)
-            .icon-btn.icon-location-2.mr-2.surface-600
+            .icon.icon-location-2.mr-2.surface-600
             span Location history
-          StockDetailHistoryTable
+          .overflow-auto.stock__log--history
+            StockDetailHistoryTable
 
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { Stock } from '~/store/stock/stock-detail'
 const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
@@ -160,10 +160,10 @@ class ItemDetail extends Vue {
   stockDetail!: {}
 
   @nsStoreStock.Action
-  actGetStockDetail!: (params: Stock.StockDetailId) => Promise<void>
+  actGetStockDetail!: (params: { id: number }) => Promise<void>
 
   backToStockList() {
-    this.$router.push('/stock/stock-detail/id')
+    this.$router.push('/stock/id')
   }
 
   editItemDetail() {
@@ -200,12 +200,8 @@ $small: 1025px
         font-weight: 600
 
   .right__information--stock
-    // display: flex
-    // flex-direction: column
-
     .stock__log--history
-      height: calc(100vh - 65px)
-
+      height: calc(100vh - 130px)
     ::v-deep.p-tabview .p-tabview-nav li
       .p-tabview-nav-link
         background: #e9ecef
