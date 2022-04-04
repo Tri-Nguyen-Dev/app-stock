@@ -25,5 +25,5 @@ export default Dashboard
 .main-container
   background-color: $bg-body-base
   height: 100vh
-  padding: $space-size-32 $space-size-32 0
+  padding: $space-size-32
 </style>
