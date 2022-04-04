@@ -1,14 +1,16 @@
 <template>
   <div class="sidebar" :style="{ width: sidebarWidth }">
     <div class="menu-section sidebar-head">
-      <img v-if="!collapsed" class="user-avatar" :src="userImageUrl"/>
-      <div v-if="!collapsed" class="user-info">
-        <span class="user-name">{{ userDisplayName }}</span>
-        <br>
-        <span class="user-role">Role Example</span>
-      </div>
+      <template v-if="!collapsed">
+        <img class="user-avatar" :src="userImageUrl"/>
+        <div class="user-info">
+          <span class="user-name">{{ userDisplayName }}</span>
+          <span class="user-role">Role Ex</span>
+        </div>
+      </template>
       <div
-        class="icon icon--xlarge icon-menu-toggle bg-primary"
+        class="icon icon--xlarge icon-menu-toggle surface-500"
+        :class="{ 'bg-primary': collapsed}"
         @click="toggleSidebar"
       >
       </div>
@@ -42,6 +44,7 @@ const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class Sidebar extends Vue {
+  // -- Statement properties
   @nsSidebar.Getter('sidebarWidth')
   sidebarWidth!: string
 
@@ -51,6 +54,7 @@ class Sidebar extends Vue {
   @nsSidebar.Mutation('toggleSidebar')
   toggleSidebar
 
+  // -- Properties
   PAGE_MENU = [
     {
       to: '', icon: 'stock', active: false, child: [
@@ -98,12 +102,13 @@ export default  Sidebar
       border-radius: 8px
       margin-right: $space-size-12
 
+    .user-info
+      @include flex-column
+      flex-grow: 1
+
     .user-name
       font-size: $font-size-large
       font-weight: $font-weight-bold
-
-    .icon
-      margin-left: auto
 
   &-menu
     padding-top: $space-size-16
@@ -116,11 +121,4 @@ export default  Sidebar
 
   .menu-section
     position: relative
-
-.collapse-icon
-  position: absolute
-  bottom: 0
-  padding: 0.75em
-  color: rgba(255, 255, 255, 0.7)
-  transition: 0.2s linear
 </style>
