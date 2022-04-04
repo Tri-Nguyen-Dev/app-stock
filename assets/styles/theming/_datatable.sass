@@ -27,16 +27,9 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
     .p-datatable-tbody > tr
         height: 66px !important
-        background-color: $color-white !important
-
-        td
-            color: $text-color-900 !important
-
+        
     .p-datatable-tbody > tr.p-highlight:not(.row-disable)
         background-color: $primary !important
-
-        td
-            color: $color-white !important
 
         .text-white-active
             color: $color-white !important
@@ -91,9 +84,14 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         &:hover
             background-color: $color-white !important
 
+    .p-column-resizer
+        cursor: url('~/assets/icons/left-right.svg'), auto !important 
+
     tr.p-highlight.row-disable
+        background-color: unset
+        color: unset
         .p-checkbox-box
-            background-color: $color-white !important
+            background-color: unset
                 
     tr.row-disable
         .p-checkbox

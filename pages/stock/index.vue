@@ -8,7 +8,7 @@
         div.stock__search
           span.p-input-icon-left
             .icon.icon--left.icon-search
-            InputText#inputSearch(type='text' placeholder='Search' v-model="filter.name")
+            InputText#inputSearch(type='text' placeholder='Search' v-on:input="debounceSearch")
         .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
           .icon.icon-filter( v-if="!isShowFilter")
           .icon.icon-chevron-up.bg-primary(v-else)
@@ -33,11 +33,11 @@
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
         DataTable.h-full.flex.flex-column(:class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
-          Column(selectionMode='multiple')
-          Column(field='no' header='NO')
+          Column(selectionMode='multiple' :styles="{'width': '62px'}")
+          Column(field='no' header='NO' :styles="{'width': '62px'}" )
             template(#body='{ index }')
               span.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + (paginate.pageNumber - 1) * paginate.pageSize  }}
-          Column(field='imageUrl' header='Image')
+          Column(field='imageUrl' header='Image' :styles="{'width': '62px'}" )
             template(#body='{ data }')
               .stock__table__image.w-2rem.h-2rem.overflow-hidden
                 img.w-full.h-full.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
@@ -45,30 +45,36 @@
             template(#header)
               div.table__sort(@click="handleSort('name')")
                 span Name
-                img(:src="require(`~/assets/icons/sort-alt-up.svg`)" v-if="sort.sortByColumn && sort.sortByColumn === 'name'" :class="{ 'sortDes': sort.sortDescending }")
+                img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'name'" :class="{ 'sortDes': sort.sortDescending }")
                 img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-          Column(field='barcode')
+          Column(field='barcode' :styles="{'width': '140px'}")
             template(#header)
-              div.table__sort(@click="handleSort('barcode')")
+              div.w-full.flex.justify-content-end.table__sort(@click="handleSort('barcode')")
                 span Code
-                img(:src="require(`~/assets/icons/sort-alt-up.svg`)" v-if="sort.sortByColumn && sort.sortByColumn === 'barcode'" :class="{ 'sortDes': sort.sortDescending }")
-                img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
+                img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'barcode'" :class="{ 'sortDes': sort.sortDescending }")
+                img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
             template(#body='{ data }')
-              .stock__table-barcode {{ data.barcode }}
-          Column(field='category')
+              div.flex.justify-content-end.stock__table-barcode {{ data.barcode }}
+          Column(field='category' :styles="{'width': '140px'}")
               template(#header)
-                div.table__sort(@click="handleSort('category.name')")
+                div.w-full.flex.justify-content-end.table__sort(@click="handleSort('category.name')")
                   span Category
-                  img(:src="require(`~/assets/icons/sort-alt-up.svg`)" v-if="sort.sortByColumn && sort.sortByColumn === 'category.name'" :class="{ 'sortDes': sort.sortDescending }")
-                  img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
-              template(#body='{ data }') {{ data.category.name }}
-          Column(field='status' header='Status')
+                  img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'category.name'" :class="{ 'sortDes': sort.sortDescending }")
+                  img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
+              template(#body='{ data }')
+                div.flex.justify-content-end {{ data.category.name }}
+          Column(field='status' :styles="{'width': '82px'}")
+            template(#header)
+              div.flex.justify-content-center.w-full Status
             template(#body='{ data }')
-              span.table__status.table__status--available(v-if="data.deleted") Available
-              span.table__status.table__status--disable(v-else) Disable
-          Column(field='action' header='Action')
+              div.flex.justify-content-end
+                span.table__status.table__status--available(v-if="data.deleted") Available
+                span.table__status.table__status--disable(v-else) Disable
+          Column(field='action' :styles="{'width': '62px'}")
+            template(#header)
+              div.flex.justify-content-center.w-full Action
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': !data.deleted}")
                 span(@click="handleEditStock(data.id)")
@@ -92,7 +98,6 @@
                 span.text-primary.underline here
                 span to add item.
               p.text-900.font-bold.mt-3(v-else) Item not found!
-
     ConfirmDialogCustom(
       title="Confirm delete"
       :message="`Are you sure you want to delete ${ids.length} in this list stock?`"
@@ -102,11 +107,10 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
-
     Toast
-   
 </template>
 <script lang="ts">
+import _ from 'lodash'
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
@@ -168,17 +172,11 @@ class Stock extends Vue {
   }
 
   selectedStock: StockModel.Model[] = []
-
   isShowFilter: boolean = false
-
   loading: boolean = false
-
   isModalDelete: boolean = false
-
   ids: string[] = []
-
   loadingSubmit: boolean = false
-
   isFilter: boolean = false
 
   get selectedStockFilter() {
@@ -191,13 +189,9 @@ class Stock extends Vue {
 
   get getInfoPaginate() {
     const { pageNumber, pageSize } = this.paginate
-
     const start = pageNumber * pageSize - (pageSize - 1)
-
     const convertStart = ('0' + start).slice(-2)
-
     const end = Math.min(start + pageSize - 1, this.total)
-
     return `Showing ${convertStart} - ${end} of ${this.total}`
   }
 
@@ -207,7 +201,6 @@ class Stock extends Vue {
 
   toggleShowFilter() {
     this.isShowFilter = !this.isShowFilter
-
     if (this.checkIsFilter)
       this.filter = {
         name: null,
@@ -277,7 +270,6 @@ class Stock extends Vue {
       this.getProductList()
       this.loadingSubmit = false
       this.isModalDelete = false
-
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
@@ -302,19 +294,30 @@ class Stock extends Vue {
   }
 
   handleSort(field: any) {
-    this.sort = {
-      sortByColumn: field,
-      sortDescending: !this.sort.sortDescending
+    this.selectedStock = []
+    if(field === this.sort.sortByColumn) {
+      this.sort = {
+        sortByColumn: field,
+        sortDescending: !this.sort.sortDescending
+      }
     }
-
+    else {
+      this.sort = {
+        sortByColumn: field,
+        sortDescending: true
+      }
+    } 
     this.getProductList()
   }
+
+  debounceSearch = _.debounce((value) => {
+    this.filter.name = value
+  }, 500)
 }
 export default Stock
 </script>
 
 <style lang="sass" scoped>
-
 .stock
   display: flex
   flex-direction: column
@@ -324,7 +327,7 @@ export default Stock
     display: flex
     align-items: center
     justify-content: space-between
-    margin-bottom: 31px
+    margin-bottom: 24px
 
     &-action
       display: flex
@@ -369,9 +372,6 @@ export default Stock
 
 .stock__table
   border-radius: 4px
-
-  &-name
-    max-width: 138px
 
   &-no
     font-size: $font-size-medium
