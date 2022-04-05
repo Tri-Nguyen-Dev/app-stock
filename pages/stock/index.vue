@@ -32,12 +32,12 @@
         .text-sm.stock__filter-title Status
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
-        DataTable.h-full.flex.flex-column(:class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true' :resizableColumns='true')
+        DataTable.h-full.flex.flex-column(:class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
           Column(selectionMode='multiple' :styles="{'width': '1%'}")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
-          Column(field='imageUrl' header='Image' :styles="{'width': '2%'}")
+          Column(field='imageUrl' header='Image' :styles="{'width': '5%'}")
             template(#body='{ data }')
               .stock__table__image.w-2rem.h-2rem.overflow-hidden
                 img.w-full.h-full.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
@@ -49,34 +49,34 @@
                 img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-          Column(field='barCode' :styles="{'width': '10%'}")
+          Column(field='barCode' :styles="{'width': '5%'}")
             template(#header)
-              div.table__sort(@click="handleSort('barCode')")
+              div.w-full.flex.justify-content-end.table__sort(@click="handleSort('barCode')")
                 span Code
                 img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'barCode'" :class="{ 'sortDes': sort.sortDescending }")
                 img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
             template(#body='{ data }')
               div.flex.justify-content-end.stock__table-barcode {{ data.barCode }}
-          Column(field='category' :styles="{'width': '10%'}")
+          Column(field='category' :styles="{'width': '5%'}")
               template(#header)
-                div.table__sort(@click="handleSort('category.name')")
+                div.w-full.flex.justify-content-end.table__sort(@click="handleSort('category.name')")
                   span Category
                   img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'category.name'" :class="{ 'sortDes': sort.sortDescending }")
                   img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
               template(#body='{ data }')
-                div {{ data.category.name }}
-          Column(field='status' :styles="{'width': '82px'}")
+                div.flex.justify-content-end {{ data.category.name }}
+          Column(field='status' :styles="{'width': '5%'}")
             template(#header)
-              div Status
+              div.flex.justify-content-center.w-full Status
             template(#body='{ data }')
-              div
-                span.table__status.table__status--available(v-if="data.deleted") Available
+              div.flex.justify-content-end
+                span.table__status.table__status--available(v-if="!data.deleted") Available
                 span.table__status.table__status--disable(v-else) Disable
-          Column(field='action' :styles="{'width': '82px'}")
+          Column(field='action' :styles="{'width': '2%'}")
             template(#header)
-              div Action
+              div.flex.justify-content-center.w-full Action
             template(#body='{ data }')
-              .table__action(:class="{'action-disabled': !data.deleted}")
+              .table__action(:class="{'action-disabled': data.deleted}")
                 span(@click="handleEditStock(data.id)")
                   .icon.icon-edit-btn
                 span(@click="showModalDelete(data.id)")
@@ -160,8 +160,8 @@ class Stock extends Vue {
   }
 
   statusList: any = [
-    { name: 'Disable', value: false },
-    { name: 'Available', value: true }
+    { name: 'Disable', value: true },
+    { name: 'Available', value: false }
   ]
 
   sort: any = {
@@ -194,7 +194,7 @@ class Stock extends Vue {
   }
 
   rowClass(data: any) {
-    return !data.deleted ? 'row-disable' : ''
+    return data.deleted ? 'row-disable' : ''
   }
 
   toggleShowFilter() {
@@ -271,6 +271,12 @@ class Stock extends Vue {
         detail: 'Successfully deleted stock',
         life: 3000
       })
+      this.paginate(
+        {
+          pageNumber: 0,
+          pageSize: 10
+        }
+      )
     } catch (error) {
       this.loadingSubmit = false
     }
