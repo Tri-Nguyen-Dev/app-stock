@@ -16,15 +16,18 @@
 
 <script lang='ts'>
 
-import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
+const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItem extends Vue {
+
+  @nsSidebar.State('collapsed')
+  collapsed!: boolean
+
   @Prop(String) readonly to!:   string | undefined
 
   @Prop(String) readonly icon: string | undefined
-
-  @Prop(Boolean) readonly collapsed!: boolean | undefined
 
   @Prop(Boolean) readonly active!: boolean | undefined
 
