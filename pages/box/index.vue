@@ -54,14 +54,13 @@
             Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0
-      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
+      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes" removableSort
       dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :class="boxList.length === 0 && 'datatable-empty'" :rowClass="rowClass" @sort="sortData($event)")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO")
           template(#body="slotProps")
             span.font-semibold {{(pageNumber - 1) * pageSize + slotProps.index +1}}
         Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold")
-        Column(field="id" header="ID" :sortable="true" bodyClass="font-semibold")
         Column(field="seller.email" header="SELLER EMAIL" :sortable="true" className="w-3")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="p-text-right")
           template(#body="{data}") {{new Date(data.createdAt).toLocaleDateString("en-US")}}
