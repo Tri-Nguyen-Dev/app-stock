@@ -19,19 +19,19 @@
               span.uppercase save
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-4').stock__information--image
-            img(:src='require("~/assets/images/sample.png")').border-round
+            img(:src='itemDetail.imageUrl').border-round.w-full
           .col
-            Tag(severity="success").uppercase Available
-            h5.font-bold.my-2 Apple Macbook Pro
-            div
+            Tag(severity="success").uppercase {{itemDetail.deleted ? 'Disable' : 'Available'}}
+            h3.font-bold.my-2 {{itemDetail.name}}
+            div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 code:
-              span.uppercase.font-semibold.text-blue-700 ABH123
-            div
+              span.uppercase.font-semibold.text-blue-700 {{itemDetail.boxCode}}
+            div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 sku:
-              span.uppercase.font-semibold.text-blue-700 ABH123
+              span.uppercase.font-semibold.text-blue-700 {{itemDetail.sku}}
             div
               p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-              span.uppercase.font-semibold.text-blue-700 Piece
+              span.uppercase.font-semibold.text-blue-700 piece
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -40,7 +40,7 @@
                 .icon--large.icon-receipt-note.bg-blue-700
               .col
                 div.text-500 Receipt note ID
-                span.font-semibold 030133333
+                span.font-semibold {{itemDetail.receiptNote}}
                 .icon-btn.icon-export.inline-block
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -49,7 +49,7 @@
                 .icon--large.icon-tag-user.bg-blue-700
               .col
                 div.text-500 Creator ID
-                span.font-semibold NVN030133
+                span.font-semibold {{itemDetail.creatorId}}
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -58,7 +58,7 @@
                 .icon--large.icon-warehouse.bg-blue-700
               .col
                 div.text-500 Warehouse
-                span.font-semibold.mr-1.uppercase NTH001
+                span.font-semibold.mr-1.uppercase {{itemDetail.warehouse}}
                 .icon-btn.icon-arrow-up-right.inline-block
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -67,7 +67,7 @@
                 .icon--large.icon-location-2.bg-blue-700
               .col
                 div.text-500 Location
-                span.font-semibold.mr-1.uppercase NTH001
+                span.font-semibold.mr-1.uppercase {{itemDetail.location}}
                 .icon-btn.icon-arrow-up-right.inline-block
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
@@ -94,7 +94,7 @@
                   .icon--large.icon-boxcode.bg-blue-700
                 .col
                   div.text-500 Boxcode
-                  span.font-semibold.mr-1.uppercase hgn78
+                  span.font-semibold.mr-1.uppercase {{itemDetail.boxCode}}
                   .icon-btn.icon-export.inline-block
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
             .surface-hover.p-3
@@ -103,7 +103,7 @@
                   .icon--large.icon-price.bg-blue-700
                 .col
                   div.text-500 Value
-                  InputText(:disabled='isEditItemDetail == 0').w-6
+                  InputText(:disabled='isEditItemDetail == 0' v-model='itemDetail.price').w-6
       .sender__information.p-4(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
         .grid.mb-3
           .col
@@ -114,22 +114,22 @@
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
               .icon--large.icon-sender-name.bg-blue-700
             .col
-              div.text-500 Sender
-              span.font-semibold {{stockDetail.senderName}}
+              div.text-500 Seller
+              span.font-semibold {{}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
               .icon--large.icon-sender-email.bg-blue-700
             .col
               div.text-500 Email Address
-              span.font-semibold {{stockDetail.senderName}}
+              span.font-semibold {{itemDetail.seller}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
               .icon--large.icon-sender-phone.bg-blue-700
             .col
               div.text-500 Phone number
-              span.font-semibold {{stockDetail.senderName}}
+              span.font-semibold {{itemDetail.seller}}
     .col-8.px-5.right__information--stock
       TabView
         TabPanel
@@ -148,6 +148,7 @@
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
@@ -157,10 +158,10 @@ class ItemDetail extends Vue {
   isEditItemDetail: boolean = false
 
   @nsStoreStock.State
-  stockDetail!: {}
+  itemDetail!: StockModel.Model[]
 
   @nsStoreStock.Action
-  actGetStockDetail!: (params: { id: number }) => Promise<void>
+  actGetItemsDetail
 
   backToStockList() {
     this.$router.push('/stock/id')
@@ -175,7 +176,7 @@ class ItemDetail extends Vue {
   }
 
   async mounted() {
-    await this.actGetStockDetail({ id: 4 })
+    await this.actGetItemsDetail({ stockId: 1, boxId: 2 })
   }
 }
 export default ItemDetail

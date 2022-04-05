@@ -14,10 +14,8 @@ server.use(
   jsonServer.rewriter({
     '/api/*': '/$1',
     '/:page/list*': '/:page$2',
-    '*?pageSize*': '$1?_limit$2',
-    '*&pageSize*': '$1&_limit$2',
-    '*?pageNumber*': '$1?_page$2',
-    '*&pageNumber*': '$1&_page$2',
+    '*pageSize*': '$1_limit$2',
+    '*pageNumber*': '$1_page$2',
     '/:page/create': '/:page',
     '/:page/:id/detail': '/:page/:id',
     '/:page/:id/update': '/:page/:id',
@@ -25,9 +23,13 @@ server.use(
     '/auth/:page': '/:page',
     '*name*': '$1name_like$2',
     '*barcode*': '$1barcode_like$2',
-    '*sellerName*': '$1seller.name_like$2',
+    '*boxCode*': '$1boxCode_like$2',
+    '*location*': '$1location_like$2',
+    '*sku*': '$1sku_like$2',
     '/stock/:stockId/box/list': '/stockbox?stockId=:stockId',
+    '/stock/:stockId/box/list*': '/stockbox$2&stockId=:stockId',
     '/stock/:stockId/box/:boxId/detail': '/stockbox/:boxId?stockId=:stockId'
+
   })
 )
 

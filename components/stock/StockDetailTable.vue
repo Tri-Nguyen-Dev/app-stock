@@ -21,42 +21,42 @@
             span.text-600.font-sm Seller
           span.p-input-icon-right.w-full
             .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter seller")
+            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter seller" v-model='filter.sellerEmail')
       .col
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
             span.text-600.font-sm SKU
           span.p-input-icon-right.w-full
             .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter SKU")
+            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter SKU" v-model='filter.sku')
       .col
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
             span.text-600.font-sm Box Code
           span.p-input-icon-right.w-full
             .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter box code")
+            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter box code" v-model='filter.boxCode')
       .col
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
             span.text-600.font-sm Warehouse
-          Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" optionLabel="name" placeholder="Select")
+          Dropdown.w-full.border-0.mb-1(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
       .col
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
             span.text-600.font-sm Location
           span.p-input-icon-right.w-full
             .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location")
+            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model='filter.location')
       .col
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
             span.text-600.font-sm Status
-          Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" optionLabel="name" placeholder="Select")
+          Dropdown.w-full.border-0.mb-1(v-model="filter.status" :options="statusList" optionLabel="name" placeholder="Select")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
         DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="itemsList" :value="itemsList" responsiveLayout="scroll" :selection.sync="selectedStock"
-        dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" )
+        dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" @row-click='redirectToDetail')
           Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
           Column(field="no" header="NO" sortable)
             template(#body="slotProps")
@@ -111,6 +111,7 @@
 import { Component, namespace, Vue,Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreStockTable = namespace('stock/stock-detail')
+const nsWarehouseStock = namespace('warehouse/warehouse-list')
 
 @Component({
   components: {ConfirmDialogCustom}
@@ -139,20 +140,32 @@ class StockDetailTable extends Vue {
   totalBoxRecords: number = 100
 
   filter: any = {
-    name: null,
+    sellerName: null,
     sellerEmail: null,
     boxCode: null,
+    sku: null,
     warehouse: null,
     location: null,
     status: null
   }
 
+  statusList: any = [
+    { name: 'Disable', value: false },
+    { name: 'Available', value: true }
+  ]
+
 
   @nsStoreStockTable.State
   itemsList!: {}
 
+  @nsWarehouseStock.State
+  warehouseList!: any
+
   @nsStoreStockTable.Action
   actGetItemsList!: (params:any) => Promise<void>
+
+  @nsWarehouseStock.Action
+  actWarehouseList!: () => Promise<void>
 
   @Watch('selectedStock')
   getSelectedStock() {
@@ -178,7 +191,7 @@ class StockDetailTable extends Vue {
     try {
       // this.loadingSubmit = true
       // await this.actDeleteStockByIds(this.ids)
-      // this.getProductList()
+      // this.getItemsList()
       this.loadingSubmit = false
       this.isModalDelete = false
       this.selectedStock = []
@@ -189,7 +202,11 @@ class StockDetailTable extends Vue {
 
   async getItemsList() {
     const filter = {
-      sellerName: this.filter.name
+      sellerEmail: this.filter?.sellerEmail,
+      sku: this.filter?.sku,
+      boxCode: this.filter?.boxCode,
+      location: this.filter?.location,
+      status: this.filter?.status
     }
     const params = {
       filter,
@@ -201,6 +218,10 @@ class StockDetailTable extends Vue {
   @Watch('filter', { deep: true })
   getFilterList() {
     this.getItemsList()
+  }
+
+  redirectToDetail({ data }) {
+    this.$router.push(`${this.$route.params.id}/item/${data.id}`)
   }
 
   mounted() {

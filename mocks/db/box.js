@@ -7,13 +7,15 @@ function generateData () {
     const seller = {
       id,
       name: faker.name.firstName(),
-      email: faker.internet.email()
+      email: faker.internet.email(),
+      phone: faker.phone.phoneNumber()
     }
     const createdAt = faker.date.between('2022-03-01', '2022-03-15').toISOString().split('T')[0]
     const length = faker.datatype.number(100)
     const width = faker.datatype.number(100)
     const height = faker.datatype.number(100)
     const weight = faker.datatype.float({ max: 100 })
+    const imageUrl = faker.image.business(480, 480, true)
     const warehouse = {
       id,
       name: faker.datatype.string(5)
@@ -22,9 +24,10 @@ function generateData () {
       id,
       name: faker.phone.phoneNumber('501-###-###')
     }
-    const status = faker.datatype.number({ min: 0, max: 1 })
+    const deleted = faker.datatype.boolean()
     boxes.push({
       id,
+      imageUrl,
       barCode,
       seller,
       createdAt,
@@ -34,7 +37,7 @@ function generateData () {
       weight,
       warehouse,
       location,
-      status
+      deleted
     })
   }
 
