@@ -103,22 +103,12 @@
 
 
 <script lang="ts">
-import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
-import { Box } from '~/models/Box'
-const nsStoreSubmission = namespace('box/box-detail')
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
 @Component
 class BoxDetailHistory extends Vue {
   @Prop() stockList!: () => any
   totalItemsCount = 32
-  @nsStoreSubmission.State
-  boxDetail!: Box.Model[]
 
-  @nsStoreSubmission.Action
-  actGetBoxList!: () => Promise<void>
-
-  async mounted() {
-    await this.actGetBoxList()
-  }
   // onPage(event: any) {
   //   // console.log(event.page);
   // }

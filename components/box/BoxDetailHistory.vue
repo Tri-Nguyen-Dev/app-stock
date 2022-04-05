@@ -7,14 +7,16 @@
       :paginator="false" :rows="100"
       )
       Column(field="no" header="NO" sortable)
-        template(#body='{data}')
-          span.font-bold {{data.length  + 1 }} 
+        template(#body='slotProps')
+          span.font-bold {{slotProps.index + 1 }}
       Column(field="" header="TIME" sortable bodyClass="font-semibold" style=" width: 700px")
         template(#body='{data}')
-          span.font-bold {{data.createdAt}} 
+          span.font-bold {{data.createdAt}}
       Column(field="" header="ORIGINAL LOCATION" sortable)
       Column(field="" header="NEW LOCATION" sortable bodyClass="font-semibold")
       Column(field="" header="CREATOR ID" sortable bodyClass="font-semibold")
+        template(#body='{data}')
+          span.font-bold {{data.creatorId}}
       template(#footer)
         div
           .flex.align-items-center
@@ -27,13 +29,12 @@ import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class BoxDetailHistory extends Vue {
-@Prop() stockList!: () => any
+  @Prop() stockList!: () => any
   totalItemsCount = 32
 }
 
 export default BoxDetailHistory
 </script>
-
 
 <style lang="sass" scoped >
   .p-column-header-content

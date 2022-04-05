@@ -25,7 +25,7 @@
           .font-bold.my-3
             .col(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code: 
-                span.text-primary 2301321321
+                span.text-primary.uppercase {{boxList.barCode}}
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-receipt.bg-primary.icon--large
@@ -124,7 +124,7 @@
           h1.m-0.mb-1 Box List
       .grid.w-full.grid-nogutter.right__information--stock.relative.tabview-relative
         .col(class=' col-12  md:col-12 lg:col-12 xl:col-12')
-          TabView( @tab-click="onTabClick($event)" )
+          TabView( @tab-change="onTabClick($event)" )
             TabPanel
               template(#header)
                 .icon.icon-history.mr-2.surface-600
@@ -172,7 +172,7 @@
 <script lang="ts">
 import { Component,  Vue, Watch, namespace } from 'nuxt-property-decorator'
 
-const nsStoreSubmission = namespace('box/box-detail')
+const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
 const nsStoreLocationList = namespace('location/location-list')
 
@@ -189,19 +189,24 @@ class boxDetail extends Vue {
   barcodeFilter: any = null
   pageNumber: number = 1
   pageSize: number = 20
-   test: any = {}
 
   @nsStoreLocationList.State
   locationList!: any
 
-  @nsStoreSubmission.State
+  @nsStoreBoxDetail.State
   stockList!: any
 
+  @nsStoreBoxDetail.State
+  boxList!: any
+  
   @nsStoreCategoryList.State
   categoryList!:any
 
-  @nsStoreSubmission.Action
+  @nsStoreBoxDetail.Action
   actGetBoxDetailFilter!: (params: any) => Promise<void>
+
+  @nsStoreBoxDetail.Action
+  actGetBoxItem!: (params: any) => Promise<void>
 
   @nsStoreCategoryList.Action
   actCategoryList!: () => Promise<void>
@@ -210,6 +215,7 @@ class boxDetail extends Vue {
   actLocationList!: (params: any) => Promise<void>
 
   async mounted() {
+    await this.actGetBoxItem({ id: Number.parseInt(this.$route.params.id) })
     await this.actGetBoxDetailFilter( { pageNumber: this.pageNumber, pageSize: this.pageSize} )
     this.actCategoryList()
     this.actLocationList({name: null})
@@ -217,7 +223,6 @@ class boxDetail extends Vue {
 
   backToBox() {
     this.$router.push('/box')
-    
   }
 
   btnEdit() {
@@ -228,8 +233,6 @@ class boxDetail extends Vue {
       this.isItemHistory = !this.isItemHistory
       this.isFilter = false
   }
-
-
   
   @Watch('skuFilter')
   @Watch('barcodeFilter')
