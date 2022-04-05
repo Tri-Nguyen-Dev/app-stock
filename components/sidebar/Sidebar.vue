@@ -1,6 +1,12 @@
 <template>
   <div class="sidebar" :style="{ width: sidebarWidth }">
     <div class="menu-section sidebar-head">
+      <img v-if="!collapsed" class="user-avatar" :src="userImageUrl"/>
+      <div v-if="!collapsed" class="user-info">
+        <span class="user-name">{{ userDisplayName }}</span>
+        <br>
+        <span class="user-role">Role Example</span>
+      </div>
       <div
         class="icon icon--xlarge icon-menu-toggle bg-primary"
         @click="toggleSidebar"
@@ -29,8 +35,10 @@
 
 <script lang='ts'>
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { User } from '~/models/User'
 
 const nsSidebar = namespace('layout/store-sidebar')
+
 
 @Component
 class Sidebar extends Vue {
@@ -42,6 +50,27 @@ class Sidebar extends Vue {
 
   @nsSidebar.Mutation('toggleSidebar')
   toggleSidebar
+
+  PAGE_MENU = [
+    {
+      to: '', icon: 'stock', active: false, child: [
+
+      ]
+    }
+
+  ]
+
+  get user() {
+    return this.$auth.user as unknown as User.Model
+  }
+
+  get userImageUrl() {
+    return this.user.userDetail.pictureUrl
+  }
+
+  get userDisplayName() {
+    return this.user.userDetail.displayName
+  }
 }
 export default  Sidebar
 </script>
@@ -60,15 +89,28 @@ export default  Sidebar
 
   &-head
     @include flex-center-vert
-    height: 48px
     border-bottom: 1px solid $text-color-400
-    padding-bottom: $space-size-16
+    padding-bottom: $space-size-24
+
+    .user-avatar
+      @include size(48px)
+      border: 2px solid #0095FF
+      border-radius: 8px
+      margin-right: $space-size-12
+
+    .user-name
+      font-size: $font-size-large
+      font-weight: $font-weight-bold
+
+    .icon
+      margin-left: auto
 
   &-menu
     padding-top: $space-size-16
-    border-bottom: 1px solid $text-color-400
+
 
   &-foot
+    border-top: 1px solid $text-color-400
     height: 130px
     margin-top: auto
 

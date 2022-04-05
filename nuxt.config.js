@@ -83,7 +83,7 @@ export default {
           required: false
         },
         user: {
-          property: 'user',
+          property: '',
           autoFetch: true
         },
         endpoints: {
