@@ -5,7 +5,7 @@
       <div v-if="!collapsed" class="user-info">
         <span class="user-name">{{ userDisplayName }}</span>
         <br>
-        <span class="user-role">Role Example</span>
+        <span class="user-role">Role</span>
       </div>
       <div
         class="icon icon--xlarge icon-menu-toggle bg-primary"
@@ -60,16 +60,19 @@ class Sidebar extends Vue {
 
   ]
 
+  // TODO: update authentication later
   get user() {
-    return this.$auth.user as unknown as User.Model
+    return this.$auth.user as unknown as User.Model || null
   }
 
+  // TODO: update authentication later
   get userImageUrl() {
-    return this.user.userDetail.pictureUrl
+    return this.user?.userDetail.pictureUrl || ''
   }
 
+  // TODO: update authentication later
   get userDisplayName() {
-    return this.user.userDetail.displayName
+    return this.user?.userDetail.displayName || 'User Name'
   }
 }
 export default  Sidebar
