@@ -26,7 +26,7 @@
       .stock__filter-item.bg-white.border-round
         .text-sm.stock__filter-title Code
         span.p-input-icon-right.w-full
-            InputText#inputSearchCode.w-full(type="text" v-model="filter.barcode" placeholder="Search code" )
+            InputText#inputSearchCode.w-full(type="text" v-model="filter.barCode" placeholder="Search code" )
             i.icon.icon-search
       .stock__filter-item.bg-white.border-round
         .text-sm.stock__filter-title Status
@@ -36,7 +36,7 @@
           Column(selectionMode='multiple' :styles="{'width': '82px'}")
           Column(field='no' header='NO' :styles="{'width': '82px'}" )
             template(#body='{ index }')
-              span.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + (paginate.pageNumber - 1) * paginate.pageSize  }}
+              span.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
           Column(field='imageUrl' header='Image' :styles="{'width': '82px'}")
             template(#body='{ data }')
               .stock__table__image.w-2rem.h-2rem.overflow-hidden
@@ -49,14 +49,14 @@
                 img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-          Column(field='barcode' :styles="{'width': '10%'}")
+          Column(field='barCode' :styles="{'width': '10%'}")
             template(#header)
-              div.w-full.flex.justify-content-end.table__sort(@click="handleSort('barcode')")
+              div.w-full.flex.justify-content-end.table__sort(@click="handleSort('barCode')")
                 span Code
-                img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'barcode'" :class="{ 'sortDes': sort.sortDescending }")
+                img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'barCode'" :class="{ 'sortDes': sort.sortDescending }")
                 img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
             template(#body='{ data }')
-              div.flex.justify-content-end.stock__table-barcode {{ data.barcode }}
+              div.flex.justify-content-end.stock__table-barcode {{ data.barCode }}
           Column(field='category' :styles="{'width': '10%'}")
               template(#header)
                 div.w-full.flex.justify-content-end.table__sort(@click="handleSort('category.name')")
@@ -116,7 +116,6 @@ import { Stock as StockModel } from '~/models/Stock'
 const nsCategoryStock = namespace('category/category-list')
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStock = namespace('stock/stock-list')
-
 @Component({
   components: {
     ConfirmDialogCustom
@@ -148,7 +147,7 @@ class Stock extends Vue {
   actWarehouseList!: () => Promise<void>
 
   paginate: any = {
-    pageNumber: 1,
+    pageNumber: 0,
     pageSize: 10
   }
 
@@ -156,7 +155,7 @@ class Stock extends Vue {
     name: null,
     warehouse: null,
     categories: null,
-    barcode: null,
+    barCode: null,
     status: null
   }
 
@@ -167,7 +166,7 @@ class Stock extends Vue {
 
   sort: any = {
     sortByColumn: null,
-    sortDescending: false
+    sortDescending: null
   }
 
   selectedStock: StockModel.Model[] = []
@@ -188,7 +187,7 @@ class Stock extends Vue {
 
   get getInfoPaginate() {
     const { pageNumber, pageSize } = this.paginate
-    const start = pageNumber * pageSize - (pageSize - 1)
+    const start = (pageNumber + 1) * pageSize - (pageSize - 1)
     const convertStart = ('0' + start).slice(-2)
     const end = Math.min(start + pageSize - 1, this.total)
     return `Showing ${convertStart} - ${end} of ${this.total}`
@@ -205,7 +204,7 @@ class Stock extends Vue {
         name: null,
         warehouse: null,
         categories: null,
-        barcode: null,
+        barCode: null,
         status: null
       }
   }
@@ -217,23 +216,20 @@ class Stock extends Vue {
   }
 
   async getProductList() {
+    const categoryIds = this.filter.categories && this.filter.categories.map((item: any) => item?.id).toString()
     const filter = {
-      name: this.filter.name,
+      name: this.filter.name && this.filter.name !== '' ? this.filter.name : null,
       warehouseId: this.filter.warehouse?.id,
-      categoryIds:
-        this.filter.categories &&
-        this.filter.categories.map((item: any) => item?.id),
-      barcode: this.filter.barcode,
+      categoryIds,
+      barCode: this.filter.barCode && this.filter.barCode !== '' ? this.filter.barCode : null,
       deleted: this.filter.status?.value,
       sortByColumn: this.sort?.sortByColumn,
-      sortDescending: this.sort?.sortDescending
+      sortDescending: this.sort.sortDescending && this.sort?.sortDescending
     }
-
     const params = {
       ...this.paginate,
       ...filter
     }
-
     await this.actGetStockList(params)
   }
 
@@ -247,7 +243,7 @@ class Stock extends Vue {
   }
 
   onPage(event: any) {
-    this.paginate.pageNumber = event.page + 1
+    this.paginate.pageNumber = event.page
     this.getProductList()
   }
 
@@ -311,7 +307,6 @@ class Stock extends Vue {
 }
 export default Stock
 </script>
-
 <style lang="sass" scoped>
 .stock
   display: flex

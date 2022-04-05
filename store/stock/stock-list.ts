@@ -18,14 +18,13 @@ export default class StoreStock extends VuexModule {
   @Mutation
   setStockList(data: any) {  
     this.total = data.total
-    this.stockList = data.items
+    this.stockList = data.data
   }
 
   @Action({ commit: 'setStockList', rawError: true })
   async actGetStockList(
     params?: any
   ): Promise<string | undefined> {
-  
     const url = PathBind.transform(
       this.context,
       StoreStock.STATE_URL.GET_STOCK,
