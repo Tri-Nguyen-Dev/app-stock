@@ -14,9 +14,9 @@ function generateData (warehouseList, categoryList, typeList) {
     const type = _.sample(typeList)
     const warehouse = _.sample(warehouseList)
     const attributes = [
-      { id: 1, name: 'size', value: faker.datatype.number({ min: 1, max: 500 }) },
-      { id: 2, name: 'weight', value: faker.datatype.number({ min: 1, max: 500 }) },
-      { id: 3, name: 'unit', value: faker.random.alphaNumeric(5) }
+      { id: 1, name: 'size', value: faker.datatype.number({ min: 1, max: 500 }), icon:'icon-size' },
+      { id: 2, name: 'weight', value: faker.datatype.number({ min: 1, max: 500 }), icon:'icon-weight' },
+      { id: 3, name: 'unit', value: faker.random.alphaNumeric(5), icon:'icon-size' }
     ]
     const totalInventory = faker.datatype.number({ min: 1, max: 500 })
     const deleted = faker.datatype.boolean()

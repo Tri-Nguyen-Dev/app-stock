@@ -1,12 +1,12 @@
 <template lang="pug">
   .grid.grid-nogutter.stock__information-detail
-    .col-3.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden
+    .col-2.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
           .icon.icon-btn-back.bg-blue-700
         span.font-semibold.text-base Stock list / Stock Detail
-      .stock__information--gerenal.p-4
+      .stock__information--gerenal.p-4.border-bottom-1.border-gray-300
         .grid.mb-3
           .col-9.pl-0.flex
             .icon.icon-box-info.mr-1.bg-blue-700
@@ -29,25 +29,22 @@
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700 {{ unitAttribute }}
-        .grid.surface-hover.mb-3
-          .col-2.flex.align-items-center.justify-content-end
-            .icon--large.icon-size.bg-blue-700
-          .col
-            div.text-500 Size (cm)
-            InputText(:disabled='isEditStockDetail == 0' v-model='sizeAttribute')
-        .grid.surface-hover.mb-3
-          .col-2.flex.align-items-center.justify-content-end
-            .icon--large.icon-weight.bg-blue-700
-          .col
-            div.text-500 Weight (kg)
-            InputText(:disabled='isEditStockDetail == 0' v-model='weightAttribute')
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700
-          .col
+          .col-10
             div.text-500 Total inventory quantity
             span.font-semibold.mr-1.uppercase {{stockDetail.totalInventory}}
-    .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
+        div(
+           v-for='(attr, index) in stockDetail.attributes'
+        )
+          .grid.surface-hover.mb-3
+            .col-2.flex.align-items-center.justify-content-end
+              div(:class='"icon--large " + attr.icon + " bg-blue-700"' )   
+            .col-10
+              div.text-500 {{attr.name}}
+              InputText(:disabled='isEditStockDetail == 0' v-model='attr.value')      
+    .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
 </template>
 <script lang="ts">
@@ -144,4 +141,7 @@ export default StockDetail
  border-radius: 10px
  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
  background-color: #979AA4
+
+.grid.surface-hover
+  background-color: #F8F7FA !important
 </style>
