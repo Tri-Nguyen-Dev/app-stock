@@ -1,21 +1,14 @@
-<template>
-  <div class="sidebar" :style="{ width: sidebarWidth }">
-    <div class="menu-section sidebar-head">
-      <template v-if="!collapsed">
-        <img class="user-avatar" :src="userImageUrl"/>
-        <div class="user-info">
-          <span class="user-name">{{ userDisplayName }}</span>
-          <span class="user-role">Role Ex</span>
-        </div>
-      </template>
-      <div
-        class="icon icon--xlarge icon-menu-toggle surface-500"
-        :class="{ 'bg-primary': collapsed}"
-        @click="toggleSidebar"
-      >
-      </div>
-    </div>
+<template lang="pug">
+  .sidebar(:style="{ width: sidebarWidth }")
+    .menu-section.sidebar-head
+      template(v-if="!collapsed")
+        img.user-avatar(:src="userImageUrl")
+        .user-info
+          span.user-name {{ userDisplayName }}
+          span.user-role Role Ex
+      .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed}", @click="toggleSidebar")
 
+    .menu-section.sidebar-menu
     <div class="menu-section sidebar-menu">
       <SidebarItem to="/stock" icon="icon-shopping-cart">Stock</SidebarItem>
       <SidebarItem to="/activity" icon="icon-activity">Activities</SidebarItem>
@@ -55,14 +48,6 @@ class Sidebar extends Vue {
   toggleSidebar
 
   // -- Properties
-  PAGE_MENU = [
-    {
-      to: '', icon: 'stock', active: false, child: [
-
-      ]
-    }
-
-  ]
 
   get user() {
     return this.$auth.user as unknown as User.Model
@@ -76,7 +61,8 @@ class Sidebar extends Vue {
     return this.user.userDetail.displayName
   }
 }
-export default  Sidebar
+
+export default Sidebar
 </script>
 
 <style lang="sass" scoped>
