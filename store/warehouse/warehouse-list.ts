@@ -16,7 +16,7 @@ export default class Warehouse extends VuexModule {
 
   @Mutation
   setWarehouseList(data: any) {
-    this.warehouseList = data.items
+    this.warehouseList = data.data
   }
 
   @Action({ commit: 'setWarehouseList', rawError: true })
@@ -24,10 +24,9 @@ export default class Warehouse extends VuexModule {
     try {
       const url = PathBind.transform(
         this.context,
-        Warehouse.STATE_URL.GET_WAREHOUSE,
-        { pageNumber: 1 }
+        Warehouse.STATE_URL.GET_WAREHOUSE
       )
-      const response = await $api.get(url, { params: { pageNumber: 1 }}) 
+      const response = await $api.get(url) 
    
       return response.data
     } catch (error) {}
