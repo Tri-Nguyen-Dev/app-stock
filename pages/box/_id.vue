@@ -23,7 +23,7 @@
             span.font-bold.text-white.p-2.border-round(:class='boxDetail.status? "bg-green-500" : "surface-200"') {{boxDetail.status? 'Available' : 'Disable'}} 
           .font-bold.my-3
             .col(:class='isEditBox? "opacity-40" : "opacity-100"')
-              span Box Code: 
+              span Box Code:
                 span.text-primary.uppercase {{boxDetail.barCode}}
       .grid.grid-nogutter.sub--scroll
         .col.px-3
@@ -31,8 +31,8 @@
             .col-fixed.mr-2
               .icon-receipt.bg-primary.icon--large
             div(class=' col-12  lg:col-12 xl:col-8')
-              span.font-bold.text-600 Receipt note ID 
-              .mt-1.flex.align-items-center 
+              span.font-bold.text-600 Receipt note ID
+              .mt-1.flex.align-items-center
                 span.font-bold.uppercase {{boxDetail.receiptNoteId}}
                 .icon-arrow-up-right.icon--base
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
@@ -56,10 +56,10 @@
             div(class=' col-12  lg:col-12 xl:col-8')
               span.font-bold.text-600 Location
               .mt-1.flex.align-items-center
-                AutoComplete.edit-location( v-model="isLocation"   
-                :suggestions="locationList" 
-                field="name" 
-                :disabled='isEditBox == 0' 
+                AutoComplete.edit-location( v-model="isLocation"
+                :suggestions="locationList"
+                field="name"
+                :disabled='isEditBox === 0'
                 :placeholder='location' )
                   template(#item="slotProps")
                     .grid.align-items-center.grid-nogutter
@@ -87,10 +87,10 @@
               span.font-bold.text-600 Estimated inventory Fee
               .mt-1
                 span.font-bold {{boxDetail.inventoryFee}}$ PER DAY
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-5(:class='isEditBox? "opacity-40" : "opacity-100"')
+          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-resize.icon--large.bg-primary
-            div.align-items(class=' col-12  lg:col-12 xl:col-8')
+            div.align-items(class=' col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Box Size:
               span.font-bold.text-600.bg-primary.ml-1.border-round.p-1.pr-2  {{boxDetail.boxSize}}
               .mt-1
@@ -108,7 +108,7 @@
                   .icon-user-octagon-2.icon--large.bg-primary
                 div(class=' col-12  lg:col-12 xl:col-8')
                   span.font-bold.text-600 Sender
-                  .mt-1 
+                  .mt-1
                     span.font-bold {{boxSellerName}}
               .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
                 .col-fixed.mr-2
@@ -146,7 +146,7 @@
                 .col
                   .bg-white.border-round
                     div.pt-2.pl-1.pb-1
-                      span.text-600.text-sm.pl-2 Bar code
+                      span.text-600.text-sm.pl-2 Barcode
                     span.p-input-icon-right.w-full
                       .icon.icon--right.icon-search-input.surface-900
                       InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="barcodeFilter" v-on:input="validateText")
@@ -156,7 +156,7 @@
                       span.text-600.text-sm.pl-2 Category
                       Dropdown.w-full.border-0.mb-1.text-900.font-bold( v-model="categorySelected" :options='categoryList' optionLabel="name" placeholder="Select")
               .overflow-auto.item__log--history
-                BoxDetailTable(v-if="stockList.length > 0" :stockList='stockList'  :totalStockRecords='totalStockRecords')
+                BoxDetailTable(v-if="stockList.length > 0" :stockList='stockList' :filterPagingTable='filterPagingTable' :totalStockRecords='totalStockRecords' :getParam='getParamAPI')
             TabPanel
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
@@ -172,7 +172,6 @@
             Button.border-0.bg-white.w-7rem.shadow-none.border-primary.h-3rem.py-4(@click="isFilter = !isFilter")
               .icon-filter.bg-primary.icon
               span.text-900.ml-3.text-primary Filter
-
 </template>
 
 <script lang="ts">
@@ -184,7 +183,7 @@ const nsStoreCategoryList = namespace('category/category-list')
 const nsStoreLocationList = namespace('location/location-list')
 
 @Component
-class boxDetail extends Vue {
+class BoxDetail extends Vue {
   isFilter: boolean = false
   isEditBox: boolean = false
   isItemHistory: boolean = false
@@ -194,7 +193,7 @@ class boxDetail extends Vue {
   skuFilter: any = null
   categorySelected: any = null
   barcodeFilter: any = null
-  nameStockFilter: any = null 
+  nameStockFilter: any = null
   pageNumber: number = 1
   pageSize: number = 20
   filterObj: any = {}
@@ -206,7 +205,7 @@ class boxDetail extends Vue {
   stockList!: any
 
   @nsStoreBoxDetail.State
-  totalStockRecords!: any
+  totalStockRecords!: number
 
   @nsStoreBoxDetail.State
   boxDetail!: {
@@ -214,10 +213,9 @@ class boxDetail extends Vue {
     seller: any,
     location: any
   }
-  
+
   @nsStoreCategoryList.State
   categoryList!:any
-
 
   @nsStoreBoxDetail.Action
   actGetBoxDetailFilter!: (params: any) => Promise<void>
@@ -231,11 +229,25 @@ class boxDetail extends Vue {
   @nsStoreLocationList.Action
   actLocationList!: (params: any) => Promise<void>
 
+  getParamAPI() {
+    return {
+      pageNumber: 1,
+      pageSize: this.pageSize,
+      'sku' : this.skuFilter === '' ? null : this.skuFilter,
+      'barcode' : this.barcodeFilter === '' ? null : this.barcodeFilter ,
+      'name': this.nameStockFilter === '' ? null : this.nameStockFilter,
+      'category.id': this.categorySelected?.id
+    }
+  }
+
   async mounted() {
     await this.actGetBoxItem({ id: Number.parseInt(this.$route.params.id) })
-    await this.actGetBoxDetailFilter( { pageNumber: this.pageNumber, pageSize: this.pageSize} )
-    this.actCategoryList()
-    this.actLocationList({name: null})
+    await this.actGetBoxDetailFilter({
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
+    })
+    await this.actCategoryList()
+    await this.actLocationList({name: null})
   }
 
   backToBox() {
@@ -244,32 +256,24 @@ class boxDetail extends Vue {
 
   btnEdit() {
     this.isEditBox = !this.isEditBox
-
   }
 
-  onTabClick(){
+  onTabClick() {
       this.isItemHistory = !this.isItemHistory
       this.isFilter = false
   }
 
 
-  getParamAPI(){
-    return{
-      pageNumber: 1, pageSize: this.pageSize,
-      'sku' : this.skuFilter === '' ? null : this.skuFilter,
-      'barcode' : this.barcodeFilter === '' ? null : this.barcodeFilter ,
-      'nameStock': this.nameStockFilter === '' ? null : this.nameStockFilter,
-      'category.id': this.categorySelected?.id
-    }
-  }
+
   
   @Watch('categorySelected') 
    async filtersChange(){
     await this.actGetBoxDetailFilter(this.getParamAPI()) 
   }
 
+
   @Watch('isLocation')
-  async filterLocation(){
+  async filterLocation() {
     await this.actLocationList({
       'name': this.isLocation === '' ? null: this.isLocation
     })
@@ -305,11 +309,11 @@ class boxDetail extends Vue {
 
 }
 
-export default boxDetail
+export default BoxDetail
 </script>
 
 <style lang="sass" scoped >
-@media (max-width: 1024px) 
+@media (max-width: 1024px)
   .tabview-left
     top: -4rem !important
 .tabview-relative
@@ -360,10 +364,12 @@ export default boxDetail
     padding: 0
     background-color: var(--surface-100)
     opacity: 1
-  ::-webkit-input-placeholder 
+  ::-webkit-input-placeholder
     color: var(--surface-900)
 
 
+::-webkit-input-placeholder
+  font-weight: normal
 
 ::-webkit-scrollbar
  width: 7px
@@ -379,8 +385,6 @@ export default boxDetail
  border-radius: 10px
  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
  background-color: #979AA4
-
-
 .p-disabled, .p-component:disabled
   opacity: 1
 
