@@ -26,7 +26,7 @@
       .stock__filter-item.bg-white.border-round
         .text-sm.stock__filter-title Code
         span.p-input-icon-right.w-full
-            InputText#inputSearchCode.w-full(type="text" v-model="filter.barCode" placeholder="Search code" )
+            input#inputSearchCode.w-full(type="text" @input="debounceSearchCode" placeholder="Search code" )
             i.icon.icon-search
       .stock__filter-item.bg-white.border-round
         .text-sm.stock__filter-title Status
@@ -56,7 +56,7 @@
                 img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'barCode'" :class="{ 'sortDes': sort.sortDescending }")
                 img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
             template(#body='{ data }')
-              div.stock__table-barcode {{ data.barCode }}
+              div.grid-body-end.stock__table-barcode {{ data.barCode }}
           Column(field='category' :styles="{'width': '5%'}")
               template(#header)
                 div.table__sort(@click="handleSort('category.name')")
@@ -85,7 +85,7 @@
               div.pagination__delete(v-else @click="showModalDelete()")
                 img(:src="require('~/assets/icons/trash-white.svg')")
                 span Delete {{ selectedStockFilter.length }} items selected
-              Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)" :rowsPerPageOptions="[10,20,30]")
+              Paginator(:first.sync="firstPage" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)" :rowsPerPageOptions="[10,20,30]")
           template(#empty)
             div.flex.align-items-center.justify-content-center.flex-column
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
@@ -142,6 +142,8 @@ class Stock extends Vue {
 
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
+
+  firstPage:any = 0
 
   paginate: any = {
     pageNumber: 0,
@@ -217,7 +219,7 @@ class Stock extends Vue {
     const filter = {
       name: this.filter.name && this.filter.name !== '' ? this.filter.name : null,
       warehouseId: this.filter.warehouse?.id,
-      categoryIds,
+      categoryIds: categoryIds && categoryIds !== '' ? categoryIds : null,
       barCode: this.filter.barCode && this.filter.barCode !== '' ? this.filter.barCode : null,
       deleted: this.filter.status?.value,
       sortByColumn: this.sort?.sortByColumn,
@@ -231,6 +233,7 @@ class Stock extends Vue {
   }
 
   @Watch('filter', { deep: true })
+  @Watch('paginate', { deep: true })
   getNewStock() {
     this.getProductList()
   }
@@ -239,11 +242,10 @@ class Stock extends Vue {
     this.selectedStock = data
   }
 
-  onPage(event: any) {  
+  onPage(event: any) {     
     this.paginate.pageSize = event.rows
     this.paginate.pageNumber = event.page
     this.selectedStock = []
-    this.getProductList()
   }
 
   showModalDelete(id?: string) {
@@ -270,6 +272,9 @@ class Stock extends Vue {
         life: 3000
       })
       this.paginate.pageNumber = 0
+      this.firstPage = 0
+      this.getProductList()
+      this.selectedStock = []
     } catch (error) {
       this.loadingSubmit = false
     }
@@ -306,6 +311,10 @@ class Stock extends Vue {
 
   debounceSearchName = _.debounce((e) => {
     this.filter.name = e.target.value
+  }, 500)
+
+  debounceSearchCode = _.debounce((e) => {
+    this.filter.barCode = e.target.value
   }, 500)
 }
 export default Stock
