@@ -18,14 +18,14 @@
               .icon-btn.icon-check-lg.bg-white.mr-1
               span.uppercase save
         .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          img(:src='require("~/assets/images/sample.png")').border-round.w-full
+          img(:src='stockDetail.data.imageUrl').border-round.w-full
         .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           Tag(severity="success").uppercase {{stockDetail.deleted ? 'Available' : 'Disable'}}
         .grid.mb-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          h3.font-bold.my-2 {{stockDetail.name}}
+          h3.font-bold.my-2 {{stockDetail.data.name}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 code:
-          span.uppercase.font-semibold.text-blue-700 {{stockDetail.barcode}}
+          span.uppercase.font-semibold.text-blue-700 {{stockDetail.data.barcode}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700 {{ unitAttribute }}
@@ -87,7 +87,7 @@ class StockDetail extends Vue {
   }
 
   async mounted() {
-    await this.actGetStockDetail({ id: Number.parseInt(this.$route.params.id) })
+    await this.actGetStockDetail({ id: Number.parseInt(this.$route.params.sid) })
     this.sizeAttribute = this.stockDetail.attributes?.find((x: { name: string }) => x.name === 'size')?.value || ''
     this.weightAttribute = this.stockDetail.attributes?.find((x: { name: string }) => x.name === 'weight')?.value || ''
   }

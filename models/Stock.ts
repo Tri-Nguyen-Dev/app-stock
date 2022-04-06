@@ -18,6 +18,11 @@ export namespace Stock {
   export interface ModelDetail {
     id: string,
     name?: string,
+    seller: {
+      name: string,
+      phone: number,
+      email: string
+    }
     description?: string,
     imageUrl?: string,
     barcode?: string
