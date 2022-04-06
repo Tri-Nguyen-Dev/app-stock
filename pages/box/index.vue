@@ -57,7 +57,7 @@
             Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0
-      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
+      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes" @row-click='onRowClick($event)'
       dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :class="boxList.length === 0 && 'datatable-empty'" :rowClass="rowClass")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO" sortable)
@@ -206,6 +206,11 @@ class BoxList extends Vue {
   rowClass(data: Box.Model) {
     return !data.status && 'row-disable';
   }
+
+  onRowClick({data}){
+    this.$router.push(`/box/${data.id}`);
+  }
+
 }
 export default BoxList
 </script>

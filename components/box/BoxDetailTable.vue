@@ -1,5 +1,5 @@
 <template lang="pug">
-    DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable(
+    DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable.table__sort-icon.bg-white(
       :resizableColumns='true',
       :rows='15',
       :value='stockList'
@@ -95,11 +95,11 @@
         template(#body='{data}')
           span.font-bold {{data.category.name}}
       template(#footer)
-        div
-          .flex.align-items-center.ml-4
-            .icon--large.icon-footer-paginator.surface-400
-            span.ml-3.text-400.font-sm Showing {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
-        Paginator(:rows="20" :totalRecords="totalStockRecords" @page="onPage($event)").p-0
+                .pagination
+                  div.pagination__info
+                    img(:src="require('~/assets/icons/filter-left.svg')")
+                    span.pagination__total {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
+                  Paginator(:rows="20" :totalRecords="totalStockRecords" @page="onPage($event)").p-0
 </template>
 
 

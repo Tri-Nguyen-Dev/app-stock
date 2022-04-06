@@ -49,7 +49,7 @@
             div(class=' col-12  lg:col-12 xl:col-8')
               span.font-bold.text-600 Warehouse
               .mt-1.flex.align-items-center
-                span.font-bold.uppercase {{boxDetail.warehouse}}
+                span.font-bold.uppercase {{boxWarehouse}}
                 .icon-arrow-up-right.icon
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
             .col-fixed.mr-2
@@ -59,10 +59,9 @@
               .mt-1.flex.align-items-center
                 AutoComplete.edit-location( v-model="isLocation"   
                 :suggestions="locationList" 
-                @item-select="searchLocation($event)"  
                 field="name" 
                 :disabled='isEditBox == 0' 
-                :placeholder='boxDetail.location')
+                :placeholder='location' )
                   template(#item="slotProps")
                     .grid.align-items-center.grid-nogutter
                       span.font-bold {{slotProps.item.name}}
@@ -94,7 +93,7 @@
               .icon-resize.icon--large.bg-primary
             div.align-items(class=' col-12  lg:col-12 xl:col-8')
               span.font-bold.text-600 Box Size:
-              span.font-bold.text-600.bg-primary.ml-1.border-round.p-1.pr-2  Small
+              span.font-bold.text-600.bg-primary.ml-1.border-round.p-1.pr-2  {{boxDetail.boxSize}}
               .mt-1
                 span.font-bold {{boxDetail.length}}*{{boxDetail.width}}*{{boxDetail.height}}
         .col(:class='isEditBox? "opacity-40" : "opacity-100"')
@@ -111,21 +110,21 @@
                 div(class=' col-12  lg:col-12 xl:col-8')
                   span.font-bold.text-600 Sender
                   .mt-1 
-                    span.font-bold Apple Inc
+                    span.font-bold {{boxSellerName}}
               .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
                 .col-fixed.mr-2
                   .icon-sms-notification.icon--large.bg-primary
                 div(class=' col-12  lg:col-12 xl:col-8')
                   span.font-bold.text-600 Email Address
                   .mt-1
-                    span.font-bold pỏn@gmail.com
+                    span.font-bold {{boxSellerEmail}}
               .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-5
                 .col-fixed.mr-2
                   .icon-phone.icon--large.bg-primary
                 div(class=' col-12  lg:col-12 xl:col-8')
                   span.font-bold.text-600 Phone number
                   .mt-1
-                    span.font-bold +84 333 666 9999 
+                    span.font-bold {{boxSellerPhone}}
     div.ml-5.flex-1(class=' col-7  md:col-8  lg:col-8 xl:col-8')
       .grid.justify-content-between
         .col-fixed
@@ -169,7 +168,7 @@
           .col
             span.p-input-icon-left
               .icon.icon--left.icon-search-input.surface-900
-              InputText.w-23rem.font-bold.h-3rem.py-4(type="text" placeholder="Search" v-model='nameStockFilter')
+              InputText.w-23rem.font-bold.h-3rem.py-4.text-900(type="text" placeholder="Search" v-model='nameStockFilter')
           .col
             Button.border-0.bg-white.w-7rem.shadow-none.border-primary.h-3rem.py-4(@click="isFilter = !isFilter")
               .icon-filter.bg-primary.icon
@@ -210,7 +209,11 @@ class boxDetail extends Vue {
   totalStockRecords!: any
 
   @nsStoreBoxDetail.State
-  boxDetail!: {}
+  boxDetail!: {
+    warehouse: any,
+    seller: any,
+    location: any
+  }
   
   @nsStoreCategoryList.State
   categoryList!:any
@@ -274,9 +277,29 @@ class boxDetail extends Vue {
   this.filterObj.push( this.skuFilter , this.barcodeFilter, this.categorySelected)
   }
 
-// searchLocation(event){
-// console.log(event)
-// }
+  get boxWarehouse() {
+    return this.boxDetail.warehouse?.name || ''
+  }
+
+    get boxSellerName() {
+    return this.boxDetail.seller?.name || ''
+  }
+
+    get boxSellerEmail() {
+    return this.boxDetail.seller?.email || ''
+  }
+
+    get boxSellerPhone() {
+    return this.boxDetail.seller?.phone || ''
+  }
+
+    get location() {
+      return this.boxDetail.location?.name || ''
+    }
+
+  // searchLocation(event){
+  // console.log(event)
+  // }
 
 }
 
@@ -287,7 +310,6 @@ export default boxDetail
 @media (max-width: 1024px) 
   .tabview-left
     top: -4rem !important
-
 .tabview-relative
   position: relative
   .tabview-left
@@ -336,6 +358,9 @@ export default boxDetail
     padding: 0
     background-color: var(--surface-100)
     opacity: 1
+  ::-webkit-input-placeholder 
+    color: var(--surface-900)
+
 
 
 ::-webkit-scrollbar
@@ -353,8 +378,7 @@ export default boxDetail
  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
  background-color: #979AA4
 
-::-webkit-input-placeholder 
-  color: $text-color-900
+
 .p-disabled, .p-component:disabled
   opacity: 1
 

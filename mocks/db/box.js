@@ -15,7 +15,7 @@ function generateData ( sellerList, warehouseList, locationList ) {
     const createdAt = faker.date.between('2022-03-01', '2022-03-15').toISOString().split('T')[0]
     const updatedAt = faker.date.between('2022-03-15', '2022-03-30').toISOString().split('T')[0]
     const seller = _.sample(sellerList)
-    const boxSize = faker.random.arrayElement([ 'small' , 'medium' , 'big'])
+    const boxSize = faker.random.arrayElement([ 'Small' , 'Medium' , 'Big'])
     const receiptNoteId = faker.random.alphaNumeric(7)
     const creatorId = faker.random.alphaNumeric(7)
     const inventoryFee = faker.datatype.number({ min: 1, max: 100 })

@@ -18,7 +18,7 @@ module.exports = {
   category,
   warehouse,
   location,
-  box: genBoxList(seller, location , warehouse ),
+  box: genBoxList(seller,warehouse, location  ),
   items: genStockBox(),
   boxDetail: genBoxDetail( location)
 }
