@@ -58,7 +58,7 @@
                 .icon--large.icon-warehouse.bg-blue-700
               .col
                 div.text-500 Warehouse
-                span.font-semibold.mr-1.uppercase {{itemDetail.warehouse}}
+                span.font-semibold.mr-1.uppercase {{itemWarehouse}}
                 .icon-btn.icon-arrow-up-right.inline-block
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -67,7 +67,7 @@
                 .icon--large.icon-location-2.bg-blue-700
               .col
                 div.text-500 Location
-                span.font-semibold.mr-1.uppercase {{itemDetail.location}}
+                span.font-semibold.mr-1.uppercase {{itemLocation}}
                 .icon-btn.icon-arrow-up-right.inline-block
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
@@ -115,21 +115,21 @@
               .icon--large.icon-sender-name.bg-blue-700
             .col
               div.text-500 Seller
-              span.font-semibold {{}}
+              span.font-semibold {{sellerName}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
               .icon--large.icon-sender-email.bg-blue-700
             .col
               div.text-500 Email Address
-              span.font-semibold {{itemDetail.seller}}
+              span.font-semibold {{sellerEmail}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
               .icon--large.icon-sender-phone.bg-blue-700
             .col
               div.text-500 Phone number
-              span.font-semibold {{itemDetail.seller}}
+              span.font-semibold {{sellerPhone}}
     .col-8.px-5.right__information--stock
       TabView
         TabPanel
@@ -158,13 +158,13 @@ class ItemDetail extends Vue {
   isEditItemDetail: boolean = false
 
   @nsStoreStock.State
-  itemDetail!: StockModel.Model[]
+  itemDetail!: StockModel.ModelDetail
 
   @nsStoreStock.Action
   actGetItemsDetail
 
   backToStockList() {
-    this.$router.push('/stock/id')
+    this.$router.push(`/stock/${this.$route.params.sid}`)
   }
 
   editItemDetail() {
@@ -175,8 +175,28 @@ class ItemDetail extends Vue {
     this.isEditItemDetail = false
   }
 
+  get itemLocation() {
+    return this.itemDetail.data.location?.name
+  }
+
+  get itemWarehouse() {
+    return this.itemDetail.data.warehouse?.name
+  }
+
+  get sellerName() {
+    return this.itemDetail.data.seller?.name
+  }
+
+  get sellerEmail() {
+    return this.itemDetail.data.seller?.email
+  }
+
+  get sellerPhone() {
+    return this.itemDetail.data.seller?.phone
+  }
+
   async mounted() {
-    await this.actGetItemsDetail({ stockId: 1, boxId: 2 })
+    await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
   }
 }
 export default ItemDetail

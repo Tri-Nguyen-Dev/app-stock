@@ -7,10 +7,6 @@
       .col-fixed
         .grid
           .col-fixed
-            span.p-input-icon-left
-              .icon.icon--left.icon-search.surface-900
-              InputText.w-21rem.h-3rem(type="text" placeholder="Search" v-model='filter.name')
-          .col-fixed
             Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isShowFilter = !isShowFilter")
               .icon.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
               span.text-900.ml-3.text-primary Filter
@@ -56,7 +52,7 @@
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
         DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="itemsList" :value="itemsList" responsiveLayout="scroll" :selection.sync="selectedStock"
-        dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" @row-click='redirectToDetail')
+        dataKey="id" :resizableColumns="true" :rowClass="rowClass" :rows="20" :scrollable="false" @row-dblclick='redirectToDetail')
           Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
           Column(field="no" header="NO" sortable)
             template(#body="slotProps")
@@ -78,10 +74,10 @@
           Column(field="deleted" header="STATUS" sortable className="p-text-right")
             template(#body="{data}")
               div
-                Tag(v-if="data.status" severity="success").px-2.bg-green-100
-                  span.font-bold.text-green-400.font-sm AVAILABLE
-                Tag(v-else severity="success").px-2.surface-200
+                Tag(v-if="data.deleted" severity="success").px-2.surface-200
                   span.font-bold.text-400.font-sm DISABLE
+                Tag(v-else severity="success").px-2.bg-green-100
+                  span.font-bold.text-green-400.font-sm AVAILABLE
           Column(:exportable="false" header="ACTION" className="p-text-right")
             template(#body="{data}")
               Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.status")
@@ -89,14 +85,22 @@
               Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete()" :disabled="!data.status")
                 .icon--small.icon-btn-delete
           template(#footer)
-            div
-              .flex.align-items-center(v-if="selectedStock.length <= 0")
-                .icon--large.icon-footer-paginator.surface-400
-                span.ml-3.text-400.font-sm Showing 01 - {{pageSize}} of {{totalBoxRecords}}
-              Button(@click="showModalDelete()" v-if="selectedStock.length>0").p-button-danger.opacity-70.ml-1
-                .icon--small.icon-trash-white.bg-white
-                span.ml-3 Delete {{selectedStock.length}} items selected
-            Paginator(:rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
+            .pagination
+              div.pagination__info(v-if='!selectedStockFilter.length > 0')
+                img(:src="require('~/assets/icons/filter-left.svg')")
+                span.pagination__total {{ getInfoPaginate }}
+              div.pagination__delete(v-else @click="showModalDelete()")
+                img(:src="require('~/assets/icons/trash-white.svg')")
+                span Delete {{ selectedStockFilter.length }} items selected
+              Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)")
+          template(#empty)
+            div.flex.align-items-center.justify-content-center.flex-column
+              img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
+              img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+              p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
+                span.text-primary.underline here
+                span to add item.
+              p.text-900.font-bold.mt-3(v-else) Item not found!
     ConfirmDialogCustom(
       title="Confirm delete"
       :message="`Are you sure you want to delete ${ids.length} in this list stock?`"
@@ -110,6 +114,7 @@
 <script lang="ts">
 import { Component, namespace, Vue,Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStockTable = namespace('stock/stock-detail')
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 
@@ -123,7 +128,7 @@ class StockDetailTable extends Vue {
 
   selectedStatus = null
 
-  selectedStock = []
+  selectedStock :StockModel.ModelDetail[] = []
 
   deleteStockList = []
 
@@ -133,12 +138,6 @@ class StockDetailTable extends Vue {
 
   loadingSubmit: boolean = false
 
-  pageNumber: number = 0
-
-  pageSize: number = 20
-
-  totalBoxRecords: number = 100
-
   filter: any = {
     sellerName: null,
     sellerEmail: null,
@@ -146,17 +145,24 @@ class StockDetailTable extends Vue {
     sku: null,
     warehouse: null,
     location: null,
-    status: null
+    status: false
   }
 
   statusList: any = [
-    { name: 'Disable', value: false },
-    { name: 'Available', value: true }
+    { name: 'Disable', value: true },
+    { name: 'Available', value: false }
   ]
 
+  paginate: any = {
+    pageNumber: 0,
+    pageSize: 10
+  }
 
   @nsStoreStockTable.State
-  itemsList!: {}
+  total!: number
+
+  @nsStoreStockTable.State
+  itemsList!: []
 
   @nsWarehouseStock.State
   warehouseList!: any
@@ -167,20 +173,41 @@ class StockDetailTable extends Vue {
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
 
-  @Watch('selectedStock')
-  getSelectedStock() {
-    this.deleteStockList = [...this.selectedStock]
+
+  get getInfoPaginate() {
+    const { pageNumber, pageSize } = this.paginate
+    const start = (pageNumber + 1) * pageSize - (pageSize - 1)
+    const convertStart = ('0' + start).slice(-2)
+    const end = Math.min(start + pageSize - 1, this.total)
+    return `Showing ${convertStart} - ${end} of ${this.total}`
+  }
+
+  get selectedStockFilter() {
+    return this.selectedStock
+  }
+
+   onPage(event: any) {
+    this.paginate.pageNumber = event.page
+    this.getItemsList()
+  }
+
+  get checkIsFilter() {
+    return Object.values(this.filter).some((item) => item)
   }
 
   showModalDelete(id?: string) {
     if (id) {
       this.ids = [id]
     } else {
-      this.ids = this.selectedStock.map((item: any) => {
+      this.ids = this.selectedStockFilter.map((item: any) => {
         return item.id
       })
     }
     this.isModalDelete = true
+  }
+
+  rowClass(data: any) {
+    return data.deleted ? 'row-disable' : ''
   }
 
   handleCancel() {
@@ -202,16 +229,21 @@ class StockDetailTable extends Vue {
 
   async getItemsList() {
     const filter = {
-      sellerEmail: this.filter?.sellerEmail,
+      seller: this.filter?.sellerEmail,
       sku: this.filter?.sku,
       boxCode: this.filter?.boxCode,
       location: this.filter?.location,
-      status: this.filter?.status
+      deleted: this.filter.status?.value,
+      pageNumber:this.paginate.pageNumber,
+      pageSize: this.paginate.pageSize
     }
+
     const params = {
       filter,
-      id: this.$route.params.id
+      ...this.paginate,
+      id: this.$route.params.sid
     }
+
     await this.actGetItemsList(params)
   }
 
@@ -221,11 +253,11 @@ class StockDetailTable extends Vue {
   }
 
   redirectToDetail({ data }) {
-    this.$router.push(`${this.$route.params.id}/item/${data.id}`)
+    this.$router.push(`${this.$route.params.sid}/item/${data.id}`)
   }
 
   mounted() {
-    this.getItemsList()
+      this.getItemsList()
   }
 }
 export default StockDetailTable

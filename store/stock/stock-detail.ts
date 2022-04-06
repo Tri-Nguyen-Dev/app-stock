@@ -15,6 +15,8 @@ export default class StoreStockDetail extends VuexModule {
     GET_ITEM_INFO: '/api/stock/:stockId/box/:boxId/detail'
   }
 
+  public total?: number = 0
+
   public stockDetail: any = {}
 
   public itemsList: StockModel.ModelDetail[] = []
@@ -22,8 +24,9 @@ export default class StoreStockDetail extends VuexModule {
   public itemDetail: any = {}
 
   @Mutation
-  setStockDetail(stockDetail: StockModel.ModelDetail) {
-    this.stockDetail = stockDetail
+  setStockDetail(data:any) {
+    this.total = data.total
+    this.stockDetail = data
   }
 
   @Mutation

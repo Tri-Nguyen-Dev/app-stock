@@ -6,7 +6,7 @@
         Button(@click='backToStockList').p-button-link.mr-2
           .icon.icon-btn-back.bg-blue-700
         span.font-semibold.text-base Stock list / Stock Detail
-      .stock__information--gerenal.p-4.border-bottom-1.border-gray-300
+      .stock__information--gerenal.p-4.border-bottom-1.border-gray-300(v-if='stockDetail.data')
         .grid.mb-3
           .col-9.pl-0.flex
             .icon.icon-box-info.mr-1.bg-blue-700
@@ -20,7 +20,7 @@
         .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           img(:src='stockDetail.data.imageUrl').border-round.w-full
         .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          Tag(severity="success").uppercase {{stockDetail.deleted ? 'Available' : 'Disable'}}
+          Tag(severity="success").uppercase {{stockDetail.data.deleted ? 'Disable' : 'Available'}}
         .grid.mb-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           h3.font-bold.my-2 {{stockDetail.data.name}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
@@ -28,15 +28,15 @@
           span.uppercase.font-semibold.text-blue-700 {{stockDetail.data.barcode}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 {{ unitAttribute }}
+          span.uppercase.font-semibold.text-blue-700 {{unitAttribute}}
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700
           .col-10
             div.text-500 Total inventory quantity
-            span.font-semibold.mr-1.uppercase {{stockDetail.totalInventory}}
+            span.font-semibold.mr-1.uppercase {{stockDetail.data.totalInventory}}
         div(
-           v-for='(attr, index) in stockDetail.attributes'
+           v-for='(attr, index) in stockDetail.data.attributeValue'
         )
           .grid.surface-hover.mb-3
             .col-2.flex.align-items-center.justify-content-end
@@ -83,13 +83,11 @@ class StockDetail extends Vue {
   }
 
   get unitAttribute() {
-    return this.stockDetail.attributes?.find((x: { name: string }) => x.name === 'unit')?.value || ''
+    return this.stockDetail.data.attributeValue?.find((x: { name: string }) => x.name === 'unit')?.value || ''
   }
 
   async mounted() {
-    await this.actGetStockDetail({ id: Number.parseInt(this.$route.params.sid) })
-    this.sizeAttribute = this.stockDetail.attributes?.find((x: { name: string }) => x.name === 'size')?.value || ''
-    this.weightAttribute = this.stockDetail.attributes?.find((x: { name: string }) => x.name === 'weight')?.value || ''
+    await this.actGetStockDetail({ id: this.$route.params.sid })
   }
 }
 export default StockDetail
