@@ -1,7 +1,7 @@
 const { faker } = require('@faker-js/faker')
 const _ = require('lodash')
 
-function generateData (warehouseList, locationList, sellerList) {
+function generateData ( sellerList, warehouseList, locationList ) {
   const boxes = []
   for (let id = 1; id < 105; id++) {
     const barCode = faker.random.alphaNumeric(5)
@@ -18,11 +18,12 @@ function generateData (warehouseList, locationList, sellerList) {
     const boxSize = faker.random.arrayElement([ 'small' , 'medium' , 'big'])
     const receiptNoteId = faker.random.alphaNumeric(7)
     const creatorId = faker.random.alphaNumeric(7)
+    const inventoryFee = faker.datatype.number({ min: 1, max: 100 })
     boxes.push({
       id,
       barCode,
-      seller,
       warehouse,
+      seller,
       location,
       length,
       width,
@@ -33,7 +34,8 @@ function generateData (warehouseList, locationList, sellerList) {
       updatedAt,
       boxSize,
       receiptNoteId,
-      creatorId
+      creatorId,
+      inventoryFee
     })
   }
 

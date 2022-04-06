@@ -19,19 +19,47 @@
           span.font-bold {{data.creatorId}}
       template(#footer)
         div
-          .flex.align-items-center
-            span.ml-3.text-400.font-size-small Showing 01 - 100 of 1280
-        Paginator(:rows="20" :totalRecords="totalItemsCount").p-0
+          .flex.align-items-center.ml-4
+            .icon--large.icon-footer-paginator.surface-400
+            span.ml-3.text-400.font-sm Showing {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
+        Paginator(:rows="20" :totalRecords="totalStockRecords" @page="onPageHistory($event)").p-0
 
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
+const nsStoreBoxDetail = namespace('box/box-detail')
+
 
 @Component
 class BoxDetailHistory extends Vue {
   @Prop() stockList!: () => any
+  @Prop() totalStockRecords: () => any
+
   totalItemsCount = 32
+  pageSize: number = 20
+  pageNumber: number = 1 
+
+  getParamAPi(){
+    return {
+      pageNumber: this.pageNumber, pageSize: this.pageSize
+    }
+  }
+
+  @nsStoreBoxDetail.Action
+  actGetBoxDetailFilter!: (params: any) => Promise<void>
+
+  async mounted() {
+   await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize })
+  }
+
+
+  async onPageHistory(event: any) {
+    this.pageNumber = event.page + 1;
+    await this.actGetBoxDetailFilter(this.getParamAPi())
+  }
 }
+
+
 
 export default BoxDetailHistory
 </script>
