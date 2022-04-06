@@ -32,7 +32,6 @@ function generateData () {
       updatedAt
     })
   }
-
   return stocks
 }
 

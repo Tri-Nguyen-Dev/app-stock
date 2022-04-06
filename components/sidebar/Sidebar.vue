@@ -9,6 +9,7 @@
       .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed}", @click="toggleSidebar")
 
     .menu-section.sidebar-menu
+      SidebarItem(v-for="")
     <div class="menu-section sidebar-menu">
       <SidebarItem to="/stock" icon="icon-shopping-cart">Stock</SidebarItem>
       <SidebarItem to="/activity" icon="icon-activity">Activities</SidebarItem>
@@ -30,14 +31,14 @@
 
 <script lang='ts'>
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
+
 import { User } from '~/models/User'
-
 const nsSidebar = namespace('layout/store-sidebar')
-
 
 @Component
 class Sidebar extends Vue {
-  // -- Statement properties
+  // -- [ Statement Properties ] ------------------------------------------------
+
   @nsSidebar.Getter('sidebarWidth')
   sidebarWidth!: string
 
@@ -47,7 +48,9 @@ class Sidebar extends Vue {
   @nsSidebar.Mutation('toggleSidebar')
   toggleSidebar
 
-  // -- Properties
+  // -- [ Properties ] ----------------------------------------------------------
+
+  // -- [ Getters ] ----------------------------------------------------------
 
   get user() {
     return this.$auth.user as unknown as User.Model
@@ -98,7 +101,6 @@ export default Sidebar
 
   &-menu
     padding-top: $space-size-16
-
 
   &-foot
     border-top: 1px solid $text-color-400

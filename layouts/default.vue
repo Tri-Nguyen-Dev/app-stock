@@ -7,7 +7,6 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component({
