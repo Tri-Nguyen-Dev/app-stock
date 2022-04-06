@@ -6,33 +6,19 @@
         .user-info
           span.user-name {{ userDisplayName }}
           span.user-role Role Ex
-      .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed}", @click="toggleSidebar")
+      .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
 
     .menu-section.sidebar-menu
-      SidebarItem(v-for="")
-    <div class="menu-section sidebar-menu">
-      <SidebarItem to="/stock" icon="icon-shopping-cart">Stock</SidebarItem>
-      <SidebarItem to="/activity" icon="icon-activity">Activities</SidebarItem>
-      <SidebarItem to="/bin" icon="icon-location">Bin</SidebarItem>
-      <SidebarItem to="/role" icon="icon-award">Role</SidebarItem>
-      <SidebarItem to="/shipper" icon="icon-user-octagon">Shipper</SidebarItem>
-      <SidebarItem to="/tags" icon="icon-tag">Tags</SidebarItem>
-      <SidebarItem to="/seller" icon="icon-send-square">Seller</SidebarItem>
-      <SidebarItem to="/dashboard" icon="icon-dashboard">Dashboard</SidebarItem>
-      <SidebarItem to="/inventory" icon="icon-dollar-square">Inventory Fee</SidebarItem>
-    </div>
+      SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @click="onSelectMenu(item)")
 
-    <div class="menu-section sidebar-foot">
-      <SidebarItem to="/notification" icon="icon-notification">Notifications</SidebarItem>
-      <SidebarItem to="/setting" icon="icon-setting">Setting</SidebarItem>
-    </div>
-  </div>
+    .menu-section.sidebar-foot
+      SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @click="onSelectMenu(item)")
 </template>
 
 <script lang='ts'>
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-
 import { User } from '~/models/User'
+import { PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
@@ -50,6 +36,10 @@ class Sidebar extends Vue {
 
   // -- [ Properties ] ----------------------------------------------------------
 
+  pageMenu = PAGE_MENU
+  settingMenu = SETTING_MENU
+  selectedItem = null
+
   // -- [ Getters ] ----------------------------------------------------------
 
   get user() {
@@ -57,11 +47,16 @@ class Sidebar extends Vue {
   }
 
   get userImageUrl() {
-    return this.user.userDetail.pictureUrl
+    return this.user?.userDetail.pictureUrl || null
   }
 
   get userDisplayName() {
-    return this.user.userDetail.displayName
+    return this.user?.userDetail.displayName || 'Unknown'
+  }
+  // -- [ Methods ] ----------------------------------------------------------
+
+  onSelectMenu(item) {
+    this.selectedItem = item
   }
 }
 

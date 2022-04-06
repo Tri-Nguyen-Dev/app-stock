@@ -1,21 +1,10 @@
 <template lang="pug">
   .menu-item.font-bold.flex-row(:class="{ 'active': active }")
-    router-link(v-if="!!to" :to="to")
-      SidebarItemValue(:icon="icon", :active="active", :hasChild="hasChild")
+    .item-parent-link(v-if="!!item.parentId")
+    router-link(v-if="!!item.to" :to="item.to")
+      SidebarItemValue(:item="item", :active="active")
     div(v-else)
-      SidebarItemValue(:icon="icon", :active="active", :hasChild="hasChild")
-  //  <router-link :to="to" class="link">
-  //    <div class="item-icon">
-  //      <div v-if="!!icon" class="icon icon--large" :class="icon"></div>
-  //    </div>
-  //    <transition name="fade">
-  //      <div v-if="!collapsed" class="item-label">
-  //        <slot />
-  //        <span class="icon toggle icon-chevron-down" :class="{ 'surface-500': !hasChild }"></span>
-  //      </div>
-  //    </transition>
-  //  </router-link>
-  //</div>
+      SidebarItemValue(:item="item", :active="active")
 </template>
 
 <script lang='ts'>
@@ -25,18 +14,12 @@ const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItem extends Vue {
-
+  // -- [ Statement Properties ] ------------------------------------------------
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
-  @Prop(String) readonly to!:   string | undefined
-
-  @Prop(String) readonly icon: string | undefined
-
+  @Prop() readonly item!: any | undefined
   @Prop(Boolean) readonly active!: boolean | undefined
-
-  // @Prop(Number) readonly level!: number | undefined
-
   @Prop(Boolean) readonly hasChild: boolean = false
 }
 
@@ -44,28 +27,10 @@ export default SidebarItem
 </script>
 
 <style lang="sass" scoped>
-//.menu-item
-//  &:hover, &.active
-//    border-radius: 4px
-//    background-color: $text-color-300
-//
-//  .link
-//    @include flex-center-vert
-//    height: 100%
-//    color: $text-color-base
-//    font-size: $font-size-medium
-//    font-weight: $font-weight-bold
-//    cursor: pointer
-//    position: relative
-//    user-select: none
-//    text-decoration: none
-//  .item-label
-//    @include flex-center-space-between
-//    width: 100%
-//  .item-icon
-//    padding: $space-size-16
-//
-//  .toggle
-//    margin-right: $space-size-20
+.item-parent-link
+  width: 40px
+  height: 40px
 
+.ml-40
+  margin-left: 40px
 </style>

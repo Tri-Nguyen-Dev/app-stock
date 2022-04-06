@@ -1,22 +1,11 @@
 <template lang="pug">
   .item-value(:class="{ 'active': active }")
-    .item__icon(v-if="!!icon")
-      .icon.icon--large(:class="icon")
+    .item__icon(v-if="!!item.icon")
+      .icon.icon--large(:class="`icon-${item.icon}`")
     transition(name="fade")
       .item__label(v-if="!collapsed")
-        slot
-        span.icon.toggle.icon-chevron-down(:class="{ 'surface-500': !hasChild }")
-  //<div>
-  //  <div class="item-icon">
-  //    <div v-if="!!icon" class="icon icon--large" :class="icon"></div>
-  //  </div>
-  //  <transition name="fade">
-  //    <div v-if="!collapsed" class="item-label">
-  //      <slot />
-  //      <span class="icon toggle icon-chevron-down" :class="{ 'surface-500': !hasChild }"></span>
-  //    </div>
-  //  </transition>
-  //</div>
+        span {{ item.label }}
+        span.icon.toggle.icon-chevron-down(:class="{ 'surface-500': !active }")
 </template>
 
 <script lang='ts'>
@@ -30,11 +19,9 @@ class SidebarItem extends Vue {
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
-  @Prop(String) readonly icon: string | undefined
+  @Prop() readonly item!: any | undefined
 
   @Prop(Boolean) readonly active!: boolean | undefined
-
-  @Prop(Boolean) readonly hasChild: boolean
 }
 
 export default SidebarItem
@@ -61,6 +48,9 @@ export default SidebarItem
     width: 100%
   .item__icon
     padding: $space-size-16
+
+  .item__icon, .item__parent-link
+    min-height: 56px
 
   .toggle
     margin-right: $space-size-20
