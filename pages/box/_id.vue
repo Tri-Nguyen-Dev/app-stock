@@ -1,11 +1,10 @@
-/* eslint-disable import/named */
 <template lang="pug">
   .grid.flex.grid-nogutter
     div.bg-white.border-round-top.sub-tab(class=' col-3  md:col-3 lg:col-3 xl:col-3')
       .col.flex.align-items-center.p-3
         Button(@click='backToBox').p-button-link
           .icon-arrow-left.icon.bg-primary.mr-3.align-items-center
-        span.font-normal Box list  /  
+        span.font-normal( @click='backToBox') Box list  /  
         span.font-normal.text-primary &nbsp;  Box Detail
       .border-bottom-1.border-gray-300.grid-nogutter
       .grid.flex.my-4.p-3.grid-nogutter
@@ -21,7 +20,7 @@
       div
         .col.px-3
           div(:class='isEditBox? "opacity-40" : "opacity-100"')
-            span.font-bold.text-white.bg-green-500.p-2.border-round AVAILABLE
+            span.font-bold.text-white.p-2.border-round(:class='boxDetail.status? "bg-green-500" : "surface-200"') {{boxDetail.status? 'Available' : 'Disable'}} 
           .font-bold.my-3
             .col(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code: 
@@ -143,32 +142,32 @@
                       span.text-600.text-sm.pl-2 SKU
                     span.p-input-icon-right.w-full
                       .icon.icon--right.icon-search-input.surface-900
-                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="skuFilter")
+                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="skuFilter" v-on:input="validateText")
                 .col
                   .bg-white.border-round
                     div.pt-2.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Bar code
                     span.p-input-icon-right.w-full
                       .icon.icon--right.icon-search-input.surface-900
-                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="barcodeFilter")
+                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="barcodeFilter" v-on:input="validateText")
                 .col
                   .bg-white.border-round
                     div.pt-2.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Category
                       Dropdown.w-full.border-0.mb-1.text-900.font-bold( v-model="categorySelected" :options='categoryList' optionLabel="name" placeholder="Select")
               .overflow-auto.item__log--history
-                BoxDetailTable(v-if="stockList.length > 0" :stockList='stockList' :filterPaggingTable='filterPaggingTable' :totalStockRecords='totalStockRecords')
+                BoxDetailTable(v-if="stockList.length > 0" :stockList='stockList'  :totalStockRecords='totalStockRecords')
             TabPanel
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
                 span Location history
               .overflow-auto.box__detail--history
-                BoxDetailHistory(v-if="stockList.length > 0" :stockList='stockList' :totalStockRecords='totalStockRecords')
+                BoxDetailHistory(v-if="stockList.length > 0" :stockList='stockList' :totalStockRecords='totalStockRecords' )
         .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
           .col
             span.p-input-icon-left
               .icon.icon--left.icon-search-input.surface-900
-              InputText.w-23rem.font-bold.h-3rem.py-4.text-900(type="text" placeholder="Search" v-model='nameStockFilter')
+              InputText.w-23rem.font-bold.h-3rem.py-4.text-900(type="text" placeholder="Search" v-model='nameStockFilter' v-on:input="validateText" )
           .col
             Button.border-0.bg-white.w-7rem.shadow-none.border-primary.h-3rem.py-4(@click="isFilter = !isFilter")
               .icon-filter.bg-primary.icon
@@ -178,6 +177,7 @@
 
 <script lang="ts">
 import { Component,  Vue, Watch, namespace } from 'nuxt-property-decorator'
+const _ = require('lodash')
 
 const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
@@ -251,31 +251,33 @@ class boxDetail extends Vue {
       this.isItemHistory = !this.isItemHistory
       this.isFilter = false
   }
-  
-  @Watch('skuFilter')
-  @Watch('barcodeFilter')
-  @Watch('categorySelected') 
-  @Watch('nameStockFilter')
-   async filtersChange(){
-    await this.actGetBoxDetailFilter({
+
+
+  getParamAPI(){
+    return{
       pageNumber: 1, pageSize: this.pageSize,
       'sku' : this.skuFilter === '' ? null : this.skuFilter,
       'barcode' : this.barcodeFilter === '' ? null : this.barcodeFilter ,
-      'name': this.nameStockFilter === '' ? null : this.nameStockFilter,
+      'nameStock': this.nameStockFilter === '' ? null : this.nameStockFilter,
       'category.id': this.categorySelected?.id
-    }) 
+    }
+  }
+  
+  @Watch('categorySelected') 
+   async filtersChange(){
+    await this.actGetBoxDetailFilter(this.getParamAPI()) 
   }
 
   @Watch('isLocation')
   async filterLocation(){
     await this.actLocationList({
-      'name': this.isLocation
+      'name': this.isLocation === '' ? null: this.isLocation
     })
   }
 
-  filterPaggingTable() {
-  this.filterObj.push( this.skuFilter , this.barcodeFilter, this.categorySelected)
-  }
+    validateText =  _.debounce( async ()=>{
+     await this.actGetBoxDetailFilter(this.getParamAPI())
+  }, 500);
 
   get boxWarehouse() {
     return this.boxDetail.warehouse?.name || ''
