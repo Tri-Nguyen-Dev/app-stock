@@ -13,8 +13,8 @@
       template(#empty)
         | dsadsads
       column(field='no', header='NO', sortable='')
-        template(#body="slotProps") 
-          span.font-bold {{ slotProps.index + 1 }}
+        template(#body="slotProps")
+          span.font-bold {{ pageSize * (pageNumber - 1) + slotProps.index + 1 }}
       column(
         field='',
         header='IMAGE',
@@ -44,7 +44,7 @@
       column(
         field='name',
         header='NAME',
-        sortable='', 
+        sortable='',
         )
           template(#body='{data}')
             span.font-bold.text-right {{data.name}}
@@ -102,7 +102,6 @@
                   Paginator(:rows="20" :totalRecords="totalStockRecords" @page="onPage($event)").p-0
 </template>
 
-
 <script lang="ts">
 import { Component, Prop,namespace, Vue } from 'nuxt-property-decorator'
 const nsStoreBoxDetail = namespace('box/box-detail')
@@ -110,13 +109,13 @@ const nsStoreBoxDetail = namespace('box/box-detail')
 @Component
 class BoxDetailHistory extends Vue {
   @Prop() stockList!: () => any
-  @Prop() filterPaggingTable!: () => any
+  @Prop() filterPagingTable!: () => any
   @Prop() totalStockRecords: () => any
 
   pageSize: number = 20
-  pageNumber: number = 1 
+  pageNumber: number = 1
 
-  getParamAPi(){
+  getParamApi() {
     return {
       pageNumber: this.pageNumber, pageSize: this.pageSize
     }
@@ -132,7 +131,7 @@ class BoxDetailHistory extends Vue {
 
   async onPage(event: any) {
     this.pageNumber = event.page + 1;
-    await this.actGetBoxDetailFilter(this.getParamAPi())
+    await this.actGetBoxDetailFilter(this.getParamApi())
   }
 
 }
@@ -141,8 +140,7 @@ export default BoxDetailHistory
 </script>
 
 
-<style lang="sass" scoped >
-
+<style lang="sass" scoped>
   .p-column-header-content
     .p-column-title
       color: #464D64
@@ -170,6 +168,4 @@ export default BoxDetailHistory
         font-weight:  bold
         border: none
         color: var(--surface-500)
-
-
 </style>

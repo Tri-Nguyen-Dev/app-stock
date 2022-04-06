@@ -1,9 +1,9 @@
 <template lang="pug">
     DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable.table__sort-icon.bg-white(
-      responsiveLayout="scroll" 
-      dataKey="id" 
+      responsiveLayout="scroll"
+      dataKey="id"
       :value='stockList'
-      :resizableColumns="true" 
+      :resizableColumns="true"
       :paginator="false" :rows="100"
       )
       Column(field="no" header="NO" sortable)
@@ -37,9 +37,9 @@ class BoxDetailHistory extends Vue {
 
   totalItemsCount = 32
   pageSize: number = 20
-  pageNumber: number = 1 
+  pageNumber: number = 1
 
-  getParamAPi(){
+  getParamApi(){
     return {
       pageNumber: this.pageNumber, pageSize: this.pageSize
     }
@@ -55,7 +55,7 @@ class BoxDetailHistory extends Vue {
 
   async onPageHistory(event: any) {
     this.pageNumber = event.page + 1;
-    await this.actGetBoxDetailFilter(this.getParamAPi())
+    await this.actGetBoxDetailFilter(this.getParamApi())
   }
 }
 
