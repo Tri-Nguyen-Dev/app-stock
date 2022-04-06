@@ -44,11 +44,9 @@ export default class StoreStock extends VuexModule {
         StoreStock.STATE_URL.DELETE_STOCK
       )
       const response = await $api.post(url, { ids })
-
       if (!response.data) {
         return 
       }
-
       return response.data
     } catch (error) {
     }

@@ -8,7 +8,7 @@
         div.stock__search
           span.p-input-icon-left
             .icon.icon--left.icon-search
-            InputText#inputSearch(type='text' placeholder='Search' @input="debounceSearchName")
+            input#inputSearch(type='text' placeholder='Search' @input="debounceSearchName")
         .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
           .icon.icon-filter( v-if="!isShowFilter")
           .icon.icon-chevron-up.bg-primary(v-else)
@@ -85,14 +85,14 @@
               div.pagination__delete(v-else @click="showModalDelete()")
                 img(:src="require('~/assets/icons/trash-white.svg')")
                 span Delete {{ selectedStockFilter.length }} items selected
-              Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)")
+              Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)" :rowsPerPageOptions="[10,20,30]")
           template(#empty)
             div.flex.align-items-center.justify-content-center.flex-column
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
               p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
-                span.text-primary.underline here
-                span to add item.
+                span.text-primary.underline.cursor-pointer &nbsp;here
+                span &nbsp;to add item.
               p.text-900.font-bold.mt-3(v-else) Item not found!
     ConfirmDialogCustom(
       title="Confirm delete"
@@ -175,7 +175,7 @@ class Stock extends Vue {
   isFilter: boolean = false
 
   get selectedStockFilter() {
-    return this.selectedStock.filter((item) => item.deleted)
+    return this.selectedStock.filter((item) => !item.deleted)
   }
 
   get checkIsFilter() {
@@ -239,8 +239,10 @@ class Stock extends Vue {
     this.selectedStock = data
   }
 
-  onPage(event: any) {
+  onPage(event: any) {  
+    this.paginate.pageSize = event.rows
     this.paginate.pageNumber = event.page
+    this.selectedStock = []
     this.getProductList()
   }
 
@@ -267,13 +269,7 @@ class Stock extends Vue {
         detail: 'Successfully deleted stock',
         life: 3000
       })
-      this.getProductList()
-      this.paginate(
-        {
-          pageNumber: 0,
-          pageSize: 10
-        }
-      )
+      this.paginate.pageNumber = 0
     } catch (error) {
       this.loadingSubmit = false
     }
@@ -308,8 +304,8 @@ class Stock extends Vue {
     this.getProductList()
   }
 
-  debounceSearchName = _.debounce((value) => {
-    this.filter.name = value
+  debounceSearchName = _.debounce((e) => {
+    this.filter.name = e.target.value
   }, 500)
 }
 export default Stock
