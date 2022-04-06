@@ -15,7 +15,7 @@ export default class Category extends VuexModule {
 
   @Mutation
   setCategoryList(data: any) { 
-    this.categoryList = data.data
+    this.categoryList = data.items
   }
 
   @Action({ commit: 'setCategoryList', rawError: true })

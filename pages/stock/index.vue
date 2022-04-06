@@ -8,7 +8,7 @@
         div.stock__search
           span.p-input-icon-left
             .icon.icon--left.icon-search
-            InputText#inputSearch(type='text' placeholder='Search' v-model="filter.name")
+            InputText#inputSearch(type='text' placeholder='Search' @input="debounceSearchName")
         .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
           .icon.icon-filter( v-if="!isShowFilter")
           .icon.icon-chevron-up.bg-primary(v-else)
@@ -49,32 +49,28 @@
                 img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-          Column(field='barCode' :styles="{'width': '5%'}")
+          Column(field='barCode' :styles="{'width': '5%'}" headerClass="grid-heading-end")
             template(#header)
-              div.w-full.flex.justify-content-end.table__sort(@click="handleSort('barCode')")
+              div.table__sort(@click="handleSort('barCode')")
                 span Code
                 img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'barCode'" :class="{ 'sortDes': sort.sortDescending }")
                 img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
             template(#body='{ data }')
-              div.flex.justify-content-end.stock__table-barcode {{ data.barCode }}
+              div.stock__table-barcode {{ data.barCode }}
           Column(field='category' :styles="{'width': '5%'}")
               template(#header)
-                div.w-full.flex.justify-content-end.table__sort(@click="handleSort('category.name')")
+                div.table__sort(@click="handleSort('category.name')")
                   span Category
                   img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'category.name'" :class="{ 'sortDes': sort.sortDescending }")
                   img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
               template(#body='{ data }')
-                div.flex.justify-content-end {{ data.category.name }}
-          Column(field='status' :styles="{'width': '5%'}")
-            template(#header)
-              div.flex.justify-content-center.w-full Status
+                div.grid-body-end {{ data.category.name }}
+          Column(field='status' header="Status" :styles="{'width': '5%'}" headerClass="grid-heading-content")
             template(#body='{ data }')
-              div.flex.justify-content-end
+              div
                 span.table__status.table__status--available(v-if="!data.deleted") Available
                 span.table__status.table__status--disable(v-else) Disable
-          Column(field='action' :styles="{'width': '2%'}")
-            template(#header)
-              div.flex.justify-content-center.w-full Action
+          Column(field='action' header="action" :styles="{'width': '2%'}" headerClass="grid-heading-content")
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': data.deleted}")
                 span(@click="handleEditStock(data.id)")
@@ -110,6 +106,7 @@
     Toast
 </template>
 <script lang="ts">
+import _ from 'lodash'
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
@@ -262,7 +259,6 @@ class Stock extends Vue {
     try {
       this.loadingSubmit = true
       await this.actDeleteStockByIds(this.ids)
-      this.getProductList()
       this.loadingSubmit = false
       this.isModalDelete = false
       this.$toast.add({
@@ -271,6 +267,7 @@ class Stock extends Vue {
         detail: 'Successfully deleted stock',
         life: 3000
       })
+      this.getProductList()
       this.paginate(
         {
           pageNumber: 0,
@@ -310,6 +307,10 @@ class Stock extends Vue {
     } 
     this.getProductList()
   }
+
+  debounceSearchName = _.debounce((value) => {
+    this.filter.name = value
+  }, 500)
 }
 export default Stock
 </script>

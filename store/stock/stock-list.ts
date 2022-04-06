@@ -18,7 +18,7 @@ export default class StoreStock extends VuexModule {
   @Mutation
   setStockList(data: any) {  
     this.total = data.total
-    this.stockList = data.data
+    this.stockList = data.items
   }
 
   @Action({ commit: 'setStockList', rawError: true })

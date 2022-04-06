@@ -16,7 +16,7 @@ export default class Warehouse extends VuexModule {
 
   @Mutation
   setWarehouseList(data: any) {
-    this.warehouseList = data.data
+    this.warehouseList = data.items
   }
 
   @Action({ commit: 'setWarehouseList', rawError: true })
