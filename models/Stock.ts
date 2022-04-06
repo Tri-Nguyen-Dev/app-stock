@@ -16,28 +16,30 @@ export namespace Stock {
   }
 
   export interface ModelDetail {
-    id: string,
-    name?: string,
-    seller: {
-      name: string,
-      phone: number,
-      email: string
+    data: {
+      id: string,
+      name?: string,
+      seller: {
+        name: string,
+        phone: number,
+        email: string
+      },
+      description?: string,
+      imageUrl?: string,
+      barCode?: string
+      unit?: string
+      sku? : string
+      attributeValue: [{
+        id: string
+        name: string
+        value: string
+      }]
+      category?: {
+        id: string
+        name: string
+      },
+      type?: object,
+      deleted?: boolean,
     }
-    description?: string,
-    imageUrl?: string,
-    barcode?: string
-    unit?: string
-    sku? : string
-    attributes: [{
-      id: string
-      name: string
-      value: string
-    }]
-    category?: {
-      id: string
-      name: string
-    },
-    type?: object,
-    deleted?: boolean,
   }
 }
