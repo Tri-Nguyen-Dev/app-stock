@@ -41,7 +41,8 @@ class BoxDetailHistory extends Vue {
 
   getParamApi(){
     return {
-      pageNumber: this.pageNumber, pageSize: this.pageSize
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
     }
   }
 

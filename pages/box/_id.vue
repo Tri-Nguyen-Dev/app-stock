@@ -157,7 +157,7 @@
                       span.text-600.text-sm.pl-2 Category
                       Dropdown.w-full.border-0.mb-1.text-900.font-bold( v-model="categorySelected" :options='categoryList' optionLabel="name" placeholder="Select")
               .overflow-auto.item__log--history
-                BoxDetailTable(v-if="stockList.length > 0" :stockList='stockList' :filterPagingTable='filterPagingTable' :totalStockRecords='totalStockRecords')
+                BoxDetailTable(v-if="stockList.length > 0" :stockList='stockList' :filterPagingTable='filterPagingTable' :totalStockRecords='totalStockRecords' :getParam='getParamAPI')
             TabPanel
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
@@ -205,7 +205,7 @@ class BoxDetail extends Vue {
   stockList!: any
 
   @nsStoreBoxDetail.State
-  totalStockRecords!: any
+  totalStockRecords!: number
 
   @nsStoreBoxDetail.State
   boxDetail!: {
@@ -229,11 +229,25 @@ class BoxDetail extends Vue {
   @nsStoreLocationList.Action
   actLocationList!: (params: any) => Promise<void>
 
+  getParamAPI() {
+    return {
+      pageNumber: 1,
+      pageSize: this.pageSize,
+      'sku' : this.skuFilter === '' ? null : this.skuFilter,
+      'barcode' : this.barcodeFilter === '' ? null : this.barcodeFilter ,
+      'name': this.nameStockFilter === '' ? null : this.nameStockFilter,
+      'category.id': this.categorySelected?.id
+    }
+  }
+
   async mounted() {
     await this.actGetBoxItem({ id: Number.parseInt(this.$route.params.id) })
-    await this.actGetBoxDetailFilter( { pageNumber: this.pageNumber, pageSize: this.pageSize} )
-    this.actCategoryList()
-    this.actLocationList({name: null})
+    await this.actGetBoxDetailFilter({
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
+    })
+    await this.actCategoryList()
+    await this.actLocationList({name: null})
   }
 
   backToBox() {
@@ -242,10 +256,9 @@ class BoxDetail extends Vue {
 
   btnEdit() {
     this.isEditBox = !this.isEditBox
-
   }
 
-  onTabClick(){
+  onTabClick() {
       this.isItemHistory = !this.isItemHistory
       this.isFilter = false
   }
@@ -254,9 +267,9 @@ class BoxDetail extends Vue {
   @Watch('barcodeFilter')
   @Watch('categorySelected')
   @Watch('nameStockFilter')
-   async filtersChange(){
+   async filtersChange() {
     await this.actGetBoxDetailFilter({
-      pageNumber: this.pageNumber,
+      pageNumber: 1,
       pageSize: this.pageSize,
       'sku' : this.skuFilter || null,
       'barcode' : this.barcodeFilter || null,
@@ -273,7 +286,12 @@ class BoxDetail extends Vue {
   }
 
   filterPagingTable() {
-    this.filterObj.push(this.nameStockFilter, this.skuFilter, this.barcodeFilter, this.categorySelected)
+    this.filterObj.push(
+      this.nameStockFilter,
+      this.skuFilter,
+      this.barcodeFilter,
+      this.categorySelected
+    )
   }
 
   get boxWarehouse() {
