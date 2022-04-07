@@ -29,7 +29,6 @@
 import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
 const nsStoreBoxDetail = namespace('box/box-detail')
 
-
 @Component
 class BoxDetailHistory extends Vue {
   @Prop() stockList!: () => any
@@ -53,14 +52,11 @@ class BoxDetailHistory extends Vue {
    await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize })
   }
 
-
   async onPageHistory(event: any) {
     this.pageNumber = event.page + 1;
     await this.actGetBoxDetailFilter(this.getParamApi())
   }
 }
-
-
 
 export default BoxDetailHistory
 </script>

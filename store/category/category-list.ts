@@ -15,7 +15,6 @@ export default class Category extends VuexModule {
 
   @Mutation
   setCategoryList(data: any) { 
-
     this.categoryList = data.items
   }
 
@@ -24,12 +23,9 @@ export default class Category extends VuexModule {
     try {
       const url = PathBind.transform(
         this.context,
-        Category.STATE_URL.GET_CATEGORIES,
-        { pageNumber: 1 }
+        Category.STATE_URL.GET_CATEGORIES
       )
-      const response = await $api.get(url, { params: { pageNumber: 1 }})      
-  
-      return response.data
+      const response = await $api.get(url)            return response.data
     } catch (error) {}
   }
 }

@@ -7,10 +7,10 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component({
+  // TODO: Update authen logic when BE updated
   // middleware: 'authenticate'
 })
 class Dashboard extends Vue {

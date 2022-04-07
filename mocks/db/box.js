@@ -38,7 +38,6 @@ function generateData ( sellerList, warehouseList, locationList ) {
       inventoryFee
     })
   }
-
   return boxes
 }
 

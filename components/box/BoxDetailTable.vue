@@ -112,8 +112,6 @@ class BoxDetailHistory extends Vue {
   @Prop() getParam: () => any
   // @Prop() listStockWithAmount: () => any
 
-
-
   // pageSize: number = 20
   // pageNumber: number = 1
   // fristPage: number = 1 

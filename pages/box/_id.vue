@@ -172,9 +172,7 @@
 
 <script lang="ts">
 import { Component,  Vue, Watch, namespace } from 'nuxt-property-decorator'
-const _ = require('lodash')
-
-const nsStoreBoxDetail = namespace('box/box-detail')
+const _ = require('lodash')const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
 const nsStoreLocationList = namespace('location/location-list')
 
@@ -276,7 +274,6 @@ class BoxDetail extends Vue {
     return [ day , month, year ].join('-') + ' ' + [sHour , sMinute ].join(':') + [sAMPM]
   }
 
-
     validateText =  _.debounce( async ()=>{
      await this.actGetBoxDetail(this.getParamAPI())
   }, 500);
@@ -375,7 +372,6 @@ export default BoxDetail
   ::-webkit-input-placeholder
     color: var(--surface-900)
 
-
 ::-webkit-input-placeholder
   font-weight: normal
 
@@ -395,7 +391,5 @@ export default BoxDetail
  background-color: #979AA4
 .p-disabled, .p-component:disabled
   opacity: 1
-
-
 
 </style>

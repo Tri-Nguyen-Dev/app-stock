@@ -24,7 +24,6 @@ function generateData (locationList) {
     const quantity = faker.datatype.number(100)
     const location = _.sample(locationList)
 
-
     stocks.push({
       id,
       name,
@@ -44,7 +43,6 @@ function generateData (locationList) {
       location
     })
   }
-
   return stocks
 }
 
