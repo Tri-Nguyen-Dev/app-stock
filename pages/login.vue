@@ -50,7 +50,7 @@ class Login extends Vue {
 
 export default Login
 </script>
-<style lang="sass" scoped>
+<style lang="sass">
 .logo-block
   height: 54px
   img

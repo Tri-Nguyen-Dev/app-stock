@@ -4,6 +4,7 @@
 </template>
 <script lang='ts'>
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
+
 const nsStoreLoader = namespace('commons/store-loader')
 
 @Component

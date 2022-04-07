@@ -15,7 +15,7 @@ export default {
     link: []
   },
 
-  plugins: ['~/plugins/vuelidate.ts', '~/plugins/toast.ts'],
+  plugins: ['~/plugins/vuelidate.ts'],
 
   components: true,
 
@@ -48,23 +48,7 @@ export default {
       'Button',
       'Checkbox',
       'DataTable',
-      'Dialog',
-      'Tag',
-      'Calendar',
-      'Tooltip',
-      'TabPanel',
-      'TabView',
-      'Column',
-      'ColumnGroup',
-      'DropDown',
-      'ScrollPanel',
-      'MultiSelect',
-      'Paginator',
-      'ConfirmDialog',
-      'Toast',
-      'ScrollPanel',
-      'TieredMenu',
-      'AutoComplete'
+      'Dialog'
     ],
     directives: ['Tooltip', 'Badge']
   },
@@ -83,7 +67,7 @@ export default {
           required: false
         },
         user: {
-          property: '',
+          property: 'user',
           autoFetch: true
         },
         endpoints: {

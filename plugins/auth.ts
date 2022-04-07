@@ -2,6 +2,7 @@ import { Plugin } from '@nuxt/types'
 import axios from 'axios'
 import { ErrorResponse, initializeAxios } from '~/utils'
 
+
 declare module 'vue/types/vue' {
   interface Vue {
     $bvToast: {
@@ -13,8 +14,10 @@ declare module 'vue/types/vue' {
     }
   }
 }
+
 const auth: Plugin = ({ store }) => {
   const axiosInstance = axios.create()
+
   axiosInstance.interceptors.request.use((config) => {
     return config
   }, (error) => {
@@ -28,9 +31,11 @@ const auth: Plugin = ({ store }) => {
     if (errorResponse) {
       store.commit('commons/store-error/setError', errorResponse)
     }
+
     return Promise.reject(error)
   })
 
   initializeAxios(axiosInstance)
 }
+
 export default auth
