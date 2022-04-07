@@ -41,7 +41,6 @@ function generateData () {
       barcode
     })
   }
-
   return stocks
 }
 
