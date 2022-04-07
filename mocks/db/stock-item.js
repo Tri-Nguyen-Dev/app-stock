@@ -32,9 +32,7 @@ function generateItems (stocks, boxes) {
         inventoryQuantity
       })
     })
-  }
-
-  return itemsList
+  }  return itemsList
 }
 
 module.exports = generateItems

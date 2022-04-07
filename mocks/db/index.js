@@ -5,10 +5,7 @@ const warehouse = require('./warehouse.json')
 const genStockList = require('./stock.js')
 const genBoxList = require('./box.js')
 const genStockItemList = require('./stock-item.js')
-const genTypeList = require('./types.js')
-
-
-const boxes = genBoxList()
+const genTypeList = require('./types.js')const boxes = genBoxList()
 const stocks = genStockList(warehouse, category, genTypeList())
 
 module.exports = {

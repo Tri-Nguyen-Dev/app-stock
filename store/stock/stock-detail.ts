@@ -2,7 +2,6 @@ import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import { $api, PathBind } from '~/utils'
 import { Stock as StockModel } from '~/models/Stock'
 
-
 @Module({
   stateFactory: true,
   namespaced: true

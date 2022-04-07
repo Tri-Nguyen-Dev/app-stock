@@ -40,7 +40,6 @@ function generateData () {
       deleted
     })
   }
-
   return boxes
 }
 
