@@ -51,13 +51,13 @@
           Dropdown.w-full.border-0.mb-1(v-model="filter.status" :options="statusList" optionLabel="name" placeholder="Select")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
-        DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
-          dataKey="id" :resizableColumns="true" :rowClass="rowClass" :rows="20" :scrollable="false" @row-dblclick='redirectToDetail' 
-          :class="{ 'table__empty': !itemsList.items || itemsList/items.length <= 0 }")
+        DataTable.bg-white.table__sort-icon.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
+          dataKey="id" :resizableColumns="true" :rowClass="rowClass" :rows="20" :scrollable="false" @row-dblclick='redirectToDetail'
+          :class="{ 'table__empty': !itemsList.items || itemsList.items.length <= 0 }")
           Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
           Column(field="no" header="NO")
-            template(#body="slotProps")
-              span.font-semibold {{slotProps.index +1}}
+            template(#body="{ index }")
+              span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
           Column(field="box.request.seller.email" header="SELLER EMAIL" sortable className="w-3")
           Column(field="stock.sku" header="SKU" sortable className="p-text-right")
           Column(field="amount" header="INVENTORY QUANTITY" className="p-text-right" bodyClass="font-semibold")
@@ -93,7 +93,7 @@
               div.pagination__delete(v-else @click="showModalDelete()")
                 img(:src="require('~/assets/icons/trash-white.svg')")
                 span Delete {{ selectedStockFilter.length }} items selected
-              Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)")
+              Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="itemsList.data.total" @page="onPage($event)")
           template(#empty)
             div.flex.align-items-center.justify-content-center.flex-column
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
@@ -125,7 +125,7 @@ const nsWarehouseStock = namespace('warehouse/warehouse-list')
 class StockDetailTable extends Vue {
 
   @Prop() sku!: string
-  
+
   isShowFilter: boolean = false
 
   selectedWarehouse = []
@@ -177,18 +177,16 @@ class StockDetailTable extends Vue {
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
 
-
-
   get getInfoPaginate() {
     const { pageNumber, pageSize } = this.paginate
     const start = (pageNumber + 1) * pageSize - (pageSize - 1)
     const convertStart = ('0' + start).slice(-2)
-    const end = Math.min(start + pageSize - 1, this.total)
-    return `Showing ${convertStart} - ${end} of ${this.total}`
+    const end = Math.min(start + pageSize - 1, this.itemsList.data.total)
+    return `Showing ${convertStart} - ${end} of ${this.itemsList.data.total}`
   }
 
   get selectedStockFilter() {
-    return this.selectedStock
+    return this.selectedStock.filter((item: any) => !item.box.deleted)
   }
 
    onPage(event: any) {
@@ -212,7 +210,7 @@ class StockDetailTable extends Vue {
   }
 
   rowClass(data: any) {
-    return data.deleted ? 'row-disable' : ''
+    return data.box.deleted ? 'row-disable' : ''
   }
 
   handleCancel() {
@@ -236,13 +234,12 @@ class StockDetailTable extends Vue {
     const filter = {
       seller: this.filter?.sellerEmail,
       sku: this.filter?.sku,
-      boxCode: this.filter?.boxCode,
+      barCode: this.filter?.boxCode,
       location: this.filter?.location,
       deleted: this.filter.status?.value,
       pageNumber:this.paginate.pageNumber,
       pageSize: this.paginate.pageSize
     }
-
     const params = {
       filter,
       ...this.paginate,

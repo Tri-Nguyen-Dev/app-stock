@@ -45,7 +45,6 @@ class BoxDetailHistory extends Vue {
 export default BoxDetailHistory
 </script>
 
-
 <style lang="sass" scoped >
   .p-column-header-content
     .p-column-title
