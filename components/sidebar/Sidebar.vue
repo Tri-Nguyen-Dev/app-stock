@@ -9,14 +9,14 @@
       .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
 
     .menu-section.sidebar-menu
-      SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @click="onSelectMenu(item)")
+      SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
 
     .menu-section.sidebar-foot
-      SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @click="onSelectMenu(item)")
+      SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
 </template>
 
 <script lang='ts'>
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, ProvideReactive, Vue } from 'nuxt-property-decorator'
 import { User } from '~/models/User'
 import { PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
@@ -35,12 +35,13 @@ class Sidebar extends Vue {
   toggleSidebar
 
   // -- [ Properties ] ----------------------------------------------------------
+  @ProvideReactive()
+  selectedItem: any = null
 
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
-  selectedItem = null
 
-  // -- [ Getters ] ----------------------------------------------------------
+  // -- [ Getters ] -------------------------------------------------------------
 
   get user() {
     return this.$auth.user as unknown as User.Model
@@ -53,10 +54,10 @@ class Sidebar extends Vue {
   get userDisplayName() {
     return this.user?.userDetail.displayName || 'Unknown'
   }
-  // -- [ Methods ] ----------------------------------------------------------
+  // -- [ Methods ] ------------------------------------------------------------
 
   onSelectMenu(item) {
-    this.selectedItem = item
+    this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
   }
 }
 

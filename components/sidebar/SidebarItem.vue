@@ -1,14 +1,14 @@
 <template lang="pug">
-  .menu-item.flex-row(:class="{ 'active': active }")
+  .menu-item.flex-row(v-show="isShow" @click="select(item)")
     router-link(v-if="!!item.to" :to="item.to")
-      SidebarItemValue(:item="item", :active="active")
+      SidebarItemValue(:item="item")
     div(v-else)
-      SidebarItemValue(:item="item", :active="active")
+      SidebarItemValue(:item="item")
 </template>
 
 <script lang='ts'>
 
-import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
+import { Component, Emit, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
@@ -18,8 +18,19 @@ class SidebarItem extends Vue {
   collapsed!: boolean
 
   @Prop() readonly item!: any | undefined
-  @Prop(Boolean) readonly active!: boolean | undefined
-  @Prop(Boolean) readonly hasChild: boolean = false
+  @InjectReactive() readonly selectedItem!: any
+
+  @Emit()
+  select(item) {
+    return item
+  }
+
+  // -- [ Getters ] -------------------------------------------------------------
+  get isShow() {
+    return !this.item.parentId ||
+      (this.selectedItem?.parentId === this.item.parentId) ||
+      (this.selectedItem?.id === this.item.parentId)
+  }
 }
 
 export default SidebarItem
