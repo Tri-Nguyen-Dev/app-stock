@@ -63,13 +63,13 @@
             span.font-semibold {{(pageNumber - 1) * pageSize + slotProps.index +1}}
         Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_barCode")
         Column(field="request.seller.email" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_sellerEmail")
-        Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right datatable__head-right" sortField="_createTime")
+        Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right datatable__head-right" sortField="_createdAt")
           template(#body="{data}") {{formatDate(data.createdAt)}}
         Column(field="attributes" header="SIZE(CM)" className="text-right datatable__head-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
         Column(field="weight" header="WEIGHT(KG)" className="text-right datatable__head-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.weight}}
-        Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right datatable__head-right" sortField="_warehouse")
+        Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right datatable__head-right" sortField="_warehouseId")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm.text-white-active {{data.request.warehouse.name}}
@@ -98,7 +98,7 @@
             div.pagination__delete(v-else @click="showModalDelete()")
               img(:src="require('~/assets/icons/trash-white.svg')")
               span Delete {{itemsBoxDelete.length}} items selected
-            Paginator(v-model:first="firstPage" :rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)")
+            Paginator(:first.sync="firstPage" :rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)")
         template(#empty)
           div.flex.align-items-center.justify-content-center.flex-column
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
@@ -261,6 +261,9 @@ class BoxList extends Vue {
     if(sortOrder){
       this.isDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '');
+    }else{
+      this.isDescending = null
+      this.sortByColumn = null
     }
     await this.actGetBoxList(this.getParamAPi())
   }
