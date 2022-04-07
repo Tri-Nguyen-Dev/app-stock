@@ -302,7 +302,6 @@ class Stock extends Vue {
     this.getProductList()
   }
 
-
   debounceSearchName = _.debounce((e) => {
     this.filter.name = e.target.value
   }, 500)

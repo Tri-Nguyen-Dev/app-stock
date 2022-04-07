@@ -1,11 +1,8 @@
 const jsonServer = require('json-server')
 const data = require('./db')
-
 const postAsUpdate = require('./scripts/postAsUpdate.js')
 const pagingResults = require('./scripts/pagingResults.js')
-const filterRewriter = require('./scripts/filterRewriter.js')
-
-const server = jsonServer.create()
+const filterRewriter = require('./scripts/filterRewriter.js')const server = jsonServer.create()
 const router = jsonServer.router(data)
 const middlewares = jsonServer.defaults()
 

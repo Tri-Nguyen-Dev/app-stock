@@ -26,9 +26,7 @@ export default class Warehouse extends VuexModule {
         this.context,
         Warehouse.STATE_URL.GET_WAREHOUSE
       )
-      const response = await $api.get(url) 
-   
-      return response.data
+      const response = await $api.get(url)       return response.data
     } catch (error) {}
   }
 }

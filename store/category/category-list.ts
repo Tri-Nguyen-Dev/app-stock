@@ -25,9 +25,7 @@ export default class Category extends VuexModule {
         this.context,
         Category.STATE_URL.GET_CATEGORIES
       )
-      const response = await $api.get(url)      
-  
-      return response.data
+      const response = await $api.get(url)            return response.data
     } catch (error) {}
   }
 }

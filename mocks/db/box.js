@@ -36,9 +36,7 @@ function generateData () {
       location,
       status
     })
-  }
-
-  return boxes
+  }  return boxes
 }
 
 module.exports = generateData;

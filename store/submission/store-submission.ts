@@ -1,9 +1,6 @@
 import { Mutation, VuexModule, Action, Module } from 'vuex-module-decorators';
 import { $api } from '~/utils'
 
-
-
-
 export namespace Submission {
     export class SubmissionModel {
         id?: number
@@ -22,7 +19,6 @@ export namespace Submission {
     stateFactory: true,
     namespaced: true
   })
-
 
 export default class StoreSubmission extends VuexModule {
     private static readonly STATE_URL =  {
