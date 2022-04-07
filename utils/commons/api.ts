@@ -1,4 +1,5 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
+
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 class ApiWrapper {
@@ -30,10 +31,8 @@ class ApiWrapper {
   }
 
 }
-
 // eslint-disable-next-line import/no-mutable-exports
 let $api: ApiWrapper
-
 export function initializeAxios(axiosInstance: any) {
 
   $api = new ApiWrapper(axiosInstance)
