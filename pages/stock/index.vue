@@ -9,10 +9,13 @@
           span.p-input-icon-left
             .icon.icon--left.icon-search
             input#inputSearch(type='text' placeholder='Search' @input="debounceSearchName")
-        .stock__btn-filter.flex.align-items-center.bg-white.border-round.cursor-pointer(@click="toggleShowFilter" :class="{'active': isShowFilter}")
-          .icon.icon-filter( v-if="!isShowFilter")
-          .icon.icon-chevron-up.bg-primary(v-else)
-          span Filter
+        .stock__btn-filter.border-round.cursor-pointer(:class="{'active': isShowFilter}")
+          div.bg-white.btn-filter-toggle.flex.align-items-center.h-full.flex-1(@click="toggleShowFilter")
+            .icon.icon-filter( v-if="!isShowFilter")
+            .icon.icon-chevron-up.bg-primary(v-else)
+            span Filter
+          div.refresh-filter(@click="handleRefreshFilter")
+            img(:src="require(`~/assets/icons/rotate-left.svg`)")
         .stock__btn-add.flex.align-items-center.bg-primary.border-round.cursor-pointer
           .icon.icon-add-items.bg-white
           span Add Stock
@@ -33,14 +36,14 @@
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
         DataTable.h-full.flex.flex-column(:class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
-          Column(selectionMode='multiple' :styles="{'width': '1%'}")
+          Column(selectionMode='multiple' :styles="{'width': '1%'}" :headerClass="`${!stockList || stockList.length <= 0 || checkStockDisable ? 'checkbox-disable' : ''}`")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
-              span.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
+              span.grid-body-center.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
           Column(field='imageUrl' header='Image' :styles="{'width': '5%'}")
             template(#body='{ data }')
-              .stock__table__image.w-2rem.h-2rem.overflow-hidden
-                img.w-full.h-full.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
+              .grid-body-center.stock__table__image.overflow-hidden
+                img.h-2rem.w-2rem.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
           Column(field='name')
             template(#header)
               div.table__sort(@click="handleSort('name')")
@@ -180,6 +183,10 @@ class Stock extends Vue {
     return this.selectedStock.filter((item) => !item.deleted)
   }
 
+  get checkStockDisable () {
+    return this.stockList.every((item) => item.deleted)
+  }
+
   get checkIsFilter() {
     return Object.values(this.filter).some((item) => item)
   }
@@ -198,14 +205,6 @@ class Stock extends Vue {
 
   toggleShowFilter() {
     this.isShowFilter = !this.isShowFilter
-    if (this.checkIsFilter)
-      this.filter = {
-        name: null,
-        warehouse: null,
-        categories: null,
-        barCode: null,
-        status: null
-      }
   }
 
   mounted() {
@@ -285,11 +284,11 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/stock/stock-detail/${id}`})
+    this.$router.push({ path: `/box/${id}/detail`})
   }
 
-  rowdbClick({ data }) {
-    this.$router.push(`/stock/stock-detail/${data.id}`)
+  rowdbClick({ data }) { 
+    this.$router.push(`/box/${data.id}/detail`)
   }
 
   handleSort(field: any) {
@@ -316,6 +315,17 @@ class Stock extends Vue {
   debounceSearchCode = _.debounce((e) => {
     this.filter.barCode = e.target.value
   }, 500)
+
+  handleRefreshFilter () {
+    if (this.checkIsFilter)
+      this.filter = {
+        name: null,
+        warehouse: null,
+        categories: null,
+        barCode: null,
+        status: null
+      }
+  }
 }
 export default Stock
 </script>
@@ -324,31 +334,44 @@ export default Stock
   display: flex
   flex-direction: column
   height: 100%
-
   &__header
     display: flex
     align-items: center
     justify-content: space-between
     margin-bottom: 24px
-
     &-action
       display: flex
       align-items: center
       gap: 0 16px
-
-  &__btn-filter, &__btn-add
+  &__btn-filter
+    display: flex
+    height: 48px
+    width: 166px
+    .refresh-filter
+      background-color: $primary
+      display: flex
+      align-items: center
+      width: 50px
+      justify-content: center
+      border-top-right-radius: 4px
+      border-bottom-right-radius: 4px
+    .btn-filter-toggle
+      gap: 18px
+      border-top-left-radius: 4px
+      border-bottom-left-radius: 4px
+      display: flex
+      justify-content: center
+  &__btn-add
     gap: 18px
     height: 48px
     padding: 0 32px 0 20px
     white-space: nowrap
-
     span
       line-height: calc(24 / 14)
-
   &__btn-filter.active
-    color: $primary,
-    border: 1.5px solid $primary
-
+    .btn-filter-toggle
+        color: $primary,
+        border: 1.5px solid $primary
   &__filter
     visibility: hidden
     max-height: 0
@@ -356,28 +379,22 @@ export default Stock
     display: grid
     grid-template-columns: repeat(4, 1fr)
     grid-gap: 0 16px
-
     &.active
       visibility: visible
       max-height: 200px
       margin-bottom: 24px
-
     &-item
       padding: 13px 5.5px
-
     &-title
       font-size: 12px
       color: $text-color-700
       line-height: calc(16 / 12)
       margin-bottom: 5px
       padding-left: 10.5px
-
 .stock__table
   border-radius: 4px
-
   &-no
     font-size: $font-size-medium
-
   &-barcode
     text-transform: uppercase
 </style>
