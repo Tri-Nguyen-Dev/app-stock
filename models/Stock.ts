@@ -5,13 +5,13 @@ export namespace Stock {
     name?: string,
     description?: string,
     imageUrl?: string,
-    barcode?: String
+    barCode?: String
     sku : String
     category?: {
       id: string
       name: string
     },
     type?: object,
-    delete?: boolean,
+    deleted?: boolean,
   }
 }
