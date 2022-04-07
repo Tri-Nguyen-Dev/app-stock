@@ -184,3 +184,13 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   gap: 0 7px
 .sortDes
   transform: rotate(180deg) !important
+
+.table__sort-icon
+  .pi-sort-alt:before
+    content: url('~/assets/icons/sort-alt.svg')
+  .pi-sort-amount-up-alt:before
+    content: url('~/assets/icons/sort-alt-up.svg')
+  .pi-sort-amount-down
+    transform: rotate(180deg) !important
+    &:before
+      content: url('~/assets/icons/sort-alt-up.svg')

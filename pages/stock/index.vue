@@ -35,7 +35,7 @@
         .text-sm.stock__filter-title Status
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
-        DataTable.h-full.flex.flex-column(:class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
+        DataTable.table__sort-icon.h-full.flex.flex-column(@sort="sortData($event)" :class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
           Column(selectionMode='multiple' :styles="{'width': '1%'}" :headerClass="`${!stockList || stockList.length <= 0 || checkStockDisable ? 'checkbox-disable' : ''}`")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
@@ -44,28 +44,13 @@
             template(#body='{ data }')
               .grid-body-center.stock__table__image.overflow-hidden
                 img.h-2rem.w-2rem.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
-          Column(field='name')
-            template(#header)
-              div.table__sort(@click="handleSort('name')")
-                span Name
-                img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'name'" :class="{ 'sortDes': sort.sortDescending }")
-                img(:src="require(`~/assets/icons/sort-alt.svg`)" v-else)
+          Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-          Column(field='barCode' :styles="{'width': '5%'}" headerClass="grid-heading-end")
-            template(#header)
-              div.table__sort(@click="handleSort('barCode')")
-                span Code
-                img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'barCode'" :class="{ 'sortDes': sort.sortDescending }")
-                img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
+          Column(header='Code' field='barCode' :sortable="true" :styles="{'width': '5%'}" headerClass="grid-heading-end" sortField="_barCode")
             template(#body='{ data }')
               div.grid-body-end.stock__table-barcode {{ data.barCode }}
-          Column(field='category' :styles="{'width': '5%'}")
-              template(#header)
-                div.table__sort(@click="handleSort('category.name')")
-                  span Category
-                  img(:src="require('~/assets/icons/sort-alt-up.svg')" v-if="sort.sortByColumn && sort.sortByColumn === 'category.name'" :class="{ 'sortDes': sort.sortDescending }")
-                  img(:src="require('~/assets/icons/sort-alt.svg')" v-else)
+          Column(header='Category' :sortable="true" field='category' :styles="{'width': '5%'}" sortField="_category")
               template(#body='{ data }')
                 div.grid-body-end {{ data.category.name }}
           Column(field='status' header="Status" :styles="{'width': '5%'}" headerClass="grid-heading-content")
@@ -307,6 +292,16 @@ class Stock extends Vue {
     } 
     this.getProductList()
   }
+
+  sortData(e: any){
+    const {sortField, sortOrder} = e;
+    if(sortOrder){
+      this.sort.sortDescending = sortOrder !== 1
+      this.sort.sortByColumn = sortField.replace('_', '');
+    }
+    this.getProductList()
+  }
+
 
   debounceSearchName = _.debounce((e) => {
     this.filter.name = e.target.value
