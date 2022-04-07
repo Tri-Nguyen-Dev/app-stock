@@ -67,7 +67,7 @@
                 div.grid-body-end {{ data.category.name }}
           Column(field='status' header="Status" :styles="{'width': '5%'}" headerClass="grid-heading-content")
             template(#body='{ data }')
-              div
+              div.grid-body-end
                 span.table__status.table__status--available(v-if="!data.deleted") Available
                 span.table__status.table__status--disable(v-else) Disable
           Column(field='action' header="action" :styles="{'width': '2%'}" headerClass="grid-heading-content")
@@ -285,7 +285,7 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push(`/stock/stock-detail/${id}`)
+    this.$router.push({ path: `/stock/stock-detail/${id}`})
   }
 
   rowdbClick({ data }) {
