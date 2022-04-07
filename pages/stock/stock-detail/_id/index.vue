@@ -49,6 +49,7 @@
             span.font-semibold.mr-1.uppercase {{stockDetail.totalInventory}}
     .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
+
 </template>
 <script lang="ts">
 import { Component, Vue, namespace} from 'nuxt-property-decorator'

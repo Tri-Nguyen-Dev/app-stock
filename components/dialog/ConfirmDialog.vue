@@ -39,22 +39,22 @@ class ConfirmDialogCustom extends Vue {
 export default ConfirmDialogCustom
 </script>
 
-<style lang="sass">
-
-.p-dialog
-    font-family: $font-family-primary !important
-    border-radius: 8px !important
-    overflow: hidden
-    border: none
-    max-width: 300px
-  
-    .p-dialog-header
-        display: none !important
-
-    .p-dialog-content
-        padding: 0
+<style lang="sass" scoped>
 
 .confirm-dialog
+    ::v-deep.p-dialog
+        font-family: $font-family-primary !important
+        border-radius: 8px !important
+        overflow: hidden
+        border: none
+        max-width: 300px
+  
+    ::v-deep.p-dialog-header
+        display: none !important
+
+    ::v-deep.p-dialog-content
+        padding: 0
+        
     &__content
         text-align: center
         padding: 48px 16px 16px 16px

@@ -2,13 +2,9 @@ const { faker } = require('@faker-js/faker')
 const _ = require('lodash')
 
 function generateItems () {
-  const itemsList = []
-
-  const warehouseList = Array.from({ length: 10 }, (_, i) => {
+  const itemsList = []  const warehouseList = Array.from({ length: 10 }, (_, i) => {
     return { id: i, name: faker.commerce.product() }
-  })
-
-  const statusList = Array.from({ length: 10 }, (_, i) => {
+  })  const statusList = Array.from({ length: 10 }, (_, i) => {
     return { id: i, name: faker.commerce.productMaterial() }
   })
 
@@ -30,9 +26,7 @@ function generateItems () {
       location,
       status
     })
-  }
-
-  return itemsList
+  }  return itemsList
 }
 
 module.exports = generateItems

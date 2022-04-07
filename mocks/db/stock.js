@@ -35,9 +35,7 @@ function generateData (warehouseList, categoryList, typeList) {
       createdAt,
       updatedAt
     })
-  }
-
-  return stocks
+  }  return stocks
 }
 
 module.exports = generateData;

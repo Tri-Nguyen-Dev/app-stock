@@ -87,7 +87,7 @@
         Column(:exportable="false" header="ACTION" className="text-right datatable__head-right")
           template(#body="{data}")
             Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="data.status === 'DISABLE'")
-              .icon.icon-btn-edit
+              .icon.icon-edit-btn
             Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.status === 'DISABLE'")
               .icon.icon-btn-delete
         template(#footer)
@@ -190,7 +190,7 @@ class BoxList extends Vue {
       'sellerEmail': this.textSearch === '' ? null : this.textSearch,
       'barCode': this.textCode === '' ? null : this.textCode,
       'warehouseId': this.selectedWarehouse?.id,
-      'binName': this.textLocation === '' ? null : this.textLocation,
+      'location': this.textLocation === '' ? null : this.textLocation,
       'from': this.dateFrom ? moment(this.dateFrom).format('yyyy-MM-DD'): null,
       'to': this.dateTo ? moment(this.dateTo).format('yyyy-MM-DD'): null,
       'sortByColumn': this.sortByColumn === '' ? null : this.sortByColumn,

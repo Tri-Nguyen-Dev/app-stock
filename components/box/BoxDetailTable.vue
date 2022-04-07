@@ -102,7 +102,6 @@
 
 </template>
 
-
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
@@ -119,14 +118,12 @@ class BoxDetailHistory extends Vue {
   async mounted() {
     await this.actGetBoxList()
 
-
   }
 
 }
 
 export default BoxDetailHistory
 </script>
-
 
 <style lang="sass" scoped >
 
