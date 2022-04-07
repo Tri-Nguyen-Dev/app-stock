@@ -1,5 +1,5 @@
 <template lang="pug">
-  .item-value(:class="{ 'active': active }")
+  .item-value(:class="{ 'active': active, 'child-item': !!item.parentId }")
     .item__icon(v-if="!!item.icon")
       .icon.icon--large(:class="`icon-${item.icon}`")
     transition(name="fade")
@@ -28,16 +28,14 @@ export default SidebarItem
 </script>
 
 <style lang="sass" scoped>
+.child-item
+  margin-left: 40px
 .item-value
   @include flex-center-vert
   height: 100%
   color: $text-color-base
   font-size: $font-size-medium
   font-weight: $font-weight-bold
-  cursor: pointer
-  position: relative
-  user-select: none
-  text-decoration: none
 
   &:hover, &.active
     border-radius: 4px
@@ -46,6 +44,7 @@ export default SidebarItem
   .item__label
     @include flex-center-space-between
     width: 100%
+    min-height: 56px
   .item__icon
     padding: $space-size-16
 

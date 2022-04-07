@@ -1,6 +1,5 @@
 <template lang="pug">
-  .menu-item.font-bold.flex-row(:class="{ 'active': active }")
-    .item-parent-link(v-if="!!item.parentId")
+  .menu-item.flex-row(:class="{ 'active': active }")
     router-link(v-if="!!item.to" :to="item.to")
       SidebarItemValue(:item="item", :active="active")
     div(v-else)
@@ -30,6 +29,12 @@ export default SidebarItem
 .item-parent-link
   width: 40px
   height: 40px
+
+a
+  cursor: pointer
+  position: relative
+  user-select: none
+  text-decoration: none
 
 .ml-40
   margin-left: 40px
