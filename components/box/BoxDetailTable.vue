@@ -99,36 +99,39 @@
                   div.pagination__info
                     img(:src="require('~/assets/icons/filter-left.svg')")
                     span.pagination__total {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
-                  Paginator(:rows="pageSize" :totalRecords="totalStockRecords" @page="onPage($event)").p-0
+                  Paginator( :first.sync="fristPage" :rows="pageSize"  @page="onPage($event)" ).p-0
 </template>
 
 <script lang="ts">
-import { Component, Prop,namespace, Vue } from 'nuxt-property-decorator'
-const nsStoreBoxDetail = namespace('box/box-detail')
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
+// const nsStoreBoxDetail = namespace('box/box-detail')
 
 @Component
 class BoxDetailHistory extends Vue {
   @Prop() stockList!: () => any
-  @Prop() filterPagingTable!: () => any
-  @Prop() totalStockRecords!: number
   @Prop() getParam: () => any
+  // @Prop() listStockWithAmount: () => any
 
-  pageSize: number = 20
-  pageNumber: number = 1
 
-  @nsStoreBoxDetail.Action
-  actGetBoxDetailFilter!: (params: any) => Promise<void>
 
-  async mounted() {
-   await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize })
-  }
+  // pageSize: number = 20
+  // pageNumber: number = 1
+  // fristPage: number = 1 
 
-  async onPage(event: any) {
-    await this.actGetBoxDetailFilter({
-      ...this.getParam(),
-      pageNumber: event.page + 1
-    })
-  }
+  // @nsStoreBoxDetail.Action
+  // actGetBoxDetailFilter!: (params: any) => Promise<void>
+
+  // async mounted() {
+  //  await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize })
+  // }
+
+  // async onPage(event: any) {
+  //   await this.actGetBoxDetailFilter(
+  //     {
+  //     ...this.getParam(),
+  //     pageNumber: event.page + 1
+  //   })
+  // }
 
 }
 

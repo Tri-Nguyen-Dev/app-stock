@@ -18,14 +18,13 @@ export default class StoreBox extends VuexModule {
   setBoxList(data: any) {
     this.boxDetail = data
    this.totalStockRecords = data.total
-
   }
 
 
   @Action({ commit: 'setBoxList', rawError: true })
   async actGetBoxDetail(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX_DETAIL, params)
-    const response: any = await $api.get(url)
+    const response: any = await $api.get(url, {params})
     return response.data
   }
 

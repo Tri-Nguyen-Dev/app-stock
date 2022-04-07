@@ -56,11 +56,7 @@
             div(class=' col-12  lg:col-12 xl:col-8')
               span.font-bold.text-600 Location
               .mt-1.flex.align-items-center
-                AutoComplete.edit-location( v-model="isLocation"
-                :suggestions="locationList"
-                field="name"
-                :disabled='isEditBox === 0'
-                :placeholder='location' )
+                AutoComplete.edit-location( v-model="isLocation" :suggestions="locationList" field="name" :disabled='isEditBox == 0' :placeholder='boxLocation' @complete='searchLocation($event)'  )
                   template(#item="slotProps")
                     .grid.align-items-center.grid-nogutter
                       span.font-bold {{slotProps.item.name}}
@@ -71,7 +67,7 @@
             div(class=' col-12  lg:col-12 xl:col-8')
               span.font-bold.text-600 Create Time
               .mt-1
-                span.font-bold {{boxDetail.createdAt}}
+                span.font-bold  {{formatDate(boxDetail.createdAt)}} 
             div
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
@@ -92,7 +88,7 @@
               .icon-resize.icon--large.bg-primary
             div.align-items(class=' col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Box Size:
-              span.font-bold.text-600.bg-primary.ml-1.border-round.p-1.pr-2  {{boxDetail.boxSize}}
+              span.font-bold.text-600.bg-primary.ml-1.border-round.p-1.pr-2  {{boxSizeFormat(boxDetail.boxSize)}} 
               .mt-1
                 span.font-bold {{boxDetail.length}}*{{boxDetail.width}}*{{boxDetail.height}}
         .col(:class='isEditBox? "opacity-40" : "opacity-100"')
@@ -153,14 +149,14 @@
                 .col
                   .bg-white.border-round
                     div.pt-2.pl-1.pb-1
-                      span.text-600.text-sm.pl-2 Category
+                      span.text-600.text-sm.pl-2 Category 
                       Dropdown.w-full.border-0.mb-1.text-900.font-bold( v-model="categorySelected" :options='categoryList' optionLabel="name" placeholder="Select")
               .overflow-auto.item__log--history
                 //- BoxDetailTable( v-if="listStockWithAmount.length > 0" :listStockWithAmount='listStockWithAmount' :getParam='getParamAPI' )
             TabPanel
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
-                span Location history {{listStockWithAmount}}
+                span Location history 
               .overflow-auto.box__detail--history
                 //- BoxDetailHistory( v-if="listStockWithAmount.length > 0" :listStockWithAmount='listStockWithAmount' :totalStockRecords='totalStockRecords' )
         .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
@@ -180,7 +176,7 @@ const _ = require('lodash')
 
 const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
-// const nsStoreLocationList = namespace('location/location-list')
+const nsStoreLocationList = namespace('location/location-list')
 
 @Component
 class BoxDetail extends Vue {
@@ -188,7 +184,6 @@ class BoxDetail extends Vue {
   isEditBox: boolean = false
   isItemHistory: boolean = false
   isLocation : any = null
-  suggestions: any = []
   locations: any = null
   skuFilter: any = null
   categorySelected: any = null
@@ -197,28 +192,23 @@ class BoxDetail extends Vue {
   pageNumber: number = 1
   pageSize: number = 20
 
-  // @nsStoreLocationList.State
-  // locationList!: any
-
-  // @nsStoreBoxDetail.State
-  // stockList!: any
+  @nsStoreLocationList.State
+  locationList!: any
 
   @nsStoreBoxDetail.State
   totalStockRecords!: number
 
   @nsStoreBoxDetail.State
   boxDetail!: {
-    warehouse: any,
+    warehouse: string,
     request: any,
     location: any
-    listStockWithAmount: [] 
+    listStockWithAmount: any, 
+    shelfBin: any
   }
 
   @nsStoreCategoryList.State
   categoryList!:any
-
-  // @nsStoreBoxDetail.Action
-  // actGetBoxDetailFilter!: (params: any) => Promise<void>
 
   @nsStoreBoxDetail.Action
   actGetBoxDetail!: (params: any) => Promise<void>
@@ -226,8 +216,8 @@ class BoxDetail extends Vue {
   @nsStoreCategoryList.Action
   actCategoryList!: () => Promise<void>
 
-  // @nsStoreLocationList.Action
-  // actLocationList!: (params: any) => Promise<void>
+  @nsStoreLocationList.Action
+  actLocationList!: (params: any) => Promise<void>
 
   getParamAPI() {
     return {
@@ -241,9 +231,9 @@ class BoxDetail extends Vue {
   }
 
   async mounted() {
-    await this.actGetBoxDetail({ id: this.$route.params.id })
+    await this.actGetBoxDetail({ id: this.$route.params.id  })
     await this.actCategoryList()
-    // await this.actLocationList({name: null})
+    await this.actLocationList({name: null})
   }
 
   backToBox() {
@@ -264,44 +254,68 @@ class BoxDetail extends Vue {
     await this.actGetBoxDetail(this.getParamAPI()) 
   }
 
+  @Watch('isLocation')
+  async filterLocation() {
+    await this.actLocationList({
+      'name': this.isLocation === '' ? null: this.isLocation
+    })
+  }
 
-  // @Watch('isLocation')
-  // async filterLocation() {
-  //   await this.actLocationList({
-  //     'name': this.isLocation === '' ? null: this.isLocation
-  //   })
-  // }
+  formatDate(date: any) {
+    const d = new Date(date);
+      let month = '' + (d.getMonth() + 1);
+      let day = '' + d.getDate();
+      const year = d.getFullYear();
+      const sHour = d.getHours();
+      const sMinute = d.getMinutes();
+      const sAMPM = 'AM';
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+    return [ day , month, year ].join('-') + ' ' + [sHour , sMinute ].join(':') + [sAMPM]
+  }
+
 
     validateText =  _.debounce( async ()=>{
      await this.actGetBoxDetail(this.getParamAPI())
   }, 500);
 
   get boxWarehouse() {
-    return this.boxDetail.request?.warehouse.name || ''
+    return this.boxDetail.request?.warehouse.name || null
   }
 
     get boxSellerName() {
-    return this.boxDetail.request?.seller.name || ''
+    return this.boxDetail.request?.seller.name || null
   }
 
     get boxSellerEmail() {
-    return this.boxDetail.request?.seller.email || ''
+    return this.boxDetail.request?.seller.email || null
   }
 
     get boxSellerPhone() {
-    return this.boxDetail.request?.seller.phone || ''
+    return this.boxDetail.request?.seller.phone || null
   }
 
+  get boxLocation() {
+    return this.boxDetail.shelfBin?.name || null
+  }
 
-
-    // get location() {
-    //   return this.boxDetail.request?.location.name || ''
-    // }
+  get APIlocation() {
+       const LocationName =  _.map(this.locationList, 'name');
+       return LocationName
+    }
 
   // searchLocation(event){
-  // console.log(event)
+  //   // console.log(event)
   // }
 
+  //  boxSizeFormat(boxSize : string) {
+  //   const BOX_SIZE_BIG : string =  'BIG'
+  //   const BOX_SIZE_MEDIUM : string =  'Medium'
+  //   const BOX_SIZE_SMALL : string = 'Small'
+  //   return [BOX_SIZE_BIG , BOX_SIZE_MEDIUM , BOX_SIZE_SMALL].join()
+  // }
 }
 
 export default BoxDetail
@@ -338,7 +352,6 @@ export default BoxDetail
       background: var(--bg-body-bas)
       border: none
       box-shadow: none !important
-
   ::v-deep.p-tabview .p-tabview-panels
     background: var(--bg-body-bas)
     padding: 1.25rem 0 0 0
