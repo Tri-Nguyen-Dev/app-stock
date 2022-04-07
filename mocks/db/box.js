@@ -34,7 +34,6 @@ function generateData (warehouseList, locationList) {
       updatedAt
     })
   }
-
   return boxes
 }
 

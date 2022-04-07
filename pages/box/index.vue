@@ -62,19 +62,19 @@
           template(#body="slotProps")
             span.font-semibold {{(pageNumber - 1) * pageSize + slotProps.index +1}}
         Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_barCode")
-        Column(field="request.seller.email" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_sellerEmail")
+        Column(field="request.seller.email" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right datatable__head-right" sortField="_createdAt")
           template(#body="{data}") {{formatDate(data.createdAt)}}
         Column(field="attributes" header="SIZE(CM)" className="text-right datatable__head-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
         Column(field="weight" header="WEIGHT(KG)" className="text-right datatable__head-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.weight}}
-        Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right datatable__head-right" sortField="_warehouseId")
+        Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right datatable__head-right" sortField="_request.warehouse.name")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm.text-white-active {{data.request.warehouse.name}}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(field="shelfBin.name" header="LOCATION" :sortable="true" className="text-right datatable__head-right" sortField="_location")
+        Column(field="shelfBin.name" header="LOCATION" :sortable="true" className="text-right datatable__head-right" sortField="_shelfBin.name")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm.text-white-active {{data.shelfBin.name}}
