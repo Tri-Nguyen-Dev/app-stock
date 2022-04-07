@@ -1,13 +1,14 @@
 export namespace Box {
   export interface Model {
     id: string,
-    code: string,
+    barCode: string,
     seller: {
       id: string,
       name: string,
       email: string
     },
     createAt?: Date,
+    updatedAt?: Date,
     length: number,
     width: number,
     height: number
