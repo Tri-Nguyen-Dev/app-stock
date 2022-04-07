@@ -52,35 +52,36 @@
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
         DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
-        dataKey="id" :resizableColumns="true" :rowClass="rowClass" :rows="20" :scrollable="false" @row-dblclick='redirectToDetail')
+          dataKey="id" :resizableColumns="true" :rowClass="rowClass" :rows="20" :scrollable="false" @row-dblclick='redirectToDetail' 
+          :class="{ 'table__empty': !itemsList.items || itemsList/items.length <= 0 }")
           Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
-          Column(field="no" header="NO" sortable)
+          Column(field="no" header="NO")
             template(#body="slotProps")
               span.font-semibold {{slotProps.index +1}}
-          Column(field="seller.email" header="SELLER EMAIL" sortable className="w-3")
-          Column(field="sku" header="SKU" sortable className="p-text-right")
-          Column(field="inventoryQuantity" header="INVENTORY QUANTITY" className="p-text-right" bodyClass="font-semibold")
-          Column(field="boxCode" header="BOX CODE" className="p-text-right" bodyClass="font-semibold")
-          Column(field="box.request.warehouse" header="WAREHOUSE" sortable className="p-text-right")
-            template(#body='{data}')
+          Column(field="box.request.seller.email" header="SELLER EMAIL" sortable className="w-3")
+          Column(field="stock.sku" header="SKU" sortable className="p-text-right")
+          Column(field="amount" header="INVENTORY QUANTITY" className="p-text-right" bodyClass="font-semibold")
+          Column(field="box.barCode" header="BOX CODE" className="p-text-right" bodyClass="font-semibold")
+          Column(field="box.request.warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
+            template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.font-sm {{data.box.request.warehouse.name}}
                 .icon--small.icon-arrow-up-right.bg-primary
-          Column(field="location.name" header="LOCATION" sortable className="p-text-right")
-            template(#body="{data}")
-              .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.font-sm {{data.location.name}}
-                .icon--small.icon-arrow-up-right.bg-primary
-          Column(field="deleted" header="STATUS" sortable className="p-text-right")
+          //- Column(field="location.name" header="LOCATION" sortable className="p-text-right")
+          //-   template(#body="{data}")
+          //-     .flex.align-items-center.cursor-pointer.justify-content-end
+          //-       span.text-primary.font-bold.font-sm {{data.location.name}}
+          //-       .icon--small.icon-arrow-up-right.bg-primary
+          Column(field="box.deleted" header="STATUS" sortable className="p-text-right")
             template(#body="{data}")
               div
-                Tag(v-if="data.deleted" severity="success").px-2.surface-200
+                Tag(v-if="data.box.deleted" severity="success").px-2.surface-200
                   span.font-bold.text-400.font-sm DISABLE
                 Tag(v-else severity="success").px-2.bg-green-100
                   span.font-bold.text-green-400.font-sm AVAILABLE
           Column(:exportable="false" header="ACTION" className="p-text-right")
             template(#body="{data}")
-              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.status")
+              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.box.status")
                 .icon--small.icon-btn-edit
               Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete()" :disabled="!data.status")
                 .icon--small.icon-btn-delete
@@ -112,7 +113,7 @@
     )
 </template>
 <script lang="ts">
-import { Component, namespace, Vue,Watch } from 'nuxt-property-decorator'
+import { Component, namespace, Prop, Vue,Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStockTable = namespace('stock/stock-detail')
@@ -122,6 +123,9 @@ const nsWarehouseStock = namespace('warehouse/warehouse-list')
   components: {ConfirmDialogCustom}
 })
 class StockDetailTable extends Vue {
+
+  @Prop() sku!: string
+  
   isShowFilter: boolean = false
 
   selectedWarehouse = []
@@ -172,6 +176,7 @@ class StockDetailTable extends Vue {
 
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
+
 
 
   get getInfoPaginate() {

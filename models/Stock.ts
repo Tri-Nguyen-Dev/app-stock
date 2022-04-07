@@ -107,7 +107,7 @@ export namespace Stock {
                 accessibility: string,
                 systemRequirement: string,
                 brandName: string,
-                manufacturingDate: null
+                manufacturingDate: Date
               },
               status: 1,
               createdAt: Date,

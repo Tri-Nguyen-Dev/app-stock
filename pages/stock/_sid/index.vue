@@ -1,12 +1,12 @@
 <template lang="pug">
   .grid.grid-nogutter.stock__information-detail
-    .col-2.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden
+    .col-2.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden(v-if='stockDetail.data')
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
           .icon.icon-btn-back.bg-blue-700
         span.font-semibold.text-base Stock list / Stock Detail
-      .stock__information--gerenal.p-4.border-bottom-1.border-gray-300(v-if='stockDetail.data')
+      .stock__information--gerenal.p-4.border-bottom-1.border-gray-300
         .grid.mb-3
           .col-9.pl-0.flex
             .icon.icon-box-info.mr-1.bg-blue-700
@@ -40,9 +40,9 @@
         )
           .grid.surface-hover.mb-3
             .col-2.flex.align-items-center.justify-content-end
-              div(:class='"icon--large " + attr.icon + " bg-blue-700"' )   
+              div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"' )   
             .col-10
-              div.text-500 {{attr.name}}
+              div.text-500 {{attr.attribute.name}}
               InputText(:disabled='isEditStockDetail == 0' v-model='attr.value')      
     .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
@@ -83,7 +83,7 @@ class StockDetail extends Vue {
   }
 
   get unitAttribute() {
-    return this.stockDetail.data.attributeValue?.find((x: { name: string }) => x.name === 'unit')?.value || ''
+    return this.stockDetail.data?.attributeValue.find((x: { name: string }) => x.name === 'unit')?.value || ''
   }
 
   async mounted() {

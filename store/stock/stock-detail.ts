@@ -17,14 +17,14 @@ export default class StoreStockDetail extends VuexModule {
 
   public total?: number = 0
 
-  public stockDetail: {};
+  public stockDetail: any = {};
 
   public itemsList: any = {}
+
   public itemDetail: any = {}
 
   @Mutation
-  setStockDetail(data:any) {
-    this.total = data.total
+  setStockDetail(data:StockModel.ModelDetail) {
     this.stockDetail = data
   }
 
