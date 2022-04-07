@@ -10,6 +10,7 @@ export class PathBind {
   static transform(context: any, base: string, bind: { [key: string]: any } = {}): string {
     let url = base.slice(0)
     const params = this.buildPlaceholder(base)
+
     for (const [name, phold] of Object.entries(params)) {
       let value = bind[name]
       const token = phold.token
@@ -26,7 +27,9 @@ export class PathBind {
       }
       url = url.replace(token, value)
     }
+
     return url
+
   }
 
   static buildPlaceholder(path: string): PathBindParameters {
@@ -35,8 +38,10 @@ export class PathBind {
     let tokName: string[] = []
     let tokRegex: string[] = []
     let tokToken: string[] = []
+
     let marked = false
     let stickiness = 0
+
     const toks = path.replace(/^(http:\/\/.*?\/|https:\/\/.*?\/)/gi, '').split('')
     const toksTail = toks.length - 1
     toks.forEach((c, pos) => {
@@ -106,6 +111,7 @@ export class PathBind {
         marked = false
       }
     })
+
     return params
   }
 }

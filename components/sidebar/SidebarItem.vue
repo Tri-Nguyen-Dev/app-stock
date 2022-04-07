@@ -1,52 +1,81 @@
-<template lang="pug">
-  .menu-item.flex-row(v-show="isShow" @click="select(item)")
-    router-link(v-if="!!item.to" :to="item.to")
-      SidebarItemValue(:item="item")
-    div(v-else)
-      SidebarItemValue(:item="item")
+<template>
+  <div class="menu-item">
+    <router-link :to="to" class="link">
+      <div class="icon icon--large icon--left" :class="icon"></div>
+      <transition name="fade">
+        <div v-if="!collapsed" class="item-label">
+          <slot />
+        </div>
+      </transition>
+    </router-link>
+  </div>
 </template>
 
 <script lang='ts'>
 
-import { Component, Emit, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItem extends Vue {
-  // -- [ Statement Properties ] ------------------------------------------------
+  @Prop(String) readonly to!:   string | undefined
+
+  @Prop(String) readonly icon!: string | undefined
+
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
-  @Prop() readonly item!: any | undefined
-  @InjectReactive() readonly selectedItem!: any
-
-  @Emit()
-  select(item) {
-    return item
-  }
-
-  // -- [ Getters ] -------------------------------------------------------------
-  get isShow() {
-    return !this.item.parentId ||
-      (this.selectedItem?.parentId === this.item.parentId) ||
-      (this.selectedItem?.id === this.item.parentId)
-  }
 }
 
 export default SidebarItem
 </script>
 
 <style lang="sass" scoped>
-.item-parent-link
-  width: 40px
-  height: 40px
+.menu-item
+  height: 56px
+  margin-bottom: 4px
+  font-size: 16px
+  font-weight: bold
+.item-label
+  padding-left: 48px
+.fade-enter-active,
+.fade-leave-active
+  transition: opacity 0.1s
 
-a
+
+.fade-enter,
+.fade-leave-to
+  opacity: 0
+
+
+.link
+  display: flex
+  align-items: center
+
   cursor: pointer
   position: relative
+  font-weight: 400
   user-select: none
+
+  margin: 0.1em 0
+  padding: 0.4em
+  border-radius: 0.25em
+  height: 1.5em
+
   text-decoration: none
 
-.ml-40
-  margin-left: 40px
+
+.link:hover
+  background-color: $primary
+
+
+.link.active
+  background-color: $primary
+
+
+.link .icon
+  flex-shrink: 0
+  width: 25px
+  margin-right: 10px
+
 </style>
