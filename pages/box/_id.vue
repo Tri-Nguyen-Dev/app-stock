@@ -41,7 +41,7 @@
             div(class=' col-12  lg:col-12 xl:col-8')
               span.font-bold.text-600 Create ID
               .mt-1.flex.align-items-center
-                span.font-bold.uppercase {{boxDetail.creatorId}}
+                span.font-bold.uppercase {{boxDetail.createBy}}
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-warehouse.bg-primary.icon--large
@@ -79,7 +79,7 @@
             div(class=' col-12  lg:col-12 xl:col-8')
               span.font-bold.text-600 Box Items
               .mt-1
-                span.font-bold {{stockList.length}}
+                span.font-bold {{boxDetail.length}}
           .grid.align-items-center.m-0.pl-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-dollar-square-2.icon--large.bg-primary
@@ -156,13 +156,13 @@
                       span.text-600.text-sm.pl-2 Category
                       Dropdown.w-full.border-0.mb-1.text-900.font-bold( v-model="categorySelected" :options='categoryList' optionLabel="name" placeholder="Select")
               .overflow-auto.item__log--history
-                BoxDetailTable(v-if="stockList.length > 0" :stockList='stockList' :filterPagingTable='filterPagingTable' :totalStockRecords='totalStockRecords' :getParam='getParamAPI')
+                //- BoxDetailTable( v-if="listStockWithAmount.length > 0" :listStockWithAmount='listStockWithAmount' :getParam='getParamAPI' )
             TabPanel
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
-                span Location history
+                span Location history {{listStockWithAmount}}
               .overflow-auto.box__detail--history
-                BoxDetailHistory(v-if="stockList.length > 0" :stockList='stockList' :totalStockRecords='totalStockRecords' )
+                //- BoxDetailHistory( v-if="listStockWithAmount.length > 0" :listStockWithAmount='listStockWithAmount' :totalStockRecords='totalStockRecords' )
         .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
           .col
             span.p-input-icon-left
@@ -180,7 +180,7 @@ const _ = require('lodash')
 
 const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
-const nsStoreLocationList = namespace('location/location-list')
+// const nsStoreLocationList = namespace('location/location-list')
 
 @Component
 class BoxDetail extends Vue {
@@ -196,13 +196,12 @@ class BoxDetail extends Vue {
   nameStockFilter: any = null
   pageNumber: number = 1
   pageSize: number = 20
-  filterObj: any = {}
 
-  @nsStoreLocationList.State
-  locationList!: any
+  // @nsStoreLocationList.State
+  // locationList!: any
 
-  @nsStoreBoxDetail.State
-  stockList!: any
+  // @nsStoreBoxDetail.State
+  // stockList!: any
 
   @nsStoreBoxDetail.State
   totalStockRecords!: number
@@ -210,24 +209,25 @@ class BoxDetail extends Vue {
   @nsStoreBoxDetail.State
   boxDetail!: {
     warehouse: any,
-    seller: any,
+    request: any,
     location: any
+    listStockWithAmount: [] 
   }
 
   @nsStoreCategoryList.State
   categoryList!:any
 
-  @nsStoreBoxDetail.Action
-  actGetBoxDetailFilter!: (params: any) => Promise<void>
+  // @nsStoreBoxDetail.Action
+  // actGetBoxDetailFilter!: (params: any) => Promise<void>
 
   @nsStoreBoxDetail.Action
-  actGetBoxItem!: (params: any) => Promise<void>
+  actGetBoxDetail!: (params: any) => Promise<void>
 
   @nsStoreCategoryList.Action
   actCategoryList!: () => Promise<void>
 
-  @nsStoreLocationList.Action
-  actLocationList!: (params: any) => Promise<void>
+  // @nsStoreLocationList.Action
+  // actLocationList!: (params: any) => Promise<void>
 
   getParamAPI() {
     return {
@@ -241,13 +241,9 @@ class BoxDetail extends Vue {
   }
 
   async mounted() {
-    await this.actGetBoxItem({ id: Number.parseInt(this.$route.params.id) })
-    await this.actGetBoxDetailFilter({
-      pageNumber: this.pageNumber,
-      pageSize: this.pageSize
-    })
+    await this.actGetBoxDetail({ id: this.$route.params.id })
     await this.actCategoryList()
-    await this.actLocationList({name: null})
+    // await this.actLocationList({name: null})
   }
 
   backToBox() {
@@ -262,46 +258,45 @@ class BoxDetail extends Vue {
       this.isItemHistory = !this.isItemHistory
       this.isFilter = false
   }
-
-
-
   
   @Watch('categorySelected') 
    async filtersChange(){
-    await this.actGetBoxDetailFilter(this.getParamAPI()) 
+    await this.actGetBoxDetail(this.getParamAPI()) 
   }
 
 
-  @Watch('isLocation')
-  async filterLocation() {
-    await this.actLocationList({
-      'name': this.isLocation === '' ? null: this.isLocation
-    })
-  }
+  // @Watch('isLocation')
+  // async filterLocation() {
+  //   await this.actLocationList({
+  //     'name': this.isLocation === '' ? null: this.isLocation
+  //   })
+  // }
 
     validateText =  _.debounce( async ()=>{
-     await this.actGetBoxDetailFilter(this.getParamAPI())
+     await this.actGetBoxDetail(this.getParamAPI())
   }, 500);
 
   get boxWarehouse() {
-    return this.boxDetail.warehouse?.name || ''
+    return this.boxDetail.request?.warehouse.name || ''
   }
 
     get boxSellerName() {
-    return this.boxDetail.seller?.name || ''
+    return this.boxDetail.request?.seller.name || ''
   }
 
     get boxSellerEmail() {
-    return this.boxDetail.seller?.email || ''
+    return this.boxDetail.request?.seller.email || ''
   }
 
     get boxSellerPhone() {
-    return this.boxDetail.seller?.phone || ''
+    return this.boxDetail.request?.seller.phone || ''
   }
 
-    get location() {
-      return this.boxDetail.location?.name || ''
-    }
+
+
+    // get location() {
+    //   return this.boxDetail.request?.location.name || ''
+    // }
 
   // searchLocation(event){
   // console.log(event)

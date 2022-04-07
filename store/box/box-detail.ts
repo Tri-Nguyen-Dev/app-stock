@@ -7,8 +7,7 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreBox extends VuexModule {
   private static readonly STATE_URL = {
-    GET_BOX_DETAIL: '/api/boxDetail/list',
-    GET_BOX: '/api/box/list'
+    GET_BOX_DETAIL: '/api/box/:id/detail'
   }
 
   public stockList?: any = []
@@ -18,26 +17,16 @@ export default class StoreBox extends VuexModule {
   @Mutation
   setBoxList(data: any) {
     this.boxDetail = data
+   this.totalStockRecords = data.total
+
   }
 
-  @Mutation
-  setStockList(data: any) {
-    this.stockList = data.items
-    this.totalStockRecords = data.total
-  }
-
-  @Action({ commit: 'setStockList', rawError: true })
-  async actGetBoxDetailFilter(params?: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX_DETAIL, params)
-    const response: any = await $api.get(url, {params})
-    return response.data
-  }
 
   @Action({ commit: 'setBoxList', rawError: true })
-  async actGetBoxItem(params?: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX, params)
-    const response: any = await $api.get(url, {params})
-    return response[0]
+  async actGetBoxDetail(params?: any): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX_DETAIL, params)
+    const response: any = await $api.get(url)
+    return response.data
   }
 
 
