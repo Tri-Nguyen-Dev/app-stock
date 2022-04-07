@@ -30,6 +30,7 @@ export default class StoreStockDetail extends VuexModule {
   @Mutation
   setItemsList(itemsList: StockModel.BoxModel) {
     this.itemsList = itemsList
+    this.total = itemsList.data.total
   }
 
   @Mutation

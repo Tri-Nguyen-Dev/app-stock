@@ -34,16 +34,16 @@
             .icon--large.icon-total-inventory.bg-blue-700
           .col-10
             div.text-500 Total inventory quantity
-            span.font-semibold.mr-1.uppercase {{stockDetail.data.totalInventory}}
+            span.font-semibold.mr-1.uppercase {{total}}
         div(
            v-for='(attr, index) in stockDetail.data.attributeValue'
         )
           .grid.surface-hover.mb-3
             .col-2.flex.align-items-center.justify-content-end
-              div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"' )   
+              div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"' )
             .col-10
               div.text-500 {{attr.attribute.name}}
-              InputText(:disabled='isEditStockDetail == 0' v-model='attr.value')      
+              InputText(:disabled='isEditStockDetail == 0' v-model='attr.value')
     .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
 
@@ -63,6 +63,9 @@ class StockDetail extends Vue {
 
   @nsStoreStock.State
   stockDetail!: StockModel.ModelDetail
+
+  @nsStoreStock.State
+  total!: number
 
   @nsStoreStock.Action
   actGetStockDetail
