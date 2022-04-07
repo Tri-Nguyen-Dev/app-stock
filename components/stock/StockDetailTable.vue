@@ -3,7 +3,7 @@
     .grid.justify-content-between
       .col-fixed
         h1.font-bold.m-0.font-size-4xlarge.line-height-1 Stock detail
-        span.text-600.font-sm(v-if="itemsList") {{itemsList.length}} results found
+        span.text-600.font-sm(v-if="itemsList.data") {{itemsList.data.total}} results found
       .col-fixed
         .grid
           .col-fixed
@@ -51,7 +51,7 @@
           Dropdown.w-full.border-0.mb-1(v-model="filter.status" :options="statusList" optionLabel="name" placeholder="Select")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
-        DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="itemsList" :value="itemsList" responsiveLayout="scroll" :selection.sync="selectedStock"
+        DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
         dataKey="id" :resizableColumns="true" :rowClass="rowClass" :rows="20" :scrollable="false" @row-dblclick='redirectToDetail')
           Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
           Column(field="no" header="NO" sortable)
@@ -61,10 +61,10 @@
           Column(field="sku" header="SKU" sortable className="p-text-right")
           Column(field="inventoryQuantity" header="INVENTORY QUANTITY" className="p-text-right" bodyClass="font-semibold")
           Column(field="boxCode" header="BOX CODE" className="p-text-right" bodyClass="font-semibold")
-          Column(field="warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
-            template(#body="{data}")
+          Column(field="box.request.warehouse" header="WAREHOUSE" sortable className="p-text-right")
+            template(#body='{data}')
               .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.font-sm {{data.warehouse.name}}
+                span.text-primary.font-bold.font-sm {{data.box.request.warehouse.name}}
                 .icon--small.icon-arrow-up-right.bg-primary
           Column(field="location.name" header="LOCATION" sortable className="p-text-right")
             template(#body="{data}")
@@ -162,7 +162,7 @@ class StockDetailTable extends Vue {
   total!: number
 
   @nsStoreStockTable.State
-  itemsList!: []
+  itemsList!: StockModel.BoxModel
 
   @nsWarehouseStock.State
   warehouseList!: any
@@ -243,7 +243,6 @@ class StockDetailTable extends Vue {
       ...this.paginate,
       id: this.$route.params.sid
     }
-
     await this.actGetItemsList(params)
   }
 
@@ -263,11 +262,10 @@ class StockDetailTable extends Vue {
 export default StockDetailTable
 </script>
 <style lang="sass" scoped>
-.stock__mutidelete
-  background-color: #FF7171
-
-::v-deep.p-inputtext,
-::v-deep.p-dropdown,
-::v-deep.p-button
-  box-shadow: none !important
+    .stock__mutidelete
+      background-color: #FF7171
+    ::v-deep.p-inputtext,
+    ::v-deep.p-dropdown,
+    ::v-deep.p-button
+      box-shadow: none !important
 </style>

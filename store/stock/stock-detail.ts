@@ -17,10 +17,9 @@ export default class StoreStockDetail extends VuexModule {
 
   public total?: number = 0
 
-  public stockDetail: any = {}
+  public stockDetail: {};
 
-  public itemsList: StockModel.ModelDetail[] = []
-
+  public itemsList: any = {}
   public itemDetail: any = {}
 
   @Mutation
@@ -30,12 +29,12 @@ export default class StoreStockDetail extends VuexModule {
   }
 
   @Mutation
-  setItemsList(itemsList: StockModel.ModelDetail[]) {
+  setItemsList(itemsList: StockModel.BoxModel) {
     this.itemsList = itemsList
   }
 
   @Mutation
-  setItemDetail(itemDetail: StockModel.ModelDetail) {
+  setItemDetail(itemDetail: StockModel.BoxModel) {
     this.itemDetail = itemDetail
   }
 
