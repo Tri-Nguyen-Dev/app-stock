@@ -192,6 +192,14 @@ class Stock extends Vue {
     this.isShowFilter = !this.isShowFilter
   }
 
+  redirectToDetail({ data }) {
+    this.$router.push(`stock/${data.id}`)
+  }
+
+  editStockDetail(id:any) {
+    this.$router.push(`stock/${id}`)
+  }
+
   mounted() {
     this.getProductList()
     this.actCategoryList()
@@ -226,7 +234,7 @@ class Stock extends Vue {
     this.selectedStock = data
   }
 
-  onPage(event: any) {     
+  onPage(event: any) {
     this.paginate.pageSize = event.rows
     this.paginate.pageNumber = event.page
     this.selectedStock = []
@@ -272,7 +280,7 @@ class Stock extends Vue {
     this.$router.push({ path: `/box/${id}/detail`})
   }
 
-  rowdbClick({ data }) { 
+  rowdbClick({ data }) {
     this.$router.push(`/box/${data.id}/detail`)
   }
 
@@ -289,7 +297,7 @@ class Stock extends Vue {
         sortByColumn: field,
         sortDescending: true
       }
-    } 
+    }
     this.getProductList()
   }
 
