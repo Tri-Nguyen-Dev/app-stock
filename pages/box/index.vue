@@ -64,7 +64,7 @@
         Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_barCode")
         Column(field="request.seller.email" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right datatable__head-right" sortField="_createdAt")
-          template(#body="{data}") {{formatDate(data.createdAt)}}
+          template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
         Column(field="attributes" header="SIZE(CM)" className="text-right datatable__head-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
         Column(field="weight" header="WEIGHT(KG)" className="text-right datatable__head-right" bodyClass="font-semibold")
@@ -203,18 +203,6 @@ class BoxList extends Vue {
     return Object.values(params).some((item) => item);
   }
 
-  formatDateParams(date: any) {
-    const d = new Date(date);
-      let month = '' + (d.getMonth() + 1);
-      let day = '' + d.getDate();
-      const year = d.getFullYear();
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
-    return [year, month, day].join('-');
-  }
-
   async onPage(event: any) {
     this.pageNumber = event.page + 1;
     await this.actGetBoxList(this.getParamAPi());
@@ -276,12 +264,6 @@ class BoxList extends Vue {
 
   onRowClick({data}){
     this.$router.push(`/box/${data.id}`);
-  }
-
-  get formatDate() {
-    return (myparameter: any) => {
-      return moment(myparameter).format('DD-MM-yyyy hh:mm A')
-    };
   }
 
   handleEditBox(id: any) {
