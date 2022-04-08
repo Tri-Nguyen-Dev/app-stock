@@ -1,5 +1,4 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
-import { Box } from '~/models/Box'
 import { $api, PathBind } from '~/utils'
 @Module({
   stateFactory: true,
@@ -8,23 +7,23 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreBox extends VuexModule {
   private static readonly STATE_URL = {
-    GET_BOX: '/api/boxDetail/list',
-    DELETE_BOX: '/boxDetail/delete'
+    GET_BOX_DETAIL: '/api/box/:id/detail'
   }
 
-  public boxDetail?: Box.Model[] = []
-  public totalBoxRecords?: number = 0
+  public stockList?: any = []
+  public boxDetail?: {} = {}
+  public totalItems?: number = 0
 
   @Mutation
-  setBoxList(data: any) {
+  setBoxDetail(data: any) {
     this.boxDetail = data
-    // this.totalBoxRecords = data?.total
+    this.totalItems = data.listStockWithAmount.length
   }
 
-  @Action({ commit: 'setBoxList', rawError: true })
-  async actGetBoxList(params?: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX, params)
-    const response: any = await $api.get(url, {params})
-    return response
+  @Action({ commit: 'setBoxDetail', rawError: true })
+  async actGetBoxDetail(params?: any): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX_DETAIL, params)
+    const response: any = await $api.get(url)
+    return response.data
   }
 }

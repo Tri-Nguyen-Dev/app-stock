@@ -1,24 +1,26 @@
 <template lang="pug">
-    DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable(
-      :resizableColumns='true',
-      :rows='15',
-      :value='boxDetail'
-      dataKey='id',
-      :paginator='false',
-      :row-hover='true',
-      filterDisplay='menu',
+    DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable.table__sort-icon.bg-white(
+      :resizableColumns='true'
+      :rows='pagination.rows'
+      :value='dataRenderItems'
+      dataKey='id'
+      :paginator='false'
+      :row-hover='true'
+      filterDisplay='menu'
       responsiveLayout="scroll"
       columnResizeMode="fit"
     )
       template(#empty)
-        | dsadsads
-      column(field='no', header='NO', sortable='')
-        template(#body="slotProps") 
-          span.font-bold {{ slotProps.index + 1 }}
+          div.flex.align-items-center.justify-content-center.flex-column
+              img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
+              p.text-900.font-bold.mt-3 List is empty!
+      column(field='no', header='NO')
+        template(#body="slotProps")
+          span.font-bold {{ pagination.rows * pagination.page + slotProps.index + 1 }}
       column(
         field='',
         header='IMAGE',
-        sortable='',
+        :sortable='true',
         filter-match-mode='contains'
       )
         template(#body="slotProps")
@@ -26,13 +28,13 @@
       column.text-overflow-ellipsis(
         field='barCode'
         header='BARCODE',
-        sortable='',
+        :sortable='true',
         filter-field='representative',
         sort-field='representative.name',
         :show-filter-match-modes='false'
       )
         template(#body='{data}')
-          span.text-primary.font-bold {{data.barcode}}
+          span.text-primary.font-bold {{data.barCode}}
       column(
         field='sku',
         header='SKU',
@@ -44,7 +46,7 @@
       column(
         field='name',
         header='NAME',
-        sortable='', 
+        sortable='',
         )
           template(#body='{data}')
             span.font-bold.text-right {{data.name}}
@@ -56,11 +58,10 @@
         className="p-text-right"
       )
         template(#body='{data}')
-            span.font-bold.text-right {{data.quantity}}
+            span.font-bold.text-right {{data.amount}}
       column(
         field='unit',
         header='UNIT',
-        sortable='',
         :show-filter-match-modes='false'
         className="p-text-right"
       )
@@ -69,7 +70,6 @@
       column(
         field='size',
         header='SIZE',
-        sortable='',
         :show-filter-match-modes='false'
         className="p-text-right"
       )
@@ -78,7 +78,6 @@
       column(
         field='weight',
         header='WEIGHT(KG)',
-        sortable='',
         :show-filter-match-modes='false'
         className="p-text-right"
       )
@@ -90,43 +89,51 @@
         sortable='',
         :show-filter-match-modes='false'
         className="p-text-right"
-
       )
         template(#body='{data}')
           span.font-bold {{data.category.name}}
       template(#footer)
-        div
-          .flex.align-items-center
-            span.ml-3.text-400.font-size-small Showing 01 - 100 of 1280
-        Paginator(:rows="20" :totalRecords="totalItemsCount").p-0
-
+        .pagination
+          div.pagination__info
+            img(:src="require('~/assets/icons/filter-left.svg')")
+            span.pagination__total Showing {{pagination.page * pagination.rows + 1}} - {{(pagination.page + 1) * pagination.rows}} of {{listStockWithAmount.length}}
+          Paginator(v-if="listStockWithAmount.length > 0" :rows="pagination.rows" :totalRecords="listStockWithAmount.length" @page="onPage($event)" :first="pagination.first").p-0
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { Box } from '~/models/Box'
-const nsStoreSubmission = namespace('box/box-detail')
+import { Component, Prop, Watch, Vue } from 'nuxt-property-decorator'
+
 @Component
 class BoxDetailHistory extends Vue {
-  totalItemsCount = 32
-  @nsStoreSubmission.State
-  boxDetail!: Box.Model[]
+  @Prop() listStockWithAmount!: any[]
+  @Prop() getParam: () => any
 
-  @nsStoreSubmission.Action
-  actGetBoxList!: () => Promise<void>
-
-  async mounted() {
-    await this.actGetBoxList()
-
+  pagination: any = {
+    first: 0,
+    page: 0,
+    pageCount: 1,
+    rows: 20
   }
 
+  get dataRenderItems() {
+    const lastIndex = this.pagination.first + this.pagination.rows
+    return this.listStockWithAmount.filter((_, index) => index >= this.pagination.first && index < lastIndex)
+  }
+
+  onPage(event: any) {
+    this.pagination = event
+  }
+
+  @Watch('listStockWithAmount')
+  resetPaging() {
+    this.pagination.first = 0
+  }
 }
 
 export default BoxDetailHistory
 </script>
 
-<style lang="sass" scoped >
-
+<style lang="sass" scoped>
   .p-column-header-content
     .p-column-title
       color: #464D64
@@ -154,9 +161,4 @@ export default BoxDetailHistory
         font-weight:  bold
         border: none
         color: var(--surface-500)
-  ::-webkit-input-placeholder
-    color: $text-color-900
-  .p-disabled, .p-component:disabled
-    opacity: 1
-
 </style>

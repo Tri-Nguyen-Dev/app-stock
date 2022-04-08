@@ -171,17 +171,17 @@ class BoxList extends Vue {
   actDeleteBoxById!: (params: {ids: string[]}) => Promise<any>
 
   async mounted() {
-    await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize });
-    this.actWarehouseList();
+    await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
+    this.actWarehouseList()
   }
 
   @Watch('selectedWarehouse')
   @Watch('dateFrom')
   @Watch('dateTo')
   async filterChange() {
-    this.firstPage = 1;
-    this.pageNumber = 1;
-    await this.actGetBoxList(this.getParamAPi());
+    this.firstPage = 1
+    this.pageNumber = 1
+    await this.actGetBoxList(this.getParamAPi())
   }
 
   getParamAPi(){
@@ -199,57 +199,57 @@ class BoxList extends Vue {
   }
 
   get isFilter(){
-    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize']);
-    return Object.values(params).some((item) => item);
+    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize'])
+    return Object.values(params).some((item) => item)
   }
 
   formatDateParams(date: any) {
-    const d = new Date(date);
-      let month = '' + (d.getMonth() + 1);
-      let day = '' + d.getDate();
-      const year = d.getFullYear();
+    const d = new Date(date)
+    let month = '' + (d.getMonth() + 1)
+    let day = '' + d.getDate()
+    const year = d.getFullYear()
     if (month.length < 2) 
-        month = '0' + month;
+      month = '0' + month
     if (day.length < 2) 
-        day = '0' + day;
-    return [year, month, day].join('-');
+      day = '0' + day
+    return [year, month, day].join('-')
   }
 
   async onPage(event: any) {
-    this.pageNumber = event.page + 1;
-    await this.actGetBoxList(this.getParamAPi());
+    this.pageNumber = event.page + 1
+    await this.actGetBoxList(this.getParamAPi())
   }
 
   async handleDeleteStock() {
     const result = await this.actDeleteBoxById({ ids: this.ids })
     if(result) {
-      this.isModalDelete = false;
-      this.firstPage = 1;
-      this.pageNumber = 1;
-      await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize });
+      this.isModalDelete = false
+      this.firstPage = 1
+      this.pageNumber = 1
+      await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
     }
   }
 
   handleCancel() {
-    this.isModalDelete = false;
+    this.isModalDelete = false
   }
   
   get itemsBoxDelete(){
-    const itemsDelete: string[] = [];
+    const itemsDelete: string[] = []
     _.forEach(this.selectedBoxes, function(box: any) {
       if(box.status !== 'DISABLE')
-        itemsDelete.push(box.id);
-    });
-    return itemsDelete;
+        itemsDelete.push(box.id)
+    })
+    return itemsDelete
   }
 
   showModalDelete(id?: string) {
-    this.ids = id? [id] : this.itemsBoxDelete;
+    this.ids = id? [id] : this.itemsBoxDelete
     this.isModalDelete = true
   }
 
   rowClass(data: any) {
-    return data.status === 'DISABLE' && 'row-disable';
+    return data.status === 'DISABLE' && 'row-disable'
   }
 
   validateText =  _.debounce(async ()=>{
@@ -257,10 +257,10 @@ class BoxList extends Vue {
   }, 500);
 
   async sortData(e: any){
-    const {sortField, sortOrder} = e;
+    const {sortField, sortOrder} = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
-      this.sortByColumn = sortField.replace('_', '');
+      this.sortByColumn = sortField.replace('_', '')
     }else{
       this.isDescending = null
       this.sortByColumn = null
@@ -269,13 +269,13 @@ class BoxList extends Vue {
   }
 
   onRowClick({data}){
-    this.$router.push(`/box/${data.id}`);
+    this.$router.push(`/box/${data.id}`)
   }
 
   get formatDate() {
     return (myparameter: any) => {
       return moment(myparameter).format('DD-MM-yyyy hh:mm A')
-    };
+    }
   }
 }
 export default BoxList

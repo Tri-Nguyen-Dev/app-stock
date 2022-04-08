@@ -41,4 +41,4 @@ function generateData (warehouseList, categoryList, typeList) {
   return stocks
 }
 
-module.exports = generateData;
+module.exports = generateData

@@ -1,6 +1,6 @@
 <template lang="pug">
     .confirm-dialog
-       Dialog(:visible.sync="visible" :modal="true") 
+       Dialog(:visible.sync="visible" :modal="true")
             div.confirm-dialog__content
                 img(:srcset="`${image ? require(`~/assets/images/${image}.png`) : ''} 2x`")
                 h3.confirm-dialog__title  {{ title }}
@@ -28,11 +28,11 @@ class ConfirmDialogCustom extends Vue {
   @Prop({ default: false }) loading!: boolean
 
   get visible() {
-      return this.isShow
+    return this.isShow
   }
 
   get loadingBtn() {
-      return this.loading
+    return this.loading
   }
 }
 
@@ -48,13 +48,13 @@ export default ConfirmDialogCustom
         overflow: hidden
         border: none
         max-width: 300px
-  
+
     ::v-deep.p-dialog-header
         display: none !important
 
     ::v-deep.p-dialog-content
         padding: 0
-        
+
     &__content
         text-align: center
         padding: 48px 16px 16px 16px
@@ -76,7 +76,7 @@ export default ConfirmDialogCustom
         margin-bottom: 0
         color: $text-color-700
         font-weight: $font-weight-regular
-        font-size: $font-size-small !important 
+        font-size: $font-size-small !important
         line-height: calc(20 / 12)
 
     &__footer
