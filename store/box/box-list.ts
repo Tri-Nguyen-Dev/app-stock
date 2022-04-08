@@ -26,7 +26,7 @@ export default class StoreBox extends VuexModule {
   async actGetBoxList(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX, params)
     const response: any = await $api.get(url, {params})
-    return response
+    return response.data
   }
 
   @Action({ rawError: true })
