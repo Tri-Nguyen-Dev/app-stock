@@ -276,7 +276,7 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/stock/${id}` })
+    this.$router.push({ path: `/stock/${id}`,  query: { edit: id }})
   }
 
   rowdbClick({ data }) {
