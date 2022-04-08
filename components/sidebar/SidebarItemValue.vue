@@ -1,8 +1,12 @@
 <template lang="pug">
-  .item-value(:class="{ 'active': active, 'child-item': !!item.parentId }")
+  div
+   .item-value(:class="{ 'active': active, 'child-item': !!item.parentId }" )
+    ul.item-collapsed.p-2(v-if='collapsed && parentItem.length > 0')
+      li(v-for="parent in parentItem" :key="parent.id")
+        nuxt-link.item-collapsed__children.py-3.pl-4(:to="parent.to") {{parent.label}}
     .item__icon(v-if="!!item.icon")
       .icon.icon--large(:class="`icon-${item.icon} ${iconMenuCssClasses}`")
-    transition(name="fade")
+    transition(name="fade") 
       .item__label(v-if="!collapsed" :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast }")
         div.item__children(v-if="item.parentId")
         div.item__rect(v-if="item.parentId")
@@ -17,13 +21,15 @@ const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItem extends Vue {
+
   // -- [ Statement Properties ] ----------------------------------------------------------
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
   @Prop() readonly item!: any | undefined
   @InjectReactive() readonly selectedItem!: any
-  // -- [ Getters ] -----------------------------------------------------------------------
+  @InjectReactive() readonly parentItem!: any
+
   get active() {
     return this.item.id === this.selectedItem?.id || this.item.id === this.selectedItem?.parentId
   }
@@ -41,6 +47,7 @@ class SidebarItem extends Vue {
     }
     return clazz
   }
+
 }
 
 export default SidebarItem
@@ -81,9 +88,35 @@ export default SidebarItem
   color: $text-color-base
   font-size: $font-size-medium
   font-weight: $font-weight-bold
-
-  &.active::before
-    content: ""
+  .item-collapsed 
+    display: none
+  &.active 
+   .item-collapsed 
+     display: block
+     position: absolute
+     top: 40px
+     width: 230px
+     background-color: $color-white
+     border: 1px solid $bg-body-base
+     box-shadow: 0px 10px 30px rgba(0, 10, 24, 0.1)
+     border-radius: 8px
+     z-index: 111
+     li 
+      list-style: none
+     .item-collapsed__children 
+       display: block
+       text-decoration: none
+       color: $text-color-900
+       &:hover 
+        border-radius: 4px
+        background-color: $text-color-300
+       &.nuxt-link-active 
+        background: $primary
+        color: $color-white
+        border-radius: 4px
+       
+   &::before 
+    content:""
     position: absolute
     border-radius: 0 5px 5px 0
     left: -16px
