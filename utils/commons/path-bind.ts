@@ -45,54 +45,54 @@ export class PathBind {
       }
 
       switch (stickiness) {
-        case 0:
-          if (c === '<') {
-            throw new Error('Syntax error \'<\' : Invalid path specification.')
-          }
-          if (c === '>') {
-            throw new Error('Syntax error \'>\' : Invalid path specification.')
-          }
-          if (c === ':') {
-            tokToken.push(c)
-            stickiness++
-          }
-          break
-        case 1:
-          if (c === '>') {
-            throw new Error('Syntax error \'>\' : Invalid path specification.')
-          } else if (c === ':') {
-            throw new Error('Syntax error \':\' : Placeholder are duplicated registered on same dir.')
-          } else if (c === '<') {
-            tokToken.push(c)
-            stickiness++
-          } else if (c === '?') {
-            stickiness--
-            marked = true
-          } else if (c === '&') {
-            stickiness--
-            marked = true
-          } else if (c === '/') {
-            stickiness--
-            marked = true
-          } else {
-            tokToken.push(c)
-            tokName.push(c)
-          }
-          break
-        case 2:
-          if (c === '<') {
-            throw new Error('Syntax error \'<\' : Invalid path specification.')
-          } else if (c === '>') {
-            tokToken.push(c)
-            stickiness = 0
-            marked = true
-          } else {
-            tokToken.push(c)
-            tokRegex.push(c)
-          }
-          break
-        default:
-          throw new Error('Syntax error : Invalid path specification.')
+      case 0:
+        if (c === '<') {
+          throw new Error('Syntax error \'<\' : Invalid path specification.')
+        }
+        if (c === '>') {
+          throw new Error('Syntax error \'>\' : Invalid path specification.')
+        }
+        if (c === ':') {
+          tokToken.push(c)
+          stickiness++
+        }
+        break
+      case 1:
+        if (c === '>') {
+          throw new Error('Syntax error \'>\' : Invalid path specification.')
+        } else if (c === ':') {
+          throw new Error('Syntax error \':\' : Placeholder are duplicated registered on same dir.')
+        } else if (c === '<') {
+          tokToken.push(c)
+          stickiness++
+        } else if (c === '?') {
+          stickiness--
+          marked = true
+        } else if (c === '&') {
+          stickiness--
+          marked = true
+        } else if (c === '/') {
+          stickiness--
+          marked = true
+        } else {
+          tokToken.push(c)
+          tokName.push(c)
+        }
+        break
+      case 2:
+        if (c === '<') {
+          throw new Error('Syntax error \'<\' : Invalid path specification.')
+        } else if (c === '>') {
+          tokToken.push(c)
+          stickiness = 0
+          marked = true
+        } else {
+          tokToken.push(c)
+          tokRegex.push(c)
+        }
+        break
+      default:
+        throw new Error('Syntax error : Invalid path specification.')
       }
 
       if ((marked || pos === toksTail) && tokName.length > 0) {

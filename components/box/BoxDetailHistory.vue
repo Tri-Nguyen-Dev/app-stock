@@ -1,45 +1,61 @@
 <template lang="pug">
-    DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable(
+    DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable.table__sort-icon.bg-white(
       responsiveLayout="scroll"
       dataKey="id"
-      :value='boxDetail'
+      :value='stockList'
       :resizableColumns="true"
       :paginator="false" :rows="100"
       )
       Column(field="no" header="NO" sortable)
-        template(#body='{data}')
-          span.font-bold {{data.length  + 1 }}
+        template(#body='slotProps')
+          span.font-bold {{slotProps.index + 1 }}
       Column(field="" header="TIME" sortable bodyClass="font-semibold" style=" width: 700px")
         template(#body='{data}')
           span.font-bold {{data.createdAt}}
       Column(field="" header="ORIGINAL LOCATION" sortable)
       Column(field="" header="NEW LOCATION" sortable bodyClass="font-semibold")
       Column(field="" header="CREATOR ID" sortable bodyClass="font-semibold")
+        template(#body='{data}')
+          span.font-bold {{data.creatorId}}
       template(#footer)
-        div
-          .flex.align-items-center
-            span.ml-3.text-400.font-size-small Showing 01 - 100 of 1280
-        Paginator(:rows="20" :totalRecords="totalItemsCount").p-0
+                .pagination
+                  div.pagination__info
+                    img(:src="require('~/assets/icons/filter-left.svg')")
+                    span.pagination__total {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
+                  Paginator(:rows="20" :totalRecords="totalStockRecords" @page="onPageHistory($event)").p-0
+
 </template>
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { Box } from '~/models/Box'
-const nsStoreSubmission = namespace('box/box-detail')
+import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
+const nsStoreBoxDetail = namespace('box/box-detail')
 
 @Component
 class BoxDetailHistory extends Vue {
+  @Prop() stockList!: () => any
+  @Prop() totalStockRecords: () => any
+
   totalItemsCount = 32
-  @nsStoreSubmission.State
-  boxDetail!: Box.Model[]
+  pageSize: number = 20
+  pageNumber: number = 1
 
-  @nsStoreSubmission.Action
-  actGetBoxList!: () => Promise<void>
-
-  async mounted() {
-    await this.actGetBoxList()
-
+  getParamApi(){
+    return {
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
+    }
   }
 
+  @nsStoreBoxDetail.Action
+  actGetBoxDetailFilter!: (params: any) => Promise<void>
+
+  async mounted() {
+    await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize })
+  }
+
+  async onPageHistory(event: any) {
+    this.pageNumber = event.page + 1
+    await this.actGetBoxDetailFilter(this.getParamApi())
+  }
 }
 
 export default BoxDetailHistory
@@ -77,6 +93,5 @@ export default BoxDetailHistory
     color: $text-color-900
   .p-disabled, .p-component:disabled
     opacity: 1
-
 </style>
 

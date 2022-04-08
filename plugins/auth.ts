@@ -16,6 +16,11 @@ declare module 'vue/types/vue' {
 const auth: Plugin = ({ store }) => {
   const axiosInstance = axios.create()
   axiosInstance.interceptors.request.use((config) => {
+    if (process.env.NODE_ENV !== 'development') {
+      config.baseURL = process.env.BE_API_URL
+    } else {
+      config.url = '/api' + config.url
+    }
     return config
   }, (error) => {
     return Promise.reject(error)

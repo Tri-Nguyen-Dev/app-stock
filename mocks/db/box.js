@@ -37,4 +37,4 @@ function generateData (warehouseList, locationList) {
   return boxes
 }
 
-module.exports = generateData;
+module.exports = generateData

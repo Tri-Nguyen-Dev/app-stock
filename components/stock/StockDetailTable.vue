@@ -191,7 +191,7 @@ class StockDetailTable extends Vue {
     return this.selectedStock.filter((item: any) => !item.box.deleted)
   }
 
-   onPage(event: any) {
+  onPage(event: any) {
     this.paginate.pageNumber = event.page
     this.getItemsList()
   }
@@ -212,10 +212,10 @@ class StockDetailTable extends Vue {
   }
 
   sortData(e: any){
-    const {sortField, sortOrder} = e;
+    const {sortField, sortOrder} = e
     if(sortOrder){
       this.sort.sortDescending = sortOrder !== 1
-      this.sort.sortByColumn = sortField.replace('_', '');
+      this.sort.sortByColumn = sortField.replace('_', '')
     }
     this.getItemsList()
   }
