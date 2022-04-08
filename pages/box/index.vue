@@ -54,7 +54,7 @@
             Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
-      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes" 
+      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
       removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :rowClass="rowClass" @sort="sortData($event)"
       @row-dblclick="onRowClick($event)" :class="{ 'table__empty': !boxList || boxList.length <= 0 }")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
@@ -83,7 +83,7 @@
           template(#body="{data}")
             .flex.justify-content-end
               Tag(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'bg-green-100' : data.status === 'BOX_STATUS_DRAFT' ? 'bg-blue-100' : 'surface-200'").px-2
-                span(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'text-green-400' : data.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'").font-bold.font-sm {{data.status | status}}
+                span(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'text-green-400' : data.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'").font-bold.font-sm {{data.status | boxStatus}}
         Column(:exportable="false" header="ACTION" className="text-right datatable__head-right")
           template(#body="{data}")
             Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(@click="handleEditBox(data.id)" :disabled="data.status === 'BOX_STATUS_DISABLE'")
@@ -171,17 +171,17 @@ class BoxList extends Vue {
   actDeleteBoxById!: (params: {ids: string[]}) => Promise<any>
 
   async mounted() {
-    await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize });
-    this.actWarehouseList();
+    await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
+    this.actWarehouseList()
   }
 
   @Watch('selectedWarehouse')
   @Watch('dateFrom')
   @Watch('dateTo')
   async filterChange() {
-    this.firstPage = 1;
-    this.pageNumber = 1;
-    await this.actGetBoxList(this.getParamAPi());
+    this.firstPage = 1
+    this.pageNumber = 1
+    await this.actGetBoxList(this.getParamAPi())
   }
 
   getParamAPi(){
@@ -199,51 +199,51 @@ class BoxList extends Vue {
   }
 
   get isFilter(){
-    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize']);
-    return Object.values(params).some((item) => item);
+    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize'])
+    return Object.values(params).some((item) => item)
   }
 
   async onPage(event: any) {
-    this.pageNumber = event.page + 1;
-    await this.actGetBoxList(this.getParamAPi());
+    this.pageNumber = event.page + 1
+    await this.actGetBoxList(this.getParamAPi())
   }
 
   async handleDeleteStock() {
     const result = await this.actDeleteBoxById({ ids: this.ids })
     if(result) {
-      this.isModalDelete = false;
+      this.isModalDelete = false
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
         detail: 'Successfully deleted box',
         life: 3000
       })
-      this.firstPage = 1;
-      this.pageNumber = 1;
-      await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize });
+      this.firstPage = 1
+      this.pageNumber = 1
+      await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
     }
   }
 
   handleCancel() {
-    this.isModalDelete = false;
+    this.isModalDelete = false
   }
-  
+
   get itemsBoxDelete(){
-    const itemsDelete: string[] = [];
+    const itemsDelete: string[] = []
     _.forEach(this.selectedBoxes, function(box: any) {
       if(box.status !== 'BOX_STATUS_DISABLE')
-        itemsDelete.push(box.id);
-    });
-    return itemsDelete;
+        itemsDelete.push(box.id)
+    })
+    return itemsDelete
   }
 
   showModalDelete(id?: string) {
-    this.ids = id? [id] : this.itemsBoxDelete;
+    this.ids = id? [id] : this.itemsBoxDelete
     this.isModalDelete = true
   }
 
   rowClass(data: any) {
-    return data.status === 'BOX_STATUS_DISABLE' && 'row-disable';
+    return data.status === 'BOX_STATUS_DISABLE' && 'row-disable'
   }
 
   validateText =  _.debounce(async ()=>{
@@ -251,10 +251,10 @@ class BoxList extends Vue {
   }, 500);
 
   async sortData(e: any){
-    const {sortField, sortOrder} = e;
+    const {sortField, sortOrder} = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
-      this.sortByColumn = sortField.replace('_', '');
+      this.sortByColumn = sortField.replace('_', '')
     }else{
       this.isDescending = null
       this.sortByColumn = null
@@ -263,7 +263,7 @@ class BoxList extends Vue {
   }
 
   onRowClick({data}){
-    this.$router.push(`/box/${data.id}`);
+    this.$router.push(`/box/${data.id}`)
   }
 
   handleEditBox(id: any) {

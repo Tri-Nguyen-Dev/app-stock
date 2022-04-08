@@ -7,14 +7,14 @@ import { $api, PathBind } from '~/utils'
 })
 export default class StoreStock extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK: '/api/stock/list',
-    DELETE_STOCK: 'api/stock/delete'
+    GET_STOCK: '/stock/list',
+    DELETE_STOCK: '/stock/delete'
   }
 
   public stockList?: Stock.Model[] = []
   public total?: number = 0
   @Mutation
-  setStockList(data: any) {  
+  setStockList(data: any) {
     this.total = data.total
     this.stockList = data.items
   }
@@ -31,7 +31,7 @@ export default class StoreStock extends VuexModule {
     const response = await $api.get(url, { params })
     return response.data
   }
-  
+
   @Action({ rawError: true })
   async actDeleteStockByIds(
     ids?: string[]
@@ -43,7 +43,7 @@ export default class StoreStock extends VuexModule {
       )
       const response = await $api.post(url, { ids })
       if (!response.data) {
-        return 
+        return
       }
       return response.data
     } catch (error) {

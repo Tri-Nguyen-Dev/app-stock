@@ -9,9 +9,9 @@ import { Stock as StockModel } from '~/models/Stock'
 
 export default class StoreStockDetail extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK_DETAIL: '/api/stock/:id/detail',
-    GET_ITEMS_LIST: '/api/stock/:id/box/list',
-    GET_ITEM_INFO: '/api/stock/:stockId/box/:boxId/detail'
+    GET_STOCK_DETAIL: '/stock/:id/detail',
+    GET_ITEMS_LIST: '/stock/:id/box/list',
+    GET_ITEM_INFO: '/stock/:stockId/box/:boxId/detail'
   }
 
   public total?: number = 0
