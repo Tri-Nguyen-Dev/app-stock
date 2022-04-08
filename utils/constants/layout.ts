@@ -1,7 +1,7 @@
 export const PAGE_MENU = [
   { id: 1, icon: 'shopping-cart', label: 'Stock' },
-  { id: 11, to: 'stock', label: 'Stock List', parentId: 1 },
-  { id: 12, to: 'box', label: 'Box List', parentId: 1, isLast: true },
+  { id: 11, to: '/stock', label: 'Stock List', parentId: 1 },
+  { id: 12, to: '/box', label: 'Box List', parentId: 1, isLast: true },
   { id: 2, icon: 'activity', label: 'Activities' },
   { id: 3, icon: 'location', label: 'Bin' },
   { id: 4, icon: 'award', label: 'Role' },

@@ -15,11 +15,7 @@ export default {
     link: []
   },
 
-  plugins: [
-    '~/plugins/vuelidate.ts', 
-    '~/plugins/toast.ts',
-    '~/plugins/filters.ts'
-  ],
+  plugins: ['~/plugins/vuelidate.ts', '~/plugins/toast.ts', '~/plugins/filters.ts'],
 
   components: true,
 

@@ -54,9 +54,9 @@
             Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
-      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes" 
+      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
       removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :rowClass="rowClass" @sort="sortData($event)"
-      @row-click="onRowClick($event)" :class="{ 'table__empty': !boxList || boxList.length <= 0 }")
+      @row-dblclick="onRowClick($event)" :class="{ 'table__empty': !boxList || boxList.length <= 0 }")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO")
           template(#body="slotProps")
@@ -64,7 +64,7 @@
         Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_barCode")
         Column(field="request.seller.email" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right datatable__head-right" sortField="_createdAt")
-          template(#body="{data}") {{formatDate(data.createdAt)}}
+          template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
         Column(field="attributes" header="SIZE(CM)" className="text-right datatable__head-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
         Column(field="weight" header="WEIGHT(KG)" className="text-right datatable__head-right" bodyClass="font-semibold")
@@ -82,13 +82,13 @@
         Column(field="status" header="STATUS" :sortable="true" className="p-text-right datatable__head-right" sortField="_status")
           template(#body="{data}")
             .flex.justify-content-end
-              Tag(:class="data.status === 'AVAILABLE' ? 'bg-green-100' : data.status === 'DRAFT' ? 'bg-blue-100' : 'surface-200'").px-2
-                span(:class="data.status === 'AVAILABLE' ? 'text-green-400' : data.status === 'DRAFT' ? 'text-primary' : 'text-400'").font-bold.font-sm {{data.status}}
+              Tag(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'bg-green-100' : data.status === 'BOX_STATUS_DRAFT' ? 'bg-blue-100' : 'surface-200'").px-2
+                span(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'text-green-400' : data.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'").font-bold.font-sm {{data.status | boxStatus}}
         Column(:exportable="false" header="ACTION" className="text-right datatable__head-right")
           template(#body="{data}")
-            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="data.status === 'DISABLE'")
+            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(@click="handleEditBox(data.id)" :disabled="data.status === 'BOX_STATUS_DISABLE'")
               .icon.icon-edit-btn
-            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.status === 'DISABLE'")
+            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.status === 'BOX_STATUS_DISABLE'")
               .icon.icon-btn-delete
         template(#footer)
           .pagination
@@ -117,7 +117,7 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
-    
+    Toast
 </template>
 
 <script lang="ts">
@@ -203,18 +203,6 @@ class BoxList extends Vue {
     return Object.values(params).some((item) => item)
   }
 
-  formatDateParams(date: any) {
-    const d = new Date(date)
-    let month = '' + (d.getMonth() + 1)
-    let day = '' + d.getDate()
-    const year = d.getFullYear()
-    if (month.length < 2) 
-      month = '0' + month
-    if (day.length < 2) 
-      day = '0' + day
-    return [year, month, day].join('-')
-  }
-
   async onPage(event: any) {
     this.pageNumber = event.page + 1
     await this.actGetBoxList(this.getParamAPi())
@@ -224,6 +212,12 @@ class BoxList extends Vue {
     const result = await this.actDeleteBoxById({ ids: this.ids })
     if(result) {
       this.isModalDelete = false
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted box',
+        life: 3000
+      })
       this.firstPage = 1
       this.pageNumber = 1
       await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
@@ -233,11 +227,11 @@ class BoxList extends Vue {
   handleCancel() {
     this.isModalDelete = false
   }
-  
+
   get itemsBoxDelete(){
     const itemsDelete: string[] = []
     _.forEach(this.selectedBoxes, function(box: any) {
-      if(box.status !== 'DISABLE')
+      if(box.status !== 'BOX_STATUS_DISABLE')
         itemsDelete.push(box.id)
     })
     return itemsDelete
@@ -249,7 +243,7 @@ class BoxList extends Vue {
   }
 
   rowClass(data: any) {
-    return data.status === 'DISABLE' && 'row-disable'
+    return data.status === 'BOX_STATUS_DISABLE' && 'row-disable'
   }
 
   validateText =  _.debounce(async ()=>{
@@ -272,10 +266,8 @@ class BoxList extends Vue {
     this.$router.push(`/box/${data.id}`)
   }
 
-  get formatDate() {
-    return (myparameter: any) => {
-      return moment(myparameter).format('DD-MM-yyyy hh:mm A')
-    }
+  handleEditBox(id: any) {
+    this.$router.push({ path: `/box/${id}`, query: { plan: 'edit' }})
   }
 }
 export default BoxList
