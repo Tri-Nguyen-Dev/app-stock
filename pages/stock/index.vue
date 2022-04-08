@@ -192,14 +192,6 @@ class Stock extends Vue {
     this.isShowFilter = !this.isShowFilter
   }
 
-  redirectToDetail({ data }) {
-    this.$router.push(`stock/${data.id}`)
-  }
-
-  editStockDetail(id:any) {
-    this.$router.push(`stock/${id}`)
-  }
-
   mounted() {
     this.getProductList()
     this.actCategoryList()
@@ -277,11 +269,11 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/box/${id}/detail`})
+    this.$router.push({ path: `/stock/${id}`})
   }
 
   rowdbClick({ data }) {
-    this.$router.push(`/box/${data.id}/detail`)
+    this.$router.push(`/stock/${data.id}`)
   }
 
   handleSort(field: any) {

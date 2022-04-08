@@ -51,18 +51,18 @@
           Dropdown.w-full.border-0.mb-1(v-model="filter.status" :options="statusList" optionLabel="name" placeholder="Select")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
-        DataTable.bg-white.table__sort-icon.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
+        DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
           dataKey="id" :resizableColumns="true" :rowClass="rowClass" :rows="20" :scrollable="false" @row-dblclick='redirectToDetail'
-          :class="{ 'table__empty': !itemsList.items || itemsList.items.length <= 0 }")
-          Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
-          Column(field="no" header="NO")
+          :class="{ 'table__empty': !itemsList.data.items || itemsList.data.items.length <= 0 }" @sort="sortData($event)")
+          Column(selectionMode="multiple" :styles="{'width': '1%'}" :exportable="false")
+          Column(field="no" header="NO" :styles="{'width': '1%'}")
             template(#body="{ index }")
               span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
           Column(field="box.request.seller.email" header="SELLER EMAIL" sortable className="w-3")
           Column(field="stock.sku" header="SKU" sortable className="p-text-right")
-          Column(field="amount" header="INVENTORY QUANTITY" className="p-text-right" bodyClass="font-semibold")
-          Column(field="box.barCode" header="BOX CODE" className="p-text-right" bodyClass="font-semibold")
-          Column(field="box.request.warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
+          Column(field="amount" header="INVENTORY QUANTITY" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
+          Column(field="box.barCode" header="BOX CODE" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
+          Column(field="box.request.warehouse.name" sortable header="WAREHOUSE" className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.font-sm {{data.box.request.warehouse.name}}
@@ -72,7 +72,7 @@
           //-     .flex.align-items-center.cursor-pointer.justify-content-end
           //-       span.text-primary.font-bold.font-sm {{data.location.name}}
           //-       .icon--small.icon-arrow-up-right.bg-primary
-          Column(field="box.deleted" header="STATUS" sortable className="p-text-right")
+          Column(field="box.deleted" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
               div
                 Tag(v-if="data.box.deleted" severity="success").px-2.surface-200
@@ -83,7 +83,7 @@
             template(#body="{data}")
               Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.box.status")
                 .icon--small.icon-btn-edit
-              Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete()" :disabled="!data.status")
+              Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.box.deleted")
                 .icon--small.icon-btn-delete
           template(#footer)
             .pagination
@@ -93,7 +93,7 @@
               div.pagination__delete(v-else @click="showModalDelete()")
                 img(:src="require('~/assets/icons/trash-white.svg')")
                 span Delete {{ selectedStockFilter.length }} items selected
-              Paginator(v-model:first="paginate.pageNumber" :rows="paginate.pageSize" :totalRecords="itemsList.data.total" @page="onPage($event)")
+              Paginator(:first.sync="firstPage" :rows="paginate.pageSize" :totalRecords="itemsList.data.total" @page="onPage($event)")
           template(#empty)
             div.flex.align-items-center.justify-content-center.flex-column
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
@@ -117,7 +117,8 @@ import { Component, namespace, Prop, Vue,Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStockTable = namespace('stock/stock-detail')
-const nsWarehouseStock = namespace('warehouse/warehouse-list')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreStock = namespace('stock/stock-list')
 
 @Component({
   components: {ConfirmDialogCustom}
@@ -125,22 +126,15 @@ const nsWarehouseStock = namespace('warehouse/warehouse-list')
 class StockDetailTable extends Vue {
 
   @Prop() sku!: string
-
   isShowFilter: boolean = false
-
   selectedWarehouse = []
-
   selectedStatus = null
-
   selectedStock :StockModel.ModelDetail[] = []
-
   deleteStockList = []
-
   isModalDelete: boolean = false
-
   ids: string[] = []
-
   loadingSubmit: boolean = false
+  firstPage:any = 0
 
   filter: any = {
     sellerName: null,
@@ -162,20 +156,28 @@ class StockDetailTable extends Vue {
     pageSize: 10
   }
 
+  sort: any = {
+    sortByColumn: null,
+    sortDescending: null
+  }
+
   @nsStoreStockTable.State
   total!: number
 
   @nsStoreStockTable.State
   itemsList!: StockModel.BoxModel
 
-  @nsWarehouseStock.State
+  @nsStoreWarehouse.State
   warehouseList!: any
 
   @nsStoreStockTable.Action
   actGetItemsList!: (params:any) => Promise<void>
 
-  @nsWarehouseStock.Action
+  @nsStoreWarehouse.Action
   actWarehouseList!: () => Promise<void>
+
+  @nsStoreStock.Action
+  actDeleteStockByIds!: (ids: string[]) => Promise<void>
 
   get getInfoPaginate() {
     const { pageNumber, pageSize } = this.paginate
@@ -209,6 +211,15 @@ class StockDetailTable extends Vue {
     this.isModalDelete = true
   }
 
+  sortData(e: any){
+    const {sortField, sortOrder} = e;
+    if(sortOrder){
+      this.sort.sortDescending = sortOrder !== 1
+      this.sort.sortByColumn = sortField.replace('_', '');
+    }
+    this.getItemsList()
+  }
+
   rowClass(data: any) {
     return data.box.deleted ? 'row-disable' : ''
   }
@@ -217,13 +228,21 @@ class StockDetailTable extends Vue {
     this.isModalDelete = false
   }
 
-  handleDeleteStock() {
+  async handleDeleteStock() {
     try {
-      // this.loadingSubmit = true
-      // await this.actDeleteStockByIds(this.ids)
-      // this.getItemsList()
+      this.loadingSubmit = true
+      await this.actDeleteStockByIds(this.ids)
       this.loadingSubmit = false
       this.isModalDelete = false
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted stock',
+        life: 3000
+      })
+      this.paginate.pageNumber = 0
+      this.firstPage = 0
+      this.getItemsList()
       this.selectedStock = []
     } catch (error) {
       this.loadingSubmit = false
@@ -236,9 +255,12 @@ class StockDetailTable extends Vue {
       sku: this.filter?.sku,
       barCode: this.filter?.boxCode,
       location: this.filter?.location,
+      warehouseId: this.filter?.warehouse?.id,
       deleted: this.filter.status?.value,
       pageNumber:this.paginate.pageNumber,
-      pageSize: this.paginate.pageSize
+      pageSize: this.paginate.pageSize,
+      sortByColumn: this.sort?.sortByColumn,
+      isDescending: this.sort.sortDescending && this.sort?.sortDescending
     }
     const params = {
       filter,
@@ -259,6 +281,7 @@ class StockDetailTable extends Vue {
 
   mounted() {
       this.getItemsList()
+      this.actWarehouseList()
   }
 }
 export default StockDetailTable
