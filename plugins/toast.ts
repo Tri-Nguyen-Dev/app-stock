@@ -6,9 +6,7 @@ declare module 'vue/types/vue' {
     interface Vue {
         $toast: ToastServiceMethods
     }
-}
-
-const toast: Plugin = () => {
+}const toast: Plugin = () => {
     
 };
   

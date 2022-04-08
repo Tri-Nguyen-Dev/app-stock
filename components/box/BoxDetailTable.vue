@@ -115,7 +115,7 @@ class BoxDetailHistory extends Vue {
     first: 0,
     page: 0,
     pageCount: 1,
-    rows: 1
+    rows: 20
   }
 
   get dataRenderItems() {

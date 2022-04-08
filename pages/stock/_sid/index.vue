@@ -1,58 +1,56 @@
 <template lang="pug">
   .grid.grid-nogutter.stock__information-detail
-    .col-3.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden
+    .col-2.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden(v-if='stockDetail.data')
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
           .icon.icon-btn-back.bg-blue-700
         span.font-semibold.text-base Stock list / Stock Detail
-      .stock__information--gerenal.p-4
+      .stock__information--gerenal.p-4.border-bottom-1.border-gray-300
         .grid.mb-3
           .col-9.pl-0.flex
-            .icon-btn.icon-box-info.inline-block.mr-1.bg-blue-700
+            .icon.icon-box-info.mr-1.bg-blue-700
             span.uppercase.font-bold.text-sm general infomation
           .col.flex.justify-content-end
             .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
-              .icon-btn.icon-btn-edit
+              .icon.icon-btn-edit
             Button(:class='isEditStockDetail ? " " : "hidden"' @click='saveEditStockDetail')
               .icon-btn.icon-check-lg.bg-white.mr-1
               span.uppercase save
         .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          img(:src='require("~/assets/images/sample.png")').border-round.w-full
+          img(:src='stockDetail.data.imageUrl').border-round.w-full
         .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          Tag(severity="success").uppercase {{stockDetail.status ? 'Available' : 'Disable'}}
+          Tag(severity="success").uppercase {{stockDetail.data.deleted ? 'Disable' : 'Available'}}
         .grid.mb-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          h5.font-bold.my-2 {{stockDetail.name}}
-        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+          h3.font-bold.my-2 {{stockDetail.data.name}}
+        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 code:
-          span.uppercase.font-semibold.text-blue-700 {{stockDetail.code}}
-        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+          span.uppercase.font-semibold.text-blue-700 {{stockDetail.data.barcode}}
+        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 {{stockDetail.unit}}
-        .grid.surface-hover.mb-3
-          .col-2.flex.align-items-center.justify-content-end
-            .icon--large.icon-size.bg-blue-700
-          .col
-            div.text-500 Size (cm)
-            InputText( :disabled='isEditStockDetail == 0' v-model='stockDetail.size')
-        .grid.surface-hover.mb-3
-          .col-2.flex.align-items-center.justify-content-end
-            .icon--large.icon-weight.bg-blue-700
-          .col
-            div.text-500 Weight (kg)
-            InputText( :disabled='isEditStockDetail == 0' v-model='stockDetail.weight')
+          span.uppercase.font-semibold.text-blue-700 {{unitAttribute}}
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700
-          .col
+          .col-10
             div.text-500 Total inventory quantity
-            span.font-semibold.mr-1.uppercase {{stockDetail.totalInventory}}
-    .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
+            span.font-semibold.mr-1.uppercase {{total}}
+        div(
+           v-for='(attr, index) in stockDetail.data.attributeValue'
+        )
+          .grid.surface-hover.mb-3
+            .col-2.flex.align-items-center.justify-content-end
+              div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"' )
+            .col-10
+              div.text-500 {{attr.attribute.name}}
+              InputText(:disabled='isEditStockDetail == 0' v-model='attr.value')
+    .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
+
 </template>
 <script lang="ts">
 import { Component, Vue, namespace} from 'nuxt-property-decorator';
-import { Stock } from '~/store/stock/stock-detail';
+import { Stock as StockModel } from '~/models/Stock';
 const nsStoreStock = namespace('stock/stock-detail');
 
 @Component({
@@ -60,12 +58,17 @@ const nsStoreStock = namespace('stock/stock-detail');
 })
 class StockDetail extends Vue {
   isEditStockDetail: boolean = false
+  sizeAttribute: string = ''
+  weightAttribute: string = ''
 
   @nsStoreStock.State
-  stockDetail!: {}
+  stockDetail!: StockModel.ModelDetail
+
+  @nsStoreStock.State
+  total!: number
 
   @nsStoreStock.Action
-  actGetStockDetail!: (params: Stock.StockDetailId) => Promise<void>
+  actGetStockDetail
 
   backToStockList() {
     this.$router.push('/stock');
@@ -83,8 +86,12 @@ class StockDetail extends Vue {
     this.$router.push('/stock');
   }
 
+  get unitAttribute() {
+    return this.stockDetail.data?.attributeValue.find((x: { name: string }) => x.name === 'unit')?.value || '';
+  }
+
   async mounted() {
-    await this.actGetStockDetail({ id: 4 });
+    await this.actGetStockDetail({ id: this.$route.params.sid });
   }
 }
 export default StockDetail;
@@ -136,4 +143,7 @@ export default StockDetail;
  border-radius: 10px
  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
  background-color: #979AA4
+
+.grid.surface-hover
+  background-color: #F8F7FA !important
 </style>

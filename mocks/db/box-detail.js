@@ -1,8 +1,8 @@
 const { faker } = require('@faker-js/faker');
 const _ = require('lodash');
 
-function generateData(locationList) {
-  const boxDetail = [];
+function generateData (locationList) {
+  const stocks = [];
   const categoryList = Array.from({ length: 10 }, (_, i) => {
     return { id: i, name: faker.commerce.product() };
   });
@@ -15,14 +15,8 @@ function generateData(locationList) {
     const unit = faker.music.genre();
     const category = _.sample(categoryList);
     const status = faker.datatype.number({ min: 0, max: 1 });
-    const createdAt = faker.date
-      .between('2022-03-01', '2022-03-15')
-      .toISOString()
-      .split('T')[0];
-    const updatedAt = faker.date
-      .between('2022-03-15', '2022-03-30')
-      .toISOString()
-      .split('T')[0];
+    const createdAt = faker.date.between('2022-03-01', '2022-03-15').toISOString().split('T')[0];
+    const updatedAt = faker.date.between('2022-03-15', '2022-03-30').toISOString().split('T')[0];
     const width = faker.datatype.number(100);
     const height = faker.datatype.number(100);
     const length = faker.datatype.number(100);
@@ -30,7 +24,7 @@ function generateData(locationList) {
     const quantity = faker.datatype.number(100);
     const location = _.sample(locationList);
 
-    boxDetail.push({
+    stocks.push({
       id,
       name,
       length,
@@ -49,8 +43,7 @@ function generateData(locationList) {
       location
     });
   }
-
-  return boxDetail;
+  return stocks;
 }
 
 module.exports = generateData;
