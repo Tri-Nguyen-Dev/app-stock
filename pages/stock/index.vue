@@ -237,6 +237,7 @@ class Stock extends Vue {
   onPage(event: any) {
     this.paginate.pageSize = event.rows
     this.paginate.pageNumber = event.page
+    this.selectedStock = []
   }
 
   showModalDelete(id?: string) {
@@ -276,7 +277,7 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/stock/${id}`,  query: { edit: id }})
+    this.$router.push({ path: `/stock/${id}`,  query: { plan: 'edit' }})
   }
 
   rowdbClick({ data }) {
