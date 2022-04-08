@@ -1,10 +1,10 @@
 <template lang="pug">
   .grid.flex.grid-nogutter
-    div.bg-white.border-round-top.sub-tab(class=' col-3  md:col-3 lg:col-3 xl:col-3')
+    div.bg-white.border-round-top.sub-tab(class='col-3 md:col-3 lg:col-3 xl:col-3')
       .col.flex.align-items-center.p-3
-        Button(@click='backToBox').p-button-link
-          .icon-arrow-left.icon.bg-primary.mr-3.align-items-center
         span.font-normal( @click='backToBox') Box list  /  
+          .icon-arrow-left.icon.bg-primary.mr-3.align-items-center
+        Breadcrumb( home="/box" :model) 
         span.font-normal.text-primary &nbsp;  Box Detail
       .border-bottom-1.border-gray-300.grid-nogutter
       .grid.flex.my-4.p-3.grid-nogutter
@@ -13,7 +13,7 @@
           span.font-bold.text-800.uppercase Box Detail
         .col-fixed
           Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" :class='isEditBox? "hidden " : "" ' )
-            .icon-btn-edit.icon
+            .icon-edit-btn.icon
           Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="btnEdit" :class='isEditBox? "" : "hidden"' )
             .icon-check-lg.icon.bg-white.mr-1
             span Save
@@ -24,102 +24,81 @@
           .font-bold.my-3
             .col(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
-                span.text-primary.uppercase {{boxDetail.barCode}}
+                span.text-primary.uppercase.ml-2 {{boxDetail.barCode}}
       .grid.grid-nogutter.sub--scroll
         .col.px-3
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-receipt.bg-primary.icon--large
-            div(class=' col-12  lg:col-12 xl:col-8')
+            div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Receipt note ID
-              .mt-1.flex.align-items-center
-                span.font-bold.uppercase {{boxDetail.receiptNoteId}}
+              div.mt-1.flex.align-items-center.w-7rem.overflow-hidden.white-space-nowrap.text-overflow-ellipsis
+                span.font-bold.uppercase {{ receiptNoteId }}
                 .icon-arrow-up-right.icon--base
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
+          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(v-if='boxDetail.createBy' :class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-tag-user.bg-primary.icon--large
-            div(class=' col-12  lg:col-12 xl:col-8')
+            div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Create ID
               .mt-1.flex.align-items-center
-                span.font-bold.uppercase {{boxDetail.createBy}}
+                span.font-bold.uppercase {{ boxDetail.createBy }}
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-warehouse.bg-primary.icon--large
-            div(class=' col-12  lg:col-12 xl:col-8')
+            div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Warehouse
               .mt-1.flex.align-items-center
-                span.font-bold.uppercase {{boxWarehouse}}
+                span.font-bold.uppercase {{ boxWarehouse }}
                 .icon-arrow-up-right.icon
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
             .col-fixed.mr-2
               .icon-location-2.icon--large.bg-primary
-            div(class=' col-12  lg:col-12 xl:col-8')
+            div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Location
               .mt-1.flex.align-items-center
-                AutoComplete.edit-location( v-model="isLocation" :suggestions="locationList" field="name" :disabled='isEditBox == 0' :placeholder='boxLocation' @complete='searchLocation($event)'  )
+                AutoComplete.edit-location( v-model="isLocation" field="name" :suggestions='locationList'  :disabled='isEditBox == 0' :placeholder='boxLocation'  )
                   template(#item="slotProps")
                     .grid.align-items-center.grid-nogutter
-                      span.font-bold {{slotProps.item.name}}
+                      span.font-bold {{ slotProps.item.name }}
                       .icon-arrow-up-right.icon
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-calendar.icon--large.bg-primary
-            div(class=' col-12  lg:col-12 xl:col-8')
+            div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Create Time
               .mt-1
-                span.font-bold  {{formatDate(boxDetail.createdAt)}} 
+                span.font-bold  {{ boxDetail.createdAt | dateTimeHour12 }} 
             div
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-frame.icon--large.bg-primary
-            div(class=' col-12  lg:col-12 xl:col-8')
+            div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Box Items
               .mt-1
-                span.font-bold {{boxDetail.length}}
+                span.font-bold {{ boxDetail.length }}
           .grid.align-items-center.m-0.pl-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-dollar-square-2.icon--large.bg-primary
-            div(class=' col-12  lg:col-12 xl:col-9')
+            div(class='col-12 lg:col-12 xl:col-9')
               span.font-bold.text-600 Estimated inventory Fee
               .mt-1
-                span.font-bold {{boxDetail.inventoryFee}}$ PER DAY
+                span.font-bold {{ boxDetail.inventoryFee }}$ PER DAY
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
               .icon-resize.icon--large.bg-primary
-            div.align-items(class=' col-12 lg:col-12 xl:col-8')
+            div.align-items(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Box Size:
-              span.font-bold.text-600.bg-primary.ml-1.border-round.p-1.pr-2  {{boxSizeFormat(boxDetail.boxSize)}} 
+              span.font-bold.text-600.bg-primary.ml-1.border-round(:class='boxDetail.boxSize? "p-1" : ""') {{ boxDetail.boxSize | boxSize }}
               .mt-1
-                span.font-bold {{boxDetail.length}}*{{boxDetail.width}}*{{boxDetail.height}}
+                span.font-bold {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }}
         .col(:class='isEditBox? "opacity-40" : "opacity-100"')
-          .div
+          .div.mb-6
             .col.border-bottom-1.border-gray-300
-            .col.flex
+            .col.flex.my-3
               .col.flex.align-items-center
                 .icon-seller-information.icon.bg-primary.mr-2
                 span.font-bold.text-800.uppercase Seller Information
-            .col.p-3
-              .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
-                .col-fixed.mr-2
-                  .icon-user-octagon-2.icon--large.bg-primary
-                div(class=' col-12  lg:col-12 xl:col-8')
-                  span.font-bold.text-600 Sender
-                  .mt-1
-                    span.font-bold {{boxSellerName}}
-              .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
-                .col-fixed.mr-2
-                  .icon-sms-notification.icon--large.bg-primary
-                div(class=' col-12  lg:col-12 xl:col-8')
-                  span.font-bold.text-600 Email Address
-                  .mt-1
-                    span.font-bold {{boxSellerEmail}}
-              .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-5
-                .col-fixed.mr-2
-                  .icon-phone.icon--large.bg-primary
-                div(class=' col-12  lg:col-12 xl:col-8')
-                  span.font-bold.text-600 Phone number
-                  .mt-1
-                    span.font-bold {{boxSellerPhone}}
+            BoxDetailValue(v-for='item in sellerInfor' :key='item.id' :item='item' :boxSellerInfor='boxSellerInfor')
     div.ml-5.flex-1(class=' col-7  md:col-8  lg:col-8 xl:col-8')
       .grid.justify-content-between
         .col-fixed
@@ -137,14 +116,14 @@
                     div.pt-2.pl-1.pb-1
                       span.text-600.text-sm.pl-2 SKU
                     span.p-input-icon-right.w-full
-                      .icon.icon--right.icon-search-input.surface-900
+                      .icon.icon--right.icon-search.surface-900
                       InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="skuFilter" v-on:input="validateText")
                 .col
                   .bg-white.border-round
                     div.pt-2.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Barcode
                     span.p-input-icon-right.w-full
-                      .icon.icon--right.icon-search-input.surface-900
+                      .icon.icon--right.icon-search.surface-900
                       InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="barcodeFilter" v-on:input="validateText")
                 .col
                   .bg-white.border-round
@@ -162,7 +141,7 @@
         .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
           .col
             span.p-input-icon-left
-              .icon.icon--left.icon-search-input.surface-900
+              .icon.icon--left.icon-search.surface-900
               InputText.w-23rem.font-bold.h-3rem.py-4.text-900(type="text" placeholder="Search" v-model='nameStockFilter' v-on:input="validateText" )
           .col
             Button.border-0.bg-white.w-7rem.shadow-none.border-primary.h-3rem.py-4(@click="isFilter = !isFilter")
@@ -171,8 +150,10 @@
 </template>
 
 <script lang="ts">
-import { Component,  Vue, Watch, namespace } from 'nuxt-property-decorator'
-const _ = require('lodash')const nsStoreBoxDetail = namespace('box/box-detail')
+import { Component, Vue, Watch, namespace } from 'nuxt-property-decorator'
+import { ITEM_BOX_DETAIL, ITEM_SELLER_INFOR } from '~/utils'
+const _ = require('lodash')
+const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
 const nsStoreLocationList = namespace('location/location-list')
 
@@ -181,7 +162,7 @@ class BoxDetail extends Vue {
   isFilter: boolean = false
   isEditBox: boolean = false
   isItemHistory: boolean = false
-  isLocation : any = null
+  isLocation: any = null
   locations: any = null
   skuFilter: any = null
   categorySelected: any = null
@@ -189,24 +170,26 @@ class BoxDetail extends Vue {
   nameStockFilter: any = null
   pageNumber: number = 1
   pageSize: number = 20
+  itemBoxDetail = ITEM_BOX_DETAIL
+  sellerInfor = ITEM_SELLER_INFOR
 
   @nsStoreLocationList.State
-  locationList!: any
+  locationList: [] 
 
   @nsStoreBoxDetail.State
   totalStockRecords!: number
 
   @nsStoreBoxDetail.State
   boxDetail!: {
-    warehouse: string,
-    request: any,
+    warehouse: string
+    request: any
     location: any
-    listStockWithAmount: any, 
+    listStockWithAmount: any
     shelfBin: any
   }
 
   @nsStoreCategoryList.State
-  categoryList!:any
+  categoryList!: any
 
   @nsStoreBoxDetail.Action
   actGetBoxDetail!: (params: any) => Promise<void>
@@ -221,17 +204,17 @@ class BoxDetail extends Vue {
     return {
       pageNumber: 1,
       pageSize: this.pageSize,
-      'sku' : this.skuFilter === '' ? null : this.skuFilter,
-      'barcode' : this.barcodeFilter === '' ? null : this.barcodeFilter ,
-      'name': this.nameStockFilter === '' ? null : this.nameStockFilter,
+      sku: this.skuFilter === '' ? null : this.skuFilter,
+      barcode: this.barcodeFilter === '' ? null : this.barcodeFilter,
+      name: this.nameStockFilter === '' ? null : this.nameStockFilter,
       'category.id': this.categorySelected?.id
     }
   }
 
   async mounted() {
-    await this.actGetBoxDetail({ id: this.$route.params.id  })
+    await this.actGetBoxDetail({ id: this.$route.params.id })
     await this.actCategoryList()
-    await this.actLocationList({name: null})
+    await this.actLocationList({ name: null })
   }
 
   backToBox() {
@@ -243,82 +226,53 @@ class BoxDetail extends Vue {
   }
 
   onTabClick() {
-      this.isItemHistory = !this.isItemHistory
-      this.isFilter = false
+    this.isItemHistory = !this.isItemHistory
+    this.isFilter = false
   }
-  
-  @Watch('categorySelected') 
-   async filtersChange(){
-    await this.actGetBoxDetail(this.getParamAPI()) 
+
+  @Watch('categorySelected')
+  async filtersChange() {
+    await this.actGetBoxDetail(this.getParamAPI())
   }
 
   @Watch('isLocation')
   async filterLocation() {
     await this.actLocationList({
-      'name': this.isLocation === '' ? null: this.isLocation
+      name: this.isLocation === '' ? null : this.isLocation
     })
   }
 
-  formatDate(date: any) {
-    const d = new Date(date);
-      let month = '' + (d.getMonth() + 1);
-      let day = '' + d.getDate();
-      const year = d.getFullYear();
-      const sHour = d.getHours();
-      const sMinute = d.getMinutes();
-      const sAMPM = 'AM';
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
-    return [ day , month, year ].join('-') + ' ' + [sHour , sMinute ].join(':') + [sAMPM]
-  }
-
-    validateText =  _.debounce( async ()=>{
-     await this.actGetBoxDetail(this.getParamAPI())
-  }, 500);
+  validateText = _.debounce(async () => {
+    await this.actGetBoxDetail(this.getParamAPI())
+  }, 500)
 
   get boxWarehouse() {
     return this.boxDetail.request?.warehouse.name || null
   }
 
-    get boxSellerName() {
-    return this.boxDetail.request?.seller.name || null
-  }
-
-    get boxSellerEmail() {
-    return this.boxDetail.request?.seller.email || null
-  }
-
-    get boxSellerPhone() {
-    return this.boxDetail.request?.seller.phone || null
+  get boxSellerInfor() {
+     return this.boxDetail.request?.seller || '' 
   }
 
   get boxLocation() {
     return this.boxDetail.shelfBin?.name || null
   }
 
+  get receiptNoteId() {
+    return this.boxDetail.request?.id || null
+  }
+
   get APIlocation() {
-       const LocationName =  _.map(this.locationList, 'name');
-       return LocationName
-    }
+    const LocationName = _.map(this.locationList, 'name')
+    return LocationName
+  }
 
-  // searchLocation(event){
-  //   // console.log(event)
-  // }
-
-  //  boxSizeFormat(boxSize : string) {
-  //   const BOX_SIZE_BIG : string =  'BIG'
-  //   const BOX_SIZE_MEDIUM : string =  'Medium'
-  //   const BOX_SIZE_SMALL : string = 'Small'
-  //   return [BOX_SIZE_BIG , BOX_SIZE_MEDIUM , BOX_SIZE_SMALL].join()
-  // }
 }
 
 export default BoxDetail
 </script>
 
-<style lang="sass" scoped >
+<style lang="sass" scoped>
 @media (max-width: 1024px)
   .tabview-left
     top: -4rem !important
@@ -334,9 +288,9 @@ export default BoxDetail
     max-width: 21.5rem
     overflow: hidden
 .sub--scroll
-    height: calc(100vh - 280px)
-    max-width: 21.5rem
-    overflow: auto
+  height: calc(100vh - 280px)
+  max-width: 21.5rem
+  overflow: auto
 .right__information--stock
   display: flex
   flex-direction: column
@@ -357,7 +311,7 @@ export default BoxDetail
     color: #000 !important
     border-bottom: 2px solid #486AE2 !important
     .icon
-      background-color:  var(--primary-color) !important
+      background-color: var(--primary-color) !important
 
 .edit-location
   ::v-deep input
@@ -376,20 +330,19 @@ export default BoxDetail
   font-weight: normal
 
 ::-webkit-scrollbar
- width: 7px
- height: 7px
- background-color: #F5F5F5
+  width: 7px
+  height: 7px
+  background-color: #F5F5F5
 
 ::-webkit-scrollbar-track
- -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
- border-radius: 10px
- background-color: #F5F5F5
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+  border-radius: 10px
+  background-color: #F5F5F5
 
 ::-webkit-scrollbar-thumb
- border-radius: 10px
- -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
- background-color: #979AA4
+  border-radius: 10px
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
+  background-color: #979AA4
 .p-disabled, .p-component:disabled
   opacity: 1
-
 </style>

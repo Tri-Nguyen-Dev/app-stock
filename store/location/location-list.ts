@@ -12,7 +12,7 @@ export default class Location extends VuexModule {
     GET_LOCATION: '/api/shelf-bin/list'
   }
 
-  public locationList: {} = {}
+  public locationList: [] = []
 
   @Mutation
   setLocationList(data: any) {
