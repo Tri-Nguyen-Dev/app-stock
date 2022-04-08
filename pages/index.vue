@@ -6,8 +6,8 @@
 import { Component, Vue } from 'nuxt-property-decorator';
 
 @Component({
-    // middleware: ['authenticate'],
-    // layout: 'dashboard'
+  // middleware: ['authenticate'],
+  // layout: 'dashboard'
 })
 class Pages extends Vue {}
 

@@ -129,87 +129,87 @@ const nsStoreBox = namespace('box/box-list');
 const nsStoreMasterData = namespace('box/master-data');
 
 @Component({
-    components: {
-        ConfirmDialogCustom
-    }
+  components: {
+    ConfirmDialogCustom
+  }
 })
 class BoxList extends Vue {
-    selectedBoxes=[];
-    selectedWarehouse = null
-    selectedSize = null
-    selectedLocation = null
-    isFilter = false
-    dateFrom = null
-    dateTo = null
-    pageNumber: number = 0
-    pageSize: number = 20
-    isModalDelete: boolean = false
-    loadingSubmit: boolean = false
-    ids: string[] = []
+  selectedBoxes=[];
+  selectedWarehouse = null
+  selectedSize = null
+  selectedLocation = null
+  isFilter = false
+  dateFrom = null
+  dateTo = null
+  pageNumber: number = 0
+  pageSize: number = 20
+  isModalDelete: boolean = false
+  loadingSubmit: boolean = false
+  ids: string[] = []
 
-    @nsStoreBox.State
-    boxList!: Box.Model[]
+  @nsStoreBox.State
+  boxList!: Box.Model[]
 
-    @nsStoreBox.State
-    totalBoxRecords!: number
+  @nsStoreBox.State
+  totalBoxRecords!: number
 
-    @nsStoreMasterData.State
-    masterData!: any
+  @nsStoreMasterData.State
+  masterData!: any
 
-    @nsStoreBox.Action
-    actGetBoxList!: (params: any) => Promise<void>
+  @nsStoreBox.Action
+  actGetBoxList!: (params: any) => Promise<void>
 
-    @nsStoreMasterData.Action
-    actGetMasterData!: () => Promise<void>
+  @nsStoreMasterData.Action
+  actGetMasterData!: () => Promise<void>
 
-    @nsStoreBox.Action
-    actDeleteBoxById!: (
-        params: any
-    ) => Promise<any>
+  @nsStoreBox.Action
+  actDeleteBoxById!: (
+    params: any
+  ) => Promise<any>
 
-    async mounted() {
-        await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize });
-        // await this.actGetMasterData()
+  async mounted() {
+    await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize });
+    // await this.actGetMasterData()
+  }
+
+  @Watch('selectedSize')
+  @Watch('selectedWarehouse')
+  filterChange() {
+    // console.log("value");
+  }
+
+  async onPage(event: any) {
+    await this.actGetBoxList({ pageNumber: event.page + 1, pageSize: this.pageSize });
+  }
+
+  async handleDeleteStock() {
+    // console.log(this.ids);
+  }
+
+  handleCancel() {
+    this.isModalDelete = false;
+  }
+
+  async deleteBoxById(id: any) {
+    const ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id);
+    const result = await this.actDeleteBoxById({ids});
+    if (result) {
+      await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize });
     }
+  }
 
-    @Watch('selectedSize')
-    @Watch('selectedWarehouse')
-    filterChange() {
-        // console.log("value");
-    }
+  showModalDelete(id?: string) {
+    this.ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id);
+    this.isModalDelete = true;
+  }
 
-    async onPage(event: any) {
-        await this.actGetBoxList({ pageNumber: event.page + 1, pageSize: this.pageSize });
-    }
+  rowClass(data: Box.Model) {
+    return !data.status && 'row-disable';
+  }
 
-    async handleDeleteStock() {
-        // console.log(this.ids);
-    }
-
-    handleCancel() {
-        this.isModalDelete = false;
-    }
-
-    async deleteBoxById(id: any) {
-        const ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id);
-        const result = await this.actDeleteBoxById({ids});
-        if (result) {
-            await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize });
-        }
-    }
-
-    showModalDelete(id?: string) {
-        this.ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id);
-        this.isModalDelete = true;
-    }
-
-    rowClass(data: Box.Model) {
-        return !data.status && 'row-disable';
-    }
-
-    onRowClick({data}){
-        this.$router.push(`/box/${data.id}`);
-    }
+  onRowClick({data}){
+    this.$router.push(`/box/${data.id}`);
+  }
 
 }
 export default BoxList;

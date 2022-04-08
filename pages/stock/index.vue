@@ -99,169 +99,169 @@ const nsWarehouseStock = namespace('warehouse/warehouse-list');
 const nsStoreStock = namespace('stock/stock-list');
 
 @Component({
-    components: {
-        ConfirmDialogCustom
-    }
+  components: {
+    ConfirmDialogCustom
+  }
 })
 
 class Stock extends Vue {
-    @nsStoreStock.State
-    total!: number
+  @nsStoreStock.State
+  total!: number
 
-    @nsStoreStock.State
-    stockList!: StockModel.Model[]
+  @nsStoreStock.State
+  stockList!: StockModel.Model[]
 
-    @nsCategoryStock.State
-    categoryList!: any
+  @nsCategoryStock.State
+  categoryList!: any
 
-    @nsWarehouseStock.State
-    warehouseList!: any
+  @nsWarehouseStock.State
+  warehouseList!: any
 
-    @nsStoreStock.Action
-    actGetStockList!: (params?: any) => Promise<void>
+  @nsStoreStock.Action
+  actGetStockList!: (params?: any) => Promise<void>
 
-    @nsStoreStock.Action
-    actDeleteStockByIds!: (ids: string[]) => Promise<void>
+  @nsStoreStock.Action
+  actDeleteStockByIds!: (ids: string[]) => Promise<void>
 
-    @nsCategoryStock.Action
-    actCategoryList!: () => Promise<void>
+  @nsCategoryStock.Action
+  actCategoryList!: () => Promise<void>
 
-    @nsWarehouseStock.Action
-    actWarehouseList!: () => Promise<void>
+  @nsWarehouseStock.Action
+  actWarehouseList!: () => Promise<void>
 
-    paginate: any = {
-        pageNumber: 1,
-        pageSize: 10
+  paginate: any = {
+    pageNumber: 1,
+    pageSize: 10
+  }
+
+  filter: any = {
+    name: null,
+    warehouse: null,
+    categories: null,
+    barcode: null,
+    status: null
+  }
+
+  statusList: any = [
+    { name: 'Disable', value: false },
+    { name: 'Available', value: true }
+  ]
+
+  selectedStock: StockModel.Model[] = []
+
+  get selectedStockFilter() {
+    return this.selectedStock.filter(item => item.delete);
+  }
+
+  get getInfoPaginate() {
+    const { pageNumber, pageSize } = this.paginate;
+
+    const start = (pageNumber * pageSize) - (pageSize - 1);
+
+    const convertStart = ('0' + start).slice(-2);
+
+    const end = Math.min(start + pageSize - 1, this.total);
+
+    return `Showing ${convertStart} - ${end} of ${this.total}`;
+  }
+
+  isShowFilter: boolean = false
+
+  loading: boolean = false
+
+  isModalDelete: boolean = false
+
+  ids: string[] = []
+
+  loadingSubmit: boolean = false
+
+  isFilter: boolean = false
+
+  get checkIsFilter () {
+    return Object.values(this.filter).some(item => item);
+  }
+
+  rowClass(data: any) {
+    return !data.deleted ? 'row-disable': '';
+  }
+
+  toggleShowFilter() {
+    this.isShowFilter = !this.isShowFilter;
+
+    if(this.checkIsFilter) this.filter = {
+      name: null,
+      warehouse: null,
+      categories: null,
+      barcode: null,
+      status: null
+    };
+  }
+
+  mounted() {
+    this.getProductList();
+    this.actCategoryList();
+    this.actWarehouseList();
+  }
+
+  async getProductList() {
+    const filter = {
+      name: this.filter.name,
+      warehouseId: this.filter.warehouse?.id,
+      categoryIds: this.filter.categories && this.filter.categories.map((item: any) => item?.id),
+      barcode: this.filter.barcode,
+      delete: this.filter.status?.value
+    };
+
+    const params = {
+      ...this.paginate,
+      ...filter
+    };
+
+    await this.actGetStockList(params);
+  }
+
+  @Watch('filter', { deep: true })
+  getNewStock() {
+    this.getProductList();
+  }
+
+  getProductSelected(data: any[]) {
+    this.selectedStock = data;
+  }
+
+  onPage(event: any) {
+    this.paginate.pageNumber = event.page + 1;
+    this.getProductList();
+  }
+
+  showModalDelete(id?: string) {
+    if (id) {
+      this.ids = [id];
+    } else {
+      this.ids = this.selectedStockFilter.map((item: any) => {
+        return item.id;
+      });
     }
+    this.isModalDelete = true;
+  }
 
-    filter: any = {
-        name: null,
-        warehouse: null,
-        categories: null,
-        barcode: null,
-        status: null
+  async handleDeleteStock() {
+    try {
+      this.loadingSubmit = true;
+      await this.actDeleteStockByIds(this.ids);
+      this.getProductList();
+      this.loadingSubmit = false;
+      this.isModalDelete = false;
+
+      this.$toast.add({severity:'success', summary: 'Success Message', detail:'Successfully deleted stock', life: 3000});
+    } catch (error) {
+      this.loadingSubmit = false;
     }
+  }
 
-    statusList: any = [
-        { name: 'Disable', value: false },
-        { name: 'Available', value: true }
-    ]
-
-    selectedStock: StockModel.Model[] = []
-
-    get selectedStockFilter() {
-        return this.selectedStock.filter(item => item.delete);
-    }
-
-    get getInfoPaginate() {
-        const { pageNumber, pageSize } = this.paginate;
-
-        const start = (pageNumber * pageSize) - (pageSize - 1);
-
-        const convertStart = ('0' + start).slice(-2);
-
-        const end = Math.min(start + pageSize - 1, this.total);
-
-        return `Showing ${convertStart} - ${end} of ${this.total}`;
-    }
-
-    isShowFilter: boolean = false
-
-    loading: boolean = false
-
-    isModalDelete: boolean = false
-
-    ids: string[] = []
-
-    loadingSubmit: boolean = false
-
-    isFilter: boolean = false
-
-    get checkIsFilter () {
-        return Object.values(this.filter).some(item => item);
-    }
-
-    rowClass(data: any) {
-        return !data.deleted ? 'row-disable': '';
-    }
-
-    toggleShowFilter() {
-        this.isShowFilter = !this.isShowFilter;
-
-        if(this.checkIsFilter) this.filter = {
-            name: null,
-            warehouse: null,
-            categories: null,
-            barcode: null,
-            status: null
-        };
-    }
-
-    mounted() {
-        this.getProductList();
-        this.actCategoryList();
-        this.actWarehouseList();
-    }
-
-    async getProductList() {
-        const filter = {
-            name: this.filter.name,
-            warehouseId: this.filter.warehouse?.id,
-            categoryIds: this.filter.categories && this.filter.categories.map((item: any) => item?.id),
-            barcode: this.filter.barcode,
-            delete: this.filter.status?.value
-        };
-
-        const params = {
-            ...this.paginate,
-            ...filter
-        };
-
-        await this.actGetStockList(params);
-    }
-
-    @Watch('filter', { deep: true })
-    getNewStock() {
-        this.getProductList();
-    }
-
-    getProductSelected(data: any[]) {
-        this.selectedStock = data;
-    }
-
-    onPage(event: any) {
-        this.paginate.pageNumber = event.page + 1;
-        this.getProductList();
-    }
-
-    showModalDelete(id?: string) {
-        if (id) {
-            this.ids = [id];
-        } else {
-            this.ids = this.selectedStockFilter.map((item: any) => {
-                return item.id;
-            });
-        }
-        this.isModalDelete = true;
-    }
-
-    async handleDeleteStock() {
-        try {
-            this.loadingSubmit = true;
-            await this.actDeleteStockByIds(this.ids);
-            this.getProductList();
-            this.loadingSubmit = false;
-            this.isModalDelete = false;
-
-            this.$toast.add({severity:'success', summary: 'Success Message', detail:'Successfully deleted stock', life: 3000});
-        } catch (error) {
-            this.loadingSubmit = false;
-        }
-    }
-
-    handleCancel() {
-        this.isModalDelete = false;
-    }
+  handleCancel() {
+    this.isModalDelete = false;
+  }
 }
 export default Stock;
 </script>

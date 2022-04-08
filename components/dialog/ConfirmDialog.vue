@@ -16,24 +16,24 @@ import { Component, Vue, Prop } from 'nuxt-property-decorator';
 
 @Component
 class ConfirmDialogCustom extends Vue {
-    @Prop() image!: string
-    @Prop({ default: '' }) title!: string
-    @Prop({ default: '' }) message!: string
+  @Prop() image!: string
+  @Prop({ default: '' }) title!: string
+  @Prop({ default: '' }) message!: string
 
-    @Prop({ default: false }) isShow!: boolean
-    @Prop() onOk!: () => void
+  @Prop({ default: false }) isShow!: boolean
+  @Prop() onOk!: () => void
 
-    @Prop() onCancel!: () => void
+  @Prop() onCancel!: () => void
 
-    @Prop({ default: false }) loading!: boolean
+  @Prop({ default: false }) loading!: boolean
 
-    get visible() {
-        return this.isShow;
-    }
+  get visible() {
+    return this.isShow;
+  }
 
-    get loadingBtn() {
-        return this.loading;
-    }
+  get loadingBtn() {
+    return this.loading;
+  }
 }
 
 export default ConfirmDialogCustom;

@@ -116,73 +116,73 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue';
 const nsStoreStockTable = namespace('stock/stock-detail');
 
 @Component({
-    components: {ConfirmDialogCustom}
+  components: {ConfirmDialogCustom}
 })
 class StockDetailTable extends Vue {
-    isShowFilter: boolean = false
+  isShowFilter: boolean = false
 
-    selectedWarehouse = []
+  selectedWarehouse = []
 
-    selectedStatus = null
+  selectedStatus = null
 
-    selectedStock = []
+  selectedStock = []
 
-    deleteStockList = []
+  deleteStockList = []
 
-    isModalDelete: boolean = false
+  isModalDelete: boolean = false
 
-    ids: string[] = []
+  ids: string[] = []
 
-    loadingSubmit: boolean = false
+  loadingSubmit: boolean = false
 
-    pageNumber: number = 0
+  pageNumber: number = 0
 
-    pageSize: number = 20
+  pageSize: number = 20
 
-    totalBoxRecords: number = 100
+  totalBoxRecords: number = 100
 
-    @nsStoreStockTable.State
-    boxData!: any
+  @nsStoreStockTable.State
+  boxData!: any
 
-    @nsStoreStockTable.Action
-    actGetBoxData!: () => Promise<void>
+  @nsStoreStockTable.Action
+  actGetBoxData!: () => Promise<void>
 
-    @Watch('selectedStock')
-    getSelectedStock() {
-        this.deleteStockList = [...this.selectedStock];
+  @Watch('selectedStock')
+  getSelectedStock() {
+    this.deleteStockList = [...this.selectedStock];
+  }
+
+  showModalDelete(id?: string) {
+    if (id) {
+      this.ids = [id];
+    } else {
+      this.ids = this.selectedStock.map((item: any) => {
+        return item.id;
+      });
     }
+    this.isModalDelete = true;
+  }
 
-    showModalDelete(id?: string) {
-        if (id) {
-            this.ids = [id];
-        } else {
-            this.ids = this.selectedStock.map((item: any) => {
-                return item.id;
-            });
-        }
-        this.isModalDelete = true;
-    }
+  handleCancel() {
+    this.isModalDelete = false;
+  }
 
-    handleCancel() {
-        this.isModalDelete = false;
+  handleDeleteStock() {
+    try {
+      // this.loadingSubmit = true
+      // await this.actDeleteStockByIds(this.ids)
+      // this.getProductList()
+      this.loadingSubmit = false;
+      this.isModalDelete = false;
+      this.selectedStock = [];
+    } catch (error) {
+      this.loadingSubmit = false;
     }
+  }
 
-    handleDeleteStock() {
-        try {
-            // this.loadingSubmit = true
-            // await this.actDeleteStockByIds(this.ids)
-            // this.getProductList()
-            this.loadingSubmit = false;
-            this.isModalDelete = false;
-            this.selectedStock = [];
-        } catch (error) {
-            this.loadingSubmit = false;
-        }
-    }
-
-    async mounted() {
-        await this.actGetBoxData();
-    }
+  async mounted() {
+    await this.actGetBoxData();
+  }
 }
 export default StockDetailTable;
 </script>

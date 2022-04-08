@@ -1,36 +1,36 @@
 <template>
-    <div class="sidebar" :style="{ width: sidebarWidth }">
-        <div class="menu-section sidebar-head">
-            <img v-if="!collapsed" class="user-avatar" :src="userImageUrl"/>
-            <div v-if="!collapsed" class="user-info">
-                <span class="user-name">{{ userDisplayName }}</span>
-                <br>
-                <span class="user-role">Role</span>
-            </div>
-            <div
-                class="icon icon--xlarge icon-menu-toggle bg-primary"
-                @click="toggleSidebar"
-            >
-            </div>
-        </div>
-
-        <div class="menu-section sidebar-menu">
-            <SidebarItem to="/stock" icon="icon-shopping-cart">Stock</SidebarItem>
-            <SidebarItem to="/activity" icon="icon-activity">Activities</SidebarItem>
-            <SidebarItem to="/bin" icon="icon-location">Bin</SidebarItem>
-            <SidebarItem to="/role" icon="icon-award">Role</SidebarItem>
-            <SidebarItem to="/shipper" icon="icon-user-octagon">Shipper</SidebarItem>
-            <SidebarItem to="/tags" icon="icon-tag">Tags</SidebarItem>
-            <SidebarItem to="/seller" icon="icon-send-square">Seller</SidebarItem>
-            <SidebarItem to="/dashboard" icon="icon-dashboard">Dashboard</SidebarItem>
-            <SidebarItem to="/inventory" icon="icon-dollar-square">Inventory Fee</SidebarItem>
-        </div>
-
-        <div class="menu-section sidebar-foot">
-            <SidebarItem to="/notification" icon="icon-notification">Notifications</SidebarItem>
-            <SidebarItem to="/setting" icon="icon-setting">Setting</SidebarItem>
-        </div>
+  <div class="sidebar" :style="{ width: sidebarWidth }">
+    <div class="menu-section sidebar-head">
+      <img v-if="!collapsed" class="user-avatar" :src="userImageUrl"/>
+      <div v-if="!collapsed" class="user-info">
+        <span class="user-name">{{ userDisplayName }}</span>
+        <br>
+        <span class="user-role">Role</span>
+      </div>
+      <div
+        class="icon icon--xlarge icon-menu-toggle bg-primary"
+        @click="toggleSidebar"
+      >
+      </div>
     </div>
+
+    <div class="menu-section sidebar-menu">
+      <SidebarItem to="/stock" icon="icon-shopping-cart">Stock</SidebarItem>
+      <SidebarItem to="/activity" icon="icon-activity">Activities</SidebarItem>
+      <SidebarItem to="/bin" icon="icon-location">Bin</SidebarItem>
+      <SidebarItem to="/role" icon="icon-award">Role</SidebarItem>
+      <SidebarItem to="/shipper" icon="icon-user-octagon">Shipper</SidebarItem>
+      <SidebarItem to="/tags" icon="icon-tag">Tags</SidebarItem>
+      <SidebarItem to="/seller" icon="icon-send-square">Seller</SidebarItem>
+      <SidebarItem to="/dashboard" icon="icon-dashboard">Dashboard</SidebarItem>
+      <SidebarItem to="/inventory" icon="icon-dollar-square">Inventory Fee</SidebarItem>
+    </div>
+
+    <div class="menu-section sidebar-foot">
+      <SidebarItem to="/notification" icon="icon-notification">Notifications</SidebarItem>
+      <SidebarItem to="/setting" icon="icon-setting">Setting</SidebarItem>
+    </div>
+  </div>
 </template>
 
 <script lang='ts'>
@@ -42,38 +42,38 @@ const nsSidebar = namespace('layout/store-sidebar');
 
 @Component
 class Sidebar extends Vue {
-    @nsSidebar.Getter('sidebarWidth')
-    sidebarWidth!: string
+  @nsSidebar.Getter('sidebarWidth')
+  sidebarWidth!: string
 
-    @nsSidebar.State('collapsed')
-    collapsed!: boolean
+  @nsSidebar.State('collapsed')
+  collapsed!: boolean
 
-    @nsSidebar.Mutation('toggleSidebar')
-    toggleSidebar
+  @nsSidebar.Mutation('toggleSidebar')
+  toggleSidebar
 
-    PAGE_MENU = [
-        {
-            to: '', icon: 'stock', active: false, child: [
+  PAGE_MENU = [
+    {
+      to: '', icon: 'stock', active: false, child: [
 
-            ]
-        }
-
-    ]
-
-    // TODO: update authentication later
-    get user() {
-        return this.$auth.user as unknown as User.Model || null;
+      ]
     }
 
-    // TODO: update authentication later
-    get userImageUrl() {
-        return this.user?.userDetail.pictureUrl || '';
-    }
+  ]
 
-    // TODO: update authentication later
-    get userDisplayName() {
-        return this.user?.userDetail.displayName || 'User Name';
-    }
+  // TODO: update authentication later
+  get user() {
+    return this.$auth.user as unknown as User.Model || null;
+  }
+
+  // TODO: update authentication later
+  get userImageUrl() {
+    return this.user?.userDetail.pictureUrl || '';
+  }
+
+  // TODO: update authentication later
+  get userDisplayName() {
+    return this.user?.userDetail.displayName || 'User Name';
+  }
 }
 export default  Sidebar;
 </script>

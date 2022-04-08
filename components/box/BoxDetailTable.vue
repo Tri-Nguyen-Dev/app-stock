@@ -108,29 +108,29 @@ import { Component, Prop, Watch, Vue } from 'nuxt-property-decorator';
 
 @Component
 class BoxDetailHistory extends Vue {
-    @Prop() listStockWithAmount!: any[]
-    @Prop() getParam: () => any
+  @Prop() listStockWithAmount!: any[]
+  @Prop() getParam: () => any
 
-    pagination: any = {
-        first: 0,
-        page: 0,
-        pageCount: 1,
-        rows: 1
-    }
+  pagination: any = {
+    first: 0,
+    page: 0,
+    pageCount: 1,
+    rows: 1
+  }
 
-    get dataRenderItems() {
-        const lastIndex = this.pagination.first + this.pagination.rows;
-        return this.listStockWithAmount.filter((_, index) => index >= this.pagination.first && index < lastIndex);
-    }
+  get dataRenderItems() {
+    const lastIndex = this.pagination.first + this.pagination.rows;
+    return this.listStockWithAmount.filter((_, index) => index >= this.pagination.first && index < lastIndex);
+  }
 
-    onPage(event: any) {
-        this.pagination = event;
-    }
+  onPage(event: any) {
+    this.pagination = event;
+  }
 
-    @Watch('listStockWithAmount')
-    resetPaging() {
-        this.pagination.first = 0;
-    }
+  @Watch('listStockWithAmount')
+  resetPaging() {
+    this.pagination.first = 0;
+  }
 }
 
 export default BoxDetailHistory;

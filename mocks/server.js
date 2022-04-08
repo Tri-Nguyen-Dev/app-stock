@@ -11,23 +11,23 @@ const middlewares = jsonServer.defaults();
 server.use(postAsUpdate);
 // -- Rewriter
 server.use(
-    jsonServer.rewriter({
-        '/api/*': '/$1',
-        '/:page/list*': '/:page$2',
-        '*?pageSize*': '$1?_limit$2',
-        '*&pageSize*': '$1&_limit$2',
-        '*?pageNumber*': '$1?_page$2',
-        '*&pageNumber*': '$1&_page$2',
-        '/:page/create': '/:page',
-        '/:page/:id/detail': '/:page/:id',
-        '/:page/:id/update': '/:page/:id',
-        '/:page/:id/delete': '/:page/:id',
-        '/auth/:page': '/:page',
-        '*name*': '$1name_like$2',
-        '*barcode*': '$1barcode_like$2',
-        '*sku*': '$1sku_like$2'
+  jsonServer.rewriter({
+    '/api/*': '/$1',
+    '/:page/list*': '/:page$2',
+    '*?pageSize*': '$1?_limit$2',
+    '*&pageSize*': '$1&_limit$2',
+    '*?pageNumber*': '$1?_page$2',
+    '*&pageNumber*': '$1&_page$2',
+    '/:page/create': '/:page',
+    '/:page/:id/detail': '/:page/:id',
+    '/:page/:id/update': '/:page/:id',
+    '/:page/:id/delete': '/:page/:id',
+    '/auth/:page': '/:page',
+    '*name*': '$1name_like$2',
+    '*barcode*': '$1barcode_like$2',
+    '*sku*': '$1sku_like$2'
 
-    })
+  })
 );
 
 server.use(middlewares);

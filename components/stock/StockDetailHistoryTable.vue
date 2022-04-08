@@ -19,15 +19,15 @@ const nsStoreStock = namespace('stock/stock-detail');
 
 @Component
 class StockDetailHistoryTable extends Vue {
-    @nsStoreStock.State
-    boxData!: any
+  @nsStoreStock.State
+  boxData!: any
 
-    @nsStoreStock.Action
-    actGetBoxData!: () => Promise<void>
+  @nsStoreStock.Action
+  actGetBoxData!: () => Promise<void>
 
-    async mounted() {
-        await this.actGetBoxData();
-    }
+  async mounted() {
+    await this.actGetBoxData();
+  }
 }
 
 export default StockDetailHistoryTable;

@@ -182,130 +182,130 @@ const nsStoreLocationList = namespace('location/location-list');
 
 @Component
 class BoxDetail extends Vue {
-    isFilter: boolean = false
-    isEditBox: boolean = false
-    isItemHistory: boolean = false
-    isLocation : any = null
-    suggestions: any = []
-    locations: any = null
-    filterParams: any = {
-        sku: null,
-        category: null,
-        barCode: null,
-        name: null
+  isFilter: boolean = false
+  isEditBox: boolean = false
+  isItemHistory: boolean = false
+  isLocation : any = null
+  suggestions: any = []
+  locations: any = null
+  filterParams: any = {
+    sku: null,
+    category: null,
+    barCode: null,
+    name: null
+  }
+
+  pageNumber: number = 1
+  pageSize: number = 20
+  boxDetailData: any = []
+
+  @nsStoreLocationList.State
+  locationList!: any
+
+  // @nsStoreBoxDetail.State
+  // stockList!: any
+
+  @nsStoreBoxDetail.State
+  totalItems!: number
+
+  @nsStoreBoxDetail.State
+  boxDetail!: {
+    warehouse: any,
+    request: any,
+    location: any
+    listStockWithAmount: []
+  }
+
+  @nsStoreCategoryList.State
+  categoryList!:any
+
+  @nsStoreBoxDetail.Action
+  actGetBoxDetail!: (params: any) => Promise<void>
+
+  @nsStoreCategoryList.Action
+  actCategoryList!: () => Promise<void>
+
+  // @nsStoreLocationList.Action
+  // actLocationList!: (params: any) => Promise<void>
+
+  get convertBoxDetailData() {
+    if (this.boxDetail && this.boxDetail.listStockWithAmount) {
+      return [
+        ...this.boxDetail.listStockWithAmount.map((item: any) => ({
+          ...(item.stock || []),
+          amount: item.amount
+        }))
+      ];
     }
+    return [];
+  }
 
-    pageNumber: number = 1
-    pageSize: number = 20
-    boxDetailData: any = []
-
-    @nsStoreLocationList.State
-    locationList!: any
-
-    // @nsStoreBoxDetail.State
-    // stockList!: any
-
-    @nsStoreBoxDetail.State
-    totalItems!: number
-
-    @nsStoreBoxDetail.State
-    boxDetail!: {
-        warehouse: any,
-        request: any,
-        location: any
-        listStockWithAmount: []
-    }
-
-    @nsStoreCategoryList.State
-    categoryList!:any
-
-    @nsStoreBoxDetail.Action
-    actGetBoxDetail!: (params: any) => Promise<void>
-
-    @nsStoreCategoryList.Action
-    actCategoryList!: () => Promise<void>
-
-    // @nsStoreLocationList.Action
-    // actLocationList!: (params: any) => Promise<void>
-
-    get convertBoxDetailData() {
-        if (this.boxDetail && this.boxDetail.listStockWithAmount) {
-            return [
-                ...this.boxDetail.listStockWithAmount.map((item: any) => ({
-                    ...(item.stock || []),
-                    amount: item.amount
-                }))
-            ];
+  get filteredBoxDetailData() {
+    return this.convertBoxDetailData.filter(item => {
+      let filter = true;
+      Object.keys(this.filterParams).map(key => {
+        if (this.filterParams[key]) {
+          if (key === 'category') {
+            filter = filter && item[key]?.id === this.filterParams[key];
+          } else {
+            filter = filter && item[key].includes(this.filterParams[key]);
+          }
         }
-        return [];
-    }
+        return filter;
+      });
+      return filter;
+    });
+  }
 
-    get filteredBoxDetailData() {
-        return this.convertBoxDetailData.filter(item => {
-            let filter = true;
-            Object.keys(this.filterParams).map(key => {
-                if (this.filterParams[key]) {
-                    if (key === 'category') {
-                        filter = filter && item[key]?.id === this.filterParams[key];
-                    } else {
-                        filter = filter && item[key].includes(this.filterParams[key]);
-                    }
-                }
-                return filter;
-            });
-            return filter;
-        });
-    }
+  async mounted() {
+    await this.actGetBoxDetail({ id: this.$route.params.id });
+    await this.actCategoryList();
+    // await this.actLocationList({name: null})
+  }
 
-    async mounted() {
-        await this.actGetBoxDetail({ id: this.$route.params.id });
-        await this.actCategoryList();
-        // await this.actLocationList({name: null})
-    }
+  backToBox() {
+    this.$router.push('/box');
+  }
 
-    backToBox() {
-        this.$router.push('/box');
-    }
+  btnEdit() {
+    this.isEditBox = !this.isEditBox;
+  }
 
-    btnEdit() {
-        this.isEditBox = !this.isEditBox;
-    }
+  onTabClick() {
+    this.isItemHistory = !this.isItemHistory;
+    this.isFilter = false;
+  }
 
-    onTabClick() {
-        this.isItemHistory = !this.isItemHistory;
-        this.isFilter = false;
-    }
+  // @Watch('isLocation')
+  // async filterLocation() {
+  //   await this.actLocationList({
+  //     'name': this.isLocation === '' ? null: this.isLocation
+  //   })
+  // }
 
-    // @Watch('isLocation')
-    // async filterLocation() {
-    //   await this.actLocationList({
-    //     'name': this.isLocation === '' ? null: this.isLocation
-    //   })
-    // }
+  get boxWarehouse() {
+    return this.boxDetail.request?.warehouse.name || '';
+  }
 
-    get boxWarehouse() {
-        return this.boxDetail.request?.warehouse.name || '';
-    }
+  get boxSellerName() {
+    return this.boxDetail.request?.seller.name || '';
+  }
 
-    get boxSellerName() {
-        return this.boxDetail.request?.seller.name || '';
-    }
+  get boxSellerEmail() {
+    return this.boxDetail.request?.seller.email || '';
+  }
 
-    get boxSellerEmail() {
-        return this.boxDetail.request?.seller.email || '';
-    }
+  get boxSellerPhone() {
+    return this.boxDetail.request?.seller.phone || '';
+  }
 
-    get boxSellerPhone() {
-        return this.boxDetail.request?.seller.phone || '';
-    }
+  // get location() {
+  //   return this.boxDetail.request?.location.name || ''
+  // }
 
-    // get location() {
-    //   return this.boxDetail.request?.location.name || ''
-    // }
-
-    // searchLocation(event){
-    // console.log(event)
-    // }
+  // searchLocation(event){
+  // console.log(event)
+  // }
 }
 
 export default BoxDetail;

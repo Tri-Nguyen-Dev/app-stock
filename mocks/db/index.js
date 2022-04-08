@@ -11,14 +11,14 @@ const location = require('./location.json');
 const seller = require('./seller.json');
 
 module.exports = {
-    user,
-    login: auth,
-    logout: auth,
-    stock: genStockList(warehouse, category, genTypeList()),
-    category,
-    warehouse,
-    location,
-    box: genBoxList(seller,warehouse, location),
-    items: genStockBox(),
-    boxDetail: genBoxDetail(location)
+  user,
+  login: auth,
+  logout: auth,
+  stock: genStockList(warehouse, category, genTypeList()),
+  category,
+  warehouse,
+  location,
+  box: genBoxList(seller,warehouse, location),
+  items: genStockBox(),
+  boxDetail: genBoxDetail(location)
 };

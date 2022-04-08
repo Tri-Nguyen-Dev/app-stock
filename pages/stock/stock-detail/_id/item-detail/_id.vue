@@ -151,32 +151,32 @@ import { Stock } from '~/store/stock/stock-detail';
 const nsStoreStock = namespace('stock/stock-detail');
 
 @Component({
-    layout: 'dashboard'
+  layout: 'dashboard'
 })
 class ItemDetail extends Vue {
-    isEditItemDetail: boolean = false
+  isEditItemDetail: boolean = false
 
-    @nsStoreStock.State
-    stockDetail!: {}
+  @nsStoreStock.State
+  stockDetail!: {}
 
-    @nsStoreStock.Action
-    actGetStockDetail!: (params: Stock.StockDetailId) => Promise<void>
+  @nsStoreStock.Action
+  actGetStockDetail!: (params: Stock.StockDetailId) => Promise<void>
 
-    backToStockList() {
-        this.$router.push('/stock/stock-detail/id');
-    }
+  backToStockList() {
+    this.$router.push('/stock/stock-detail/id');
+  }
 
-    editItemDetail() {
-        this.isEditItemDetail = true;
-    }
+  editItemDetail() {
+    this.isEditItemDetail = true;
+  }
 
-    saveEditItemDetail() {
-        this.isEditItemDetail = false;
-    }
+  saveEditItemDetail() {
+    this.isEditItemDetail = false;
+  }
 
-    async mounted() {
-        await this.actGetStockDetail({ id: 4 });
-    }
+  async mounted() {
+    await this.actGetStockDetail({ id: 4 });
+  }
 }
 export default ItemDetail;
 </script>
