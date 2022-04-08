@@ -49,9 +49,9 @@
 
 </template>
 <script lang="ts">
-import { Component, Vue, namespace} from 'nuxt-property-decorator';
-import { Stock as StockModel } from '~/models/Stock';
-const nsStoreStock = namespace('stock/stock-detail');
+import { Component, Vue, namespace} from 'nuxt-property-decorator'
+import { Stock as StockModel } from '~/models/Stock'
+const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
   layout: 'dashboard'
@@ -71,30 +71,30 @@ class StockDetail extends Vue {
   actGetStockDetail
 
   backToStockList() {
-    this.$router.push('/stock');
+    this.$router.push('/stock')
   }
 
   editStockDetail() {
-    this.isEditStockDetail = true;
+    this.isEditStockDetail = true
   }
 
   saveEditStockDetail() {
-    this.isEditStockDetail = false;
+    this.isEditStockDetail = false
   }
 
   buttonEditItemDetail() {
-    this.$router.push('/stock');
+    this.$router.push('/stock')
   }
 
   get unitAttribute() {
-    return this.stockDetail.data?.attributeValue.find((x: { name: string }) => x.name === 'unit')?.value || '';
+    return this.stockDetail.data?.attributeValue.find((x: { name: string }) => x.name === 'unit')?.value || ''
   }
 
   async mounted() {
-    await this.actGetStockDetail({ id: this.$route.params.sid });
+    await this.actGetStockDetail({ id: this.$route.params.sid })
   }
 }
-export default StockDetail;
+export default StockDetail
 </script>
 
 <style lang="sass" scoped>

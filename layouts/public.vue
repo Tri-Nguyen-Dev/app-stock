@@ -3,10 +3,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator';
+import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
 class Dashboard extends Vue {}
 
-export default Dashboard;
+export default Dashboard
 </script>

@@ -1,18 +1,18 @@
-const { faker } = require('@faker-js/faker');
-const lodash = require('lodash');
+const { faker } = require('@faker-js/faker')
+const lodash = require('lodash')
 
 function generateItems (stocks, boxes) {
-  const itemsList = [];
+  const itemsList = []
 
   for (let i = 0; i < stocks.length; i++) {
-    const stock = stocks[i];
+    const stock = stocks[i]
 
     lodash.range(faker.datatype.number({ min: 3, max: 30})).forEach(_ => {
-      const box = lodash.sample(boxes);
-      const inventoryQuantity = faker.datatype.number({ min: 1, max: 500 });
-      const receiptNote = faker.random.alphaNumeric(9);
-      const creatorId = faker.random.alphaNumeric(9);
-      const price = faker.datatype.number({ min: 1, max: 500 });
+      const box = lodash.sample(boxes)
+      const inventoryQuantity = faker.datatype.number({ min: 1, max: 500 })
+      const receiptNote = faker.random.alphaNumeric(9)
+      const creatorId = faker.random.alphaNumeric(9)
+      const price = faker.datatype.number({ min: 1, max: 500 })
       itemsList.push({
         id: box.id,
         stockId: stock.id,
@@ -30,9 +30,9 @@ function generateItems (stocks, boxes) {
         creatorId,
         price,
         inventoryQuantity
-      });
-    });
-  }  return itemsList;
+      })
+    })
+  }  return itemsList
 }
 
-module.exports = generateItems;
+module.exports = generateItems

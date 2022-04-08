@@ -147,9 +147,9 @@
 
 </template>
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator';
-import { Stock as StockModel } from '~/models/Stock';
-const nsStoreStock = namespace('stock/stock-detail');
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Stock as StockModel } from '~/models/Stock'
+const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
   layout: 'dashboard'
@@ -164,42 +164,42 @@ class ItemDetail extends Vue {
   actGetItemsDetail
 
   backToStockList() {
-    this.$router.push(`/stock/${this.$route.params.sid}`);
+    this.$router.push(`/stock/${this.$route.params.sid}`)
   }
 
   editItemDetail() {
-    this.isEditItemDetail = true;
+    this.isEditItemDetail = true
   }
 
   saveEditItemDetail() {
-    this.isEditItemDetail = false;
+    this.isEditItemDetail = false
   }
 
   get itemLocation() {
-    return this.itemDetail.data.location?.name;
+    return this.itemDetail.data.location?.name
   }
 
   get itemWarehouse() {
-    return this.itemDetail.data.warehouse?.name;
+    return this.itemDetail.data.warehouse?.name
   }
 
   get sellerName() {
-    return this.itemDetail.data.seller?.name;
+    return this.itemDetail.data.seller?.name
   }
 
   get sellerEmail() {
-    return this.itemDetail.data.seller?.email;
+    return this.itemDetail.data.seller?.email
   }
 
   get sellerPhone() {
-    return this.itemDetail.data.seller?.phone;
+    return this.itemDetail.data.seller?.phone
   }
 
   async mounted() {
-    await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid });
+    await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
   }
 }
-export default ItemDetail;
+export default ItemDetail
 </script>
 <style lang="sass" scoped>
 $large: 1440px

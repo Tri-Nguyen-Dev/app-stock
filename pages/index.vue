@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator';
+import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component({
   // middleware: ['authenticate'],
@@ -11,7 +11,7 @@ import { Component, Vue } from 'nuxt-property-decorator';
 })
 class Pages extends Vue {}
 
-export default Pages;
+export default Pages
 </script>
 <style lang="sass">
 </style>

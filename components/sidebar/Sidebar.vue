@@ -16,10 +16,10 @@
 </template>
 
 <script lang='ts'>
-import { Component, namespace, ProvideReactive, Vue } from 'nuxt-property-decorator';
-import { User } from '~/models/User';
-import { PAGE_MENU, SETTING_MENU } from '~/utils';
-const nsSidebar = namespace('layout/store-sidebar');
+import { Component, namespace, ProvideReactive, Vue } from 'nuxt-property-decorator'
+import { User } from '~/models/User'
+import { PAGE_MENU, SETTING_MENU } from '~/utils'
+const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class Sidebar extends Vue {
@@ -44,24 +44,24 @@ class Sidebar extends Vue {
   // -- [ Getters ] -------------------------------------------------------------
 
   get user() {
-    return this.$auth.user as unknown as User.Model;
+    return this.$auth.user as unknown as User.Model
   }
 
   get userImageUrl() {
-    return this.user?.userDetail.pictureUrl || null;
+    return this.user?.userDetail.pictureUrl || null
   }
 
   get userDisplayName() {
-    return this.user?.userDetail.displayName || 'Unknown';
+    return this.user?.userDetail.displayName || 'Unknown'
   }
   // -- [ Methods ] ------------------------------------------------------------
 
   onSelectMenu(item) {
-    this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item;
+    this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
   }
 }
 
-export default Sidebar;
+export default Sidebar
 </script>
 
 <style lang="sass" scoped>

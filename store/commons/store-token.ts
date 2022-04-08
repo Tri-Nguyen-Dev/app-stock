@@ -1,5 +1,5 @@
-import { Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import { User } from '~/models/User';
+import { Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import { User } from '~/models/User'
 
 @Module({
   stateFactory: true,
@@ -11,6 +11,6 @@ export default class StoreToken extends VuexModule {
 
   @Mutation
   setToken(userToken: User.Token) {
-    this.userToken = userToken;
+    this.userToken = userToken
   }
 }

@@ -10,8 +10,8 @@
 
 <script lang='ts'>
 
-import { Component, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator';
-const nsSidebar = namespace('layout/store-sidebar');
+import { Component, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator'
+const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItem extends Vue {
@@ -23,25 +23,25 @@ class SidebarItem extends Vue {
   @InjectReactive() readonly selectedItem!: any
 
   get active() {
-    return this.item.id === this.selectedItem?.id || this.item.id === this.selectedItem?.parentId;
+    return this.item.id === this.selectedItem?.id || this.item.id === this.selectedItem?.parentId
   }
 
   get iconMenuCssClasses() {
-    return this.active ? 'bg-primary' : '';
+    return this.active ? 'bg-primary' : ''
   }
 
   get iconSelectCssClasses() {
-    let clazz = !this.item.parentId ? '' : '-rotate-90';
+    let clazz = !this.item.parentId ? '' : '-rotate-90'
     if (this.active && !!this.item.parentId) {
-      clazz += ' bg-primary';
+      clazz += ' bg-primary'
     } else if (this.active) {
-      clazz += ' surface-900';
+      clazz += ' surface-900'
     }
-    return clazz;
+    return clazz
   }
 }
 
-export default SidebarItem;
+export default SidebarItem
 </script>
 
 <style lang="sass" scoped>

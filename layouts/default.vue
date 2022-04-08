@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator';
-const nsSidebar = namespace('layout/store-sidebar');
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+const nsSidebar = namespace('layout/store-sidebar')
 
 @Component({
   // TODO: Update authen logic when BE updated
@@ -18,7 +18,7 @@ class Dashboard extends Vue {
   sidebarWidth!: string
 }
 
-export default Dashboard;
+export default Dashboard
 </script>
 
 <style lang="sass">

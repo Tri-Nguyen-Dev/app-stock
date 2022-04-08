@@ -150,11 +150,11 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator';
-import { ITEM_BOX_DETAIL, ITEM_SELLER_INFOR } from '~/utils';
-const nsStoreBoxDetail = namespace('box/box-detail');
-const nsStoreCategoryList = namespace('category/category-list');
-const nsStoreLocationList = namespace('location/location-list');
+import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
+import { ITEM_BOX_DETAIL, ITEM_SELLER_INFOR } from '~/utils'
+const nsStoreBoxDetail = namespace('box/box-detail')
+const nsStoreCategoryList = namespace('category/category-list')
+const nsStoreLocationList = namespace('location/location-list')
 
 @Component
 class BoxDetail extends Vue {
@@ -210,72 +210,72 @@ class BoxDetail extends Vue {
           ...(item.stock || []),
           amount: item.amount
         }))
-      ];
+      ]
     }
-    return [];
+    return []
   }
 
   get filteredBoxDetailData() {
     return this.convertBoxDetailData.filter(item => {
-      let filter = true;
+      let filter = true
       Object.keys(this.filterParams).map(key => {
         if (this.filterParams[key]) {
           if (key === 'category') {
-            filter = filter && item[key]?.id === this.filterParams[key];
+            filter = filter && item[key]?.id === this.filterParams[key]
           } else {
-            filter = filter && item[key]?.includes(this.filterParams[key]);
+            filter = filter && item[key]?.includes(this.filterParams[key])
           }
         }
-        return filter;
-      });
-      return filter;
-    });
+        return filter
+      })
+      return filter
+    })
   }
 
   async mounted() {
-    await this.actGetBoxDetail({ id: this.$route.params.id });
-    await this.actCategoryList();
-    await this.actLocationList({name: null});
+    await this.actGetBoxDetail({ id: this.$route.params.id })
+    await this.actCategoryList()
+    await this.actLocationList({name: null})
   }
 
   backToBox() {
-    this.$router.push('/box');
+    this.$router.push('/box')
   }
 
   btnEdit() {
-    this.isEditBox = !this.isEditBox;
+    this.isEditBox = !this.isEditBox
   }
 
   onTabClick() {
-    this.isItemHistory = !this.isItemHistory;
-    this.isFilter = false;
+    this.isItemHistory = !this.isItemHistory
+    this.isFilter = false
   }
 
   @Watch('isLocation')
   async filterLocation() {
     await this.actLocationList({
       name: this.isLocation === '' ? null : this.isLocation
-    });
+    })
   }
 
   get boxWarehouse() {
-    return this.boxDetail.request?.warehouse.name || '';
+    return this.boxDetail.request?.warehouse.name || ''
   }
 
   get boxSellerInfor() {
-    return this.boxDetail.request?.seller || '';
+    return this.boxDetail.request?.seller || ''
   }
 
   get boxLocation() {
-    return this.boxDetail.shelfBin?.name || null;
+    return this.boxDetail.shelfBin?.name || null
   }
 
   get receiptNoteId() {
-    return this.boxDetail.request?.id || null;
+    return this.boxDetail.request?.id || null
   }
 }
 
-export default BoxDetail;
+export default BoxDetail
 </script>
 
 <style lang="sass" scoped>

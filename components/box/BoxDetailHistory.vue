@@ -26,8 +26,8 @@
 
 </template>
 <script lang="ts">
-import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator';
-const nsStoreBoxDetail = namespace('box/box-detail');
+import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
+const nsStoreBoxDetail = namespace('box/box-detail')
 
 @Component
 class BoxDetailHistory extends Vue {
@@ -42,23 +42,23 @@ class BoxDetailHistory extends Vue {
     return {
       pageNumber: this.pageNumber,
       pageSize: this.pageSize
-    };
+    }
   }
 
   @nsStoreBoxDetail.Action
   actGetBoxDetailFilter!: (params: any) => Promise<void>
 
   async mounted() {
-    await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize });
+    await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize })
   }
 
   async onPageHistory(event: any) {
-    this.pageNumber = event.page + 1;
-    await this.actGetBoxDetailFilter(this.getParamApi());
+    this.pageNumber = event.page + 1
+    await this.actGetBoxDetailFilter(this.getParamApi())
   }
 }
 
-export default BoxDetailHistory;
+export default BoxDetailHistory
 </script>
 
 <style lang="sass" scoped >

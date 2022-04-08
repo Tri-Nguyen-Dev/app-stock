@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator';
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class BoxDetailValue extends Vue {
@@ -13,5 +13,5 @@ class BoxDetailValue extends Vue {
 
 }
 
-export default BoxDetailValue;
+export default BoxDetailValue
 </script>

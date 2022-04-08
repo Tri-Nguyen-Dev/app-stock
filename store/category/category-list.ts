@@ -1,6 +1,6 @@
-import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators';
-import { PathBind } from '~/utils/commons/path-bind';
-import { $api } from '~/utils';
+import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
+import { PathBind } from '~/utils/commons/path-bind'
+import { $api } from '~/utils'
 
 @Module({
   stateFactory: true,
@@ -15,7 +15,7 @@ export default class Category extends VuexModule {
 
   @Mutation
   setCategoryList(data: any) { 
-    this.categoryList = data.items;
+    this.categoryList = data.items
   }
 
   @Action({ commit: 'setCategoryList', rawError: true })
@@ -24,8 +24,8 @@ export default class Category extends VuexModule {
       const url = PathBind.transform(
         this.context,
         Category.STATE_URL.GET_CATEGORIES
-      );
-      const response = await $api.get(url);            return response.data;
+      )
+      const response = await $api.get(url)            return response.data
     } catch (error) {}
   }
 }

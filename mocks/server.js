@@ -1,14 +1,14 @@
-const jsonServer = require('json-server');
-const data = require('./db');
-const postAsUpdate = require('./scripts/postAsUpdate.js');
-const pagingResults = require('./scripts/pagingResults.js');
-const filterRewriter = require('./scripts/filterRewriter.js');
-const server = jsonServer.create();
-const router = jsonServer.router(data);
-const middlewares = jsonServer.defaults();
+const jsonServer = require('json-server')
+const data = require('./db')
+const postAsUpdate = require('./scripts/postAsUpdate.js')
+const pagingResults = require('./scripts/pagingResults.js')
+const filterRewriter = require('./scripts/filterRewriter.js')
+const server = jsonServer.create()
+const router = jsonServer.router(data)
+const middlewares = jsonServer.defaults()
 
-server.use(postAsUpdate);
-server.use(filterRewriter);
+server.use(postAsUpdate)
+server.use(filterRewriter)
 // -- Rewriter
 server.use(
   jsonServer.rewriter({
@@ -45,12 +45,12 @@ server.use(
     '/stock/:stockId/box/list*': '/stockbox$2&stockId=:stockId',
     '/stock/:stockId/box/:boxId/detail': '/stockbox/:boxId?stockId=:stockId'
   })
-);
+)
 
-server.use(middlewares);
-server.use(jsonServer.bodyParser);
+server.use(middlewares)
+server.use(jsonServer.bodyParser)
 // -- Custom responses for mock api here
-router.render = pagingResults;
+router.render = pagingResults
 
-server.use(router);
-server.listen(process.env.MOCK_API_PORT || 3000);
+server.use(router)
+server.listen(process.env.MOCK_API_PORT || 3000)

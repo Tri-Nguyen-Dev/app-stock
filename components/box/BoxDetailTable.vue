@@ -14,13 +14,13 @@
           div.flex.align-items-center.justify-content-center.flex-column
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
               p.text-900.font-bold.mt-3 List is empty!
-      column(field='no', header='NO', sortable='')
+      column(field='no', header='NO')
         template(#body="slotProps")
           span.font-bold {{ pagination.rows * pagination.page + slotProps.index + 1 }}
       column(
         field='',
         header='IMAGE',
-        sortable='',
+        :sortable='true',
         filter-match-mode='contains'
       )
         template(#body="slotProps")
@@ -28,7 +28,7 @@
       column.text-overflow-ellipsis(
         field='barCode'
         header='BARCODE',
-        sortable='',
+        :sortable='true',
         filter-field='representative',
         sort-field='representative.name',
         :show-filter-match-modes='false'
@@ -62,7 +62,6 @@
       column(
         field='unit',
         header='UNIT',
-        sortable='',
         :show-filter-match-modes='false'
         className="p-text-right"
       )
@@ -71,7 +70,6 @@
       column(
         field='size',
         header='SIZE',
-        sortable='',
         :show-filter-match-modes='false'
         className="p-text-right"
       )
@@ -80,7 +78,6 @@
       column(
         field='weight',
         header='WEIGHT(KG)',
-        sortable='',
         :show-filter-match-modes='false'
         className="p-text-right"
       )
@@ -104,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Vue } from 'nuxt-property-decorator';
+import { Component, Prop, Watch, Vue } from 'nuxt-property-decorator'
 
 @Component
 class BoxDetailHistory extends Vue {
@@ -119,21 +116,21 @@ class BoxDetailHistory extends Vue {
   }
 
   get dataRenderItems() {
-    const lastIndex = this.pagination.first + this.pagination.rows;
-    return this.listStockWithAmount.filter((_, index) => index >= this.pagination.first && index < lastIndex);
+    const lastIndex = this.pagination.first + this.pagination.rows
+    return this.listStockWithAmount.filter((_, index) => index >= this.pagination.first && index < lastIndex)
   }
 
   onPage(event: any) {
-    this.pagination = event;
+    this.pagination = event
   }
 
   @Watch('listStockWithAmount')
   resetPaging() {
-    this.pagination.first = 0;
+    this.pagination.first = 0
   }
 }
 
-export default BoxDetailHistory;
+export default BoxDetailHistory
 </script>
 
 <style lang="sass" scoped>

@@ -3,8 +3,8 @@
     slot
 </template>
 <script lang='ts'>
-import { Component, namespace, Vue } from 'nuxt-property-decorator';
-const nsStoreLoader = namespace('commons/store-loader');
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+const nsStoreLoader = namespace('commons/store-loader')
 
 @Component
 class Loading extends Vue {
@@ -12,5 +12,5 @@ class Loading extends Vue {
   loading!: boolean
 }
 
-export default Loading;
+export default Loading
 </script>

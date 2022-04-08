@@ -1,6 +1,6 @@
-import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators';
-import { PathBind } from '~/utils/commons/path-bind';
-import { $api } from '~/utils';
+import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
+import { PathBind } from '~/utils/commons/path-bind'
+import { $api } from '~/utils'
 
 @Module({
   stateFactory: true,
@@ -16,7 +16,7 @@ export default class Warehouse extends VuexModule {
 
   @Mutation
   setWarehouseList(data: any) {
-    this.warehouseList = data.items;
+    this.warehouseList = data.items
   }
 
   @Action({ commit: 'setWarehouseList', rawError: true })
@@ -25,8 +25,8 @@ export default class Warehouse extends VuexModule {
       const url = PathBind.transform(
         this.context,
         Warehouse.STATE_URL.GET_WAREHOUSE
-      );
-      const response = await $api.get(url);       return response.data;
+      )
+      const response = await $api.get(url)       return response.data
     } catch (error) {}
   }
 }

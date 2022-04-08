@@ -113,11 +113,11 @@
     )
 </template>
 <script lang="ts">
-import { Component, namespace, Prop, Vue,Watch } from 'nuxt-property-decorator';
-import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue';
-import { Stock as StockModel } from '~/models/Stock';
-const nsStoreStockTable = namespace('stock/stock-detail');
-const nsWarehouseStock = namespace('warehouse/warehouse-list');
+import { Component, namespace, Prop, Vue,Watch } from 'nuxt-property-decorator'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import { Stock as StockModel } from '~/models/Stock'
+const nsStoreStockTable = namespace('stock/stock-detail')
+const nsWarehouseStock = namespace('warehouse/warehouse-list')
 
 @Component({
   components: {ConfirmDialogCustom}
@@ -178,43 +178,43 @@ class StockDetailTable extends Vue {
   actWarehouseList!: () => Promise<void>
 
   get getInfoPaginate() {
-    const { pageNumber, pageSize } = this.paginate;
-    const start = (pageNumber + 1) * pageSize - (pageSize - 1);
-    const convertStart = ('0' + start).slice(-2);
-    const end = Math.min(start + pageSize - 1, this.itemsList.data.total);
-    return `Showing ${convertStart} - ${end} of ${this.itemsList.data.total}`;
+    const { pageNumber, pageSize } = this.paginate
+    const start = (pageNumber + 1) * pageSize - (pageSize - 1)
+    const convertStart = ('0' + start).slice(-2)
+    const end = Math.min(start + pageSize - 1, this.itemsList.data.total)
+    return `Showing ${convertStart} - ${end} of ${this.itemsList.data.total}`
   }
 
   get selectedStockFilter() {
-    return this.selectedStock.filter((item: any) => !item.box.deleted);
+    return this.selectedStock.filter((item: any) => !item.box.deleted)
   }
 
   onPage(event: any) {
-    this.paginate.pageNumber = event.page;
-    this.getItemsList();
+    this.paginate.pageNumber = event.page
+    this.getItemsList()
   }
 
   get checkIsFilter() {
-    return Object.values(this.filter).some((item) => item);
+    return Object.values(this.filter).some((item) => item)
   }
 
   showModalDelete(id?: string) {
     if (id) {
-      this.ids = [id];
+      this.ids = [id]
     } else {
       this.ids = this.selectedStockFilter.map((item: any) => {
-        return item.id;
-      });
+        return item.id
+      })
     }
-    this.isModalDelete = true;
+    this.isModalDelete = true
   }
 
   rowClass(data: any) {
-    return data.box.deleted ? 'row-disable' : '';
+    return data.box.deleted ? 'row-disable' : ''
   }
 
   handleCancel() {
-    this.isModalDelete = false;
+    this.isModalDelete = false
   }
 
   handleDeleteStock() {
@@ -222,11 +222,11 @@ class StockDetailTable extends Vue {
       // this.loadingSubmit = true
       // await this.actDeleteStockByIds(this.ids)
       // this.getItemsList()
-      this.loadingSubmit = false;
-      this.isModalDelete = false;
-      this.selectedStock = [];
+      this.loadingSubmit = false
+      this.isModalDelete = false
+      this.selectedStock = []
     } catch (error) {
-      this.loadingSubmit = false;
+      this.loadingSubmit = false
     }
   }
 
@@ -239,29 +239,29 @@ class StockDetailTable extends Vue {
       deleted: this.filter.status?.value,
       pageNumber:this.paginate.pageNumber,
       pageSize: this.paginate.pageSize
-    };
+    }
     const params = {
       filter,
       ...this.paginate,
       id: this.$route.params.sid
-    };
-    await this.actGetItemsList(params);
+    }
+    await this.actGetItemsList(params)
   }
 
   @Watch('filter', { deep: true })
   getFilterList() {
-    this.getItemsList();
+    this.getItemsList()
   }
 
   redirectToDetail({ data }) {
-    this.$router.push(`${this.$route.params.sid}/item/${data.id}`);
+    this.$router.push(`${this.$route.params.sid}/item/${data.id}`)
   }
 
   mounted() {
-    this.getItemsList();
+    this.getItemsList()
   }
 }
-export default StockDetailTable;
+export default StockDetailTable
 </script>
 <style lang="sass" scoped>
     .stock__mutidelete

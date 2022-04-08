@@ -10,12 +10,12 @@ export const PAGE_MENU = [
   { id: 7, icon: 'send-square', label: 'Seller' },
   { id: 8, icon: 'dashboard', label: 'Dashboard' },
   { id: 9, icon: 'dollar-square', label: 'Inventory Fee' }
-];
+]
 
 export const SETTING_MENU = [
   { id: 100, icon: 'notification', label: 'Notifications' },
   { id: 200, icon: 'setting', label: 'Setting' }
-];
+]
 
 export const ITEM_BOX_DETAIL = [
   { id: 1, icon: 'receipt', label: 'Receipt note ID' },
@@ -26,10 +26,10 @@ export const ITEM_BOX_DETAIL = [
   { id: 7, icon: 'frame', label: 'Box Items' },
   { id: 8, icon: 'dollar-square-2', label: 'Estimated inventory Fee' },
   { id: 9, icon: 'resize', label: 'Box Size:' }
-];
+]
 
 export const ITEM_SELLER_INFOR = [
   { id: 1, icon: 'user-octagon-2', label: 'Sender' },
   { id: 2, icon: 'sms-notification', label: 'Email' },
   { id: 3, icon: 'phone', label: 'Phone number' }
-];
+]

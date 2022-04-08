@@ -14,12 +14,12 @@
                 span.ml-3.text-400.text-sm Showing 01 - 50 of 80
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator';
+import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
 class StockDetailHistoryTable extends Vue {
 }
 
-export default StockDetailHistoryTable;
+export default StockDetailHistoryTable
 </script>
 <style lang="sass" scoped></style>

@@ -8,8 +8,8 @@
 
 <script lang='ts'>
 
-import { Component, Emit, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator';
-const nsSidebar = namespace('layout/store-sidebar');
+import { Component, Emit, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator'
+const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItem extends Vue {
@@ -22,18 +22,18 @@ class SidebarItem extends Vue {
 
   @Emit()
   select(item) {
-    return item;
+    return item
   }
 
   // -- [ Getters ] -------------------------------------------------------------
   get isShow() {
     return !this.item.parentId ||
       (this.selectedItem?.parentId === this.item.parentId) ||
-      (this.selectedItem?.id === this.item.parentId);
+      (this.selectedItem?.id === this.item.parentId)
   }
 }
 
-export default SidebarItem;
+export default SidebarItem
 </script>
 
 <style lang="sass" scoped>

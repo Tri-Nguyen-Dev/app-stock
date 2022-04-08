@@ -94,13 +94,13 @@
     Toast
 </template>
 <script lang="ts">
-import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator';
-import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue';
-import { Stock as StockModel } from '~/models/Stock';
-const _ = require('lodash');
-const nsCategoryStock = namespace('category/category-list');
-const nsWarehouseStock = namespace('warehouse/warehouse-list');
-const nsStoreStock = namespace('stock/stock-list');
+import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import { Stock as StockModel } from '~/models/Stock'
+const _ = require('lodash')
+const nsCategoryStock = namespace('category/category-list')
+const nsWarehouseStock = namespace('warehouse/warehouse-list')
+const nsStoreStock = namespace('stock/stock-list')
 @Component({
   components: {
     ConfirmDialogCustom
@@ -165,49 +165,49 @@ class Stock extends Vue {
   isFilter: boolean = false
 
   get selectedStockFilter() {
-    return this.selectedStock.filter((item) => !item.deleted);
+    return this.selectedStock.filter((item) => !item.deleted)
   }
 
   get checkStockDisable () {
-    return this.stockList.every((item) => item.deleted);
+    return this.stockList.every((item) => item.deleted)
   }
 
   get checkIsFilter() {
-    return Object.values(this.filter).some((item) => item);
+    return Object.values(this.filter).some((item) => item)
   }
 
   get getInfoPaginate() {
-    const { pageNumber, pageSize } = this.paginate;
-    const start = (pageNumber + 1) * pageSize - (pageSize - 1);
-    const convertStart = ('0' + start).slice(-2);
-    const end = Math.min(start + pageSize - 1, this.total);
-    return `Showing ${convertStart} - ${end} of ${this.total}`;
+    const { pageNumber, pageSize } = this.paginate
+    const start = (pageNumber + 1) * pageSize - (pageSize - 1)
+    const convertStart = ('0' + start).slice(-2)
+    const end = Math.min(start + pageSize - 1, this.total)
+    return `Showing ${convertStart} - ${end} of ${this.total}`
   }
 
   rowClass(data: any) {
-    return data.deleted ? 'row-disable' : '';
+    return data.deleted ? 'row-disable' : ''
   }
 
   toggleShowFilter() {
-    this.isShowFilter = !this.isShowFilter;
+    this.isShowFilter = !this.isShowFilter
   }
 
   redirectToDetail({ data }) {
-    this.$router.push(`stock/${data.id}`);
+    this.$router.push(`stock/${data.id}`)
   }
 
   editStockDetail(id:any) {
-    this.$router.push(`stock/${id}`);
+    this.$router.push(`stock/${id}`)
   }
 
   mounted() {
-    this.getProductList();
-    this.actCategoryList();
-    this.actWarehouseList();
+    this.getProductList()
+    this.actCategoryList()
+    this.actWarehouseList()
   }
 
   async getProductList() {
-    const categoryIds = this.filter.categories && this.filter.categories.map((item: any) => item?.id).toString();
+    const categoryIds = this.filter.categories && this.filter.categories.map((item: any) => item?.id).toString()
     const filter = {
       name: this.filter.name && this.filter.name !== '' ? this.filter.name : null,
       warehouseId: this.filter.warehouse?.id,
@@ -216,89 +216,89 @@ class Stock extends Vue {
       deleted: this.filter.status?.value,
       sortByColumn: this.sort?.sortByColumn,
       sortDescending: this.sort.sortDescending && this.sort?.sortDescending
-    };
+    }
     const params = {
       ...this.paginate,
       ...filter
-    };
-    await this.actGetStockList(params);
+    }
+    await this.actGetStockList(params)
   }
 
   @Watch('filter', { deep: true })
   @Watch('paginate', { deep: true })
   getNewStock() {
-    this.getProductList();
+    this.getProductList()
   }
 
   getProductSelected(data: any[]) {
-    this.selectedStock = data;
+    this.selectedStock = data
   }
 
   onPage(event: any) {
-    this.paginate.pageSize = event.rows;
-    this.paginate.pageNumber = event.page;
-    this.selectedStock = [];
+    this.paginate.pageSize = event.rows
+    this.paginate.pageNumber = event.page
+    this.selectedStock = []
   }
 
   showModalDelete(id?: string) {
     if (id) {
-      this.ids = [id];
+      this.ids = [id]
     } else {
       this.ids = this.selectedStockFilter.map((item: any) => {
-        return item.id;
-      });
+        return item.id
+      })
     }
-    this.isModalDelete = true;
+    this.isModalDelete = true
   }
 
   async handleDeleteStock() {
     try {
-      this.loadingSubmit = true;
-      await this.actDeleteStockByIds(this.ids);
-      this.loadingSubmit = false;
-      this.isModalDelete = false;
+      this.loadingSubmit = true
+      await this.actDeleteStockByIds(this.ids)
+      this.loadingSubmit = false
+      this.isModalDelete = false
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
         detail: 'Successfully deleted stock',
         life: 3000
-      });
-      this.paginate.pageNumber = 0;
-      this.firstPage = 0;
-      this.getProductList();
-      this.selectedStock = [];
+      })
+      this.paginate.pageNumber = 0
+      this.firstPage = 0
+      this.getProductList()
+      this.selectedStock = []
     } catch (error) {
-      this.loadingSubmit = false;
+      this.loadingSubmit = false
     }
   }
 
   handleCancel() {
-    this.isModalDelete = false;
+    this.isModalDelete = false
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/stock/${id}`});
+    this.$router.push({ path: `/stock/${id}`})
   }
 
   rowdbClick({ data }) {
-    this.$router.push(`/stock/${data.id}`);
+    this.$router.push(`/stock/${data.id}`)
   }
 
   sortData(e: any){
-    const { sortField, sortOrder } = e;
+    const { sortField, sortOrder } = e
     if(sortOrder){
-      this.sort.sortDescending = sortOrder !== 1;
-      this.sort.sortByColumn = sortField.replace('_', '');
+      this.sort.sortDescending = sortOrder !== 1
+      this.sort.sortByColumn = sortField.replace('_', '')
     }
-    this.getProductList();
+    this.getProductList()
   }
 
   debounceSearchName = _.debounce((e) => {
-    this.filter.name = e.target.value;
+    this.filter.name = e.target.value
   }, 500)
 
   debounceSearchCode = _.debounce((e) => {
-    this.filter.barCode = e.target.value;
+    this.filter.barCode = e.target.value
   }, 500)
 
   handleRefreshFilter () {
@@ -309,10 +309,10 @@ class Stock extends Vue {
         categories: null,
         barCode: null,
         status: null
-      };
+      }
   }
 }
-export default Stock;
+export default Stock
 </script>
 <style lang="sass" scoped>
 .stock

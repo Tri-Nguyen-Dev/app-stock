@@ -25,13 +25,13 @@
           a.ml-5.font-sm.text-right.text-primary.cursor-pointer Forgot password?
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator';
+import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component({
   layout: 'public',
   fetch({ redirect, $auth }): Promise<void> | void {
     if ($auth.loggedIn) {
-      redirect('/');
+      redirect('/')
     }
   }
 })
@@ -44,11 +44,11 @@ class Login extends Vue {
   }
 
   callLogin() {
-    this.$auth.loginWith('local', { data: this.loginUser });
+    this.$auth.loginWith('local', { data: this.loginUser })
   }
 }
 
-export default Login;
+export default Login
 </script>
 <style lang="sass" scoped>
 .logo-block
