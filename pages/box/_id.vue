@@ -14,14 +14,14 @@
         .col-fixed
           Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" :class='isEditBox? "hidden " : "" ' )
             .icon-edit-btn.icon
-          Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="btnEdit" :class='isEditBox? "" : "hidden"' )
+          Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="btnEdit" :class='isEditBox? "" : "hidden"'  )
             .icon-check-lg.icon.bg-white.mr-1
             span Save
       div
         .col.px-3
           div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
-            Tag(:class="boxDetail.status === 'AVAILABLE' ? 'bg-green-100' : boxDetail.status === 'DRAFT' ? 'bg-blue-100' : 'surface-200'").py-1
-                span.text-base.font-bold.px-3.border-round(:class="boxDetail.status === 'AVAILABLE' ? 'text-green-400' : boxDetail.status === 'DRAFT' ? 'text-primary' : 'text-400'") {{ boxDetail.status }}
+            Tag(:class="boxDetail.status === 'BOX_STATUS_AVAILABLE' ? 'bg-green-100' : boxDetail.status === 'BOX_STATUS_DRAFT' ? 'bg-blue-100' : 'surface-200'").py-1
+                span.text-base.font-bold.px-3.border-round(:class="boxDetail.status === 'BOX_STATUS_AVAILABLE' ? 'text-green-400' : boxDetail.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'") {{ boxDetail.status | status }}
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
@@ -162,6 +162,7 @@ class BoxDetail extends Vue {
   isEditBox: boolean = false
   isItemHistory: boolean = false
   isLocation: any = null
+  isEditStockDetail: boolean = false
   filterParams: any = {
     sku: null,
     category: null,
@@ -232,7 +233,14 @@ class BoxDetail extends Vue {
     })
   }
 
+  saveEditStockDetail() {
+    this.isEditStockDetail = false
+  }
+
   async mounted() {
+    if(this.$route.query.plan === 'edit') {
+      this.isEditStockDetail = true
+    }
     await this.actGetBoxDetail({ id: this.$route.params.id })
     await this.actCategoryList()
     await this.actLocationList({name: null})
@@ -244,6 +252,7 @@ class BoxDetail extends Vue {
 
   btnEdit() {
     this.isEditBox = !this.isEditBox
+    this.saveEditStockDetail()
   }
 
   onTabClick() {
