@@ -22,8 +22,6 @@ class SidebarItem extends Vue {
   collapsed!: boolean
 
   @Prop() readonly item!: any | undefined
-  @Prop() readonly parentItem!: any | undefined
-  @Prop() readonly index!: any | undefined
   @InjectReactive() readonly selectedItem!: any
 
   get active() {
@@ -42,12 +40,6 @@ class SidebarItem extends Vue {
       clazz += ' surface-900'
     }
     return clazz
-  }
-
-  get lastItem() {
-    if(this.parentItem) {
-      return this.index === this.parentItem.length -1 
-    }
   }
 }
 
