@@ -277,32 +277,15 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/box/${id}/detail`})
+    this.$router.push({ path: `/stock/${id}`})
   }
 
   rowdbClick({ data }) {
-    this.$router.push(`/box/${data.id}/detail`)
-  }
-
-  handleSort(field: any) {
-    this.selectedStock = []
-    if(field === this.sort.sortByColumn) {
-      this.sort = {
-        sortByColumn: field,
-        sortDescending: !this.sort.sortDescending
-      }
-    }
-    else {
-      this.sort = {
-        sortByColumn: field,
-        sortDescending: true
-      }
-    }
-    this.getProductList()
+    this.$router.push(`/stock/${data.id}`)
   }
 
   sortData(e: any){
-    const {sortField, sortOrder} = e;
+    const { sortField, sortOrder } = e;
     if(sortOrder){
       this.sort.sortDescending = sortOrder !== 1
       this.sort.sortByColumn = sortField.replace('_', '');
