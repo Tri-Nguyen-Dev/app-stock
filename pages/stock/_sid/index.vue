@@ -7,8 +7,8 @@
           .icon.icon-btn-back.bg-blue-700
         span.font-semibold.text-base Stock list / Stock Detail
       .stock__information--gerenal.p-4.border-bottom-1.border-gray-300
-        .grid.mb-3
-          .col-9.pl-0.flex
+        .grid.mb-3.align-items-center
+          .pl-0.flex
             .icon.icon-box-info.mr-1.bg-blue-700
             span.uppercase.font-bold.text-sm general infomation
           .col.flex.justify-content-end
@@ -40,7 +40,7 @@
         )
           .grid.surface-hover.mb-3
             .col-2.flex.align-items-center.justify-content-end
-              div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"' )
+              div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"')
             .col-10
               div.text-500 {{attr.attribute.name}}
               InputText(:disabled='isEditStockDetail == 0' v-model='attr.value')
@@ -82,15 +82,14 @@ class StockDetail extends Vue {
     this.isEditStockDetail = false
   }
 
-  buttonEditItemDetail() {
-    this.$router.push('/stock')
-  }
-
   get unitAttribute() {
     return this.stockDetail.data?.attributeValue.find((x: { name: string }) => x.name === 'unit')?.value || ''
   }
 
   async mounted() {
+    if(this.$route.query.plan === 'edit') {
+      this.isEditStockDetail = true
+    }
     await this.actGetStockDetail({ id: this.$route.params.sid })
   }
 }
