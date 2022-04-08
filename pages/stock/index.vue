@@ -192,14 +192,6 @@ class Stock extends Vue {
     this.isShowFilter = !this.isShowFilter
   }
 
-  redirectToDetail({ data }) {
-    this.$router.push(`stock/${data.id}`)
-  }
-
-  editStockDetail(id:any) {
-    this.$router.push(`stock/${id}`)
-  }
-
   mounted() {
     this.getProductList()
     this.actCategoryList()
@@ -277,11 +269,28 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/stock/${id}`})
+    this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' }})
   }
 
   rowdbClick({ data }) {
     this.$router.push(`/stock/${data.id}`)
+  }
+
+  handleSort(field: any) {
+    this.selectedStock = []
+    if(field === this.sort.sortByColumn) {
+      this.sort = {
+        sortByColumn: field,
+        sortDescending: !this.sort.sortDescending
+      }
+    }
+    else {
+      this.sort = {
+        sortByColumn: field,
+        sortDescending: true
+      }
+    }
+    this.getProductList()
   }
 
   sortData(e: any){
