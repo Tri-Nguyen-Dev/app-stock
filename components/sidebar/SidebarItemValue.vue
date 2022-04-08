@@ -23,7 +23,7 @@ class SidebarItem extends Vue {
 
   @Prop() readonly item!: any | undefined
   @InjectReactive() readonly selectedItem!: any
-
+  // -- [ Getters ] -----------------------------------------------------------------------
   get active() {
     return this.item.id === this.selectedItem?.id || this.item.id === this.selectedItem?.parentId
   }
@@ -31,7 +31,7 @@ class SidebarItem extends Vue {
   get iconMenuCssClasses() {
     return this.active ? 'bg-primary' : ''
   }
-  
+
   get iconSelectCssClasses() {
     let clazz = !this.item.parentId ? '' : '-rotate-90'
     if (this.active && !!this.item.parentId) {
@@ -50,21 +50,21 @@ export default SidebarItem
 
 .child-item
   margin-left: 40px
-  &::before 
+  &::before
     display: none
-  .item__label 
+  .item__label
     position: relative
-    &.last-item 
-      .item__children 
+    &.last-item
+      .item__children
         height: calc(50% - 10px)
-    .item__children 
+    .item__children
       position: absolute
       top: 0
       left: -20px
       height: 100%
       width: 2px
       background-color: $bg-body-base
-    .item__rect 
+    .item__rect
       position: absolute
       left: -20px
       top: 4px
@@ -73,6 +73,7 @@ export default SidebarItem
       border-bottom: 2px solid $bg-body-base
       border-left: 2px solid $bg-body-base
       border-bottom-left-radius: 16px
+
 .item-value
   @include flex-center-vert
   height: 100%
@@ -80,15 +81,16 @@ export default SidebarItem
   color: $text-color-base
   font-size: $font-size-medium
   font-weight: $font-weight-bold
-  &.active 
-   &::before 
-    content:""
+
+  &.active::before
+    content: ""
     position: absolute
-    border-radius: 0px 5px 5px 0px
-    left:-16px
+    border-radius: 0 5px 5px 0
+    left: -16px
     width: 6px
-    height:35px
+    height: 35px
     background-color: $primary
+
   &:hover, &.active
     border-radius: 4px
     background-color: $text-color-300
