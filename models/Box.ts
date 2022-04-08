@@ -3,7 +3,8 @@ export namespace Box {
     id: string,
     code: string,
     receiptNoteId: string,
-    creatorId: string
+    creatorId: string,
+    barCode: string,
     seller: {
       id: string,
       name: string,

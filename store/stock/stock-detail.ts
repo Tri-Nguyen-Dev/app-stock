@@ -1,11 +1,6 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import { $api, PathBind } from '~/utils'
-
-export namespace Stock {
-  export class StockDetailId {
-    id?: number
-  }
-}
+import { Stock as StockModel } from '~/models/Stock'
 
 @Module({
   stateFactory: true,
@@ -15,34 +10,49 @@ export namespace Stock {
 export default class StoreStockDetail extends VuexModule {
   private static readonly STATE_URL = {
     GET_STOCK_DETAIL: '/api/stock/:id/detail',
-    GET_ALL_BOX: '/submission/user/:userId/get-all-master-data'
+    GET_ITEMS_LIST: '/api/stock/:id/box/list',
+    GET_ITEM_INFO: '/api/stock/:stockId/box/:boxId/detail'
   }
 
-  public stockDetail: {} = {}
+  public total?: number = 0
 
-  public boxData: any = null
+  public stockDetail: any = {};
+
+  public itemsList: any = {}
+
+  public itemDetail: any = {}
 
   @Mutation
-  setBoxData(boxData: {}) {
-    this.boxData = boxData
+  setStockDetail(data:StockModel.ModelDetail) {
+    this.stockDetail = data
   }
 
   @Mutation
-  setStockDetail(stockDetail: {}) {
-    this.stockDetail = stockDetail
+  setItemsList(itemsList: StockModel.BoxModel) {
+    this.itemsList = itemsList
+    this.total = itemsList.data.total
+  }
+
+  @Mutation
+  setItemDetail(itemDetail: StockModel.BoxModel) {
+    this.itemDetail = itemDetail
   }
 
   @Action({ commit: 'setStockDetail', rawError: true })
-  async actGetStockDetail(params: Stock.StockDetailId): Promise<string | undefined> {
+  async actGetStockDetail(params: { id: number }): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_STOCK_DETAIL,params)
     return await $api.get(url)
   }
 
-  @Action({ commit: 'setBoxData', rawError: true })
-  async actGetBoxData(): Promise<string | undefined> {
-    // const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_ALL_BOX)
-    const url = 'https://62315a6305f5f4d40d7871ae.mockapi.io/box'
-    return await $api.get(url)
+  @Action({ commit: 'setItemsList', rawError: true })
+  async actGetItemsList(params: any): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_ITEMS_LIST, { id: params.id })
+    return await $api.get(url, { params: params.filter })
   }
 
+  @Action({ commit: 'setItemDetail', rawError: true })
+  async actGetItemsDetail(params: {stockId: number, boxId: number}): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_ITEM_INFO, params)
+    return await $api.get(url)
+  }
 }

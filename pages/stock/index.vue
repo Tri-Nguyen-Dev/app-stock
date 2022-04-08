@@ -192,6 +192,14 @@ class Stock extends Vue {
     this.isShowFilter = !this.isShowFilter
   }
 
+  redirectToDetail({ data }) {
+    this.$router.push(`stock/${data.id}`)
+  }
+
+  editStockDetail(id:any) {
+    this.$router.push(`stock/${id}`)
+  }
+
   mounted() {
     this.getProductList()
     this.actCategoryList()
@@ -226,7 +234,7 @@ class Stock extends Vue {
     this.selectedStock = data
   }
 
-  onPage(event: any) {     
+  onPage(event: any) {
     this.paginate.pageSize = event.rows
     this.paginate.pageNumber = event.page
     this.selectedStock = []
@@ -269,32 +277,15 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/box/${id}/detail`})
+    this.$router.push({ path: `/stock/${id}`})
   }
 
-  rowdbClick({ data }) { 
-    this.$router.push(`/box/${data.id}/detail`)
-  }
-
-  handleSort(field: any) {
-    this.selectedStock = []
-    if(field === this.sort.sortByColumn) {
-      this.sort = {
-        sortByColumn: field,
-        sortDescending: !this.sort.sortDescending
-      }
-    }
-    else {
-      this.sort = {
-        sortByColumn: field,
-        sortDescending: true
-      }
-    } 
-    this.getProductList()
+  rowdbClick({ data }) {
+    this.$router.push(`/stock/${data.id}`)
   }
 
   sortData(e: any){
-    const {sortField, sortOrder} = e;
+    const { sortField, sortOrder } = e;
     if(sortOrder){
       this.sort.sortDescending = sortOrder !== 1
       this.sort.sortByColumn = sortField.replace('_', '');
