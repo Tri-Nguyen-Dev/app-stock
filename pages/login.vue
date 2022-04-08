@@ -25,30 +25,30 @@
           a.ml-5.font-sm.text-right.text-primary.cursor-pointer Forgot password?
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue } from 'nuxt-property-decorator';
 
 @Component({
-  layout: 'public',
-  fetch({ redirect, $auth }): Promise<void> | void {
-    if ($auth.loggedIn) {
-      redirect('/')
+    layout: 'public',
+    fetch({ redirect, $auth }): Promise<void> | void {
+        if ($auth.loggedIn) {
+            redirect('/');
+        }
     }
-  }
 })
 class Login extends Vue {
-  checked = false
+    checked = false
 
-  loginUser = {
-    userName: null,
-    password: null
-  }
+    loginUser = {
+        userName: null,
+        password: null
+    }
 
-  callLogin() {
-    this.$auth.loginWith('local', { data: this.loginUser })
-  }
+    callLogin() {
+        this.$auth.loginWith('local', { data: this.loginUser });
+    }
 }
 
-export default Login
+export default Login;
 </script>
 <style lang="sass">
 .logo-block

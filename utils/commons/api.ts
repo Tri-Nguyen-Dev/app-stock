@@ -1,43 +1,43 @@
-import { NuxtAxiosInstance } from '@nuxtjs/axios'
-import { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { NuxtAxiosInstance } from '@nuxtjs/axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 class ApiWrapper {
 
   public $axios!: NuxtAxiosInstance
 
   constructor(axios: NuxtAxiosInstance) {
-    this.$axios = axios
+      this.$axios = axios;
   }
 
   public async get<T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> {
-    const response: AxiosResponse<R> = await this.$axios.get(url, config)
-    return response.data
+      const response: AxiosResponse<R> = await this.$axios.get(url, config);
+      return response.data;
   }
 
   public async post<T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig): Promise<R> {
-    const response: AxiosResponse<R> = await this.$axios.post(url, data, config)
-    return response.data
+      const response: AxiosResponse<R> = await this.$axios.post(url, data, config);
+      return response.data;
   }
 
   public async put<T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig): Promise<R> {
-    const response: AxiosResponse<R> = await this.$axios.put(url, data, config)
-    return response.data
+      const response: AxiosResponse<R> = await this.$axios.put(url, data, config);
+      return response.data;
   }
 
   public async delete<T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> {
-    const response: AxiosResponse<R> = await this.$axios.delete(url, config)
-    return response.data
+      const response: AxiosResponse<R> = await this.$axios.delete(url, config);
+      return response.data;
   }
 
 }
 
 // eslint-disable-next-line import/no-mutable-exports
-let $api: ApiWrapper
+let $api: ApiWrapper;
 
 export function initializeAxios(axiosInstance: any) {
 
-  $api = new ApiWrapper(axiosInstance)
+    $api = new ApiWrapper(axiosInstance);
 
 }
 
-export { $api }
+export { $api };

@@ -1,6 +1,6 @@
 
-import { Plugin } from '@nuxt/types'
-import  { ToastServiceMethods } from 'primevue/toastservice'
+import { Plugin } from '@nuxt/types';
+import  { ToastServiceMethods } from 'primevue/toastservice';
 
 declare module 'vue/types/vue' {
     interface Vue {
@@ -10,6 +10,6 @@ declare module 'vue/types/vue' {
 
 const toast: Plugin = () => {
     
-}
+};
   
-export default toast
+export default toast;

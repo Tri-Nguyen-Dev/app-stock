@@ -50,18 +50,18 @@
               span.font-bold.text-lg 100
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue } from 'nuxt-property-decorator';
 
 @Component
 class StockLogInformation extends Vue {
-  outgoing: boolean = true
+    outgoing: boolean = true
 
-  transferring: boolean = false
+    transferring: boolean = false
 
-  incoming: boolean = false
+    incoming: boolean = false
 }
 
-export default StockLogInformation
+export default StockLogInformation;
 </script>
 <style lang="sass" scoped>
 .stock__log--information

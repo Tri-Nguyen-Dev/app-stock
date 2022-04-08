@@ -1,14 +1,14 @@
-import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
-import { PathBind } from '~/utils/commons/path-bind'
-import { $api } from '~/utils'
+import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators';
+import { PathBind } from '~/utils/commons/path-bind';
+import { $api } from '~/utils';
 
 @Module({
-  stateFactory: true,
-  namespaced: true
+    stateFactory: true,
+    namespaced: true
 })
 export default class Category extends VuexModule {
   private static readonly STATE_URL = {
-    GET_CATEGORIES: '/api/category/list'
+      GET_CATEGORIES: '/api/category/list'
   }
 
   public categoryList: any = []
@@ -16,20 +16,20 @@ export default class Category extends VuexModule {
   @Mutation
   setCategoryList(data: any) { 
 
-    this.categoryList = data.items
+      this.categoryList = data.items;
   }
 
   @Action({ commit: 'setCategoryList', rawError: true })
   async actCategoryList(): Promise<string | undefined> {
-    try {
-      const url = PathBind.transform(
-        this.context,
-        Category.STATE_URL.GET_CATEGORIES,
-        { pageNumber: 1 }
-      )
-      const response = await $api.get(url, { params: { pageNumber: 1 }})      
+      try {
+          const url = PathBind.transform(
+              this.context,
+              Category.STATE_URL.GET_CATEGORIES,
+              { pageNumber: 1 }
+          );
+          const response = await $api.get(url, { params: { pageNumber: 1 }});      
   
-      return response.data
-    } catch (error) {}
+          return response.data;
+      } catch (error) {}
   }
 }

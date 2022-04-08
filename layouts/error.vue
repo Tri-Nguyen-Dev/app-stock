@@ -5,33 +5,33 @@
     NuxtLink(to='/') Home page
 </template>
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Provide, Vue } from 'nuxt-property-decorator';
 
 interface ErrorObject {
-  statusCode: number
+    statusCode: number
 }
 
 @Component({
-  head(this: ErrorLayout): object {
-    const title =
-      this.error.statusCode === 404 ? this.pageNotFound : this.otherError
-    return {
-      title
+    head(this: ErrorLayout): object {
+        const title =
+            this.error.statusCode === 404 ? this.pageNotFound : this.otherError;
+        return {
+            title
+        };
     }
-  }
 })
 class ErrorLayout extends Vue {
-  @Prop()
-  error!: ErrorObject
+    @Prop()
+    error!: ErrorObject
 
-  @Provide()
-  pageNotFound: string = '404 Not Found'
+    @Provide()
+    pageNotFound: string = '404 Not Found'
 
-  @Provide()
-  otherError: string = 'An error occurred'
+    @Provide()
+    otherError: string = 'An error occurred'
 }
 
-export default ErrorLayout
+export default ErrorLayout;
 </script>
 <style lang="sass" scoped>
 h1

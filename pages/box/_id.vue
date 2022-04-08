@@ -4,7 +4,7 @@
       .col.flex.align-items-center.p-3
         Button(@click='backToBox').p-button-link
           .icon-arrow-left.icon.bg-primary.mr-3.align-items-center
-        span.font-normal( @click='backToBox') Box list  /  
+        span.font-normal( @click='backToBox') Box list  /
         span.font-normal.text-primary &nbsp;  Box Detail
       .border-bottom-1.border-gray-300.grid-nogutter
       .grid.flex.my-4.p-3.grid-nogutter
@@ -20,7 +20,7 @@
       div
         .col.px-3
           div(:class='isEditBox? "opacity-40" : "opacity-100"')
-            span.font-bold.text-white.p-2.border-round(:class='boxDetail.status? "bg-green-500" : "surface-200"') {{boxDetail.status? 'Available' : 'Disable'}} 
+            span.font-bold.text-white.p-2.border-round(:class='boxDetail.status? "bg-green-500" : "surface-200"') {{boxDetail.status? 'Available' : 'Disable'}}
           .font-bold.my-3
             .col(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
@@ -142,32 +142,31 @@
                       span.text-600.text-sm.pl-2 SKU
                     span.p-input-icon-right.w-full
                       .icon.icon--right.icon-search-input.surface-900
-                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="skuFilter" v-on:input="validateText")
+                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="filterParams.sku")
                 .col
                   .bg-white.border-round
                     div.pt-2.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Barcode
                     span.p-input-icon-right.w-full
                       .icon.icon--right.icon-search-input.surface-900
-                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="barcodeFilter" v-on:input="validateText")
+                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="filterParams.barCode")
                 .col
                   .bg-white.border-round
                     div.pt-2.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Category
-                      Dropdown.w-full.border-0.mb-1.text-900.font-bold( v-model="categorySelected" :options='categoryList' optionLabel="name" placeholder="Select")
-              .overflow-auto.item__log--history
-                //- BoxDetailTable( v-if="listStockWithAmount.length > 0" :listStockWithAmount='listStockWithAmount' :getParam='getParamAPI' )
+                      Dropdown.w-full.border-0.mb-1.text-900.font-bold(v-model="filterParams.category" :options='categoryList' optionLabel="name" optionValue="id" placeholder="Select")
+            BoxDetailTable(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
             TabPanel
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
-                span Location history {{listStockWithAmount}}
+                span Location history
               .overflow-auto.box__detail--history
                 //- BoxDetailHistory( v-if="listStockWithAmount.length > 0" :listStockWithAmount='listStockWithAmount' :totalStockRecords='totalStockRecords' )
         .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
           .col
             span.p-input-icon-left
               .icon.icon--left.icon-search-input.surface-900
-              InputText.w-23rem.font-bold.h-3rem.py-4.text-900(type="text" placeholder="Search" v-model='nameStockFilter' v-on:input="validateText" )
+              InputText.w-23rem.font-bold.h-3rem.py-4.text-900(type="text" placeholder="Search" v-model='filterParams.name' )
           .col
             Button.border-0.bg-white.w-7rem.shadow-none.border-primary.h-3rem.py-4(@click="isFilter = !isFilter")
               .icon-filter.bg-primary.icon
@@ -175,139 +174,144 @@
 </template>
 
 <script lang="ts">
-import { Component,  Vue, Watch, namespace } from 'nuxt-property-decorator'
-const _ = require('lodash')
+import { Component, namespace, Vue } from 'nuxt-property-decorator';
 
-const nsStoreBoxDetail = namespace('box/box-detail')
-const nsStoreCategoryList = namespace('category/category-list')
-// const nsStoreLocationList = namespace('location/location-list')
+const nsStoreBoxDetail = namespace('box/box-detail');
+const nsStoreCategoryList = namespace('category/category-list');
+const nsStoreLocationList = namespace('location/location-list');
 
 @Component
 class BoxDetail extends Vue {
-  isFilter: boolean = false
-  isEditBox: boolean = false
-  isItemHistory: boolean = false
-  isLocation : any = null
-  suggestions: any = []
-  locations: any = null
-  skuFilter: any = null
-  categorySelected: any = null
-  barcodeFilter: any = null
-  nameStockFilter: any = null
-  pageNumber: number = 1
-  pageSize: number = 20
-
-  // @nsStoreLocationList.State
-  // locationList!: any
-
-  // @nsStoreBoxDetail.State
-  // stockList!: any
-
-  @nsStoreBoxDetail.State
-  totalStockRecords!: number
-
-  @nsStoreBoxDetail.State
-  boxDetail!: {
-    warehouse: any,
-    request: any,
-    location: any
-    listStockWithAmount: [] 
-  }
-
-  @nsStoreCategoryList.State
-  categoryList!:any
-
-  // @nsStoreBoxDetail.Action
-  // actGetBoxDetailFilter!: (params: any) => Promise<void>
-
-  @nsStoreBoxDetail.Action
-  actGetBoxDetail!: (params: any) => Promise<void>
-
-  @nsStoreCategoryList.Action
-  actCategoryList!: () => Promise<void>
-
-  // @nsStoreLocationList.Action
-  // actLocationList!: (params: any) => Promise<void>
-
-  getParamAPI() {
-    return {
-      pageNumber: 1,
-      pageSize: this.pageSize,
-      'sku' : this.skuFilter === '' ? null : this.skuFilter,
-      'barcode' : this.barcodeFilter === '' ? null : this.barcodeFilter ,
-      'name': this.nameStockFilter === '' ? null : this.nameStockFilter,
-      'category.id': this.categorySelected?.id
+    isFilter: boolean = false
+    isEditBox: boolean = false
+    isItemHistory: boolean = false
+    isLocation : any = null
+    suggestions: any = []
+    locations: any = null
+    filterParams: any = {
+        sku: null,
+        category: null,
+        barCode: null,
+        name: null
     }
-  }
 
-  async mounted() {
-    await this.actGetBoxDetail({ id: this.$route.params.id })
-    await this.actCategoryList()
-    // await this.actLocationList({name: null})
-  }
+    pageNumber: number = 1
+    pageSize: number = 20
+    boxDetailData: any = []
 
-  backToBox() {
-    this.$router.push('/box')
-  }
+    @nsStoreLocationList.State
+    locationList!: any
 
-  btnEdit() {
-    this.isEditBox = !this.isEditBox
-  }
+    // @nsStoreBoxDetail.State
+    // stockList!: any
 
-  onTabClick() {
-      this.isItemHistory = !this.isItemHistory
-      this.isFilter = false
-  }
-  
-  @Watch('categorySelected') 
-   async filtersChange(){
-    await this.actGetBoxDetail(this.getParamAPI()) 
-  }
+    @nsStoreBoxDetail.State
+    totalItems!: number
 
+    @nsStoreBoxDetail.State
+    boxDetail!: {
+        warehouse: any,
+        request: any,
+        location: any
+        listStockWithAmount: []
+    }
 
-  // @Watch('isLocation')
-  // async filterLocation() {
-  //   await this.actLocationList({
-  //     'name': this.isLocation === '' ? null: this.isLocation
-  //   })
-  // }
+    @nsStoreCategoryList.State
+    categoryList!:any
 
-    validateText =  _.debounce( async ()=>{
-     await this.actGetBoxDetail(this.getParamAPI())
-  }, 500);
+    @nsStoreBoxDetail.Action
+    actGetBoxDetail!: (params: any) => Promise<void>
 
-  get boxWarehouse() {
-    return this.boxDetail.request?.warehouse.name || ''
-  }
+    @nsStoreCategoryList.Action
+    actCategoryList!: () => Promise<void>
+
+    // @nsStoreLocationList.Action
+    // actLocationList!: (params: any) => Promise<void>
+
+    get convertBoxDetailData() {
+        if (this.boxDetail && this.boxDetail.listStockWithAmount) {
+            return [
+                ...this.boxDetail.listStockWithAmount.map((item: any) => ({
+                    ...(item.stock || []),
+                    amount: item.amount
+                }))
+            ];
+        }
+        return [];
+    }
+
+    get filteredBoxDetailData() {
+        return this.convertBoxDetailData.filter(item => {
+            let filter = true;
+            Object.keys(this.filterParams).map(key => {
+                if (this.filterParams[key]) {
+                    if (key === 'category') {
+                        filter = filter && item[key]?.id === this.filterParams[key];
+                    } else {
+                        filter = filter && item[key].includes(this.filterParams[key]);
+                    }
+                }
+                return filter;
+            });
+            return filter;
+        });
+    }
+
+    async mounted() {
+        await this.actGetBoxDetail({ id: this.$route.params.id });
+        await this.actCategoryList();
+        // await this.actLocationList({name: null})
+    }
+
+    backToBox() {
+        this.$router.push('/box');
+    }
+
+    btnEdit() {
+        this.isEditBox = !this.isEditBox;
+    }
+
+    onTabClick() {
+        this.isItemHistory = !this.isItemHistory;
+        this.isFilter = false;
+    }
+
+    // @Watch('isLocation')
+    // async filterLocation() {
+    //   await this.actLocationList({
+    //     'name': this.isLocation === '' ? null: this.isLocation
+    //   })
+    // }
+
+    get boxWarehouse() {
+        return this.boxDetail.request?.warehouse.name || '';
+    }
 
     get boxSellerName() {
-    return this.boxDetail.request?.seller.name || ''
-  }
+        return this.boxDetail.request?.seller.name || '';
+    }
 
     get boxSellerEmail() {
-    return this.boxDetail.request?.seller.email || ''
-  }
+        return this.boxDetail.request?.seller.email || '';
+    }
 
     get boxSellerPhone() {
-    return this.boxDetail.request?.seller.phone || ''
-  }
-
-
+        return this.boxDetail.request?.seller.phone || '';
+    }
 
     // get location() {
     //   return this.boxDetail.request?.location.name || ''
     // }
 
-  // searchLocation(event){
-  // console.log(event)
-  // }
-
+    // searchLocation(event){
+    // console.log(event)
+    // }
 }
 
-export default BoxDetail
+export default BoxDetail;
 </script>
 
-<style lang="sass" scoped >
+<style lang="sass" scoped>
 @media (max-width: 1024px)
   .tabview-left
     top: -4rem !important

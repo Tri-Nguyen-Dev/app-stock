@@ -26,43 +26,43 @@
 
 </template>
 <script lang="ts">
-import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
-const nsStoreBoxDetail = namespace('box/box-detail')
+import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator';
+const nsStoreBoxDetail = namespace('box/box-detail');
 
 
 @Component
 class BoxDetailHistory extends Vue {
-  @Prop() stockList!: () => any
-  @Prop() totalStockRecords: () => any
+    @Prop() stockList!: () => any
+    @Prop() totalStockRecords: () => any
 
-  totalItemsCount = 32
-  pageSize: number = 20
-  pageNumber: number = 1
+    totalItemsCount = 32
+    pageSize: number = 20
+    pageNumber: number = 1
 
-  getParamApi(){
-    return {
-      pageNumber: this.pageNumber,
-      pageSize: this.pageSize
+    getParamApi(){
+        return {
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize
+        };
     }
-  }
 
-  @nsStoreBoxDetail.Action
-  actGetBoxDetailFilter!: (params: any) => Promise<void>
+    @nsStoreBoxDetail.Action
+    actGetBoxDetailFilter!: (params: any) => Promise<void>
 
-  async mounted() {
-   await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize })
-  }
+    async mounted() {
+        await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize });
+    }
 
 
-  async onPageHistory(event: any) {
-    this.pageNumber = event.page + 1;
-    await this.actGetBoxDetailFilter(this.getParamApi())
-  }
+    async onPageHistory(event: any) {
+        this.pageNumber = event.page + 1;
+        await this.actGetBoxDetailFilter(this.getParamApi());
+    }
 }
 
 
 
-export default BoxDetailHistory
+export default BoxDetailHistory;
 </script>
 
 <style lang="sass" scoped >

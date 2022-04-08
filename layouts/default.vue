@@ -6,19 +6,19 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator';
 
-const nsSidebar = namespace('layout/store-sidebar')
+const nsSidebar = namespace('layout/store-sidebar');
 
 @Component({
-  // middleware: 'authenticate'
+    // middleware: 'authenticate'
 })
 class Dashboard extends Vue {
-  @nsSidebar.Getter('sidebarWidth')
-  sidebarWidth!: string
+    @nsSidebar.Getter('sidebarWidth')
+    sidebarWidth!: string
 }
 
-export default Dashboard
+export default Dashboard;
 </script>
 
 <style lang="sass">

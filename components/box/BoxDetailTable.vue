@@ -1,20 +1,22 @@
 <template lang="pug">
     DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable.table__sort-icon.bg-white(
-      :resizableColumns='true',
-      :rows='15',
-      :value='stockList'
-      dataKey='id',
-      :paginator='false',
-      :row-hover='true',
-      filterDisplay='menu',
+      :resizableColumns='true'
+      :rows='pagination.rows'
+      :value='dataRenderItems'
+      dataKey='id'
+      :paginator='false'
+      :row-hover='true'
+      filterDisplay='menu'
       responsiveLayout="scroll"
       columnResizeMode="fit"
     )
       template(#empty)
-        | dsadsads
+          div.flex.align-items-center.justify-content-center.flex-column
+              img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
+              p.text-900.font-bold.mt-3 List is empty!
       column(field='no', header='NO', sortable='')
         template(#body="slotProps")
-          span.font-bold {{ pageSize * (pageNumber - 1) + slotProps.index + 1 }}
+          span.font-bold {{ pagination.rows * pagination.page + slotProps.index + 1 }}
       column(
         field='',
         header='IMAGE',
@@ -32,7 +34,7 @@
         :show-filter-match-modes='false'
       )
         template(#body='{data}')
-          span.text-primary.font-bold {{data.barcode}}
+          span.text-primary.font-bold {{data.barCode}}
       column(
         field='sku',
         header='SKU',
@@ -56,7 +58,7 @@
         className="p-text-right"
       )
         template(#body='{data}')
-            span.font-bold.text-right {{data.quantity}}
+            span.font-bold.text-right {{data.amount}}
       column(
         field='unit',
         header='UNIT',
@@ -90,49 +92,48 @@
         sortable='',
         :show-filter-match-modes='false'
         className="p-text-right"
-
       )
         template(#body='{data}')
           span.font-bold {{data.category.name}}
       template(#footer)
-                .pagination
-                  div.pagination__info
-                    img(:src="require('~/assets/icons/filter-left.svg')")
-                    span.pagination__total {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
-                  Paginator(:rows="pageSize" :totalRecords="totalStockRecords" @page="onPage($event)").p-0
+        .pagination
+          div.pagination__info
+            img(:src="require('~/assets/icons/filter-left.svg')")
+            span.pagination__total Showing {{pagination.page * pagination.rows + 1}} - {{(pagination.page + 1) * pagination.rows}} of {{listStockWithAmount.length}}
+          Paginator(v-if="listStockWithAmount.length > 0" :rows="pagination.rows" :totalRecords="listStockWithAmount.length" @page="onPage($event)" :first="pagination.first").p-0
 </template>
 
 <script lang="ts">
-import { Component, Prop,namespace, Vue } from 'nuxt-property-decorator'
-const nsStoreBoxDetail = namespace('box/box-detail')
+import { Component, Prop, Watch, Vue } from 'nuxt-property-decorator';
 
 @Component
 class BoxDetailHistory extends Vue {
-  @Prop() stockList!: () => any
-  @Prop() filterPagingTable!: () => any
-  @Prop() totalStockRecords!: number
-  @Prop() getParam: () => any
+    @Prop() listStockWithAmount!: any[]
+    @Prop() getParam: () => any
 
-  pageSize: number = 20
-  pageNumber: number = 1
+    pagination: any = {
+        first: 0,
+        page: 0,
+        pageCount: 1,
+        rows: 1
+    }
 
-  @nsStoreBoxDetail.Action
-  actGetBoxDetailFilter!: (params: any) => Promise<void>
+    get dataRenderItems() {
+        const lastIndex = this.pagination.first + this.pagination.rows;
+        return this.listStockWithAmount.filter((_, index) => index >= this.pagination.first && index < lastIndex);
+    }
 
-  async mounted() {
-   await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize })
-  }
+    onPage(event: any) {
+        this.pagination = event;
+    }
 
-  async onPage(event: any) {
-    await this.actGetBoxDetailFilter({
-      ...this.getParam(),
-      pageNumber: event.page + 1
-    })
-  }
-
+    @Watch('listStockWithAmount')
+    resetPaging() {
+        this.pagination.first = 0;
+    }
 }
 
-export default BoxDetailHistory
+export default BoxDetailHistory;
 </script>
 
 <style lang="sass" scoped>

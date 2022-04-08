@@ -27,7 +27,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
     .p-datatable-tbody > tr
         height: 66px !important
-        
+
     .p-datatable-tbody > tr.p-highlight:not(.row-disable)
         background-color: $primary !important
 
@@ -68,7 +68,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     .p-datatable-tbody > tr > td
         white-space: nowrap
         border-top: 1px solid $bottom-td-color
-    
+
     .p-checkbox-box
         border: 1.5px solid $text-color-500
         border-radius: 2px
@@ -88,23 +88,23 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             background-color: $color-white !important
 
     .p-column-resizer
-        cursor: url('~/assets/icons/left-right.svg'), auto !important 
+        cursor: url('~/assets/icons/left-right.svg'), auto !important
 
     tr.p-highlight.row-disable
         background-color: unset
         color: unset
         .p-checkbox-box
             background-color: unset
-                
+
     tr.row-disable
         .p-checkbox
             cursor: auto !important
             pointer-events: none !important
             .p-checkbox-box
                 border: 1.5px solid #F1F3F6 !important
-        
+
 // pagination
-.pagination
+.pagination, .p-paginator
     display: flex
     align-items: center
     justify-content: space-between
@@ -116,7 +116,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         align-items: center
         gap: 0 19px
 
-    &__total
+    &__total, .p-paginator-current
         font-size: $font-size-small
         color: $text-color-500
         line-height: calc(24 / 12)
@@ -192,7 +192,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   &--disable
     color: #979AA4
 
-    
+
 .table__sort
   cursor: pointer
   display: flex

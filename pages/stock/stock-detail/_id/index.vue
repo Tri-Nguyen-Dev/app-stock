@@ -51,43 +51,43 @@
       StockDetailTable
 </template>
 <script lang="ts">
-import { Component, Vue, namespace} from 'nuxt-property-decorator'
-import { Stock } from '~/store/stock/stock-detail'
-const nsStoreStock = namespace('stock/stock-detail')
+import { Component, Vue, namespace} from 'nuxt-property-decorator';
+import { Stock } from '~/store/stock/stock-detail';
+const nsStoreStock = namespace('stock/stock-detail');
 
 @Component({
-  layout: 'dashboard'
+    layout: 'dashboard'
 })
 class StockDetail extends Vue {
-  isEditStockDetail: boolean = false
+    isEditStockDetail: boolean = false
 
-  @nsStoreStock.State
-  stockDetail!: {}
+    @nsStoreStock.State
+    stockDetail!: {}
 
-  @nsStoreStock.Action
-  actGetStockDetail!: (params: Stock.StockDetailId) => Promise<void>
+    @nsStoreStock.Action
+    actGetStockDetail!: (params: Stock.StockDetailId) => Promise<void>
 
-  backToStockList() {
-    this.$router.push('/stock')
-  }
+    backToStockList() {
+        this.$router.push('/stock');
+    }
 
-  editStockDetail() {
-    this.isEditStockDetail = true
-  }
+    editStockDetail() {
+        this.isEditStockDetail = true;
+    }
 
-  saveEditStockDetail() {
-    this.isEditStockDetail = false
-  }
+    saveEditStockDetail() {
+        this.isEditStockDetail = false;
+    }
 
-  buttonEditItemDetail() {
-    this.$router.push('/stock')
-  }
+    buttonEditItemDetail() {
+        this.$router.push('/stock');
+    }
 
-  async mounted() {
-    await this.actGetStockDetail({ id: 4 })
-  }
+    async mounted() {
+        await this.actGetStockDetail({ id: 4 });
+    }
 }
-export default StockDetail
+export default StockDetail;
 </script>
 
 <style lang="sass" scoped>

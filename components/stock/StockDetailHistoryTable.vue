@@ -14,23 +14,23 @@
               span.ml-3.text-400.text-sm Showing 01 - 50 of 80
 </template>
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
-const nsStoreStock = namespace('stock/stock-detail')
+import { Component, namespace, Vue } from 'nuxt-property-decorator';
+const nsStoreStock = namespace('stock/stock-detail');
 
 @Component
 class StockDetailHistoryTable extends Vue {
-  @nsStoreStock.State
-  boxData!: any
+    @nsStoreStock.State
+    boxData!: any
 
-  @nsStoreStock.Action
-  actGetBoxData!: () => Promise<void>
+    @nsStoreStock.Action
+    actGetBoxData!: () => Promise<void>
 
-  async mounted() {
-    await this.actGetBoxData()
-  }
+    async mounted() {
+        await this.actGetBoxData();
+    }
 }
 
-export default StockDetailHistoryTable
+export default StockDetailHistoryTable;
 </script>
 <style lang="sass" scoped>
 .item__detail--table
