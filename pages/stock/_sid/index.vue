@@ -7,8 +7,8 @@
           .icon.icon-btn-back.bg-blue-700
         span.font-semibold.text-base Stock list / Stock Detail
       .stock__information--gerenal.p-4.border-bottom-1.border-gray-300
-        .grid.mb-3
-          .pl-0.flex(class='xl:col-9 lg:col-12')
+        .grid.mb-3.align-items-center
+          .pl-0.flex
             .icon.icon-box-info.mr-1.bg-blue-700
             span.uppercase.font-bold.text-sm general infomation
           .col.flex.justify-content-end
@@ -30,9 +30,9 @@
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700 {{unitAttribute}}
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          .col-2.flex.align-items-center.justify-content-end(class='md:hidden')
+          .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700
-          .col-10(class='md:col-12')
+          .col-10
             div.text-500 Total inventory quantity
             span.font-semibold.mr-1.uppercase {{total}}
         div(
@@ -40,8 +40,8 @@
         )
           .grid.surface-hover.mb-3
             .col-2.flex.align-items-center.justify-content-end
-              div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"' class='md:hidden')
-            .col-10(class='md:col-12')
+              div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"')
+            .col-10
               div.text-500 {{attr.attribute.name}}
               InputText(:disabled='isEditStockDetail == 0' v-model='attr.value')
     .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
@@ -82,15 +82,14 @@ class StockDetail extends Vue {
     this.isEditStockDetail = false
   }
 
-  buttonEditItemDetail() {
-    this.$router.push('/stock')
-  }
-
   get unitAttribute() {
     return this.stockDetail.data?.attributeValue.find((x: { name: string }) => x.name === 'unit')?.value || ''
   }
 
   async mounted() {
+    if(this.$route.query.plan === 'edit') {
+      this.isEditStockDetail = true
+    }
     await this.actGetStockDetail({ id: this.$route.params.sid })
   }
 }

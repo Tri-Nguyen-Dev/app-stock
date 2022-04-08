@@ -3,112 +3,111 @@
   .grid.justify-content-between
     .col-fixed
       h1.font-bold.m-0.font-size-4xlarge.line-height-1 Box list
-      span.text-600.font-sm(v-if="boxList") {{boxList.length}} products found
+      span.text-600.font-sm(v-if="boxList") {{totalBoxRecords}} products found
     .col-fixed
       .grid
         .col-fixed
           span.p-input-icon-left
-            .icon.icon--left.icon-search-input.surface-900
-            InputText.w-21rem.h-3rem(type="text" placeholder="Search")
+            .icon.icon--left.icon-search.surface-900
+            InputText.w-21rem.h-3rem(type="text" placeholder="Search" v-model="textSearch" v-on:input="validateText")
         .col-fixed
-          Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isFilter = !isFilter")
-            .icon--base.bg-primary(:class="isFilter ? 'icon-chevron-up' : 'icon-filter-btn'")
+          Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isShowFilter = !isShowFilter")
+            .icon.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
             span.text-900.ml-3.text-primary Filter
         .col-fixed
-          Button.w-9rem.h-3rem
-            .icon--base.icon-plus.surface-900.bg-white
+          Button.w-9rem.h-3rem.bg-primary
+            .icon.icon-add-items.surface-900.bg-white
             span.text-900.ml-3.text-white Add box
-  .grid(v-if="isFilter")
-    .col-9
+  .grid(v-if="isShowFilter")
+    .col-8
       .grid
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm Warehouse
-            Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" :options="masterData.warehouse" optionLabel="name" placeholder="Select")
+            Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm Location
-            Dropdown.w-full.border-0.mb-1(v-model="selectedLocation" :options="masterData.location" optionLabel="name" placeholder="Select")
-        .col
-          .bg-white.border-round
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Size
-            Dropdown.w-full.border-0.mb-1(v-model="selectedSize" :options="masterData.size" optionLabel="name" placeholder="Select")
+            span.p-input-icon-right.w-full
+              .icon.icon--right.icon-search.surface-900.icon--absolute
+              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model="textLocation" v-on:input="validateText")
         .col
           .bg-white.border-round
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm Code
             span.p-input-icon-right.w-full
-              .icon.icon--right.icon-search-input.surface-900.icon--absolute
-              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code")
-    .col-3
+              .icon.icon--right.icon-search.surface-900.icon--absolute
+              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code" v-model="textCode" v-on:input="validateText")
+    .col-4
       .grid.grid-nogutter
         .col
           .bg-white.border-round-left
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm From
-            Calendar.w-full.mb-1(v-model="dateFrom" :showIcon="true" inputClass="border-0" placeholder="Select")
+            Calendar.w-full.mb-1(v-model="dateFrom" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
         .col.ml-1
           .bg-white.border-round-right
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm To
-            Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select")
+            Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
-    .col.h-full.absolute.top-0.left-0.right-0
-      DataTable.w-full.airtag-datatable.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
-      dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :class="boxList.length === 0 && 'datatable-empty'" :rowClass="rowClass")
+    .col.h-full.absolute.top-0.left-0.right-0.bg-white
+      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes" 
+      removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :rowClass="rowClass" @sort="sortData($event)"
+      @row-click="onRowClick($event)" :class="{ 'table__empty': !boxList || boxList.length <= 0 }")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
-        Column(field="no" header="NO" sortable)
+        Column(field="no" header="NO")
           template(#body="slotProps")
-            span.font-semibold {{slotProps.index +1}}
-        Column(field="barCode" header="CODE" sortable bodyClass="font-semibold")
-        Column(field="seller.email" header="SELLER EMAIL" sortable className="w-3")
-        Column(field="createdAt" header="CREATE TIME" sortable className="p-text-right")
-          template(#body="{data}") {{new Date(data.createdAt).toLocaleDateString("en-US")}}
-        Column(field="attribute" header="SIZE(CM)" className="p-text-right" bodyClass="font-semibold")
+            span.font-semibold {{(pageNumber - 1) * pageSize + slotProps.index +1}}
+        Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_barCode")
+        Column(field="request.seller.email" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
+        Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right datatable__head-right" sortField="_createdAt")
+          template(#body="{data}") {{formatDate(data.createdAt)}}
+        Column(field="attributes" header="SIZE(CM)" className="text-right datatable__head-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
-        Column(field="attribute" header="WEIGHT(KG)" className="p-text-right" bodyClass="font-semibold")
+        Column(field="weight" header="WEIGHT(KG)" className="text-right datatable__head-right" bodyClass="font-semibold")
           template(#body="{data}") {{data.weight}}
-        Column(field="warehouse.name" header="WAREHOUSE" sortable className="p-text-right")
+        Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right datatable__head-right" sortField="_request.warehouse.name")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm {{data.warehouse.name}}
-              .icon--small.icon-arrow-up-right.bg-primary
-        Column(field="location.name" header="LOCATION" sortable className="p-text-right")
+              span.text-primary.font-bold.font-sm.text-white-active {{data.request.warehouse.name}}
+              .icon.icon-arrow-up-right.bg-primary.bg-white-active
+        Column(field="shelfBin.name" header="LOCATION" :sortable="true" className="text-right datatable__head-right" sortField="_shelfBin.name")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm {{data.location.name}}
-              .icon--small.icon-arrow-up-right.bg-primary
-        Column(field="status" header="STATUS" sortable className="p-text-right")
+              span.text-primary.font-bold.font-sm.text-white-active {{data.shelfBin.name}}
+              .icon.icon-arrow-up-right.bg-primary.bg-white-active
+        Column(field="status" header="STATUS" :sortable="true" className="p-text-right datatable__head-right" sortField="_status")
           template(#body="{data}")
-            div
-              Tag(v-if="data.status" severity="success").px-2.bg-green-100
-                span.font-bold.text-green-400.font-sm AVAILABLE
-              Tag(v-else severity="success").px-2.surface-200
-                span.font-bold.text-400.font-sm DISABLE
-        Column(:exportable="false" header="ACTION" className="p-text-right")
+            .flex.justify-content-end
+              Tag(:class="data.status === 'AVAILABLE' ? 'bg-green-100' : data.status === 'DRAFT' ? 'bg-blue-100' : 'surface-200'").px-2
+                span(:class="data.status === 'AVAILABLE' ? 'text-green-400' : data.status === 'DRAFT' ? 'text-primary' : 'text-400'").font-bold.font-sm {{data.status}}
+        Column(:exportable="false" header="ACTION" className="text-right datatable__head-right")
           template(#body="{data}")
-            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.status")
-              .icon--small.icon-edit
-            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="!data.status")
-              .icon--small.icon-delete
-        template(#empty)
-          div.text-center
-            img(:src='require("~/assets/icons/empty-table.svg")')
-            h5.font-md.font-bold List is empty! Click
-              a.text-primary(href="/box") here
-              | to add item.
+            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="data.status === 'DISABLE'")
+              .icon.icon-edit-btn
+            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.status === 'DISABLE'")
+              .icon.icon-btn-delete
         template(#footer)
-          div
-            .flex.align-items-center(v-if="selectedBoxes.length <= 0")
-              .icon--large.icon-footer-paginator.surface-400
-              span.ml-3.text-400.font-sm Showing 01 - {{pageSize}} of {{totalBoxRecords}}
-            Button(@click="showModalDelete(null)" v-if="selectedBoxes.length>0").p-button-danger.opacity-70
-              .icon--small.icon-delete.bg-white
-              span.ml-3 Delete {{selectedBoxes.length}} items selected
-          Paginator(:rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)").p-0
+          .pagination
+            div.pagination__info(v-if="itemsBoxDelete.length <= 0")
+              img(:src="require('~/assets/icons/filter-left.svg')")
+              span.pagination__total {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + boxList.length}} of {{totalBoxRecords}}
+            div.pagination__delete(v-else @click="showModalDelete()")
+              img(:src="require('~/assets/icons/trash-white.svg')")
+              span Delete {{itemsBoxDelete.length}} items selected
+            Paginator(:first.sync="firstPage" :rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)")
+        template(#empty)
+          div.flex.align-items-center.justify-content-center.flex-column
+            img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
+            img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+            p.text-900.font-bold.mt-3(v-if="!isFilter") List is empty!, Click
+              span.text-primary.underline.cursor-pointer &nbsp;here
+              span &nbsp;to add item.
+            p.text-900.font-bold.mt-3(v-else) Item not found!
+
     ConfirmDialogCustom(
       title="Confirm delete"
       :message="`Are you sure you want to delete in this list stock?`"
@@ -118,15 +117,17 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
-
+    
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
+import moment from 'moment'
 import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreBox = namespace('box/box-list')
-const nsStoreMasterData = namespace('box/master-data')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const _ = require('lodash')
 
 @Component({
   components: {
@@ -134,18 +135,22 @@ const nsStoreMasterData = namespace('box/master-data')
   }
 })
 class BoxList extends Vue {
-  selectedBoxes=[];
-  selectedWarehouse = null
-  selectedSize = null
-  selectedLocation = null
-  isFilter = false
-  dateFrom = null
-  dateTo = null
-  pageNumber: number = 0
-  pageSize: number = 20
-  isModalDelete: boolean = false
-  loadingSubmit: boolean = false
-  ids: string[] = []
+  selectedBoxes = [];
+  selectedWarehouse : any = null;
+  textLocation: any = null;
+  textSearch: any = null;
+  textCode: any = null;
+  dateFrom: any = null;
+  dateTo: any = null;
+  pageNumber: number = 1;
+  pageSize: number = 20;
+  isModalDelete: boolean = false;
+  loadingSubmit: boolean = false;
+  ids: string[] = [];
+  isShowFilter = false;
+  firstPage = 1;
+  sortByColumn: string|null = null;
+  isDescending: boolean|null = null;
 
   @nsStoreBox.State
   boxList!: Box.Model[]
@@ -153,58 +158,124 @@ class BoxList extends Vue {
   @nsStoreBox.State
   totalBoxRecords!: number
 
-  @nsStoreMasterData.State
-  masterData!: any
+  @nsStoreWarehouse.State
+  warehouseList!: any
 
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
 
-  @nsStoreMasterData.Action
-  actGetMasterData!: () => Promise<void>
+  @nsStoreWarehouse.Action
+  actWarehouseList!: () => Promise<void>
 
   @nsStoreBox.Action
-  actDeleteBoxById!: (
-    params: any
-  ) => Promise<any>
+  actDeleteBoxById!: (params: {ids: string[]}) => Promise<any>
 
   async mounted() {
-    await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
-    // await this.actGetMasterData()
+    await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize });
+    this.actWarehouseList();
   }
 
-  @Watch('selectedSize')
   @Watch('selectedWarehouse')
-  filterChange() {
-    // console.log("value");
+  @Watch('dateFrom')
+  @Watch('dateTo')
+  async filterChange() {
+    this.firstPage = 1;
+    this.pageNumber = 1;
+    await this.actGetBoxList(this.getParamAPi());
   }
 
-  async onPage(event: any) {
-    await this.actGetBoxList({ pageNumber: event.page + 1, pageSize: this.pageSize })
-  }
-
-  async handleDeleteStock() {
-    // console.log(this.ids);
-  }
-
-  handleCancel() {
-    this.isModalDelete = false
-  }
-
-  async deleteBoxById(id: any) {
-    const ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id)
-    const result = await this.actDeleteBoxById({ids})
-    if (result) {
-      await this.actGetBoxList({ pageNumber: this.pageNumber, pageSize: this.pageSize })
+  getParamAPi(){
+    return {
+      pageNumber: this.pageNumber - 1, pageSize: this.pageSize,
+      'sellerEmail': this.textSearch === '' ? null : this.textSearch,
+      'barCode': this.textCode === '' ? null : this.textCode,
+      'warehouseId': this.selectedWarehouse?.id,
+      'location': this.textLocation === '' ? null : this.textLocation,
+      'from': this.dateFrom ? moment(this.dateFrom).format('yyyy-MM-DD'): null,
+      'to': this.dateTo ? moment(this.dateTo).format('yyyy-MM-DD'): null,
+      'sortByColumn': this.sortByColumn === '' ? null : this.sortByColumn,
+      'isDescending': this.isDescending
     }
   }
 
+  get isFilter(){
+    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize']);
+    return Object.values(params).some((item) => item);
+  }
+
+  formatDateParams(date: any) {
+    const d = new Date(date);
+      let month = '' + (d.getMonth() + 1);
+      let day = '' + d.getDate();
+      const year = d.getFullYear();
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+    return [year, month, day].join('-');
+  }
+
+  async onPage(event: any) {
+    this.pageNumber = event.page + 1;
+    await this.actGetBoxList(this.getParamAPi());
+  }
+
+  async handleDeleteStock() {
+    const result = await this.actDeleteBoxById({ ids: this.ids })
+    if(result) {
+      this.isModalDelete = false;
+      this.firstPage = 1;
+      this.pageNumber = 1;
+      await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize });
+    }
+  }
+
+  handleCancel() {
+    this.isModalDelete = false;
+  }
+  
+  get itemsBoxDelete(){
+    const itemsDelete: string[] = [];
+    _.forEach(this.selectedBoxes, function(box: any) {
+      if(box.status !== 'DISABLE')
+        itemsDelete.push(box.id);
+    });
+    return itemsDelete;
+  }
+
   showModalDelete(id?: string) {
-    this.ids = id? [id] : this.selectedBoxes.map((box: Box.Model) => box.id);
+    this.ids = id? [id] : this.itemsBoxDelete;
     this.isModalDelete = true
   }
 
-  rowClass(data: Box.Model) {
-    return !data.status && 'row-disable';
+  rowClass(data: any) {
+    return data.status === 'DISABLE' && 'row-disable';
+  }
+
+  validateText =  _.debounce(async ()=>{
+    await this.actGetBoxList(this.getParamAPi())
+  }, 500);
+
+  async sortData(e: any){
+    const {sortField, sortOrder} = e;
+    if(sortOrder){
+      this.isDescending = sortOrder !== 1
+      this.sortByColumn = sortField.replace('_', '');
+    }else{
+      this.isDescending = null
+      this.sortByColumn = null
+    }
+    await this.actGetBoxList(this.getParamAPi())
+  }
+
+  onRowClick({data}){
+    this.$router.push(`/box/${data.id}`);
+  }
+
+  get formatDate() {
+    return (myparameter: any) => {
+      return moment(myparameter).format('DD-MM-yyyy hh:mm A')
+    };
   }
 }
 export default BoxList

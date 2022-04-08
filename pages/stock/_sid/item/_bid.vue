@@ -209,9 +209,12 @@ class ItemDetail extends Vue {
   //   return this.itemDetail.data.seller?.phone
   // }
 
-  // async mounted() {
-  //   await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
-  // }
+  mounted() {
+    if(this.$route.query.plan === 'edit') {
+      this.isEditItemDetail = true
+    }
+    // await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
+  }
 }
 export default ItemDetail
 </script>

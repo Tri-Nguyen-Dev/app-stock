@@ -269,7 +269,7 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/stock/${id}`})
+    this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' }})
   }
 
   rowdbClick({ data }) {
@@ -294,7 +294,7 @@ class Stock extends Vue {
   }
 
   sortData(e: any){
-    const {sortField, sortOrder} = e;
+    const { sortField, sortOrder } = e;
     if(sortOrder){
       this.sort.sortDescending = sortOrder !== 1
       this.sort.sortByColumn = sortField.replace('_', '');

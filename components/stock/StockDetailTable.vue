@@ -81,7 +81,7 @@
                   span.font-bold.text-green-400.font-sm AVAILABLE
           Column(:exportable="false" header="ACTION" className="p-text-right")
             template(#body="{data}")
-              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.box.status")
+              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.box.status" @click='editItemDetail(data.id)')
                 .icon--small.icon-btn-edit
               Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.box.deleted")
                 .icon--small.icon-btn-delete
@@ -277,6 +277,10 @@ class StockDetailTable extends Vue {
 
   redirectToDetail({ data }) {
     this.$router.push(`${this.$route.params.sid}/item/${data.id}`)
+  }
+
+  editItemDetail(id:any) {
+    this.$router.push({ path: `${this.$route.params.sid}/item/${id}`, query: {plan: 'edit'}})
   }
 
   mounted() {

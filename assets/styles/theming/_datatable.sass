@@ -4,6 +4,11 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 .p-datatable
     font-family: $font-family-primary
     font-size: $font-size-base !important
+
+    &.table__empty
+        .p-datatable-table
+            height: 100%
+
     .grid-heading-content
         .p-column-header-content
             display: flex
@@ -39,6 +44,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         &::-webkit-scrollbar-thumb
             border-radius: 10px
             background-color: $text-color-700
+
     .p-datatable-thead
         position: sticky
         top: 0
@@ -185,6 +191,10 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   gap: 0 7px
 .sortDes
   transform: rotate(180deg) !important
+
+.datatable__head-right
+  .p-column-header-content
+    justify-content: end !important
 
 .table__sort-icon
   .pi-sort-alt:before
