@@ -2,9 +2,8 @@
   .grid.flex.grid-nogutter
     div.bg-white.border-round-top.sub-tab(class='col-3 md:col-3 lg:col-3 xl:col-3')
       .col.flex.align-items-center.p-3
+        .icon-btn-back.icon.bg-primary.mr-3.align-items-center
         span.font-normal( @click='backToBox') Box list  /  
-          .icon-arrow-left.icon.bg-primary.mr-3.align-items-center
-        Breadcrumb( home="/box" :model) 
         span.font-normal.text-primary &nbsp;  Box Detail
       .border-bottom-1.border-gray-300.grid-nogutter
       .grid.flex.my-4.p-3.grid-nogutter
@@ -19,17 +18,18 @@
             span Save
       div
         .col.px-3
-          div(:class='isEditBox? "opacity-40" : "opacity-100"')
-            span.font-bold.text-white.p-2.border-round(:class='boxDetail.status? "bg-green-500" : "surface-200"') {{boxDetail.status? 'Available' : 'Disable'}} 
+          div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
+            Tag(:class="boxDetail.status === 'AVAILABLE' ? 'bg-green-100' : boxDetail.status === 'DRAFT' ? 'bg-blue-100' : 'surface-200'").py-1
+                span.text-base.font-bold.px-3.border-round(:class="boxDetail.status === 'AVAILABLE' ? 'text-green-400' : boxDetail.status === 'DRAFT' ? 'text-primary' : 'text-400'") {{ boxDetail.status }} 
           .font-bold.my-3
-            .col(:class='isEditBox? "opacity-40" : "opacity-100"')
+            div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
                 span.text-primary.uppercase.ml-2 {{boxDetail.barCode}}
       .grid.grid-nogutter.sub--scroll
         .col.px-3
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
-              .icon-receipt.bg-primary.icon--large
+              .icon-receipt-note.bg-primary.icon--large
             div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Receipt note ID
               div.mt-1.flex.align-items-center.w-7rem.overflow-hidden.white-space-nowrap.text-overflow-ellipsis
@@ -56,7 +56,7 @@
             div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Location
               .mt-1.flex.align-items-center
-                AutoComplete.edit-location( v-model="isLocation" field="name" :suggestions='locationList'  :disabled='isEditBox == 0' :placeholder='boxLocation'  )
+                AutoComplete.edit-location( v-model="isLocation" :suggestions='locationList'  :disabled='isEditBox == 0' modelValue='dsadsa'  )
                   template(#item="slotProps")
                     .grid.align-items-center.grid-nogutter
                       span.font-bold {{ slotProps.item.name }}
@@ -78,14 +78,14 @@
                 span.font-bold {{ boxDetail.length }}
           .grid.align-items-center.m-0.pl-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
-              .icon-dollar-square-2.icon--large.bg-primary
+              .icon-price.icon--large.bg-primary
             div(class='col-12 lg:col-12 xl:col-9')
               span.font-bold.text-600 Estimated inventory Fee
               .mt-1
                 span.font-bold {{ boxDetail.inventoryFee }}$ PER DAY
           .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col-fixed.mr-2
-              .icon-resize.icon--large.bg-primary
+              .icon-size.icon--large.bg-primary
             div.align-items(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Box Size:
               span.font-bold.text-600.bg-primary.ml-1.border-round(:class='boxDetail.boxSize? "p-1" : ""') {{ boxDetail.boxSize | boxSize }}
@@ -96,7 +96,7 @@
             .col.border-bottom-1.border-gray-300
             .col.flex.my-3
               .col.flex.align-items-center
-                .icon-seller-information.icon.bg-primary.mr-2
+                .icon-sender-info.icon.bg-primary.mr-2
                 span.font-bold.text-800.uppercase Seller Information
             BoxDetailValue(v-for='item in sellerInfor' :key='item.id' :item='item' :boxSellerInfor='boxSellerInfor')
     div.ml-5.flex-1(class=' col-7  md:col-8  lg:col-8 xl:col-8')
@@ -142,7 +142,7 @@
           .col
             span.p-input-icon-left
               .icon.icon--left.icon-search.surface-900
-              InputText.w-23rem.font-bold.h-3rem.py-4.text-900(type="text" placeholder="Search" v-model='nameStockFilter' v-on:input="validateText" )
+              InputText.w-20rem.font-bold.h-3rem.py-4.text-900.input-absolute(type="text" placeholder="Search" v-model='nameStockFilter' v-on:input="validateText" )
           .col
             Button.border-0.bg-white.w-7rem.shadow-none.border-primary.h-3rem.py-4(@click="isFilter = !isFilter")
               .icon-filter.bg-primary.icon
@@ -276,6 +276,15 @@ export default BoxDetail
 @media (max-width: 1024px)
   .tabview-left
     top: -4rem !important
+    .input-absolute
+      width: 15rem !important
+@media (max-width: 768px)
+  .tabview-left
+    top: -3rem !important
+    .input-absolute
+      width: 15rem !important
+  .tabview-relative
+    margin-top: 3rem
 .tabview-relative
   position: relative
   .tabview-left
