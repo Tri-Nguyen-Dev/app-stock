@@ -1,8 +1,8 @@
 <template lang="pug">
   .menu-item.flex-row(v-show="isShow" @click="select(item)")
-    router-link(v-if="!!item.to" :to="item.to")
+    nuxt-link(v-if="!!item.to" :to="item.to")
       SidebarItemValue(:item="item")
-    div(v-else)
+    div(v-if="!item.to")
       SidebarItemValue(:item="item")
 </template>
 
