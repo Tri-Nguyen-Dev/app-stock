@@ -9,7 +9,7 @@ import { $api } from '~/utils'
 
 export default class Warehouse extends VuexModule {
   private static readonly STATE_URL = {
-    GET_WAREHOUSE: '/api/warehouse/list'
+    GET_WAREHOUSE: '/warehouse/list'
   }
 
   public warehouseList: [] = []
@@ -26,7 +26,8 @@ export default class Warehouse extends VuexModule {
         this.context,
         Warehouse.STATE_URL.GET_WAREHOUSE
       )
-      const response = await $api.get(url)       return response.data
+      const response = await $api.get(url)
+      return response.data
     } catch (error) {}
   }
 }

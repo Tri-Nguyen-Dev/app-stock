@@ -7,7 +7,7 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreBox extends VuexModule {
   private static readonly STATE_URL = {
-    GET_BOX_DETAIL: '/api/box/:id/detail'
+    GET_BOX_DETAIL: '/box/:id/detail'
   }
 
   public stockList?: any = []

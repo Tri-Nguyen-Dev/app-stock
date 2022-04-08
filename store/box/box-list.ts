@@ -8,8 +8,8 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreBox extends VuexModule {
   private static readonly STATE_URL = {
-    GET_BOX: '/api/box/list',
-    DELETE_BOX: '/api/box/delete'
+    GET_BOX: '/box/list',
+    DELETE_BOX: '/box/delete'
   }
 
   public boxList?: Box.Model[] = []
