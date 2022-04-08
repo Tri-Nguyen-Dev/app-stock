@@ -276,23 +276,6 @@ class Stock extends Vue {
     this.$router.push(`/stock/${data.id}`)
   }
 
-  handleSort(field: any) {
-    this.selectedStock = []
-    if(field === this.sort.sortByColumn) {
-      this.sort = {
-        sortByColumn: field,
-        sortDescending: !this.sort.sortDescending
-      }
-    }
-    else {
-      this.sort = {
-        sortByColumn: field,
-        sortDescending: true
-      }
-    }
-    this.getProductList()
-  }
-
   sortData(e: any){
     const { sortField, sortOrder } = e;
     if(sortOrder){
