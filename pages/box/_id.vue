@@ -57,7 +57,7 @@
             div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Location
               .mt-1.flex.align-items-center
-                AutoComplete.edit-location( v-model="isLocation" :suggestions='locationList'  :disabled='isEditBox == 0' modelValue='dsadsa'  )
+                AutoComplete.edit-location( v-model="isLocation" :suggestions='locationList'  :disabled='isEditBox == 0' :placeholder='boxLocation'  )
                   template(#item="slotProps")
                     .grid.align-items-center.grid-nogutter
                       span.font-bold {{ slotProps.item.name }}

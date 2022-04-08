@@ -29,7 +29,7 @@ export const ITEM_BOX_DETAIL = [
 ]
 
 export const ITEM_SELLER_INFOR = [
-  { id: 1, icon: 'user-octagon-2', label: 'Sender' },
-  { id: 2, icon: 'sms-notification', label: 'Email' },
-  { id: 3, icon: 'phone', label: 'Phone number' }
+  { id: 1, icon: 'sender-name', label: 'Sender' },
+  { id: 2, icon: 'sender-email', label: 'Email' },
+  { id: 3, icon: 'sender-phone', label: 'Phone number' }
 ]
