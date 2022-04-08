@@ -94,10 +94,10 @@
     Toast
 </template>
 <script lang="ts">
-import _ from 'lodash'
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
+const _ = require('lodash')
 const nsCategoryStock = namespace('category/category-list')
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStock = namespace('stock/stock-list')
@@ -277,10 +277,10 @@ class Stock extends Vue {
   }
 
   sortData(e: any){
-    const { sortField, sortOrder } = e;
+    const { sortField, sortOrder } = e
     if(sortOrder){
       this.sort.sortDescending = sortOrder !== 1
-      this.sort.sortByColumn = sortField.replace('_', '');
+      this.sort.sortByColumn = sortField.replace('_', '')
     }
     this.getProductList()
   }
