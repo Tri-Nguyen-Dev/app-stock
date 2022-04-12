@@ -38,7 +38,7 @@ class Sidebar extends Vue {
   selectedItem: any = null
 
   @ProvideReactive()
-  parentItem: any = null
+  parentItems: any = []
 
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
@@ -61,7 +61,7 @@ class Sidebar extends Vue {
   onSelectMenu(item) {
     this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
     if(!item.parentId) {
-      this.parentItem = this.pageMenu.filter(value => value.parentId === item.id)
+      this.parentItems = this.pageMenu.filter(value => value.parentId === item.id)
     }
   }
 }

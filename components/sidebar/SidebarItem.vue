@@ -19,7 +19,6 @@ class SidebarItem extends Vue {
 
   @Prop() readonly item!: any | undefined
   @InjectReactive() readonly selectedItem!: any
-  @InjectReactive() readonly parentItem!: any
 
   @Emit()
   select(item) {

@@ -1,12 +1,11 @@
 <template lang="pug">
-  div
-   .item-value(:class="{ 'active': active, 'child-item': !!item.parentId }" )
-    ul.item-collapsed.p-2(v-if='collapsed && parentItem.length > 0')
-      li(v-for="parent in parentItem" :key="parent.id")
+   .item-value(:class="{ 'active': active, 'child-item': !!item.parentId }")
+    ul.item-collapsed.p-2(v-if='collapsed && parentItems.length > 0')
+      li(v-for="parent in parentItems" :key="parent.id" @click.stop="handleSelect")
         nuxt-link.item-collapsed__children.py-3.pl-4(:to="parent.to") {{parent.label}}
     .item__icon(v-if="!!item.icon")
       .icon.icon--large(:class="`icon-${item.icon} ${iconMenuCssClasses}`")
-    transition(name="fade") 
+    transition(name="fade")
       .item__label(v-if="!collapsed" :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast }")
         div.item__children(v-if="item.parentId")
         div.item__rect(v-if="item.parentId")
@@ -20,7 +19,7 @@ import { Component, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-d
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
-class SidebarItem extends Vue {
+class SidebarItemValue extends Vue {
 
   // -- [ Statement Properties ] ----------------------------------------------------------
   @nsSidebar.State('collapsed')
@@ -28,8 +27,10 @@ class SidebarItem extends Vue {
 
   @Prop() readonly item!: any | undefined
   @InjectReactive() readonly selectedItem!: any
-  @InjectReactive() readonly parentItem!: any
-
+  @InjectReactive() readonly parentItems!: any
+  
+ // -- [ Getters ] -----------------------------------------------------------------------
+ 
   get active() {
     return this.item.id === this.selectedItem?.id || this.item.id === this.selectedItem?.parentId
   }
@@ -50,11 +51,10 @@ class SidebarItem extends Vue {
 
 }
 
-export default SidebarItem
+export default SidebarItemValue
 </script>
 
 <style lang="sass" scoped>
-
 .child-item
   margin-left: 40px
   &::before
