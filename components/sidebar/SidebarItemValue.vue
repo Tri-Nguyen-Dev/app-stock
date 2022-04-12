@@ -1,7 +1,7 @@
 <template lang="pug">
    .item-value(:class="{ 'active': active, 'child-item': !!item.parentId }")
     ul.item-collapsed.p-2(v-if='collapsed && parentItems.length > 0')
-      li(v-for="parent in parentItems" :key="parent.id" @click.stop="handleSelect")
+      li(v-for="parent in parentItems" :key="parent.id" @click.stop="")
         nuxt-link.item-collapsed__children.py-3.pl-4(:to="parent.to") {{parent.label}}
     .item__icon(v-if="!!item.icon")
       .icon.icon--large(:class="`icon-${item.icon} ${iconMenuCssClasses}`")
