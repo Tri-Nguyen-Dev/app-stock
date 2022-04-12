@@ -12,11 +12,11 @@
           .icon-box-info.icon.bg-primary.mr-2
           span.font-bold.text-800.uppercase Box Detail
         .col-fixed
-          Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" :class='isEditBox? "hidden " : "" ' )
-            .icon-edit-btn.icon
-          Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="saveEditBoxDetail" :class='isEditBox? "" : "hidden"'  )
-            .icon-check-lg.icon.bg-white.mr-1
-            span Save
+            Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="handleUpdateData" v-if='isEditBox' )
+              .icon-check-lg.icon.bg-white.mr-1
+              span Save
+            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" v-if='!isEditBox' )
+              .icon-edit-btn.icon
       div
         .col.px-3
           div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
@@ -57,7 +57,7 @@
             div(class='col-12 lg:col-12 xl:col-8')
               span.font-bold.text-600 Location
               .mt-1.flex.align-items-center
-                AutoComplete.edit-location( v-model="isLocation" :suggestions='locationList'  :disabled='isEditBox == 0' :placeholder='boxLocation'  )
+                AutoComplete.edit-location(v-model="isLocation" field='name' :suggestions='locationList' :readOnly='!isEditBox' @complete="searchLocation($event)" :placeholder='boxLocation')
                   template(#item="slotProps")
                     .grid.align-items-center.grid-nogutter
                       span.font-bold {{ slotProps.item.name }}
@@ -151,7 +151,8 @@
 
 <script lang="ts">
 import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
-import { ITEM_BOX_DETAIL, ITEM_SELLER_INFOR } from '~/utils'
+import { ITEM_SELLER_INFO } from '~/utils/constants/box'
+const _ = require('lodash')
 const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
 const nsStoreLocationList = namespace('location/location-list')
@@ -169,12 +170,7 @@ class BoxDetail extends Vue {
     name: null
   }
 
-  pageNumber: number = 1
-  pageSize: number = 20
-  boxDetailData: any = []
-
-  itemBoxDetail = ITEM_BOX_DETAIL
-  sellerInfor = ITEM_SELLER_INFOR
+  sellerInfor = ITEM_SELLER_INFO
 
   @nsStoreLocationList.State
   locationList: []
@@ -184,12 +180,16 @@ class BoxDetail extends Vue {
 
   @nsStoreBoxDetail.State
   boxDetail!: {
+    id: number
     warehouse: string
     request: any
     location: any
     listStockWithAmount: []
     shelfBin: any
   }
+
+  @nsStoreBoxDetail.State
+  updateSuccess!: boolean
 
   @nsStoreCategoryList.State
   categoryList!:any
@@ -202,6 +202,9 @@ class BoxDetail extends Vue {
 
   @nsStoreLocationList.Action
   actLocationList!: (params: any) => Promise<void>
+
+  @nsStoreBoxDetail.Action
+  actUpdateBoxDetail!: (params: any) => Promise<void>
 
   get convertBoxDetailData() {
     if (this.boxDetail && this.boxDetail.listStockWithAmount) {
@@ -218,7 +221,7 @@ class BoxDetail extends Vue {
   get filteredBoxDetailData() {
     return this.convertBoxDetailData.filter(item => {
       let filter = true
-      Object.keys(this.filterParams).map(key => {
+      Object.keys(this.filterParams).forEach(key => {
         if (this.filterParams[key]) {
           if (key === 'category') {
             filter = filter && item[key]?.id === this.filterParams[key]
@@ -255,15 +258,26 @@ class BoxDetail extends Vue {
     this.filterParams.sku = null
   }
 
+  @Watch('updateSuccess')
+  updateBtnSuccess() {
+    this.isEditBox = !this.isEditBox
+  }
+
   onTabClick() {
     this.isItemHistory = !this.isItemHistory
     this.isFilter = false
   }
 
-  @Watch('isLocation')
-  async filterLocation() {
+  searchLocation = _.debounce(async (e) => {
     await this.actLocationList({
-      name: this.isLocation === '' ? null : this.isLocation
+      name: e.query
+    })
+  }, 500)
+
+  async handleUpdateData() {
+    await this.actUpdateBoxDetail({
+      id: this.boxDetail.id,
+      shelfBinId: this.isLocation.id
     })
   }
 

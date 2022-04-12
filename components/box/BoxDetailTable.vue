@@ -18,7 +18,7 @@
         template(#body="slotProps")
           span.font-bold {{ pagination.rows * pagination.page + slotProps.index + 1 }}
       column(
-        field='',
+        field='imageUrl',
         header='IMAGE',
         :sortable='true',
         filter-match-mode='contains'
@@ -29,8 +29,6 @@
         field='barCode'
         header='BARCODE',
         :sortable='true',
-        filter-field='representative',
-        sort-field='representative.name',
         :show-filter-match-modes='false'
       )
         template(#body='{data}')
@@ -46,15 +44,14 @@
       column(
         field='name',
         header='NAME',
-        sortable='',
-        )
+        :sortable='true',
+      )
           template(#body='{data}')
             span.font-bold.text-right {{data.name}}
       column(
-        field='quantity',
+        field='amount',
         header='QUANTITY',
-        sortable='',
-        :show-filter-match-modes='false'
+        :sortable='true',
         className="p-text-right"
       )
         template(#body='{data}')
@@ -84,7 +81,7 @@
         template(#body='{data}')
           span.font-bold {{data.weight}}
       column(
-        field='category',
+        field='category.name',
         header='CATEGORY',
         sortable='',
         :show-filter-match-modes='false'
