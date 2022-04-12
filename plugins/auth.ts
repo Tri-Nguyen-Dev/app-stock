@@ -12,9 +12,9 @@ declare module 'vue/types/vue' {
       hide(id: string): void
     }
   }
-}const auth: Plugin = ({ store }) => {
+}
+const auth: Plugin = ({ store }) => {
   const axiosInstance = axios.create()
-
   axiosInstance.interceptors.request.use((config) => {
     if (process.env.NODE_ENV !== 'development') {
       config.baseURL = process.env.BE_API_URL
@@ -32,10 +32,10 @@ declare module 'vue/types/vue' {
     const errorResponse: ErrorResponse = error.response.data
     if (errorResponse) {
       store.commit('commons/store-error/setError', errorResponse)
-    }    return Promise.reject(error)
+    }
+    return Promise.reject(error)
   })
 
   initializeAxios(axiosInstance)
 }
-
 export default auth
