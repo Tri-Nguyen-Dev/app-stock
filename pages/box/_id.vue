@@ -99,7 +99,7 @@
               .col.flex.align-items-center
                 .icon-sender-info.icon.bg-primary.mr-2
                 span.font-bold.text-800.uppercase Seller Information
-            BoxValue(v-for='item in sellerInfor' :key='item.id' :item='item' :boxSellerInfor='boxSellerInfor')
+            BoxDetailValue(v-for='item in sellerInfor' :key='item.id' :item='item' :boxSellerInfor='boxSellerInfor')
     div.ml-5.flex-1(class=' col-7  md:col-8  lg:col-8 xl:col-8')
       .grid.justify-content-between
         .col-fixed
