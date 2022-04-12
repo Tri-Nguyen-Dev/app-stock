@@ -1,0 +1,37 @@
+[
+    {
+      "id": 1,
+      "name": "Apple",
+      "email": "apple@apple.com",
+      "phone": "+84 123 323 787"
+    },
+    {
+      "id": 2,
+      "name": "Samsung",
+      "email": "Samsung@samsung.com",
+      "phone": "+84 123 323 787"
+      
+    },
+    {
+      "id": 3,
+      "name": "LG",
+      "email": "LG@lG.com",
+      "phone": "+84 123 322 753"
+
+    },
+    {
+      "id": 4,
+      "name": "BPhone",
+      "email": "BPhone@bphone.com",
+      "phone": "+84 123 313 783"
+
+    },
+    {
+      "id": 5,
+      "name": "Sony",
+      "email": "sony@sony.com",
+      "phone": "+84 123 343 987"
+
+    }
+  ]
+  

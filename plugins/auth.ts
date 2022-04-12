@@ -2,7 +2,6 @@ import { Plugin } from '@nuxt/types'
 import axios from 'axios'
 import { ErrorResponse, initializeAxios } from '~/utils'
 
-
 declare module 'vue/types/vue' {
   interface Vue {
     $bvToast: {
@@ -13,12 +12,15 @@ declare module 'vue/types/vue' {
       hide(id: string): void
     }
   }
-}
-
-const auth: Plugin = ({ store }) => {
+}const auth: Plugin = ({ store }) => {
   const axiosInstance = axios.create()
 
   axiosInstance.interceptors.request.use((config) => {
+    if (process.env.NODE_ENV !== 'development') {
+      config.baseURL = process.env.BE_API_URL
+    } else {
+      config.url = '/api' + config.url
+    }
     return config
   }, (error) => {
     return Promise.reject(error)
@@ -30,9 +32,7 @@ const auth: Plugin = ({ store }) => {
     const errorResponse: ErrorResponse = error.response.data
     if (errorResponse) {
       store.commit('commons/store-error/setError', errorResponse)
-    }
-
-    return Promise.reject(error)
+    }    return Promise.reject(error)
   })
 
   initializeAxios(axiosInstance)
