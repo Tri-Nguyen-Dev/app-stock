@@ -8,10 +8,9 @@ export const ITEM_BOX_DETAIL = [
   { id: 8, icon: 'dollar-square-2', label: 'Estimated inventory Fee' },
   { id: 9, icon: 'resize', label: 'Box Size:' }
 ]
-  
-export const ITEM_SELLER_INFOR = [
+
+export const ITEM_SELLER_INFO = [
   { id: 1, icon: 'sender-name', label: 'Sender' },
   { id: 2, icon: 'sender-email', label: 'Email' },
   { id: 3, icon: 'sender-phone', label: 'Phone number' }
 ]
-  
