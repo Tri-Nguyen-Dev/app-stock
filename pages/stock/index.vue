@@ -4,7 +4,7 @@
       div
         h1.text-heading Stock list
         span.text-subheading {{ total }} product found
-      .stock__header-action
+      .header__action
         .header__search
           .icon.icon--left.icon-search
           InputText(type='text' placeholder='Search' v-model="name" v-on:input="debounceInput")
@@ -208,7 +208,7 @@ class Stock extends Vue {
 
   showModalDelete(id?: string) {
     this.ids = id ? [id] : this.selectedStockFilter.map((item: any) => {
-        return item.id
+      return item.id
     })
     this.isModalDelete = true
   }
@@ -277,7 +277,7 @@ export default Stock
   &__header
     @include flex-center-space-between
     margin-bottom: 24px
-    &-action
+  .header__action
       @include flex-center
       gap: 0 16px    
   .header__filter

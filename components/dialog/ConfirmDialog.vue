@@ -13,20 +13,15 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
-
 @Component
 class ConfirmDialogCustom extends Vue {
   @Prop() image!: string
   @Prop({ default: '' }) title!: string
   @Prop({ default: '' }) message!: string
-
   @Prop({ default: false }) isShow!: boolean
   @Prop() onOk!: () => void
-
   @Prop() onCancel!: () => void
-
   @Prop({ default: false }) loading!: boolean
-
   get visible() {
     return this.isShow
   }
@@ -35,12 +30,9 @@ class ConfirmDialogCustom extends Vue {
     return this.loading
   }
 }
-
 export default ConfirmDialogCustom
 </script>
-
 <style lang="sass" scoped>
-
 .confirm-dialog
     ::v-deep.p-dialog
         font-family: $font-family-primary !important
@@ -48,21 +40,16 @@ export default ConfirmDialogCustom
         overflow: hidden
         border: none
         max-width: 300px
-
     ::v-deep.p-dialog-header
         display: none !important
-
     ::v-deep.p-dialog-content
         padding: 0
-
     &__content
         text-align: center
         padding: 48px 16px 16px 16px
-
         img
             object-fit: contain
             max-width: 100%
-
     &__title
         margin-top: 16px
         margin-bottom: 0
@@ -70,7 +57,6 @@ export default ConfirmDialogCustom
         font-weight: $font-weight-bold
         font-size: $font-size-medium !important
         line-height: calc(24 / 16)
-
     &__des
         margin-top: 12px
         margin-bottom: 0
@@ -78,13 +64,11 @@ export default ConfirmDialogCustom
         font-weight: $font-weight-regular
         font-size: $font-size-small !important
         line-height: calc(20 / 12)
-
     &__footer
         margin-top: 32px
         display: flex
         gap: 0 8px
         justify-content: center
-
     &__btn
         padding: 12px 32px
         color: $text-color-900
@@ -99,15 +83,11 @@ export default ConfirmDialogCustom
         display: flex
         align-items: center
         justify-content: center
-
     &__btn:hover
         background-color: $primary !important
-
     &__btn.btn--discard
         background-color: #E8EAEF
-
     &__btn.btn--agree
         background-color: $primary
         color: #fff
-
 </style>
