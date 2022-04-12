@@ -8,14 +8,14 @@
         span.font-semibold.text-base Stock list / Stock Detail
       .stock__information--gerenal.p-4.border-bottom-1.border-gray-300
         .grid.mb-3.align-items-center
-          .pl-0.flex
+          .col-9.pl-0.flex
             .icon.icon-box-info.mr-1.bg-blue-700
             span.uppercase.font-bold.text-sm general infomation
           .col.flex.justify-content-end
             .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon.icon-btn-edit
-            Button(:class='isEditStockDetail ? " " : "hidden"' @click='saveEditStockDetail')
-              .icon-btn.icon-check-lg.bg-white.mr-1
+            .bg-blue-500.cursor-pointer.border-round.text-white.p-1(:class='isEditStockDetail ? " " : "hidden"' @click='saveEditStockDetail')
+              .icon-small.icon-check-lg.bg-white
               span.uppercase save
         .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           img(:src='stockDetail.data.imageUrl').border-round.w-full

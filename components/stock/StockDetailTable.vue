@@ -251,7 +251,7 @@ class StockDetailTable extends Vue {
 
   async getItemsList() {
     const filter = {
-      seller: this.filter?.sellerEmail,
+      sellerEmail: this.filter?.sellerEmail,
       sku: this.filter?.sku,
       barCode: this.filter?.boxCode,
       location: this.filter?.location,
@@ -284,8 +284,8 @@ class StockDetailTable extends Vue {
   }
 
   mounted() {
-      this.getItemsList()
-      this.actWarehouseList()
+    this.getItemsList()
+    this.actWarehouseList()
   }
 }
 export default StockDetailTable

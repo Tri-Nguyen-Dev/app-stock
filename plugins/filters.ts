@@ -25,3 +25,4 @@ Vue.filter('boxStatus', (value) => {
 Vue.filter('dateTimeHour12', (value) => {
   return dayjs(new Date(value)).format('DD-MM-YYYY hh:mm A')
 })
+
