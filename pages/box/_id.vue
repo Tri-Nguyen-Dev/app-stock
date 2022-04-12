@@ -1,5 +1,5 @@
 <template lang="pug">
-  .grid.flex.grid-nogutter
+  .grid.flex.grid-nogutter.box-page-container
     div.bg-white.border-round-top.sub-tab(class='col-3 md:col-3 lg:col-3 xl:col-3')
       .col.flex.align-items-center.p-3
         Button(@click='backToBox').p-button-link
@@ -21,7 +21,7 @@
         .col.px-3
           div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
             Tag(:class="boxDetail.status === 'BOX_STATUS_AVAILABLE' ? 'bg-green-100' : boxDetail.status === 'BOX_STATUS_DRAFT' ? 'bg-blue-100' : 'surface-200'").py-1
-                span.text-base.font-bold.px-3.border-round(:class="boxDetail.status === 'BOX_STATUS_AVAILABLE' ? 'text-green-400' : boxDetail.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'") {{ boxDetail.status | status }}
+                span.text-base.font-bold.px-3.border-round(:class="boxDetail.status === 'BOX_STATUS_AVAILABLE' ? 'text-green-400' : boxDetail.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'") {{ boxDetail.status | boxStatus }}
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
@@ -239,7 +239,7 @@ class BoxDetail extends Vue {
 
   async mounted() {
     if(this.$route.query.plan === 'edit') {
-      this.isEditStockDetail = true
+      this.isEditStockDetail = false
     }
     await this.actGetBoxDetail({ id: this.$route.params.id })
     await this.actCategoryList()

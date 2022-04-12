@@ -26,12 +26,3 @@ Vue.filter('dateTimeHour12', (value) => {
   return dayjs(new Date(value)).format('DD-MM-YYYY hh:mm A')
 })
 
-// -- [ Convert status ] ------------------------------------------------
-Vue.filter('status', (value) => {
-  const STATUS_MAP = new Map<string, string>([
-    ['BOX_STATUS_AVAILABLE', 'AVAILABLE'],
-    ['BOX_STATUS_DISABLE', 'DISABLE'],
-    ['BOX_STATUS_DRAFT', 'DRAFT']
-  ])
-  return STATUS_MAP.get(value) || ''
-})
