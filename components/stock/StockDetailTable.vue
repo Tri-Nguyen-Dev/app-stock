@@ -284,8 +284,8 @@ class StockDetailTable extends Vue {
   }
 
   mounted() {
-      this.getItemsList()
-      this.actWarehouseList()
+    this.getItemsList()
+    this.actWarehouseList()
   }
 }
 export default StockDetailTable

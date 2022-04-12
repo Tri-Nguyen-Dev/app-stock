@@ -151,7 +151,7 @@
 
 <script lang="ts">
 import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
-import { ITEM_BOX_DETAIL, ITEM_SELLER_INFOR } from '~/utils'
+import { ITEM_BOX_DETAIL, ITEM_SELLER_INFO } from '~/utils/constants/box'
 const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
 const nsStoreLocationList = namespace('location/location-list')
@@ -175,7 +175,7 @@ class BoxDetail extends Vue {
   boxDetailData: any = []
 
   itemBoxDetail = ITEM_BOX_DETAIL
-  sellerInfor = ITEM_SELLER_INFOR
+  sellerInfor = ITEM_SELLER_INFO
 
   @nsStoreLocationList.State
   locationList: []
