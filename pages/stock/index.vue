@@ -7,7 +7,7 @@
       .stock__header-action
         .header__search
           .icon.icon--left.icon-search
-          input(type='text' placeholder='Search' @input="debounceSearchName")
+          InputText(type='text' placeholder='Search' v-model="name" v-on:input="debounceInput")
         .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="toggleShowFilter")
             .icon.icon-filter(v-if="!isShowFilter")
@@ -21,17 +21,17 @@
     .header__filter(:class='{ "active": isShowFilter }')
       .filter__item
         .filter__title Catagory
-        MultiSelect#MultiSelectCatagory.stock__filter-action.w-full.border-0(v-model='filter.categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+        MultiSelect.filter__multiselect(v-model='categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
       .filter__item
         .filter__title Code
         .filter__search
-            input(type="text" @input="debounceSearchCode" placeholder="Search code" )
+            InputText(type="text" placeholder="Search code" v-model="barCode" v-on:input="debounceInput" )
             .icon.icon--right.icon-search
       .filter__item
         .filter__title Status
-        Dropdown.filter__dropdown(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
-    .stock__table.bg-white.flex-1.relative.overflow-hidden
-        DataTable.table__sort-icon.h-full.flex.flex-column(@sort="sortData($event)" :class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
+        Dropdown.filter__dropdown(v-model="status"  :options="statusList" optionLabel="name" placeholder="Select")
+    .stock__table
+        DataTable(@sort="sortData($event)" :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
           Column(selectionMode='multiple' :styles="{'width': '1%'}" :headerClass="`${!stockList || stockList.length <= 0 || checkStockDisable ? 'checkbox-disable' : ''}`")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
@@ -45,7 +45,7 @@
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
           Column(header='Code' field='barCode' :sortable="true" sortField="_barCode")
             template(#body='{ data }')
-              div.stock__table-barcode {{ data.barCode }}
+              .stock__table-barcode {{ data.barCode }}
           Column(header='Category' :sortable="true" field='category' sortField="_category")
               template(#body='{ data }')
                 div {{ data.category.name }}
@@ -63,21 +63,21 @@
                   .icon.icon-btn-delete
           template(#footer)
             .pagination
-              div.pagination__info(v-if='!selectedStockFilter.length > 0')
-                img(:src="require('~/assets/icons/filter-left.svg')")
+              .pagination__info(v-if='!selectedStockFilter.length > 0')
+                .icon.icon-filter-left
                 span.pagination__total {{ getInfoPaginate }}
-              div.pagination__delete(v-else @click="showModalDelete()")
-                img(:src="require('~/assets/icons/trash-white.svg')")
+              .pagination__delete(v-else @click="showModalDelete()")
+                .icon.icon-btn-delete
                 span Delete {{ selectedStockFilter.length }} items selected
               Paginator(:first.sync="firstPage" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)" :rowsPerPageOptions="limitOptions")
           template(#empty)
-            div.flex.align-items-center.justify-content-center.flex-column
+            div.table__empty
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-              p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
-                span.text-primary.underline.cursor-pointer &nbsp;here
+              p.empty__text(v-if="!checkIsFilter") List is empty!, Click
+                span &nbsp;here
                 span &nbsp;to add item.
-              p.text-900.font-bold.mt-3(v-else) Item not found!
+              p.notfound__text(v-else) Item not found!
     ConfirmDialogCustom(
       title="Confirm delete"
       :message="`Are you sure you want to delete ${ids.length} in this list stock?`"
@@ -103,6 +103,24 @@ const nsStoreStock = namespace('stock/stock-list')
   }
 })
 class Stock extends Vue {
+  firstPage:any = 0
+  selectedStock: StockModel.Model[] = []
+  isShowFilter: boolean = false
+  loading: boolean = false
+  isModalDelete: boolean = false
+  ids: string[] = []
+  loadingSubmit: boolean = false
+  isFilter: boolean = false
+  paginate = PAGINATE_DEFAULT
+  statusList = STOCK_STATUS_LIST
+  limitOptions = LIMIT_PAGE_OPTIONS
+  name: any = null
+  barCode: any = null
+  warehouse: any = null
+  categories: any = null
+  status: any = null
+  sortByColumn: string|null = null
+  isDescending: boolean|null = null
   @nsStoreStock.State
   total!: number
 
@@ -121,33 +139,19 @@ class Stock extends Vue {
   @nsCategoryStock.Action
   actCategoryList!: () => Promise<void>
 
-  firstPage:any = 0
-  selectedStock: StockModel.Model[] = []
-  isShowFilter: boolean = false
-  loading: boolean = false
-  isModalDelete: boolean = false
-  ids: string[] = []
-  loadingSubmit: boolean = false
-  isFilter: boolean = false
-
-  paginate = PAGINATE_DEFAULT
-
-  filter: any = {
-    name: null,
-    warehouse: null,
-    categories: null,
-    barCode: null,
-    status: null
+  getParamApi(){
+    const categoryIds = this.categories && this.categories.map((item: any) => item?.id).toString()
+    return {
+      name: (this.name && this.name !== '') ? this.name : null,
+      barCode: this.barCode && this.barCode !== '' ? this.barCode : null,
+      warehouseId: this.warehouse?.id,
+      categoryIds: categoryIds && categoryIds !== '' ? categoryIds : null,
+      deleted: this.status?.value,
+      sortByColumn: this.sortByColumn,
+      sortDescending: this.isDescending && this.isDescending
+    }
   }
-
-  statusList = STOCK_STATUS_LIST
-  limitOptions = LIMIT_PAGE_OPTIONS
-
-  sort: any = {
-    sortByColumn: null,
-    sortDescending: null
-  }
-
+ 
   get selectedStockFilter() {
     return this.selectedStock.filter((item) => !item.deleted)
   }
@@ -157,7 +161,8 @@ class Stock extends Vue {
   }
 
   get checkIsFilter() {
-    return Object.values(this.filter).some((item) => item)
+    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
+    return Object.values(params).some((item) => item)
   }
 
   get getInfoPaginate() {
@@ -182,25 +187,11 @@ class Stock extends Vue {
   }
 
   async getProductList() {
-    const categoryIds = this.filter.categories && this.filter.categories.map((item: any) => item?.id).toString()
-    const filter = {
-      name: this.filter.name && this.filter.name !== '' ? this.filter.name : null,
-      warehouseId: this.filter.warehouse?.id,
-      categoryIds: categoryIds && categoryIds !== '' ? categoryIds : null,
-      barCode: this.filter.barCode && this.filter.barCode !== '' ? this.filter.barCode : null,
-      deleted: this.filter.status?.value,
-      sortByColumn: this.sort?.sortByColumn,
-      sortDescending: this.sort.sortDescending && this.sort?.sortDescending
-    }
-    const params = {
-      ...this.paginate,
-      ...filter
-    }
-    await this.actGetStockList(params)
+    await this.actGetStockList({ ...this.getParamApi(), ...this.paginate })
   }
 
-  @Watch('filter', { deep: true })
-  @Watch('paginate', { deep: true })
+  @Watch('status')
+  @Watch('categories')
   getNewStock() {
     this.getProductList()
   }
@@ -212,16 +203,13 @@ class Stock extends Vue {
   onPage(event: any) {
     this.paginate.pageSize = event.rows
     this.paginate.pageNumber = event.page
+    this.getProductList()
   }
 
   showModalDelete(id?: string) {
-    if (id) {
-      this.ids = [id]
-    } else {
-      this.ids = this.selectedStockFilter.map((item: any) => {
+    this.ids = id ? [id] : this.selectedStockFilter.map((item: any) => {
         return item.id
-      })
-    }
+    })
     this.isModalDelete = true
   }
 
@@ -240,7 +228,6 @@ class Stock extends Vue {
       this.paginate.pageNumber = 0
       this.firstPage = 0
       this.getProductList()
-      this.selectedStock = []
     } catch (error) {
       this.loadingSubmit = false
     }
@@ -260,30 +247,25 @@ class Stock extends Vue {
 
   sortData(e: any){
     const { sortField, sortOrder } = e
-    if(sortOrder){
-      this.sort.sortDescending = sortOrder !== 1
-      this.sort.sortByColumn = sortField.replace('_', '')
+    if(sortOrder) {
+      this.isDescending = sortOrder !== 1
+      this.sortByColumn = sortField.replace('_', '')
+    } else {
+      this.isDescending = null
+      this.sortByColumn = null
     }
     this.getProductList()
   }
 
-  debounceSearchName = _.debounce((e) => {
-    this.filter.name = e.target.value
-  }, 500)
-
-  debounceSearchCode = _.debounce((e) => {
-    this.filter.barCode = e.target.value
+  debounceInput =  _.debounce(async () => {
+    await this.getProductList()
   }, 500)
 
   handleRefreshFilter () {
-    if (this.checkIsFilter)
-      this.filter = {
-        name: null,
-        warehouse: null,
-        categories: null,
-        barCode: null,
-        status: null
-      }
+    this.name = null
+    this.barCode = null
+    this.categories = null
+    this.status = null
   }
 }
 export default Stock
@@ -312,7 +294,7 @@ export default Stock
     .filter__item
       background-color: $color-white
       border-radius: 4px   
-      padding: 13px 8px
+      padding: 13px 8px 8px 8px
     .filter__title
       font-size: 12px
       color: $text-color-700
@@ -321,11 +303,14 @@ export default Stock
       margin-left: 8px
 .stock__table
   border-radius: 4px
+  flex: 1
+  position: relative
+  overflow: hidden
   &-no
     font-size: $font-size-medium
   &-barcode
     text-transform: uppercase
-.filter__dropdown
+.filter__dropdown, .filter__multiselect
   width: 100%
   border: none
 </style>

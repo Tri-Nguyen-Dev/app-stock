@@ -22,6 +22,7 @@
         line-height: calc(24 / 14)
     &:focus
         border: 1.5px solid $primary
+        box-shadow: none
 .btn__filter
     @include size(166px, 48px)
     @include flex-center-space-between
@@ -55,6 +56,7 @@
         border-radius: 4px
         &:focus
             border: 1.5px solid #486AE2
+            box-shadow: none
         &:focus + .icon
             background-color: $primary
         &::placeholder
@@ -78,6 +80,15 @@
         color: $primary
         .icon
             background-color: $primary
+.p-checkbox
+    .p-checkbox-box
+        border: 1.5px solid $text-color-500
+        border-radius: 2px !important
+        &.p-highlight
+            background-color: $primary
+        &.focus, &:not(.p-checkbox-disabled)
+            box-shadow: none !important
+            border: 1.5px solid $text-color-500 !important
 // custom dropdown
 .p-dropdown
     font-family: $font-family-primary !important
@@ -116,7 +127,7 @@
         content: url('~/assets/icons/chevron-down.svg')
     .p-multiselect-label
         padding: 8px !important
-        .p-placeholde
+        &.p-placeholder
             color: $text-color-700 !important
     &:not(.p-disable).p-focus
         box-shadow: none !important
@@ -137,9 +148,6 @@
             z-index: 1
             border-bottom: none
             margin-left: 16px
-        .p-checkbox-box
-            border: 1.5px solid $text-color-500
-            border-radius: 2px
         .p-inputtext
             width: 100% !important
             padding: 14px 0 14px 52px
@@ -165,8 +173,6 @@
             .p-checkbox
                 margin-right: 18px !important 
             .p-checkbox-box
-                border: 1.5px solid $text-color-500
-                border-radius: 2px
                 &.p-highlight
                   background-color: $primary !important  
                   border: 2px solid $color-white !important
