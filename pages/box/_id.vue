@@ -14,7 +14,7 @@
         .col-fixed
           Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" :class='isEditBox? "hidden " : "" ' )
             .icon-edit-btn.icon
-          Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="btnEdit" :class='isEditBox? "" : "hidden"'  )
+          Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="saveEditBoxDetail" :class='isEditBox? "" : "hidden"'  )
             .icon-check-lg.icon.bg-white.mr-1
             span Save
       div
@@ -110,7 +110,7 @@
             TabPanel
               template(#header)
                 .icon.icon-history.mr-2.surface-600
-                span Item history
+                span Item list
               .grid(v-if="isFilter")
                 .col
                   .bg-white.border-round
@@ -130,7 +130,7 @@
                   .bg-white.border-round
                     div.pt-1.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Category
-                      Dropdown.w-full.border-0.mb-1.text-900.font-bold(v-model="filterParams.category" :options='categoryList' optionLabel="name" optionValue="id" placeholder="Select")
+                      Dropdown#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(v-model="filterParams.category" :options='categoryList' optionLabel="name" optionValue="id" placeholder="Select" :filter='true')
               BoxDetailTable(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
             TabPanel
               template(#header)
@@ -162,7 +162,6 @@ class BoxDetail extends Vue {
   isEditBox: boolean = false
   isItemHistory: boolean = false
   isLocation: any = null
-  isEditStockDetail: boolean = false
   filterParams: any = {
     sku: null,
     category: null,
@@ -233,13 +232,13 @@ class BoxDetail extends Vue {
     })
   }
 
-  saveEditStockDetail() {
-    this.isEditStockDetail = false
+  saveEditBoxDetail() {
+    this.isEditBox = false
   }
 
   async mounted() {
     if(this.$route.query.plan === 'edit') {
-      this.isEditStockDetail = false
+      this.isEditBox = true
     }
     await this.actGetBoxDetail({ id: this.$route.params.id })
     await this.actCategoryList()
@@ -252,7 +251,8 @@ class BoxDetail extends Vue {
 
   btnEdit() {
     this.isEditBox = !this.isEditBox
-    this.saveEditStockDetail()
+    this.filterParams.barCode = null
+    this.filterParams.sku = null
   }
 
   onTabClick() {
