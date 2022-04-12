@@ -1,5 +1,5 @@
 <template lang="pug">
-  .grid.flex.grid-nogutter
+  .grid.flex.grid-nogutter.box-page-container
     div.bg-white.border-round-top.sub-tab(class='col-3 md:col-3 lg:col-3 xl:col-3')
       .col.flex.align-items-center.p-3
         Button(@click='backToBox').p-button-link
@@ -14,14 +14,14 @@
         .col-fixed
           Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" :class='isEditBox? "hidden " : "" ' )
             .icon-edit-btn.icon
-          Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="btnEdit" :class='isEditBox? "" : "hidden"' )
+          Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="btnEdit" :class='isEditBox? "" : "hidden"'  )
             .icon-check-lg.icon.bg-white.mr-1
             span Save
       div
         .col.px-3
           div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
-            Tag(:class="boxDetail.status === 'AVAILABLE' ? 'bg-green-100' : boxDetail.status === 'DRAFT' ? 'bg-blue-100' : 'surface-200'").py-1
-                span.text-base.font-bold.px-3.border-round(:class="boxDetail.status === 'AVAILABLE' ? 'text-green-400' : boxDetail.status === 'DRAFT' ? 'text-primary' : 'text-400'") {{ boxDetail.status }}
+            Tag(:class="boxDetail.status === 'BOX_STATUS_AVAILABLE' ? 'bg-green-500' : boxDetail.status === 'BOX_STATUS_DRAFT' ? 'bg-blue-100' : 'surface-200'").py-1
+                span.text-base.font-bold.px-3.border-round(:class="boxDetail.status === 'BOX_STATUS_AVAILABLE' ? 'text-white' : boxDetail.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'") {{ boxDetail.status | boxStatus }}
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
@@ -128,10 +128,10 @@
                       InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="filterParams.barCode")
                 .col
                   .bg-white.border-round
-                    div.pt-2.pl-1.pb-1
+                    div.pt-1.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Category
                       Dropdown.w-full.border-0.mb-1.text-900.font-bold(v-model="filterParams.category" :options='categoryList' optionLabel="name" optionValue="id" placeholder="Select")
-            BoxDetailTable(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
+              BoxDetailTable(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
             TabPanel
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
@@ -162,6 +162,7 @@ class BoxDetail extends Vue {
   isEditBox: boolean = false
   isItemHistory: boolean = false
   isLocation: any = null
+  isEditStockDetail: boolean = false
   filterParams: any = {
     sku: null,
     category: null,
@@ -232,7 +233,14 @@ class BoxDetail extends Vue {
     })
   }
 
+  saveEditStockDetail() {
+    this.isEditStockDetail = false
+  }
+
   async mounted() {
+    if(this.$route.query.plan === 'edit') {
+      this.isEditStockDetail = false
+    }
     await this.actGetBoxDetail({ id: this.$route.params.id })
     await this.actCategoryList()
     await this.actLocationList({name: null})
@@ -244,6 +252,7 @@ class BoxDetail extends Vue {
 
   btnEdit() {
     this.isEditBox = !this.isEditBox
+    this.saveEditStockDetail()
   }
 
   onTabClick() {
