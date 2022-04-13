@@ -21,7 +21,7 @@
     .header__filter(:class='{ "active": isShowFilter }')
       .filter__item
         .filter__title Catagory
-        MultiSelect.filter__multiselect(v-model='categories' @change="handleChangeCategory" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+        MultiSelect.filter__multiselect(v-model='categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
       .filter__item
         .filter__title Code
         .filter__search
@@ -29,7 +29,7 @@
             .icon.icon--right.icon-search
       .filter__item
         .filter__title Status
-        Dropdown.filter__dropdown(v-model="status" @change="handleChangeStatus"  :options="statusList" optionLabel="name" placeholder="Select")
+        Dropdown.filter__dropdown(v-model="status" @change="handleChangeFilter"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table
         DataTable(@sort="sortData($event)" :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
           Column(selectionMode='multiple' :styles="{'width': '1%'}" :headerClass="`${!stockList || stockList.length <= 0 || checkStockDisable ? 'checkbox-disable' : ''}`")
@@ -190,11 +190,7 @@ class Stock extends Vue {
     await this.actGetStockList({ ...this.getParamApi(), ...this.paginate })
   }
 
-  handleChangeStatus() {
-    this.getProductList()
-  }
-
-  handleChangeCategory() {
+  handleChangeFilter() {
     this.getProductList()
   }
 
