@@ -144,9 +144,9 @@ class Stock extends Vue {
     return {
       name: this.name || null,
       barCode: this.barCode || null,
-      warehouseId: this.warehouse?.id || null,
+      warehouseId: this.warehouse?.id,
       categoryIds: categoryIds || null,
-      deleted: this.status?.value || null,
+      deleted: this.status?.value,
       sortByColumn: this.sortByColumn || null,
       sortDescending: this.isDescending || null
     }
