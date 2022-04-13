@@ -276,7 +276,7 @@ class StockDetailTable extends Vue {
   }
 
   redirectToDetail({ data }) {
-    this.$router.push(`${this.$route.params.sid}/item/${data.id}`)
+    this.$router.push(`${this.$route.params.sid}/item/${data.box.id}`)
   }
 
   editItemDetail(id:any) {

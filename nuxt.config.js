@@ -16,7 +16,7 @@ export default {
   },
 
   plugins: [
-    '~/plugins/vuelidate.ts', 
+    '~/plugins/vuelidate.ts',
     '~/plugins/toast.ts',
     '~/plugins/filters.ts'
   ],
@@ -68,7 +68,8 @@ export default {
       'Toast',
       'ScrollPanel',
       'TieredMenu',
-      'AutoComplete'
+      'AutoComplete',
+      'InputNumber'
     ],
     directives: ['Tooltip', 'Badge']
   },

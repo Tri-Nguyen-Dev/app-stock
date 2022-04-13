@@ -11,15 +11,13 @@ export default class StoreStockDetail extends VuexModule {
   private static readonly STATE_URL = {
     GET_STOCK_DETAIL: '/stock/:id/detail',
     GET_ITEMS_LIST: '/stock/:id/box/list',
-    GET_ITEM_INFO: '/stock/:stockId/box/:boxId/detail'
+    GET_ITEM__DETAIL: '/stock/:stockId/box/:boxId/detail',
+    UPDATE_STOCK: '/stock/:id/update'
   }
 
   public total?: number = 0
-
   public stockDetail: any = {};
-
   public itemsList: any = {}
-
   public itemDetail: any = {}
 
   @Mutation
@@ -52,7 +50,13 @@ export default class StoreStockDetail extends VuexModule {
 
   @Action({ commit: 'setItemDetail', rawError: true })
   async actGetItemsDetail(params: {stockId: number, boxId: number}): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_ITEM_INFO, params)
+    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_ITEM__DETAIL, params)
     return await $api.get(url)
+  }
+
+  @Action({ commit: 'setItemDetail', rawError: true })
+  async actUpdateStock(params: StockModel.ModelDetailEdit): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.UPDATE_STOCK, { id: this.stockDetail.data.id })
+    return await $api.post(url, params.data)
   }
 }

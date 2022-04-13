@@ -1,6 +1,6 @@
 <template lang="pug">
   .grid.grid-nogutter.stock__information-detail
-    .col-2.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden(v-if='stockDetail.data')
+    .col-2.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden(v-if='model.data')
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
@@ -18,32 +18,42 @@
               .icon-small.icon-check-lg.bg-white
               span.uppercase save
         .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          img(:src='stockDetail.data.imageUrl').border-round.w-full
+          img(:src='model.data.imageUrl').border-round.w-full
         .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          Tag(severity="success").uppercase {{stockDetail.data.deleted ? 'Disable' : 'Available'}}
+          Tag(severity="success").uppercase {{model.data.deleted ? 'Disable' : 'Available'}}
         .grid.mb-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          h3.font-bold.my-2 {{stockDetail.data.name}}
+          h3.font-bold.my-2 {{model.data.name}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 code:
-          span.uppercase.font-semibold.text-blue-700 {{stockDetail.data.barcode}}
+          span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 {{unitAttribute}}
+          span.uppercase.font-semibold.text-blue-700 {{model.data.unit}}
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700
           .col-10
             div.text-500 Total inventory quantity
             span.font-semibold.mr-1.uppercase {{total}}
-        div(
-           v-for='(attr, index) in stockDetail.data.attributeValue'
-        )
-          .grid.surface-hover.mb-3
+        .grid.surface-hover.mb-3
             .col-2.flex.align-items-center.justify-content-end
-              div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"')
+              div.icon--large.icon-size.bg-blue-700
             .col-10
-              div.text-500 {{attr.attribute.name}}
-              InputText(:disabled='isEditStockDetail == 0' v-model='attr.value')
+              div.text-500 Size (L*W*H)
+              .grid(v-if='isEditStockDetail')
+                .col-4.p-0.pl-2.pt-1
+                  InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.length').w-full
+                .col-4.p-0.pt-1
+                  InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.width').w-full
+                .col-4.p-0.pt-1
+                  InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.height').w-full
+              span.font-semibold.mr-1.uppercase(v-else) {{model.data.length}}*{{model.data.width}}*{{model.data.height}}
+        .grid.surface-hover.mb-3
+            .col-2.flex.align-items-center.justify-content-end
+              div.icon--large.icon-weight.bg-blue-700
+            .col-10
+              div.text-500 Weight
+              InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.weight')
     .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
 
@@ -52,14 +62,14 @@
 import { Component, Vue, namespace} from 'nuxt-property-decorator'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStock = namespace('stock/stock-detail')
+const _ = require('lodash')
 
 @Component({
   layout: 'dashboard'
 })
 class StockDetail extends Vue {
   isEditStockDetail: boolean = false
-  sizeAttribute: string = ''
-  weightAttribute: string = ''
+  model: StockModel.ModelDetail | any = {}
 
   @nsStoreStock.State
   stockDetail!: StockModel.ModelDetail
@@ -70,6 +80,9 @@ class StockDetail extends Vue {
   @nsStoreStock.Action
   actGetStockDetail
 
+  @nsStoreStock.Action
+  actUpdateStock!: (params: StockModel.ModelDetailEdit) => Promise<any>
+
   backToStockList() {
     this.$router.push('/stock')
   }
@@ -79,11 +92,15 @@ class StockDetail extends Vue {
   }
 
   saveEditStockDetail() {
+    this.actUpdateStock({
+      data: {
+        height: this.model.data.height,
+        length: this.model.data.length,
+        weight: this.model.data.weight,
+        width: this.model.data.width
+      }
+    })
     this.isEditStockDetail = false
-  }
-
-  get unitAttribute() {
-    return this.stockDetail.data?.attributeValue.find((x: { name: string }) => x.name === 'unit')?.value || ''
   }
 
   async mounted() {
@@ -91,6 +108,7 @@ class StockDetail extends Vue {
       this.isEditStockDetail = true
     }
     await this.actGetStockDetail({ id: this.$route.params.sid })
+    this.model = _.cloneDeep(this.stockDetail)
   }
 }
 export default StockDetail
@@ -100,6 +118,10 @@ export default StockDetail
 .stock__information-detail
   height: calc(100vh - 64px)
   .stock__information--gerenal
+    ::v-deep.p-inputnumber-input
+      box-shadow: none !important
+    ::v-deep.p-component:disabled
+      opacity: 1
     ::v-deep.p-disabled, .p-component:disabled
         opacity: 1
 

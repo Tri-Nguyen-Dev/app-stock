@@ -6,7 +6,7 @@
         Button(@click='backToStockList').p-button-link.mr-2
           .icon.icon-btn-back.bg-blue-700
         span.font-semibold.text-lg Stock list / Stock Detail / Item Detail
-      .stock__information.p-4
+      .stock__information.p-4(v-if='itemDetail.data')
         .grid.mb-3
           .col-9.flex
             .icon.icon-box-info.inline-block.mr-1.bg-blue-700
@@ -19,8 +19,7 @@
               span.uppercase save
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-4').stock__information--image
-            //- img(:src='itemDetail.imageUrl').border-round.w-full
-            img(:src='require("~/assets/images/sample.png")').border-round.w-full
+            img(:src='itemDetail.data.stock.imageUrl').border-round.w-full
           .col
             //- Tag(severity="success").uppercase {{itemDetail.deleted ? 'Disable' : 'Available'}}
             //- h3.font-bold.my-2 {{itemDetail.name}}
@@ -161,9 +160,9 @@
 
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
-// import { Stock as StockModel } from '~/models/Stock'
-// const nsStoreStock = namespace('stock/stock-detail')
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Stock as StockModel } from '~/models/Stock'
+const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
   layout: 'dashboard'
@@ -171,11 +170,11 @@ import { Component, Vue } from 'nuxt-property-decorator'
 class ItemDetail extends Vue {
   isEditItemDetail: boolean = false
 
-  // @nsStoreStock.State
-  // itemDetail!: StockModel.ModelDetail
+  @nsStoreStock.State
+  itemDetail!: StockModel.ModelDetail
 
-  // @nsStoreStock.Action
-  // actGetItemsDetail
+  @nsStoreStock.Action
+  actGetItemsDetail
 
   backToStockList() {
     this.$router.push(`/stock/${this.$route.params.sid}`)
@@ -209,11 +208,11 @@ class ItemDetail extends Vue {
   //   return this.itemDetail.data.seller?.phone
   // }
 
-  mounted() {
+  async mounted() {
     if(this.$route.query.plan === 'edit') {
       this.isEditItemDetail = true
     }
-    // await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
+    await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
   }
 }
 export default ItemDetail
