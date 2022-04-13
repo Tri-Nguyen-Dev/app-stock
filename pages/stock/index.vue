@@ -7,7 +7,7 @@
       .header__action
         .header__search
           .icon.icon--left.icon-search
-          InputText(type='text' placeholder='Search' v-model="name" v-on:input="debounceInput")
+          InputText(type='text' placeholder='Search' v-model="name" v-on:input="debounceSearchName")
         .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="toggleShowFilter")
             .icon.icon-filter(v-if="!isShowFilter")
@@ -21,21 +21,21 @@
     .header__filter(:class='{ "active": isShowFilter }')
       .filter__item
         .filter__title Catagory
-        MultiSelect.filter__multiselect(v-model='categories' :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+        MultiSelect.filter__multiselect(v-model='categories' @change="handleChangeCategory" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
       .filter__item
         .filter__title Code
         .filter__search
-            InputText(type="text" placeholder="Search code" v-model="barCode" v-on:input="debounceInput" )
+            InputText(type="text" placeholder="Search code" v-model="barCode" v-on:input="debounceSearchCode" )
             .icon.icon--right.icon-search
       .filter__item
         .filter__title Status
-        Dropdown.filter__dropdown(v-model="status"  :options="statusList" optionLabel="name" placeholder="Select")
+        Dropdown.filter__dropdown(v-model="status" @change="handleChangeStatus"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table
         DataTable(@sort="sortData($event)" :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
           Column(selectionMode='multiple' :styles="{'width': '1%'}" :headerClass="`${!stockList || stockList.length <= 0 || checkStockDisable ? 'checkbox-disable' : ''}`")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
-              span.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
+              span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(field='imageUrl' header='Image')
             template(#body='{ data }')
               .stock__table__image.overflow-hidden
@@ -90,7 +90,7 @@
     Toast
 </template>
 <script lang="ts">
-import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import  _ from 'lodash'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
@@ -134,21 +134,21 @@ class Stock extends Vue {
   actGetStockList!: (params?: any) => Promise<void>
 
   @nsStoreStock.Action
-  actDeleteStockByIds!: (ids: string[]) => Promise<void>
+  actDeleteStockByIds!: (ids: string[]) => Promise<any>
 
   @nsCategoryStock.Action
   actCategoryList!: () => Promise<void>
 
   getParamApi(){
-    const categoryIds = this.categories && this.categories.map((item: any) => item?.id).toString()
+    const categoryIds = this.categories ? this.categories.map((item: any) => item?.id).toString() : null
     return {
-      name: (this.name && this.name !== '') ? this.name : null,
-      barCode: this.barCode && this.barCode !== '' ? this.barCode : null,
-      warehouseId: this.warehouse?.id,
-      categoryIds: categoryIds && categoryIds !== '' ? categoryIds : null,
-      deleted: this.status?.value,
-      sortByColumn: this.sortByColumn,
-      sortDescending: this.isDescending && this.isDescending
+      name: this.name || null,
+      barCode: this.barCode || null,
+      warehouseId: this.warehouse?.id || null,
+      categoryIds: categoryIds || null,
+      deleted: this.status?.value || null,
+      sortByColumn: this.sortByColumn || null,
+      sortDescending: this.isDescending || null
     }
   }
  
@@ -190,9 +190,11 @@ class Stock extends Vue {
     await this.actGetStockList({ ...this.getParamApi(), ...this.paginate })
   }
 
-  @Watch('status')
-  @Watch('categories')
-  getNewStock() {
+  handleChangeStatus() {
+    this.getProductList()
+  }
+
+  handleChangeCategory() {
     this.getProductList()
   }
 
@@ -216,18 +218,20 @@ class Stock extends Vue {
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      await this.actDeleteStockByIds(this.ids)
-      this.loadingSubmit = false
-      this.isModalDelete = false
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Success Message',
-        detail: 'Successfully deleted stock',
-        life: 3000
-      })
-      this.paginate.pageNumber = 0
-      this.firstPage = 0
-      this.getProductList()
+      const data = await this.actDeleteStockByIds(this.ids)
+      if(data) {
+        this.loadingSubmit = false
+        this.isModalDelete = false
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Successfully deleted stock',
+          life: 3000
+        })
+        this.paginate.pageNumber = 0
+        this.firstPage = 0
+        this.getProductList()
+      }
     } catch (error) {
       this.loadingSubmit = false
     }
@@ -257,8 +261,14 @@ class Stock extends Vue {
     this.getProductList()
   }
 
-  debounceInput =  _.debounce(async () => {
-    await this.getProductList()
+  debounceSearchName =  _.debounce((value) => {
+    this.name = value
+    this.getProductList()
+  }, 500)
+
+  debounceSearchCode =  _.debounce((value) => {
+    this.barCode = value
+    this.getProductList()
   }, 500)
 
   handleRefreshFilter () {
@@ -266,6 +276,7 @@ class Stock extends Vue {
     this.barCode = null
     this.categories = null
     this.status = null
+    this.getProductList()
   }
 }
 export default Stock
@@ -280,27 +291,6 @@ export default Stock
   .header__action
       @include flex-center
       gap: 0 16px    
-  .header__filter
-    visibility: hidden
-    max-height: 0
-    transition: all 0.25s ease-in-out
-    display: grid
-    grid-template-columns: repeat(3, 1fr)
-    grid-gap: 0 16px
-    &.active
-      visibility: visible
-      max-height: 200px
-      margin-bottom: 24px
-    .filter__item
-      background-color: $color-white
-      border-radius: 4px   
-      padding: 13px 8px 8px 8px
-    .filter__title
-      font-size: 12px
-      color: $text-color-700
-      line-height: calc(16 / 12)
-      margin-bottom: 5px
-      margin-left: 8px
 .stock__table
   border-radius: 4px
   flex: 1

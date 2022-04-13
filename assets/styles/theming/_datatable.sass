@@ -5,6 +5,8 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     font-size: $font-size-base !important
     background-color: $color-white
     height: 100%
+    .grid-cell-center
+        @include flex-center-horiz
     @include flex-column
     .p-datatable-tbody tr:not(.p-highlight).p-datatable-emptymessage:hover
         background-color: #fff !important
