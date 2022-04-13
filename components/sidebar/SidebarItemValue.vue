@@ -1,7 +1,7 @@
 <template lang="pug">
    .item-value(:class="{ 'active': active, 'child-item': !!item.parentId }")
-    ul.item-collapsed.p-2(v-if='collapsed && parentItems.length > 0')
-      li(v-for="parent in parentItems" :key="parent.id" @click.stop="")
+    ul.item-collapsed.p-2(v-if='collapsed && parentItems.length > 0' :class="{'active-child': isShowChildren}")
+      li(v-for="parent in parentItems" :key="parent.id" @click.stop="handleSelect")
         nuxt-link.item-collapsed__children.py-3.pl-4(:to="parent.to") {{parent.label}}
     .item__icon(v-if="!!item.icon")
       .icon.icon--large(:class="`icon-${item.icon} ${iconMenuCssClasses}`")
@@ -11,16 +11,17 @@
         div.item__rect(v-if="item.parentId")
         span {{ item.label }}
         span.icon.toggle.icon-chevron-down.surface-500(:class="iconSelectCssClasses")
+        Badge.mr-2.badge-notify(v-if="item.label ==='Notifications'" :value="3")
 </template>
 
 <script lang='ts'>
 
-import { Component, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator'
+import { Component, InjectReactive, namespace, Prop, Vue, Watch } from 'nuxt-property-decorator'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItemValue extends Vue {
-
+  isShowChildren: Boolean = false
   // -- [ Statement Properties ] ----------------------------------------------------------
   @nsSidebar.State('collapsed')
   collapsed!: boolean
@@ -29,7 +30,18 @@ class SidebarItemValue extends Vue {
   @InjectReactive() readonly selectedItem!: any
   @InjectReactive() readonly parentItems!: any
   
- // -- [ Getters ] -----------------------------------------------------------------------
+  @Watch('active')
+  resetActive() {
+    this.isShowChildren = this.active
+  }
+
+  @Watch('collapsed')
+  showChild(){
+    if(!this.collapsed) {
+      this.isShowChildren = false
+    }
+  }
+  // -- [ Getters ] -----------------------------------------------------------------------
  
   get active() {
     return this.item.id === this.selectedItem?.id || this.item.id === this.selectedItem?.parentId
@@ -48,15 +60,31 @@ class SidebarItemValue extends Vue {
     }
     return clazz
   }
-
+  
+  handleSelect() {
+    this.isShowChildren = false
+  }
 }
 
 export default SidebarItemValue
 </script>
 
 <style lang="sass" scoped>
+.sidebar-foot
+  .toggle 
+    display: none
+  .badge-notify
+    border-radius: 3px
+    background-color: $bg-orange
+.menu-item 
+  .nuxt-link-active 
+    .item-value 
+      border-radius: 4px
+      background-color: $text-color-300
 .child-item
   margin-left: 40px
+  .item-collapsed
+    display: none !important
   &::before
     display: none
   .item__label
@@ -66,9 +94,9 @@ export default SidebarItemValue
         height: calc(50% - 10px)
     .item__children
       position: absolute
-      top: 0
+      top: -4px
       left: -20px
-      height: 100%
+      height: calc(100% + 8px)
       width: 2px
       background-color: $bg-body-base
     .item__rect
@@ -91,8 +119,9 @@ export default SidebarItemValue
   .item-collapsed 
     display: none
   &.active 
-   .item-collapsed 
-     display: block
+   .item-collapsed
+     &.active-child 
+       display: block
      position: absolute
      top: 40px
      width: 230px

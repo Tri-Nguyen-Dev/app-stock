@@ -57,12 +57,16 @@ class Sidebar extends Vue {
     return this.user?.userDetail.displayName || 'Unknown'
   }
   // -- [ Methods ] ------------------------------------------------------------
-
+  
   onSelectMenu(item) {
     this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
     if(!item.parentId) {
       this.parentItems = this.pageMenu.filter(value => value.parentId === item.id)
     }
+  }
+
+  mounted() {
+    this.selectedItem = this.pageMenu.filter((item)=> item.to === this.$route.path)[0]
   }
 }
 
