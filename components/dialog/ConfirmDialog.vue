@@ -4,7 +4,8 @@
             div.confirm-dialog__content
                 img(:srcset="`${image ? require(`~/assets/images/${image}.png`) : ''} 2x`")
                 h3.confirm-dialog__title  {{ title }}
-                p.confirm-dialog__des {{ message }}
+                p.confirm-dialog__des 
+                    slot(name="message")
                 div.confirm-dialog__footer
                     Button.confirm-dialog__btn.btn--discard(@click="onCancel()") No
                     Button.confirm-dialog__btn.btn--agree(@click="onOk()" :disabled="loadingBtn")
@@ -17,7 +18,6 @@ import { Component, Vue, Prop } from 'nuxt-property-decorator'
 class ConfirmDialogCustom extends Vue {
   @Prop() image!: string
   @Prop({ default: '' }) title!: string
-  @Prop({ default: '' }) message!: string
   @Prop({ default: false }) isShow!: boolean
   @Prop() onOk!: () => void
   @Prop() onCancel!: () => void

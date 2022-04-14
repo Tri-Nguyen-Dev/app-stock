@@ -6,7 +6,14 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     background-color: $color-white
     height: 100%
     .grid-cell-center
-        @include flex-center-horiz
+        @include flex-center
+    .grid-cell-right
+        display: flex
+        justify-content: flex-end
+    .grid-header-right
+        .p-column-header-content
+            display: flex
+            justify-content: flex-end
     @include flex-column
     .p-datatable-tbody tr:not(.p-highlight).p-datatable-emptymessage:hover
         background-color: #fff !important
@@ -85,10 +92,10 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         content: url('~/assets/icons/sort-alt.svg')
     .pi-sort-amount-up-alt:before
         content: url('~/assets/icons/sort-alt-up.svg')
-    .pi-sort-amount-down
+    .pi-sort-amount-down:before
+        content: url('~/assets/icons/sort-alt-up.svg')
+        display: inline-block
         transform: rotate(180deg) !important
-        &:before
-            content: url('~/assets/icons/sort-alt-up.svg')
 // custom pagination
 .pagination
     @include flex-center-vert
