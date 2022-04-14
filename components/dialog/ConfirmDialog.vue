@@ -83,6 +83,8 @@ export default ConfirmDialogCustom
         display: flex
         align-items: center
         justify-content: center
+    &__btn:focus
+        box-shadow: none !important
     &__btn:hover
         background-color: $primary !important
     &__btn.btn--discard
