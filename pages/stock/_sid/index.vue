@@ -14,9 +14,6 @@
           .col.flex.justify-content-end
             .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon.icon-btn-edit
-            .bg-blue-500.cursor-pointer.border-round.text-white.p-1(:class='isEditStockDetail ? " " : "hidden"' @click='saveEditStockDetail')
-              .icon-small.icon-check-lg.bg-white
-              span.uppercase save
         .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           img(:src='model.data.imageUrl').border-round.w-full
         .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
@@ -28,7 +25,7 @@
           span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 {{model.data.unit}}
+          span.uppercase.font-semibold.text-blue-700 {{model.data.unit.name}}
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700
@@ -54,6 +51,13 @@
             .col-10
               div.text-500 Weight
               InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.weight')
+        .grid
+          .col
+            .text-center.surface-hover.cursor-pointer.border-round.p-1(:class='isEditStockDetail ? " " : "hidden"' @click='cancelEditStockDetail')
+              span.uppercase.font-semibold cancel
+          .col
+            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(:class='isEditStockDetail ? " " : "hidden"' @click='saveEditStockDetail')
+              span.uppercase save
     .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
 
@@ -100,6 +104,10 @@ class StockDetail extends Vue {
         width: this.model.data.width
       }
     })
+    this.isEditStockDetail = false
+  }
+
+  cancelEditStockDetail() {
     this.isEditStockDetail = false
   }
 

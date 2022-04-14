@@ -1,5 +1,5 @@
 <template lang="pug">
-    DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable.table__sort-icon.bg-white(
+    DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
       :resizableColumns='true'
       :rows='pagination.rows'
       :value='dataRenderItems'
@@ -134,6 +134,8 @@ export default BoxDetailHistory
 </script>
 
 <style lang="sass" scoped>
+  .box-page-container
+    height: calc(100vh - 18rem)
   .p-column-header-content
     .p-column-title
       color: #464D64

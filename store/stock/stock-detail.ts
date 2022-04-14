@@ -12,13 +12,17 @@ export default class StoreStockDetail extends VuexModule {
     GET_STOCK_DETAIL: '/stock/:id/detail',
     GET_ITEMS_LIST: '/stock/:id/box/list',
     GET_ITEM__DETAIL: '/stock/:stockId/box/:boxId/detail',
-    UPDATE_STOCK: '/stock/:id/update'
+    UPDATE_STOCK: '/stock/:id/update',
+    GET_STOCK_HISTORY: '/stock/:stockId/box/:boxId/history',
+    DELETE_ITEMS: '/stock/:id/box/delete',
+    UPDATE_ITEM: '/stock/:stockId/box/:boxId/update'
   }
 
   public total?: number = 0
   public stockDetail: any = {};
   public itemsList: any = {}
   public itemDetail: any = {}
+  public historyList: any = {}
 
   @Mutation
   setStockDetail(data:StockModel.ModelDetail) {
@@ -34,6 +38,11 @@ export default class StoreStockDetail extends VuexModule {
   @Mutation
   setItemDetail(itemDetail: StockModel.BoxModel) {
     this.itemDetail = itemDetail
+  }
+
+  @Mutation
+  setHistoryStock(historyList: {}) {
+    this.historyList = historyList
   }
 
   @Action({ commit: 'setStockDetail', rawError: true })
@@ -54,9 +63,34 @@ export default class StoreStockDetail extends VuexModule {
     return await $api.get(url)
   }
 
-  @Action({ commit: 'setItemDetail', rawError: true })
+  @Action({ commit: 'setStockDetail', rawError: true })
   async actUpdateStock(params: StockModel.ModelDetailEdit): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.UPDATE_STOCK, { id: this.stockDetail.data.id })
+    return await $api.post(url, params.data)
+  }
+
+  @Action({ commit: 'setHistoryStock', rawError: true })
+  async actGetHistoryStock(params: {stockId: number, boxId: number}): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_STOCK_HISTORY, params)
+    return await $api.get(url)
+  }
+
+  @Action({ rawError: true })
+  async actDeleteItemsById(ids?: string[]): Promise<string | undefined> {
+    try {
+      const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.DELETE_ITEMS, {id: this.stockDetail.data.id})
+      const response = await $api.post(url, { ids })
+      if(!response.data) {
+        return
+      }
+      return response.data
+    } catch (error) {
+    }
+  }
+
+  @Action({ commit: 'setItemDetail', rawError: true })
+  async actUpdateItem(params: StockModel.ModelEditItem): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.UPDATE_ITEM, {stockId: this.stockDetail.id, boxId: this.itemDetail.id})
     return await $api.post(url, params.data)
   }
 }

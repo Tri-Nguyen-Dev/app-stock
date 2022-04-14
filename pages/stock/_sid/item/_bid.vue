@@ -1,12 +1,12 @@
 <template lang="pug">
- .grid.grid-nogutter.item__detail-container.overflow-hidden
+ .grid.grid-nogutter.item__detail-container.overflow-hidden(v-if='itemDetail.data')
     .col-4.p-0.surface-0.border-round.left__information--stock.h-full.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
           .icon.icon-btn-back.bg-blue-700
         span.font-semibold.text-lg Stock list / Stock Detail / Item Detail
-      .stock__information.p-4(v-if='itemDetail.data')
+      .stock__information.p-4
         .grid.mb-3
           .col-9.flex
             .icon.icon-box-info.inline-block.mr-1.bg-blue-700
@@ -21,21 +21,22 @@
           .col(class='xl:col-4').stock__information--image
             img(:src='itemDetail.data.stock.imageUrl').border-round.w-full
           .col
-            //- Tag(severity="success").uppercase {{itemDetail.deleted ? 'Disable' : 'Available'}}
-            //- h3.font-bold.my-2 {{itemDetail.name}}
-            Tag(severity="success").uppercase Available
-            h3.font-bold.my-2 Macbook ProMax 1TB
+            Tag(v-show="itemDetail.data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
+              span.font-bold.text-green-400.font-sm AVAILABLE
+            Tag(v-show="itemDetail.data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200
+              span.font-bold.text-400.font-sm DISABLE
+            Tag(v-show="itemDetail.data.itemStatus === 'ITEM_STATUS_DRAFT'").px-2.bg-blue-500
+              span.font-bold.text-white.font-sm DRAFT
+            h3.font-bold.my-2 {{itemDetail.data.stock.name}}
             div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 code:
-              //- span.uppercase.font-semibold.text-blue-700 {{itemDetail.boxCode}}
-              span.uppercase.font-semibold.text-blue-700 sdf090s
+              span.uppercase.font-semibold.text-blue-700 {{itemDetail.data.stock.barCode}}
             div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 sku:
-              //- span.uppercase.font-semibold.text-blue-700 {{itemDetail.sku}}
-              span.uppercase.font-semibold.text-blue-700 lgjlk9
+              span.uppercase.font-semibold.text-blue-700 {{itemDetail.data.sku}}
             div
               p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-              span.uppercase.font-semibold.text-blue-700 piece
+              span.uppercase.font-semibold.text-blue-700 {{itemDetail.data.stock.unit}}
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -44,8 +45,7 @@
                 .icon--large.icon-receipt-note.bg-blue-700
               .col
                 div.text-500 Receipt note ID
-                //- span.font-semibold {{itemDetail.receiptNote}}
-                span.font-semibold.uppercase asadfgkl80
+                span.font-semibold {{itemDetail.data.box.request.id}}
                 .icon-btn.icon-export.inline-block
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -54,8 +54,7 @@
                 .icon--large.icon-tag-user.bg-blue-700
               .col
                 div.text-500 Creator ID
-                //- span.font-semibold {{itemDetail.creatorId}}
-                span.font-semibold.uppercase asdgasga56
+                span.font-semibold {{itemDetail.data.box.request.createBy}}
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -64,8 +63,7 @@
                 .icon--large.icon-warehouse.bg-blue-700
               .col
                 div.text-500 Warehouse
-                //- span.font-semibold.mr-1.uppercase {{itemWarehouse}}
-                span.font-semibold.mr-1.uppercase asdgasg43
+                span.font-semibold.mr-1.uppercase {{itemDetail.data.box.request.warehouse.name}}
                 .icon-btn.icon-arrow-up-right.inline-block
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -74,8 +72,7 @@
                 .icon--large.icon-location-2.bg-blue-700
               .col
                 div.text-500 Location
-                //- span.font-semibold.mr-1.uppercase {{itemLocation}}
-                span.font-semibold.mr-1.uppercase asdf-35-g
+                span.font-semibold.mr-1.uppercase  {{itemDetail.data.box.rackLocation.name}}
                 .icon-btn.icon-arrow-up-right.inline-block
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
@@ -84,8 +81,8 @@
               .col-3.flex.justify-content-end
                 .icon--large.icon-size.bg-blue-700
               .col
-                div.text-500 Size (cm)
-                span.font-semibold 180x180x180
+                div.text-500 Size (L*W*H)
+                span.font-semibold {{itemDetail.data.stock.length}}*{{itemDetail.data.stock.width}}*{{itemDetail.data.stock.height}}
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
@@ -93,7 +90,7 @@
                 .icon--large.icon-weight.bg-blue-700
               .col
                 div.text-500 Weight (Kg)
-                span.font-semibold  20.8
+                span.font-semibold  {{itemDetail.data.stock.weight}}
         .grid
           .col(:class='isEditItemDetail ? "opacity-40" : "opacity-100"' class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
             .surface-hover.p-3
@@ -102,7 +99,7 @@
                   .icon--large.icon-boxcode.bg-blue-700
                 .col
                   div.text-500 Boxcode
-                  //- span.font-semibold.mr-1.uppercase {{itemDetail.boxCode}}
+                  span.font-semibold.mr-1.uppercase {{itemDetail.data.box.barCode}}
                   span.font-semibold.mr-1.uppercase asdg543
                   .icon-btn.icon-export.inline-block
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
@@ -112,8 +109,7 @@
                   .icon--large.icon-price.bg-blue-700
                 .col
                   div.text-500 Value
-                  //- InputText(:disabled='isEditItemDetail == 0' v-model='itemDetail.price').w-6
-                  InputText(:disabled='isEditItemDetail == 0' v-model='isEditItemDetail').w-6
+                  InputText(:disabled='isEditItemDetail == 0' v-model='itemDetail.data.value').w-6
       .sender__information.p-4(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
         .grid.mb-3
           .col
@@ -125,24 +121,21 @@
               .icon--large.icon-sender-name.bg-blue-700
             .col
               div.text-500 Seller
-              //- span.font-semibold {{sellerName}}
-              span.font-semibold Obama Yamaha
+              span.font-semibold {{itemDetail.data.box.request.seller.name}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
               .icon--large.icon-sender-email.bg-blue-700
             .col
               div.text-500 Email Address
-              //- span.font-semibold {{sellerEmail}}
-              span.font-semibold DonaldTrump@JoeBiden.com
+              span.font-semibold {{itemDetail.data.box.request.seller.email}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
               .icon--large.icon-sender-phone.bg-blue-700
             .col
               div.text-500 Phone number
-              //- span.font-semibold {{sellerPhone}}
-              span.font-semibold 091234567
+              span.font-semibold {{itemDetail.data.box.request.seller.phone}}
     .col-8.px-5.right__information--stock
       TabView
         TabPanel
@@ -150,7 +143,7 @@
             .icon.icon-history.mr-2.surface-600
             span Stock history
           .overflow-auto.stock__log--history
-            StockLogInformation(v-for='item in 4' :key='item.index').mb-3
+            StockLogInformation.mb-3
         TabPanel
           template(#header)
             .icon.icon-location-2.mr-2.surface-600
@@ -163,18 +156,23 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStock = namespace('stock/stock-detail')
+const _ = require('lodash')
 
 @Component({
   layout: 'dashboard'
 })
 class ItemDetail extends Vue {
   isEditItemDetail: boolean = false
+  model: StockModel.ModelEditItem | any = {}
 
   @nsStoreStock.State
   itemDetail!: StockModel.ModelDetail
 
   @nsStoreStock.Action
   actGetItemsDetail
+
+  @nsStoreStock.Action
+  actUpdateItem!: (params: StockModel.ModelEditItem) => Promise<any>
 
   backToStockList() {
     this.$router.push(`/stock/${this.$route.params.sid}`)
@@ -185,34 +183,20 @@ class ItemDetail extends Vue {
   }
 
   saveEditItemDetail() {
+    this.actUpdateItem({
+      data: {
+        value: this.model.data.value
+      }
+    })
     this.isEditItemDetail = false
   }
-
-  // get itemLocation() {
-  //   return this.itemDetail.data.location?.name
-  // }
-
-  // get itemWarehouse() {
-  //   return this.itemDetail.data.warehouse?.name
-  // }
-
-  // get sellerName() {
-  //   return this.itemDetail.data.seller?.name
-  // }
-
-  // get sellerEmail() {
-  //   return this.itemDetail.data.seller?.email
-  // }
-
-  // get sellerPhone() {
-  //   return this.itemDetail.data.seller?.phone
-  // }
 
   async mounted() {
     if(this.$route.query.plan === 'edit') {
       this.isEditItemDetail = true
     }
     await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
+    this.model = _.cloneDeep(this.itemDetail)
   }
 }
 export default ItemDetail

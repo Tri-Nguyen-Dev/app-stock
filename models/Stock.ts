@@ -23,6 +23,12 @@ export namespace Stock {
       width?: number
     }
   }
+
+  export interface ModelEditItem {
+    data: {
+      value?: number
+    }
+  }
   export interface ModelDetail {
     data: {
       id: string,

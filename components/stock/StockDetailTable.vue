@@ -6,10 +6,15 @@
         span.text-600.font-sm(v-if="itemsList.data") {{itemsList.data.total}} results found
       .col-fixed
         .grid
-          .col-fixed
-            Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isShowFilter = !isShowFilter")
+          .col-fixed.flex.btn-filter
+            //- Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isShowFilter = !isShowFilter")
+            //-   .icon.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
+            //-   span.text-900.ml-3.text-primary Filter
+            div.cursor-pointer.bg-white.btn-filter-toggle.flex.align-items-center.h-full.flex-1(@click="isShowFilter = !isShowFilter")
               .icon.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
               span.text-900.ml-3.text-primary Filter
+            div.cursor-pointer.refresh-filter(@click="handleRefreshFilter")
+              img(:src="require(`~/assets/icons/rotate-left.svg`)")
     .grid(v-show="isShowFilter")
       .col
         .bg-white.border-round
@@ -75,9 +80,9 @@
           Column(field="box.deleted" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
               div
-                Tag(v-if="data.box.deleted" severity="success").px-2.surface-200
+                Tag(v-if="data.box.deleted").px-2.surface-200
                   span.font-bold.text-400.font-sm DISABLE
-                Tag(v-else severity="success").px-2.bg-green-100
+                Tag(v-else).px-2.bg-green-100
                   span.font-bold.text-green-400.font-sm AVAILABLE
           Column(:exportable="false" header="ACTION" className="p-text-right")
             template(#body="{data}")
@@ -99,7 +104,7 @@
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
               p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
-                span.text-primary.underline here
+                span.text-primary.underline  &nbsp;here&nbsp;
                 span to add item.
               p.text-900.font-bold.mt-3(v-else) Item not found!
     ConfirmDialogCustom(
@@ -107,7 +112,7 @@
       :message="`Are you sure you want to delete ${ids.length} in this list stock?`"
       image="confirm-delete"
       :isShow="isModalDelete"
-      :onOk="handleDeleteStock"
+      :onOk="handleDeleteItems"
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
@@ -118,7 +123,6 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStockTable = namespace('stock/stock-detail')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
-const nsStoreStock = namespace('stock/stock-list')
 
 @Component({
   components: {ConfirmDialogCustom}
@@ -176,8 +180,8 @@ class StockDetailTable extends Vue {
   @nsStoreWarehouse.Action
   actWarehouseList!: () => Promise<void>
 
-  @nsStoreStock.Action
-  actDeleteStockByIds!: (ids: string[]) => Promise<void>
+  @nsStoreStockTable.Action
+  actDeleteItemsById!: (ids: string[]) => Promise<void>
 
   get getInfoPaginate() {
     const { pageNumber, pageSize } = this.paginate
@@ -228,25 +232,21 @@ class StockDetailTable extends Vue {
     this.isModalDelete = false
   }
 
-  async handleDeleteStock() {
-    try {
-      this.loadingSubmit = true
-      await this.actDeleteStockByIds(this.ids)
-      this.loadingSubmit = false
-      this.isModalDelete = false
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Success Message',
-        detail: 'Successfully deleted stock',
-        life: 3000
-      })
-      this.paginate.pageNumber = 0
-      this.firstPage = 0
-      this.getItemsList()
-      this.selectedStock = []
-    } catch (error) {
-      this.loadingSubmit = false
-    }
+  async handleDeleteItems() {
+    this.loadingSubmit = true
+    await this.actDeleteItemsById(this.ids)
+    this.loadingSubmit = false
+    this.isModalDelete = false
+    this.$toast.add({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Successfully deleted stock',
+      life: 3000
+    })
+    this.paginate.pageNumber = 0
+    this.firstPage = 0
+    this.getItemsList()
+    this.selectedStock = []
   }
 
   async getItemsList() {
@@ -275,6 +275,16 @@ class StockDetailTable extends Vue {
     this.getItemsList()
   }
 
+  handleRefreshFilter () {
+    this.filter = {
+      name: null,
+      warehouse: null,
+      categories: null,
+      barCode: null,
+      status: null
+    }
+  }
+
   redirectToDetail({ data }) {
     this.$router.push(`${this.$route.params.sid}/item/${data.box.id}`)
   }
@@ -284,17 +294,35 @@ class StockDetailTable extends Vue {
   }
 
   mounted() {
-      this.getItemsList()
-      this.actWarehouseList()
+    this.getItemsList()
+    this.actWarehouseList()
   }
 }
 export default StockDetailTable
 </script>
 <style lang="sass" scoped>
-    .stock__mutidelete
-      background-color: #FF7171
-    ::v-deep.p-inputtext,
-    ::v-deep.p-dropdown,
-    ::v-deep.p-button
-      box-shadow: none !important
+  .btn-filter
+    height: 58px
+    width: 166px
+    .refresh-filter
+      background-color: $primary
+      display: flex
+      align-items: center
+      width: 50px
+      justify-content: center
+      border-top-right-radius: 4px
+      border-bottom-right-radius: 4px
+    .btn-filter-toggle
+      // gap: 18px
+      border-top-left-radius: 4px
+      border-bottom-left-radius: 4px
+      display: flex
+      justify-content: center
+
+  .stock__mutidelete
+    background-color: #FF7171
+  ::v-deep.p-inputtext,
+  ::v-deep.p-dropdown,
+  ::v-deep.p-button
+    box-shadow: none !important
 </style>
