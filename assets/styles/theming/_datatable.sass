@@ -11,30 +11,21 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
     .grid-heading-content
         .p-column-header-content
-            display: flex
-            justify-content: center
+            @include flex-center-horiz
     .grid-heading-end
         .p-column-header-content
-            display: flex
-            justify-content: flex-end
+           @include flex-end
     .grid-body-center
-        display: flex
-        justify-content: center
-        width: 100%
+        @include flex-center-horiz
     .grid-body-end
-        display: flex
-        justify-content: flex-end
-        width: 100
+        @include flex-end
     .checkbox-disable
         .p-checkbox
             cursor: auto !important
             pointer-events: none !important
             .p-checkbox-box
                 background-color: $color-white
-                border: 1.5px solid #F1F3F6 !important
-    &.table__empty
-        .p-datatable-table
-            height: 100%
+                border: 1.5px solid $text-color-300 !important
     .p-datatable-wrapper
         flex: 1
 
@@ -108,26 +99,23 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             cursor: auto !important
             pointer-events: none !important
             .p-checkbox-box
-                border: 1.5px solid #F1F3F6 !important
+                border: 1.5px solid $text-color-300 !important
+    
 // pagination
 .pagination
-    display: flex
-    align-items: center
-    justify-content: space-between
+    @include flex-center-space-between
     background-color: $color-white
     padding: 21px 18px
     &__info
-        display: flex
-        align-items: center
+        @include flex-center-horiz
         gap: 0 19px
     &__total
         font-size: $font-size-small
         color: $text-color-500
         line-height: calc(24 / 12)
     &__delete
+        @include flex-center-vert
         background-color: #FF7171
-        display: flex
-        align-items: center
         color: $color-white
         border: 1.5px solid $color-white
         border-radius: 4px
@@ -152,20 +140,16 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         .p-link:focus
             box-shadow: none
         .p-dropdown
-            display: flex
-            align-items: center
+            @include flex-center-vert
 .table__action
-    display: flex
-    align-items: center
+    @include flex-center-vert
     gap: 0 8px
     span
+        @include flex-center
         width: 34px
         height: 34px
         border-radius: 4px
         background-color: $text-color-300
-        display: flex
-        align-items: center
-        justify-content: center
         cursor: pointer
     &.action-disabled
         span
@@ -186,8 +170,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     color: #979AA4
 .table__sort
   cursor: pointer
-  display: flex
-  align-items: center
+  @include flex-center-vert
   gap: 0 7px
 .sortDes
   transform: rotate(180deg) !important
