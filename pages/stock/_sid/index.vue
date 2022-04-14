@@ -5,7 +5,7 @@
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
           .icon.icon-btn-back.bg-blue-700
-        span.font-semibold.text-base Stock list / Stock Detail
+        Breadcrumb(:home="home" :model="breadcrumbItems")
       .stock__information--gerenal.p-4.border-bottom-1.border-gray-300
         .grid.mb-3.align-items-center
           .col-9.pl-0.flex
@@ -43,7 +43,7 @@
               div(:class='"icon--large " + `icon-${attr.attribute.icon}` + " bg-blue-700"')
             .col-10
               div.text-500 {{attr.attribute.name}}
-              InputText(:disabled='isEditStockDetail == 0' v-model='attr.value')
+              InputText(:disabled='!isEditStockDetail' v-model='attr.value')
     .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
 
@@ -60,6 +60,10 @@ class StockDetail extends Vue {
   isEditStockDetail: boolean = false
   sizeAttribute: string = ''
   weightAttribute: string = ''
+  home = {to: '/stock', label: 'Stock list'}
+  breadcrumbItems = [
+    {to: `/stock/${ this.sid }`, label: 'Stock detail'}
+  ]
 
   @nsStoreStock.State
   stockDetail!: StockModel.ModelDetail
@@ -86,11 +90,15 @@ class StockDetail extends Vue {
     return this.stockDetail.data?.attributeValue.find((x: { name: string }) => x.name === 'unit')?.value || ''
   }
 
+  get sid() {
+    return this.$route.params.sid || ''
+  }
+
   async mounted() {
     if(this.$route.query.plan === 'edit') {
       this.isEditStockDetail = true
     }
-    await this.actGetStockDetail({ id: this.$route.params.sid })
+    await this.actGetStockDetail({ id: this.sid })
   }
 }
 export default StockDetail

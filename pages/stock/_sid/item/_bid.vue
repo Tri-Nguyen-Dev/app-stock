@@ -5,7 +5,7 @@
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
           .icon.icon-btn-back.bg-blue-700
-        span.font-semibold.text-lg Stock list / Stock Detail / Item Detail
+        Breadcrumb(:home="home" :model="breadcrumbItems")
       .stock__information.p-4
         .grid.mb-3
           .col-9.flex
@@ -170,12 +170,25 @@ import { Component, Vue } from 'nuxt-property-decorator'
 })
 class ItemDetail extends Vue {
   isEditItemDetail: boolean = false
+  home = {to: '/stock', label: 'Stock list'}
+  breadcrumbItems = [
+    {to: `/stock/${ this.sid }`, label: 'Stock detail'},
+    {to: `/stock/${ this.sid }/item/${ this.bid }`, label: 'Item detail'}
+  ]
 
   // @nsStoreStock.State
   // itemDetail!: StockModel.ModelDetail
 
   // @nsStoreStock.Action
   // actGetItemsDetail
+
+  get sid() {
+    return this.$route.params.sid || ''
+  }
+
+  get bid() {
+    return this.$route.params.bid || ''
+  }
 
   backToStockList() {
     this.$router.push(`/stock/${this.$route.params.sid}`)
