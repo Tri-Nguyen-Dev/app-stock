@@ -27,32 +27,12 @@
           span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 {{model.data.unit}}
-        .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          .col-2.flex.align-items-center.justify-content-end
-            .icon--large.icon-total-inventory.bg-blue-700
-          .col-10
-            div.text-500 Total inventory quantity
-            span.font-semibold.mr-1.uppercase {{total}}
-        .grid.surface-hover.mb-3
-            .col-2.flex.align-items-center.justify-content-end
-              div.icon--large.icon-size.bg-blue-700
-            .col-10
-              div.text-500 Size (L*W*H)
-              .grid(v-if='isEditStockDetail')
-                .col-4.p-0.pl-2.pt-1
-                  InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.length').w-full
-                .col-4.p-0.pt-1
-                  InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.width').w-full
-                .col-4.p-0.pt-1
-                  InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.height').w-full
-              span.font-semibold.mr-1.uppercase(v-else) {{model.data.length}}*{{model.data.width}}*{{model.data.height}}
-        .grid.surface-hover.mb-3
-            .col-2.flex.align-items-center.justify-content-end
-              div.icon--large.icon-weight.bg-blue-700
-            .col-10
-              div.text-500 Weight
-              InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.weight')
+          span.uppercase.font-semibold.text-blue-700 
+
+        StockUnit(title="Total inventory quantity" :total="total" :isEdit="isEditStockDetail" icon="icon-total-inventory")
+        StockUnit(title="Size (L*W*H)" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size")
+        StockUnit(title="Weight" :weight="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @test='test')
+        div {{weightBox}}
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
@@ -76,6 +56,10 @@ const _ = require('lodash')
 class StockDetail extends Vue {
   isEditStockDetail: boolean = false
   model: StockModel.ModelDetail | any = {}
+  heightBox: any = ''
+  weightBox: any = ''
+  lengthBox: any = ''
+  widthBox: any = ''
 
   @nsStoreStock.State
   stockDetail!: StockModel.ModelDetail
@@ -97,11 +81,15 @@ class StockDetail extends Vue {
     this.isEditStockDetail = true
   }
 
+  test(val) {
+    this.weightBox = val
+  }
+
   saveEditStockDetail() {
     this.actUpdateStock({
       height: this.model.data.height,
       length: this.model.data.length,
-      weight: this.model.data.weight,
+      weight: this.weightBox,
       width: this.model.data.width
     })
     this.isEditStockDetail = false
@@ -117,6 +105,10 @@ class StockDetail extends Vue {
     }
     await this.actGetStockDetail({ id: this.$route.params.sid })
     this.model = _.cloneDeep(this.stockDetail)
+    this.heightBox = this.model.data.height
+    this.lengthBox = this.model.data.length
+    this.weightBox = this.model.data.weight
+    this.widthBox = this.model.data.width
   }
 }
 export default StockDetail
