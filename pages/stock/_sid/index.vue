@@ -15,9 +15,11 @@
             .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon.icon-btn-edit
         .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          img(:src='model.data.imageUrl').border-round.w-full
+          img(:src='model.data.imagePath').border-round.w-full
         .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          Tag(severity="success").uppercase {{model.data.deleted ? 'Disable' : 'Available'}}
+          Tag(severity="success" v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"').uppercase Available
+          Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DISABLE"').uppercase.surface-200 Disable
+          Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DRAFT"').uppercase Draft
         .grid.mb-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           h3.font-bold.my-2 {{model.data.name}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
@@ -25,7 +27,7 @@
           span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 {{model.data.unit.name}}
+          span.uppercase.font-semibold.text-blue-700 {{model.data.unit}}
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700

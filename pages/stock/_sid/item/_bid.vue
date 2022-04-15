@@ -16,7 +16,7 @@
               .icon.icon-btn-edit
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-4').stock__information--image
-            img(:src='model.data.stock.imageUrl').border-round.w-full
+            img(:src='model.data.stock.imagePath').border-round.w-full
           .col
             Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
               span.font-bold.text-green-400.font-sm AVAILABLE
@@ -33,7 +33,7 @@
               span.uppercase.font-semibold.text-blue-700 {{model.data.sku}}
             div
               p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-              span.uppercase.font-semibold.text-blue-700 {{model.data.stock.unit.name}}
+              span.uppercase.font-semibold.text-blue-700 {{model.data.stock.unit}}
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
