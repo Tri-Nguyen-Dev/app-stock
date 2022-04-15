@@ -170,10 +170,10 @@ import { Component, Vue } from 'nuxt-property-decorator'
 })
 class ItemDetail extends Vue {
   isEditItemDetail: boolean = false
-  home = {to: '/stock', label: 'Stock list'}
+  home = { to: '/stock', label: 'Stock list' }
   breadcrumbItems = [
-    {to: `/stock/${ this.sid }`, label: 'Stock detail'},
-    {to: `/stock/${ this.sid }/item/${ this.bid }`, label: 'Item detail'}
+    { to: `/stock/${ this.sid }`, label: 'Stock detail' },
+    { to: `/stock/${ this.sid }/item/${ this.bid }`, label: 'Item detail' }
   ]
 
   // @nsStoreStock.State

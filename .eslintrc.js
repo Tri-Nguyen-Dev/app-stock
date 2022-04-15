@@ -23,6 +23,8 @@ module.exports = {
     'padding-line-between-statements': ['error',
       { blankLine: 'always', prev: ['function', 'import'], next: ['class'] },
       { blankLine: 'never', prev: '*', next: ['const', 'let', 'var', 'return'] }
-    ]
+    ],
+    'object-curly-spacing':  ['error', 'always']
+    // 'max-len': ['error', { 'code': 140 }]
   }
 }

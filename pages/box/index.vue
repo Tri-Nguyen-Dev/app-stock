@@ -127,7 +127,6 @@ import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
-const _ = require('lodash')
 
 @Component({
   components: {
@@ -251,7 +250,7 @@ class BoxList extends Vue {
   }, 500);
 
   async sortData(e: any){
-    const {sortField, sortOrder} = e
+    const { sortField, sortOrder } = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '')
@@ -262,12 +261,12 @@ class BoxList extends Vue {
     await this.actGetBoxList(this.getParamAPi())
   }
 
-  onRowClick({data}){
+  onRowClick({ data }){
     this.$router.push(`/box/${data.id}`)
   }
 
   handleEditBox(id: any) {
-    this.$router.push({ path: `/box/${id}`, query: { plan: 'edit' }})
+    this.$router.push({ path: `/box/${id}`, query: { plan: 'edit' } })
   }
 }
 export default BoxList

@@ -243,7 +243,7 @@ class BoxDetail extends Vue {
     }
     await this.actGetBoxDetail({ id: this.$route.params.id })
     await this.actCategoryList()
-    await this.actLocationList({name: null})
+    await this.actLocationList({ name: null })
   }
 
   backToBox() {

@@ -49,7 +49,7 @@
 
 </template>
 <script lang="ts">
-import { Component, Vue, namespace} from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStock = namespace('stock/stock-detail')
 
@@ -60,9 +60,9 @@ class StockDetail extends Vue {
   isEditStockDetail: boolean = false
   sizeAttribute: string = ''
   weightAttribute: string = ''
-  home = {to: '/stock', label: 'Stock list'}
+  home = { to: '/stock', label: 'Stock list' }
   breadcrumbItems = [
-    {to: `/stock/${ this.sid }`, label: 'Stock detail'}
+    { to: `/stock/${ this.sid }`, label: 'Stock detail' }
   ]
 
   @nsStoreStock.State

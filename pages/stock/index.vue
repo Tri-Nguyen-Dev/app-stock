@@ -97,7 +97,6 @@
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
-const _ = require('lodash')
 const nsCategoryStock = namespace('category/category-list')
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStock = namespace('stock/stock-list')
@@ -269,7 +268,7 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' }})
+    this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' } })
   }
 
   rowdbClick({ data }) {
