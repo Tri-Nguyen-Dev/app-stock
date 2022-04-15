@@ -7,9 +7,6 @@
       .col-fixed
         .grid
           .col-fixed.flex.btn-filter
-            //- Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isShowFilter = !isShowFilter")
-            //-   .icon.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
-            //-   span.text-900.ml-3.text-primary Filter
             div.cursor-pointer.bg-white.btn-filter-toggle.flex.align-items-center.h-full.flex-1(@click="isShowFilter = !isShowFilter")
               .icon.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
               span.text-900.ml-3.text-primary Filter

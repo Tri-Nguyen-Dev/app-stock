@@ -51,12 +51,12 @@
             .col-10
               div.text-500 Weight
               InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.weight')
-        .grid
+        .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col
-            .text-center.surface-hover.cursor-pointer.border-round.p-1(:class='isEditStockDetail ? " " : "hidden"' @click='cancelEditStockDetail')
+            .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
               span.uppercase.font-semibold cancel
           .col
-            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(:class='isEditStockDetail ? " " : "hidden"' @click='saveEditStockDetail')
+            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditStockDetail')
               span.uppercase save
     .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
