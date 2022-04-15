@@ -80,9 +80,11 @@
           Column(field="box.deleted" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
               div
-                Tag(v-if="data.box.deleted").px-2.surface-200
+                Tag(v-show="data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200
                   span.font-bold.text-400.font-sm DISABLE
-                Tag(v-else).px-2.bg-green-100
+                Tag(v-show="data.itemStatus === 'ITEM_STATUS_DRAFT'").px-2.bg-blue-500
+                  span.font-bold.text-400.font-sm DRAFT
+                Tag(v-show="data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
                   span.font-bold.text-green-400.font-sm AVAILABLE
           Column(:exportable="false" header="ACTION" className="p-text-right")
             template(#body="{data}")

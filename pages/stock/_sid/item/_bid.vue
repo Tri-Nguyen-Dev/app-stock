@@ -1,5 +1,5 @@
 <template lang="pug">
- .grid.grid-nogutter.item__detail-container.overflow-hidden(v-if='itemDetail.data')
+ .grid.grid-nogutter.item__detail-container.overflow-hidden(v-if='model.data')
     .col-4.p-0.surface-0.border-round.left__information--stock.h-full.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
@@ -14,29 +14,26 @@
           .col.flex.justify-content-end
             .surface-hover.border-round.cursor-pointer.p-2(@click='editItemDetail' :class='isEditItemDetail ? "hidden" : " "')
               .icon.icon-btn-edit
-            Button(:class='isEditItemDetail ? " " : "hidden"' @click='saveEditItemDetail')
-              .icon-btn.icon-check-lg.bg-white.mr-1
-              span.uppercase save
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-4').stock__information--image
-            img(:src='itemDetail.data.stock.imageUrl').border-round.w-full
+            img(:src='model.data.stock.imageUrl').border-round.w-full
           .col
-            Tag(v-show="itemDetail.data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
+            Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
               span.font-bold.text-green-400.font-sm AVAILABLE
-            Tag(v-show="itemDetail.data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200
+            Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200
               span.font-bold.text-400.font-sm DISABLE
-            Tag(v-show="itemDetail.data.itemStatus === 'ITEM_STATUS_DRAFT'").px-2.bg-blue-500
+            Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_DRAFT'").px-2.bg-blue-500
               span.font-bold.text-white.font-sm DRAFT
-            h3.font-bold.my-2 {{itemDetail.data.stock.name}}
+            h3.font-bold.my-2 {{model.data.stock.name}}
             div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 code:
-              span.uppercase.font-semibold.text-blue-700 {{itemDetail.data.stock.barCode}}
+              span.uppercase.font-semibold.text-blue-700 {{model.data.stock.barCode}}
             div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 sku:
-              span.uppercase.font-semibold.text-blue-700 {{itemDetail.data.sku}}
+              span.uppercase.font-semibold.text-blue-700 {{model.data.sku}}
             div
               p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-              span.uppercase.font-semibold.text-blue-700 {{itemDetail.data.stock.unit}}
+              span.uppercase.font-semibold.text-blue-700 {{model.data.stock.unit.name}}
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -45,7 +42,7 @@
                 .icon--large.icon-receipt-note.bg-blue-700
               .col
                 div.text-500 Receipt note ID
-                span.font-semibold {{itemDetail.data.box.request.id}}
+                span.font-semibold {{model.data.box.request.id}}
                 .icon-btn.icon-export.inline-block
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -54,7 +51,7 @@
                 .icon--large.icon-tag-user.bg-blue-700
               .col
                 div.text-500 Creator ID
-                span.font-semibold {{itemDetail.data.box.request.createBy}}
+                span.font-semibold {{model.data.box.request.createBy}}
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -63,7 +60,7 @@
                 .icon--large.icon-warehouse.bg-blue-700
               .col
                 div.text-500 Warehouse
-                span.font-semibold.mr-1.uppercase {{itemDetail.data.box.request.warehouse.name}}
+                span.font-semibold.mr-1.uppercase {{model.data.box.request.warehouse.name}}
                 .icon-btn.icon-arrow-up-right.inline-block
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
@@ -72,7 +69,7 @@
                 .icon--large.icon-location-2.bg-blue-700
               .col
                 div.text-500 Location
-                span.font-semibold.mr-1.uppercase  {{itemDetail.data.box.rackLocation.name}}
+                span.font-semibold.mr-1.uppercase  {{model.data.box.rackLocation.name}}
                 .icon-btn.icon-arrow-up-right.inline-block
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
@@ -82,7 +79,7 @@
                 .icon--large.icon-size.bg-blue-700
               .col
                 div.text-500 Size (L*W*H)
-                span.font-semibold {{itemDetail.data.stock.length}}*{{itemDetail.data.stock.width}}*{{itemDetail.data.stock.height}}
+                span.font-semibold {{model.data.stock.length}}*{{model.data.stock.width}}*{{model.data.stock.height}}
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
             .grid.align-items-center
@@ -90,7 +87,7 @@
                 .icon--large.icon-weight.bg-blue-700
               .col
                 div.text-500 Weight (Kg)
-                span.font-semibold  {{itemDetail.data.stock.weight}}
+                span.font-semibold  {{model.data.stock.weight}}
         .grid
           .col(:class='isEditItemDetail ? "opacity-40" : "opacity-100"' class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
             .surface-hover.p-3
@@ -99,7 +96,7 @@
                   .icon--large.icon-boxcode.bg-blue-700
                 .col
                   div.text-500 Boxcode
-                  span.font-semibold.mr-1.uppercase {{itemDetail.data.box.barCode}}
+                  span.font-semibold.mr-1.uppercase {{model.data.box.barCode}}
                   span.font-semibold.mr-1.uppercase asdg543
                   .icon-btn.icon-export.inline-block
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
@@ -109,7 +106,14 @@
                   .icon--large.icon-price.bg-blue-700
                 .col
                   div.text-500 Value
-                  InputText(:disabled='isEditItemDetail == 0' v-model='itemDetail.data.value').w-6
+                  InputText(:disabled='isEditItemDetail == 0' v-model='model.data.value').w-6
+        .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
+          .col
+            .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditItemDetail')
+              span.uppercase.font-semibold cancel
+          .col
+            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditItemDetail')
+              span.uppercase save
       .sender__information.p-4(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
         .grid.mb-3
           .col
@@ -121,21 +125,21 @@
               .icon--large.icon-sender-name.bg-blue-700
             .col
               div.text-500 Seller
-              span.font-semibold {{itemDetail.data.box.request.seller.name}}
+              span.font-semibold {{model.data.box.request.seller.name}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
               .icon--large.icon-sender-email.bg-blue-700
             .col
               div.text-500 Email Address
-              span.font-semibold {{itemDetail.data.box.request.seller.email}}
+              span.font-semibold {{model.data.box.request.seller.email}}
         .surface-hover.mb-5
           .grid.p-3.align-items-center
             .col-1(class='xl:col-1 lg:col-2').sender__information--name
               .icon--large.icon-sender-phone.bg-blue-700
             .col
               div.text-500 Phone number
-              span.font-semibold {{itemDetail.data.box.request.seller.phone}}
+              span.font-semibold {{model.data.box.request.seller.phone}}
     .col-8.px-5.right__information--stock
       TabView
         TabPanel
@@ -163,7 +167,7 @@ const _ = require('lodash')
 })
 class ItemDetail extends Vue {
   isEditItemDetail: boolean = false
-  model: StockModel.ModelEditItem | any = {}
+  model: StockModel.ModelDetail | any = {}
 
   @nsStoreStock.State
   itemDetail!: StockModel.ModelDetail
@@ -172,7 +176,7 @@ class ItemDetail extends Vue {
   actGetItemsDetail
 
   @nsStoreStock.Action
-  actUpdateItem!: (params: StockModel.ModelEditItem) => Promise<any>
+  actUpdateItem!: (any) => Promise<any>
 
   backToStockList() {
     this.$router.push(`/stock/${this.$route.params.sid}`)
@@ -183,11 +187,17 @@ class ItemDetail extends Vue {
   }
 
   saveEditItemDetail() {
-    this.actUpdateItem({
-      data: {
-        value: this.model.data.value
-      }
-    })
+    const pathParams = {
+      stockId: this.$route.params.sid,
+      boxId: this.$route.params.bid
+    }
+    this.actUpdateItem({path: pathParams, body: {
+      value: this.model.data.value
+    }})
+    this.isEditItemDetail = false
+  }
+
+  cancelEditItemDetail() {
     this.isEditItemDetail = false
   }
 

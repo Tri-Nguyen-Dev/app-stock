@@ -16,18 +16,14 @@ export namespace Stock {
   }
 
   export interface ModelDetailEdit {
-    data: {
-      height?: number
-      length?: number
-      weight?: number
-      width?: number
-    }
+    height?: number
+    length?: number
+    weight?: number
+    width?: number
   }
 
   export interface ModelEditItem {
-    data: {
-      value?: number
-    }
+    value?: number
   }
   export interface ModelDetail {
     data: {

@@ -97,12 +97,10 @@ class StockDetail extends Vue {
 
   saveEditStockDetail() {
     this.actUpdateStock({
-      data: {
-        height: this.model.data.height,
-        length: this.model.data.length,
-        weight: this.model.data.weight,
-        width: this.model.data.width
-      }
+      height: this.model.data.height,
+      length: this.model.data.length,
+      weight: this.model.data.weight,
+      width: this.model.data.width
     })
     this.isEditStockDetail = false
   }
