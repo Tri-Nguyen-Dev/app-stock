@@ -61,7 +61,7 @@
             template(#body="{ index }")
               span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
           Column(field="box.request.seller.email" header="SELLER EMAIL" sortable className="w-3")
-          Column(field="stock.sku" header="SKU" sortable className="p-text-right")
+          Column(field="sku" header="SKU" sortable className="p-text-right")
           Column(field="amount" header="INVENTORY QUANTITY" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
           Column(field="box.barCode" header="BOX CODE" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
           Column(field="box.request.warehouse.name" sortable header="WAREHOUSE" className="p-text-right" :styles="{'width': '5%'}")
@@ -69,12 +69,12 @@
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.font-sm {{data.box.request.warehouse.name}}
                 .icon--small.icon-arrow-up-right.bg-primary
-          //- Column(field="location.name" header="LOCATION" sortable className="p-text-right")
-          //-   template(#body="{data}")
-          //-     .flex.align-items-center.cursor-pointer.justify-content-end
-          //-       span.text-primary.font-bold.font-sm {{data.location.name}}
-          //-       .icon--small.icon-arrow-up-right.bg-primary
-          Column(field="box.deleted" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
+          Column(field="location.name" header="LOCATION" sortable className="p-text-right")
+            template(#body="{data}")
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                span.text-primary.font-bold.font-sm {{data.box.request.warehouse.name}}
+                .icon--small.icon-arrow-up-right.bg-primary
+          Column(field="itemStatus" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
               div
                 Tag(v-show="data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200
@@ -146,12 +146,13 @@ class StockDetailTable extends Vue {
     sku: null,
     warehouse: null,
     location: null,
-    status: false
+    status: null
   }
 
   statusList: any = [
-    { name: 'Disable', value: true },
-    { name: 'Available', value: false }
+    { name: 'Available', value: 'ITEM_STATUS_AVAILABLE' },
+    { name: 'Draft', value: 'ITEM_STATUS_DRAFT' },
+    { name: 'Disable', value: 'ITEM_STATUS_DISABLE' }
   ]
 
   paginate: any = {
@@ -255,7 +256,7 @@ class StockDetailTable extends Vue {
       barCode: this.filter?.boxCode,
       location: this.filter?.location,
       warehouseId: this.filter?.warehouse?.id,
-      deleted: this.filter.status?.value,
+      itemStatus: this.filter.status?.value,
       pageNumber:this.paginate.pageNumber,
       pageSize: this.paginate.pageSize,
       sortByColumn: this.sort?.sortByColumn,
