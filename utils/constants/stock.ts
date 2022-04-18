@@ -1,5 +1,5 @@
 export const STOCK_STATUS_LIST = [
-  { name: 'Disable', value: true },
-  { name: 'Available', value: false }
+  { name: 'Available', value: 1 },
+  { name: 'Disable', value: 0 }
 ]
   

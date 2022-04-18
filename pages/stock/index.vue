@@ -55,7 +55,7 @@
           Column(field='imageUrl' header='Image')
             template(#body='{ data }')
               .stock__table__image.overflow-hidden
-                img.h-2rem.w-2rem.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
+                img.h-2rem.w-2rem.border-round(:src='data.imagePath' alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
@@ -64,15 +64,15 @@
               .stock__table-barcode.grid-cell-right {{ data.barCode }}
           Column(header='Category' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.name }}
+                div.grid-cell-right {{ data.category.name }}
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
-                span.table__status.table__status--available(v-if="!data.deleted") Available
-                span.table__status.table__status--disable(v-else) Disable
+                span.table__status.table__status--available(v-if="data.stockStatus === 'STOCK_STATUS_AVAILABLE'") Available
+                span.table__status.table__status--disable(v-if="data.stockStatus === 'STOCK_STATUS_DISABLE' ") Disable
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
-              .table__action(:class="{'action-disabled': data.deleted}")
+              .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
                 span(@click="handleEditStock(data.id)")
                   .icon.icon-edit-btn
                 span(@click="showModalDelete(data)")
@@ -167,7 +167,7 @@ class Stock extends Vue {
       barCode: this.filter.barCode || null,
       warehouseId: this.filter.warehouse?.id,
       categoryIds: categoryIds || null,
-      deleted: this.filter.status?.value,
+      stockStatus: this.filter.status?.value,
       sortByColumn: this.filter.sortByColumn || null,
       sortDescending: this.filter.isDescending || null
     }
@@ -175,15 +175,15 @@ class Stock extends Vue {
  
   get selectedStockFilter() {
     const itemsDelete: string[] = []
-    _.forEach(this.selectedStock, function(box: any) {
-      if(box.status !== 'BOX_STATUS_DISABLE')
-        itemsDelete.push(box.id)
+    _.forEach(this.selectedStock, function(stock: any) {
+      if(stock.stockStatus !== 'STOCK_STATUS_DISABLE')
+        itemsDelete.push(stock.id)
     })
     return itemsDelete
   }
 
   get checkStockDisable () {
-    return this.stockList.every((item) => item.deleted)
+    return this.stockList.every((item) => item.stockStatus === 'STOCK_STATUS_DISABLE')
   }
 
   get checkIsFilter() {
@@ -200,7 +200,7 @@ class Stock extends Vue {
   }
 
   rowClass(data: any) {
-    return data.deleted ? 'row-disable' : ''
+    return data.stockStatus === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
   }
 
   mounted() {
@@ -229,9 +229,7 @@ class Stock extends Vue {
       this.rowUnSelectAll()
     }
     else {
-      this.ids = this.selectedStockFilter.map((item: any) => {
-        return item.id
-      })
+      this.ids = this.selectedStockFilter
     }
     this.isModalDelete = true
   }
@@ -312,7 +310,7 @@ class Stock extends Vue {
   }
 
   rowUnselect({ data }) {
-    this.selectedStock = _.filter(this.selectedStock, (box: any) => box.id !== data.id)
+    this.selectedStock = _.filter(this.selectedStock, (stock: any) => stock.id !== data.id)
   }
 }
 export default Stock
