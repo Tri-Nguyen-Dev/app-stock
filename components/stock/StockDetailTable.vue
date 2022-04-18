@@ -13,13 +13,7 @@
             div.cursor-pointer.refresh-filter(@click="handleRefreshFilter")
               img(:src="require(`~/assets/icons/rotate-left.svg`)")
     .grid(v-show="isShowFilter")
-      .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Seller
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter seller" v-model='filter.sellerEmail')
+      FilterTable(title="Seller" placeholder="Enter seller" :filter="filter.sellerEmail" :searchText="true" @updateFilter="handleFilter")
       .col
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
@@ -34,11 +28,7 @@
           span.p-input-icon-right.w-full
             .icon.icon--right.icon-search.surface-900.icon--absolute
             InputText.border-0.w-full.mb-1(type="text" placeholder="Enter box code" v-model='filter.boxCode')
-      .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Warehouse
-          Dropdown.w-full.border-0.mb-1(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
+      FilterTable(title="Warehouse" :options="warehouseList" :filter="filter.warehouse" )
       .col
         .bg-white.border-round
           div.pt-2.pl-3.pb-1
