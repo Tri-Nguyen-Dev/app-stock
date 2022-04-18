@@ -64,7 +64,8 @@ export default {
       'Toast',
       'ScrollPanel',
       'TieredMenu',
-      'AutoComplete'
+      'AutoComplete',
+      'Card'
     ],
     directives: ['Tooltip', 'Badge']
   },
