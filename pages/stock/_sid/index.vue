@@ -28,10 +28,12 @@
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700 
-
-        StockUnit(title="Total inventory quantity" :total="total" :isEdit="isEditStockDetail" icon="icon-total-inventory" @updateUnit='handleUpdateUnit')
-        StockUnit(title="Size (L*W*H)" type ="size" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size" @updateUnit='handleUpdateUnit')
-        StockUnit(title="Weight" type ="weight" :weight="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
+        .col-12.px-0
+          StockUnit(title="Total inventory quantity" :value="total" :isEdit="false" icon="icon-total-inventory")
+        .col-12.px-0
+          StockUnit(title="Size (L*W*H)" type ="size" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size" @updateUnit='handleUpdateUnit')
+        .col-12.px-0
+          StockUnit(title="Weight" type ="weight" :weight="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
         div
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col
