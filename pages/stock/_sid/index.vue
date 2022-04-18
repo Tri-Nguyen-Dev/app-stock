@@ -27,13 +27,13 @@
           span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 {{model.data.unit}}
+          span.uppercase.font-semibold.text-blue-700 {{model.data.unit.name}}
         .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           .col-2.flex.align-items-center.justify-content-end
             .icon--large.icon-total-inventory.bg-blue-700
           .col-10
             div.text-500 Total inventory quantity
-            span.font-semibold.mr-1.uppercase {{total}}
+            span.font-semibold.mr-1.uppercase {{model.data.totalInventoryQuantity}}
         .grid.surface-hover.mb-3
             .col-2.flex.align-items-center.justify-content-end
               div.icon--large.icon-size.bg-blue-700
