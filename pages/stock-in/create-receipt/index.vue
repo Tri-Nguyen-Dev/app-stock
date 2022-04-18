@@ -5,7 +5,7 @@
         div.d-flex
           i.pi.pi-info-circle.mr-3
           span.font-semibold.text-base GENERAL INFORMATION
-      template(#content='') GENERAL INFORMATION 
+      template(#content='') GENERAL INFORMATION
     card
       template(#title='')
         div.grid
@@ -32,8 +32,10 @@
                 InputText.box-input(style='width = 20%' value="L:")
                 InputText.box-input(style='width = 20%')
                 InputText.box-input(style='width = 20%')
-                Button.bacground-input(type='button' icon='pi pi-plus')
+                Button.bacground-input(type='button' icon='pi pi-plus' @click='showModalAddStock = true')
     Toast
+    Sidebar(:visible.sync="showModalAddStock" :baseZIndex="1000" position="right" ariaCloseLabel='to')
+      StockAdd
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
@@ -58,6 +60,7 @@ class Stock extends Vue {
   ];
 
   activeIndex = 0;
+  showModalAddStock: boolean = false
 
   addBox(){
     const item = {
@@ -74,7 +77,7 @@ class Stock extends Vue {
       this.listBox.splice(this.listBox.length-1,1)
       this.activeIndex = this.listBox[this.listBox.length-1].id
     }
-    
+
   }
 }
 export default Stock
@@ -112,4 +115,10 @@ export default Stock
   padding-right: 23px
 .col-fixed-pading
   padding: 0
+::v-deep.p-sidebar.p-sidebar-active
+  width: 25rem
+  .p-sidebar-header
+    display: none
+  .p-sidebar-content
+    padding: 0
 </style>

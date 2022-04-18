@@ -65,7 +65,10 @@ export default {
       'ScrollPanel',
       'TieredMenu',
       'AutoComplete',
-      'Card'
+      'Card',
+      'Sidebar',
+      'InputNumber',
+      'FileUpload'
     ],
     directives: ['Tooltip', 'Badge']
   },
