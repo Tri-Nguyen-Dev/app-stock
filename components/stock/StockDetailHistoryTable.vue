@@ -1,17 +1,12 @@
 <template lang="pug">
-  DataTable( responsiveLayout="scroll" dataKey="id"
-            :resizableColumns="true" :paginator="true" :rows="100").h-full.flex.flex-column.airtag-datatable
-            Column(field="no" header="NO" sortable)
-              template(#body="slotProps")
-                span.font-semibold {{slotProps.index +1}}
-            Column(field="code" header="TIME" sortable bodyClass="font-semibold")
-            Column(field="sender" header="ORIGINAL LOCATION" sortable)
-            Column(field="size" header="NEW LOCATION" sortable bodyClass="font-semibold")
-            Column(field="weight" header="CREATOR ID" sortable bodyClass="font-semibold")
-            template(#paginatorstart)
-              .flex.align-items-cente
-                .icon--large.icon-footer-paginator.surface-400
-                span.ml-3.text-400.text-sm Showing 01 - 50 of 80
+  DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(responsiveLayout="scroll" dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" @sort="sortData($event)")
+    Column(field="no" header="NO" :styles="{'width': '1%'}")
+      template(#body="{ index }")
+        span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
+    Column(field="sku" header="TIME" sortable :styles="{'width': '100%'}")
+    Column(field="sku" header="ORIGINAL LOCATION" sortable)
+    Column(field="sku" header="NEW LOCATION" sortable)
+    Column(field="sku" header="ID CREATOR" sortable)
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
