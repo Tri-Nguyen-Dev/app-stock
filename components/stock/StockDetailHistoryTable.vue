@@ -12,7 +12,7 @@
         div.pagination__info
           img(:src="require('~/assets/icons/filter-left.svg')")
           span.pagination__total
-        Paginator(rows=2 totalRecords=10 @page="onPage($event)")
+        Paginator(:rows=2 :totalRecords=10 @page="onPage($event)")
     template(#empty)
       div.flex.align-items-center.justify-content-center.flex-column
         img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
