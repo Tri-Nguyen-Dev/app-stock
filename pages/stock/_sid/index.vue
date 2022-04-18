@@ -29,7 +29,7 @@
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700 
         .col-12.px-0
-          StockUnit(title="Total inventory quantity" :value="total" :isEdit="false" icon="icon-total-inventory")
+          StockUnit(title="Total inventory quantity" :value="total" :isEdit="isEditStockDetail" icon="icon-total-inventory")
         .col-12.px-0
           StockUnit(title="Size (L*W*H)" type ="size" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size" @updateUnit='handleUpdateUnit')
         .col-12.px-0
@@ -44,7 +44,6 @@
               span.uppercase save
     .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
-
 </template>
 <script lang="ts">
 import { Component, Vue, namespace} from 'nuxt-property-decorator'

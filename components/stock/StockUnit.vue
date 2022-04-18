@@ -1,5 +1,5 @@
 <template lang="pug">
-.grid.surface-hover.wapprer-unit(:class='!isEdit ? "opacity-40" : "opacity-100"') 
+.grid.surface-hover.wapprer-unit(:class='isEdit && value ? "opacity-40" : "opacity-100"') 
   .col-2.flex.align-items-center.justify-content-end.col-offset-1
     .icon--large.bg-blue-700(:class='icon')
   .col-9.flex.flex-column.justify-content-center

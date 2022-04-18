@@ -60,28 +60,28 @@
           Column(field="no" header="NO" :styles="{'width': '1%'}")
             template(#body="{ index }")
               span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
-          Column(field="sellerEmail" header="SELLER EMAIL" sortable className="w-3")
+          Column(field="box.request.seller.email" header="SELLER EMAIL" sortable className="w-3")
           Column(field="sku" header="SKU" sortable className="p-text-right")
-          Column(field="inventoryQuantity" header="INVENTORY QUANTITY" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
-          Column(field="barCode" header="BOX CODE" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
-          Column(field="warehouse" sortable header="WAREHOUSE" className="p-text-right" :styles="{'width': '5%'}")
+          Column(field="amount" header="INVENTORY QUANTITY" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
+          Column(field="box.barCode" header="BOX CODE" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
+          Column(field="box.request.warehouse.name" sortable header="WAREHOUSE" className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.font-sm {{data.warehouse}}
+                span.text-primary.font-bold.font-sm {{data.box.request.warehouse.name}}
                 .icon--small.icon-arrow-up-right.bg-primary
-          Column(field="location" header="LOCATION" sortable className="p-text-right")
+          Column(field="box.rackLocation.name" header="LOCATION" sortable className="p-text-right")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.font-sm {{data.warehouse}}
+                span.text-primary.font-bold.font-sm {{data.box.rackLocation.name}}
                 .icon--small.icon-arrow-up-right.bg-primary
-          Column(field="status" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
+          Column(field="itemStatus" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
               div
-                Tag(v-show="data.status === 'ITEM_STATUS_DISABLE'").px-2.surface-200
+                Tag(v-show="data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200
                   span.font-bold.text-400.font-sm DISABLE
-                Tag(v-show="data.status === 'ITEM_STATUS_DRAFT'").px-2.bg-blue-500
+                Tag(v-show="data.itemStatus === 'ITEM_STATUS_DRAFT'").px-2.bg-blue-500
                   span.font-bold.text-400.font-sm DRAFT
-                Tag(v-show="data.status === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
+                Tag(v-show="data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
                   span.font-bold.text-green-400.font-sm AVAILABLE
           Column(:exportable="false" header="ACTION" className="p-text-right")
             template(#body="{data}")
@@ -286,7 +286,7 @@ class StockDetailTable extends Vue {
   }
 
   redirectToDetail({ data }) {
-    this.$router.push(`${this.$route.params.sid}/item/${data.id}`)
+    this.$router.push(`${this.$route.params.sid}/item/${data.box.id}`)
   }
 
   editItemDetail(id:any) {
