@@ -29,10 +29,10 @@
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700 
 
-        StockUnit(title="Total inventory quantity" :total="total" :isEdit="isEditStockDetail" icon="icon-total-inventory")
-        StockUnit(title="Size (L*W*H)" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size")
-        StockUnit(title="Weight" :weight="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @test='test')
-        div {{weightBox}}
+        StockUnit(title="Total inventory quantity" :total="total" :isEdit="isEditStockDetail" icon="icon-total-inventory" @updateUnit='handleUpdateUnit')
+        StockUnit(title="Size (L*W*H)" type ="size" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size" @updateUnit='handleUpdateUnit')
+        StockUnit(title="Weight" type ="weight" :weight="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
+        div
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
@@ -81,22 +81,45 @@ class StockDetail extends Vue {
     this.isEditStockDetail = true
   }
 
-  test(val) {
-    this.weightBox = val
+  handleUpdateUnit(val: number, type: string) {
+    switch (type) {
+    case 'weight':
+      this.weightBox = val
+      break
+    case 'width':
+      this.widthBox = val
+      break
+    case 'height':
+      this.heightBox = val
+      break
+    case 'length':
+      this.lengthBox = val
+      break
+    default:
+      break
+    }
   }
 
   saveEditStockDetail() {
     this.actUpdateStock({
-      height: this.model.data.height,
-      length: this.model.data.length,
+      height: this.heightBox,
+      length: this.lengthBox,
       weight: this.weightBox,
-      width: this.model.data.width
+      width: this.widthBox
     })
     this.isEditStockDetail = false
   }
 
   cancelEditStockDetail() {
     this.isEditStockDetail = false
+    this.handleAssignValue(this.model?.data)
+  }
+
+  handleAssignValue(item: any) {
+    this.heightBox = item.height
+    this.lengthBox = item.length
+    this.weightBox = item.weight
+    this.widthBox = item.width
   }
 
   async mounted() {
@@ -105,10 +128,7 @@ class StockDetail extends Vue {
     }
     await this.actGetStockDetail({ id: this.$route.params.sid })
     this.model = _.cloneDeep(this.stockDetail)
-    this.heightBox = this.model.data.height
-    this.lengthBox = this.model.data.length
-    this.weightBox = this.model.data.weight
-    this.widthBox = this.model.data.width
+    this.handleAssignValue(this.model?.data)
   }
 }
 export default StockDetail

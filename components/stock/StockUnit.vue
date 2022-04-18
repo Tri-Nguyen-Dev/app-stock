@@ -5,20 +5,20 @@
   .col-10
     div.text-500 {{ title }}
     span.font-semibold.mr-1.uppercase(v-if='total') {{ total }}
-    template(v-if="weight")
-      InputNumber(:disabled='isEdit == 0' v-model='weight' :input="$emit('test',weight )")
-    template(v-if="syncedWidth")
+    template(v-if="type ==='weight'")
+      InputNumber(:disabled='isEdit == 0' v-model='weight' :input="$emit('updateUnit', weight, 'weight')")
+    template(v-if="type ==='size'")
       .grid(v-if='isEdit')
         .col-4.p-0.pl-2.pt-1
-          InputNumber.w-full(:disabled='isEdit == 0', v-model='syncedLength')
+          InputNumber.w-full(:disabled='isEdit == 0', v-model='length' :input="$emit('updateUnit', length, 'length')")
         .col-4.p-0.pt-1
-          InputNumber.w-full(:disabled='isEdit == 0', v-model='syncedWidth')
+          InputNumber.w-full(:disabled='isEdit == 0', v-model='width' :input="$emit('updateUnit', width, 'width')")
         .col-4.p-0.pt-1
-          InputNumber.w-full(:disabled='isEdit == 0', v-model='syncedHeight')
-      span.font-semibold.mr-1.uppercase(v-else) {{ syncedLength }}*{{ syncedWidth }}*{{ syncedHeight }}
+          InputNumber.w-full(:disabled='isEdit == 0', v-model='height' :input="$emit('updateUnit', height, 'height')")
+      span.font-semibold.mr-1.uppercase(v-else) {{ length }}*{{ width }}*{{ height }}
 </template>
 <script lang='ts'>
-import { Component, Prop, PropSync, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
 
 @Component
 class StockUnit extends Vue {
@@ -26,12 +26,12 @@ class StockUnit extends Vue {
   @Prop() readonly title!: string | undefined
   @Prop() readonly isEdit!: boolean | false
   @Prop() readonly icon!: string | undefined
+  @Prop() readonly type!: string | undefined
   @Prop() weight!: number | undefined
-  // @PropSync('weight', { type: Number }) syncedWeight!: number
-  @PropSync('height', { type: Number  }) syncedHeight!: number
-  @PropSync('length', { type: Number  }) syncedLength!: number
-  @PropSync('width', { type: Number  }) syncedWidth!: number 
-  
+  @Prop() height!: number | undefined
+  @Prop() length!: number | undefined
+  @Prop() width!: number | undefined
+
 }
 
 export default StockUnit
