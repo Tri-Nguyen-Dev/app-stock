@@ -97,7 +97,6 @@
                 .col
                   div.text-500 Boxcode
                   span.font-semibold.mr-1.uppercase {{model.data.box.barCode}}
-                  span.font-semibold.mr-1.uppercase asdg543
                   .icon-btn.icon-export.inline-block
           .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
             .surface-hover.p-3
@@ -154,7 +153,6 @@
             span Location history
           .overflow-auto.stock__log--history
             StockDetailHistoryTable
-
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
@@ -247,7 +245,7 @@ $small: 1025px
       color: #000 !important
       border-bottom: 2px solid #486AE2 !important
 
-      .icon-btn
+      .icon
         background-color: #094db1 !important
 
 ::-webkit-scrollbar

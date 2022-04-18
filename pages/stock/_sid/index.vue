@@ -42,7 +42,6 @@
               span.uppercase save
     .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
-
 </template>
 <script lang="ts">
 import { Component, Vue, namespace} from 'nuxt-property-decorator'
