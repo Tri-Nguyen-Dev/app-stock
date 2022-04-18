@@ -38,19 +38,19 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="model.data.box.request.id" :isEdit="isEditItemDetail" icon="icon-receipt-note")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Creator ID" :value="model.data.box.request.createBy" :isEdit="isEditItemDetail" icon="icon-tag-user")
+            StockUnit(title="Creator ID" :value="model.data.box.request.createBy" value="NVN030133" :isEdit="isEditItemDetail" icon="icon-tag-user")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Warehouse" link="https://rikkei.vn" :isEdit="isEditItemDetail" icon="icon-warehouse")
+            StockUnit(title="Warehouse" link="https://rikkei.vn" :isEdit="isEditItemDetail" value="NTH001" icon="icon-warehouse")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Location" link="https://rikkei.vn" :isEdit="isEditItemDetail" icon="icon-location-2")
-          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
+            StockUnit(title="Location" link="https://rikkei.vn" :isEdit="isEditItemDetail" value="R03-AA-B02-02" icon="icon-location-2")
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3' :class='isEditItemDetail ? "opacity-40" : "opacity-100"')
             StockUnit(title="Size (L*W*H)" type ="size" :height="model.data.stock.height" :length="model.data.stock.length" :width="model.data.stock.width" :isEdit="isEditStockDetail" icon="icon-size")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Weight (Kg)" :value="model.data.stock.weight" :isEdit="isEditItemDetail" icon="icon-weight")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Boxcode" :value="model.data.box.barCode" :isEdit="isEditItemDetail" icon="icon-delivery")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 mt-2')
-            .surface-hover.wapprer-unit(:class='isEditItemDetail ? "opacity-40" : "opacity-100"') 
+            .surface-hover.wapprer-unit.opacity-100
               .grid.align-items-center
                 .col-3.flex.justify-content-end
                   .icon--large.icon-price.bg-blue-700
@@ -70,27 +70,12 @@
           .col
             .icon.icon-sender-info.mr-2.bg-blue-700.inline-block
             span.uppercase.font-bold Seller information
-        .surface-hover.mb-5
-          .grid.p-3.align-items-center
-            .col-1(class='xl:col-1 lg:col-2').sender__information--name
-              .icon--large.icon-sender-name.bg-blue-700
-            .col
-              div.text-500 Seller
-              span.font-semibold {{model.data.box.request.seller.name}}
-        .surface-hover.mb-5
-          .grid.p-3.align-items-center
-            .col-1(class='xl:col-1 lg:col-2').sender__information--name
-              .icon--large.icon-sender-email.bg-blue-700
-            .col
-              div.text-500 Email Address
-              span.font-semibold {{model.data.box.request.seller.email}}
-        .surface-hover.mb-5
-          .grid.p-3.align-items-center
-            .col-1(class='xl:col-1 lg:col-2').sender__information--name
-              .icon--large.icon-sender-phone.bg-blue-700
-            .col
-              div.text-500 Phone number
-              span.font-semibold {{model.data.box.request.seller.phone}}
+        .col-12(class='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Seller" :value="model.data.box.request.seller.name" :isEdit="isEditItemDetail" icon="icon-sender-name")
+        .col-12(class='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Email Address" :value="model.data.box.request.seller.email" :isEdit="isEditItemDetail" icon="icon-sender-email")
+        .col-12(class='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Phone number" :value="model.data.box.request.seller.phone" :isEdit="isEditItemDetail" icon="icon-sender-phone")
     .col-8.px-5.right__information--stock
       TabView
         TabPanel

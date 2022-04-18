@@ -1,8 +1,8 @@
 <template lang="pug">
 .grid.surface-hover.wapprer-unit(:class='isEdit && value ? "opacity-40" : "opacity-100"') 
-  .col-2.flex.align-items-center.justify-content-end.col-offset-1
+  .col-2.flex.align-items-center.justify-content-center
     .icon--large.bg-blue-700(:class='icon')
-  .col-9.flex.flex-column.justify-content-center
+  .col-10.flex.flex-column.justify-content-center
     div.text-500 {{ title }}
     a(v-if="link" :href="link" target="_blank").text-link
       span.font-semibold {{value}}
@@ -44,7 +44,6 @@ export default StockUnit
 .wapprer-unit 
   height: 72px
   border-radius: 4px
-
   ::v-deep.p-inputtext
     border: none
     background: transparent
