@@ -27,32 +27,12 @@
           span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 {{model.data.unit.name}}
-        .grid.surface-hover.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          .col-2.flex.align-items-center.justify-content-end
-            .icon--large.icon-total-inventory.bg-blue-700
-          .col-10
-            div.text-500 Total inventory quantity
-            span.font-semibold.mr-1.uppercase {{model.data.totalInventoryQuantity}}
-        .grid.surface-hover.mb-3
-            .col-2.flex.align-items-center.justify-content-end
-              div.icon--large.icon-size.bg-blue-700
-            .col-10
-              div.text-500 Size (L*W*H)
-              .grid(v-if='isEditStockDetail')
-                .col-4.p-0.pl-2.pt-1
-                  InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.length').w-full
-                .col-4.p-0.pt-1
-                  InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.width').w-full
-                .col-4.p-0.pt-1
-                  InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.height').w-full
-              span.font-semibold.mr-1.uppercase(v-else) {{model.data.length}}*{{model.data.width}}*{{model.data.height}}
-        .grid.surface-hover.mb-3
-            .col-2.flex.align-items-center.justify-content-end
-              div.icon--large.icon-weight.bg-blue-700
-            .col-10
-              div.text-500 Weight
-              InputNumber(:disabled='isEditStockDetail == 0' v-model='model.data.weight')
+          span.uppercase.font-semibold.text-blue-700
+
+        StockUnit(title="Total inventory quantity" :total="total" :isEdit="isEditStockDetail" icon="icon-total-inventory" @updateUnit='handleUpdateUnit')
+        StockUnit(title="Size (L*W*H)" type ="size" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size" @updateUnit='handleUpdateUnit')
+        StockUnit(title="Weight" type ="weight" :weight="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
+        div
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
@@ -76,6 +56,10 @@ const _ = require('lodash')
 class StockDetail extends Vue {
   isEditStockDetail: boolean = false
   model: StockModel.ModelDetail | any = {}
+  heightBox: any = ''
+  weightBox: any = ''
+  lengthBox: any = ''
+  widthBox: any = ''
 
   @nsStoreStock.State
   stockDetail!: StockModel.ModelDetail
@@ -97,18 +81,45 @@ class StockDetail extends Vue {
     this.isEditStockDetail = true
   }
 
+  handleUpdateUnit(val: number, type: string) {
+    switch (type) {
+    case 'weight':
+      this.weightBox = val
+      break
+    case 'width':
+      this.widthBox = val
+      break
+    case 'height':
+      this.heightBox = val
+      break
+    case 'length':
+      this.lengthBox = val
+      break
+    default:
+      break
+    }
+  }
+
   saveEditStockDetail() {
     this.actUpdateStock({
-      height: this.model.data.height,
-      length: this.model.data.length,
-      weight: this.model.data.weight,
-      width: this.model.data.width
+      height: this.heightBox,
+      length: this.lengthBox,
+      weight: this.weightBox,
+      width: this.widthBox
     })
     this.isEditStockDetail = false
   }
 
   cancelEditStockDetail() {
     this.isEditStockDetail = false
+    this.handleAssignValue(this.model?.data)
+  }
+
+  handleAssignValue(item: any) {
+    this.heightBox = item.height
+    this.lengthBox = item.length
+    this.weightBox = item.weight
+    this.widthBox = item.width
   }
 
   async mounted() {
@@ -117,6 +128,7 @@ class StockDetail extends Vue {
     }
     await this.actGetStockDetail({ id: this.$route.params.sid })
     this.model = _.cloneDeep(this.stockDetail)
+    this.handleAssignValue(this.model?.data)
   }
 }
 export default StockDetail

@@ -33,7 +33,7 @@
               span.uppercase.font-semibold.text-blue-700 {{model.data.sku}}
             div
               p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-              span.uppercase.font-semibold.text-blue-700 {{model.data.stock.unit}}
+              span.uppercase.font-semibold.text-blue-700 {{model.data.stock.unit.name}}
         .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
            div.surface-hover.p-3
