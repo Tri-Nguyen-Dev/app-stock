@@ -29,7 +29,7 @@
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700 
         .col-12.px-0
-          StockUnit(title="Total inventory quantity" :value="total" :isEdit="isEditStockDetail" icon="icon-total-inventory")
+          StockUnit(title="Total inventory quantity" :value="total" icon="icon-total-inventory" :isEdit="isEditStockDetail")
         .col-12.px-0
           StockUnit(title="Size (L*W*H)" icon="icon-size")
             template(v-slot:size)

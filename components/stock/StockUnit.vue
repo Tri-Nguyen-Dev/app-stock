@@ -1,5 +1,5 @@
 <template lang="pug">
-.grid.wapprer-unit(:class='isEdit && value ? "opacity-40" : "opacity-100"') 
+.grid.wapprer-unit(:class='isEdit && !model? "opacity-40" : "opacity-100"') 
   .col-2.flex.align-items-center.justify-content-center
     .icon--large.bg-blue-700(:class='icon')
   .col-10.flex.flex-column.justify-content-center
@@ -10,8 +10,9 @@
       .icon.icon-arrow-up-right.inline-block
     span.font-semibold.mr-1.uppercase(v-else) {{ value }}
     template(v-if="model")
-      InputNumber(:disabled='!isEdit' :value='model' @input="handleUpdateUnit")
+      InputNumber(:disabled='!model' :value='model' @input="handleUpdateUnit")
     slot(name='size')
+    slot(name='auto-complete')
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue } from 'nuxt-property-decorator'

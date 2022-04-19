@@ -31,12 +31,8 @@
         .col.px-4
           StockUnit(title="Warehouse" link="https://rikkei.vn" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
         .col.px-4
-          StockUnit(title="Location" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-location-2")
-          //- .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
-            .col-fixed.mr-2
-              .icon-location-2.icon--large.bg-primary
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Location
+          StockUnit(title="Location" icon="icon-location-2")
+            template(v-slot:auto-complete)
               .mt-1.flex.align-items-center
                 AutoComplete.edit-location(v-model="isLocation" field='name' :suggestions='locationList' forceSelection :readOnly='!isEditBox' :placeholder='boxLocation' @complete="searchLocation($event)"  )
                   template(#item="slotProps")
@@ -52,14 +48,7 @@
         .col.px-4(:class='isEditBox ? "opacity-40" : "opacity-100"')
           StockUnit(title="Box size:" type ="size" :height="boxDetail.height" :length="boxDetail.length" :width="boxDetail.width" icon="icon-size")
             template(v-slot:size)
-              .grid(v-if='isEditBox')
-                .col-4.p-0.pl-2.pt-1
-                  InputNumber.w-full(:disabled='!isEditBox', v-model='boxDetail.length')
-                .col-4.p-0.pt-1
-                  InputNumber.w-full(:disabled='!isEditBox', v-model='boxDetail.width')
-                .col-4.p-0.pt-1
-                  InputNumber.w-full(:disabled='!isEditBox', v-model='boxDetail.height')
-              span.font-semibold.mr-1.uppercase(v-else) {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }} 
+              span.font-semibold.mr-1.uppercase {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }} 
             template(v-slot:button-size='')
               span.font-bold.text-600.bg-primary.ml-1.border-round(:class='boxDetail.boxSize? "p-1" : ""') {{ boxDetail.boxSize | boxSize }}
         div(:class='isEditBox? "opacity-40" : "opacity-100"')
