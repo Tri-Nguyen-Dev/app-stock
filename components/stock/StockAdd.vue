@@ -14,17 +14,17 @@
       h5.mb-1 Category
       Dropdown(v-model='stockInformation.category' :options="cities" optionLabel="name" :filter="true" placeholder="Select a category" :showClear="true").w-full
         template(#value='slotProps')
-      h5.mb-1 Quantity
-          InputNumber(v-model='stockInformation.quantity' showButtons buttonLayout="horizontal" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus").w-full
       .grid
         .col-6
-          h5.mb-1 Weight
-          .p-input-icon-right.w-full
-            .icon.icon--right Kg
-            InputText(type="number" v-model='stockInformation.weight').w-full
+          h5.mb-1 Quantity
+          InputText(v-model='stockInformation.quantity').w-full
         .col-6
           h5.mb-1 Unit
           Dropdown(v-model='stockInformation.unit' :options="cities" optionLabel="name")
+      h5.mb-1 Weight
+        .p-input-icon-right.w-full
+          .icon.icon--right Kg
+          InputText(type="number" v-model='stockInformation.weight').w-full
       .grid.mb-3
         .col
           h5.mb-1 Length

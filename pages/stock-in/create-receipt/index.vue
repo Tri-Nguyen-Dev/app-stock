@@ -27,7 +27,7 @@
               div(class='d-flex col-12 md:col-5 lg:col-3 justify-content-center' )
                 Button(type='button' icon='pi pi-refresh' style = 'width: 80%' @click='showModalAddStock') Scan Barcode
             .grid.border-grid.border-right.mt-0(style='border-top:none; margin-right:0px')
-              ItemDataTable()
+              ItemDataTable(:listItemInBox='listItemInBox' )
     Toast
     Sidebar(:visible='isShowModalAddStock' :baseZIndex="1000" position="right" ariaCloseLabel='to')
       StockAdd(@cancelAddStock='cancelAddStock' @addItem='addItem')
@@ -36,6 +36,7 @@
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
+import { Item as ItemModel } from '~/models/Item'
 const nsStoreStockIn = namespace('stock-in/create-receipt')
 @Component({
   components: {
@@ -50,6 +51,7 @@ class Stock extends Vue {
     header: string
   }
 
+  listSizes = [];
   boxSize: number = 0;
   listBox=[{
     id: 0,
@@ -57,7 +59,7 @@ class Stock extends Vue {
     title:'Box 1'
   }];
 
-  listItemInBox: any[] = []
+  listItemInBox: ItemModel.Model[] = []
   isShowModalAddStock: boolean = false
   activeIndex = 0;
   @nsStoreStockIn.Action
@@ -90,7 +92,37 @@ class Stock extends Vue {
 
   addItem(stockInformation:any) {
     this.isShowModalAddStock = false
-    this.listItemInBox.push(stockInformation)
+    this.listItemInBox.push({
+      id:'',
+      stock:{
+        id:'',
+        name: stockInformation.name,
+        barCode: stockInformation.barCode,
+        imageUrl:'',
+        unit: {
+          id:stockInformation.unit.code,
+          name: stockInformation.unit.name
+        },
+        height: stockInformation.height,
+        width: stockInformation.width,
+        length: stockInformation.length,
+        weight: stockInformation.weight,
+        category: {
+          id: stockInformation.category.code,
+          name: stockInformation.category.name,
+          icon: '',
+          displayOrder: 0,
+          deleted: false
+        },
+        attributeValue:undefined,
+        deleted: false
+      },
+      box: '',
+      amount: stockInformation.quantity,
+      value: 0,
+      sku: stockInformation.sku,
+      itemStatus: ''
+    })
   }
 
   //  async mounted() {

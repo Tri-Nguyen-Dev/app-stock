@@ -1,7 +1,7 @@
 <template lang="pug">
 	DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
-			:value='dataRenderItems'
-			dataKey='id'
+			:value='listItemInBox'
+			dataKey='stock.barCode'
 			:paginator='false'
 			:row-hover='true'
 			responsiveLayout="scroll"
@@ -51,7 +51,7 @@
 				template(#body='{data}')
 						span.font-bold.text-right {{data.amount}}
 			column(
-				field='unit',
+				field='unit.name',
 				header='UNIT',
 				:show-filter-match-modes='false'
 				className="p-text-right"
@@ -83,7 +83,7 @@
 				template(#body='{data}')
 					span.font-bold {{data.value}}
 			column(
-				field='category',
+				field='category.name',
 				header='CATEGORY',     
 				:show-filter-match-modes='false'
 				className="p-text-right"
@@ -111,7 +111,7 @@ class ItemDataTable extends Vue {
     sortDescending: null
   }
 
-  @Prop() listItemInBox!: any[]
+  @Prop() listItemInBox!: ItemModel.Model[]
   @Prop() getParam: () => any
 
 }

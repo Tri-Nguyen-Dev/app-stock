@@ -371,8 +371,7 @@ export default Stock
       padding-left: 10.5px
 .stock__table
   &__avv
-
-  border-radius: 4px
+    border-radius: 4px
   &-no
     font-size: $font-size-medium
   &-barcode
