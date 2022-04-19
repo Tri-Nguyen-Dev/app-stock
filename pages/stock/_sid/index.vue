@@ -31,9 +31,18 @@
         .col-12.px-0
           StockUnit(title="Total inventory quantity" :value="total" :isEdit="isEditStockDetail" icon="icon-total-inventory")
         .col-12.px-0
-          StockUnit(title="Size (L*W*H)" type="size" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size" @updateUnit='handleUpdateUnit')
+          StockUnit(title="Size (L*W*H)" icon="icon-size")
+            template(v-slot:size)
+              .grid(v-if='isEditStockDetail')
+                .col-4.p-0.pl-2.pt-1
+                  InputNumber.w-full(:disabled='!isEditStockDetail', v-model='lengthBox')
+                .col-4.p-0.pt-1
+                  InputNumber.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
+                .col-4.p-0.pt-1
+                  InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
+              span.font-semibold.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }} 
         .col-12.px-0
-          StockUnit(title="Weight" type="normal" name="weightBox" :model="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
+          StockUnit(title="Weight" name="weightBox" :model="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
         div
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col

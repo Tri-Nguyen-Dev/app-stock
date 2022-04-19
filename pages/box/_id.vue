@@ -23,32 +23,16 @@
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
                 span.text-primary.uppercase.ml-2 {{ boxDetail.barCode }}
-      .grid.grid-nogutter.sub--scroll
-        .col.px-3
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-receipt-note.bg-primary.icon--large
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Receipt note ID
-              div.mt-1.flex.align-items-center
-                span.font-bold.uppercase {{ receiptNoteId }}
-                .icon-arrow-up-right.icon--base
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(v-if='boxDetail.createBy' :class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-tag-user.bg-primary.icon--large
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Create ID
-              .mt-1.flex.align-items-center
-                span.font-bold.uppercase {{ boxDetail.createBy }}
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-warehouse.bg-primary.icon--large
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Warehouse
-              .mt-1.flex.align-items-center
-                span.font-bold.uppercase {{ boxWarehouse }}
-                .icon-arrow-up-right.icon
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
+      div.sub--scroll
+        .col.px-4
+          StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
+        .col.px-4
+          StockUnit(title="Create ID" :value="boxDetail.createBy" :isEdit="isEditBox" icon="icon-tag-user")
+        .col.px-4
+          StockUnit(title="Warehouse" link="https://rikkei.vn" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
+        .col.px-4
+          StockUnit(title="Location" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-location-2")
+          //- .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
             .col-fixed.mr-2
               .icon-location-2.icon--large.bg-primary
             div(class='col-12 lg:col-12 xl:col-8')
@@ -59,51 +43,40 @@
                     .grid.align-items-center.grid-nogutter
                       span.font-bold {{ slotProps.item.name }}
                       .icon-arrow-up-right.icon
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-calendar.icon--large.bg-primary
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Create Time
-              .mt-1
-                span.font-bold  {{ boxDetail.createdAt | dateTimeHour12 }}
-            div
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-frame.icon--large.bg-primary
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Box Items
-              .mt-1
-                span.font-bold {{ boxDetail.length }}
-          .grid.align-items-center.m-0.pl-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-price.icon--large.bg-primary
-            div(class='col-12 lg:col-12 xl:col-9')
-              span.font-bold.text-600 Estimated inventory Fee
-              .mt-1
-                span.font-bold {{ boxDetail.inventoryFee }}$ PER DAY
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-size.icon--large.bg-primary
-            div.align-items(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Box Size:
+        .col.px-4
+          StockUnit(title="Create Time" :value="boxDetail.createdAt | dateTimeHour12" :isEdit="isEditBox" icon="icon-calendar")
+        .col.px-4
+          StockUnit(title="Box Items" :value="boxDetail.length" :isEdit="isEditBox" icon="icon-frame")
+        .col.px-4
+          StockUnit(title="Estimated inventory Fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
+        .col.px-4(:class='isEditBox ? "opacity-40" : "opacity-100"')
+          StockUnit(title="Box size:" type ="size" :height="boxDetail.height" :length="boxDetail.length" :width="boxDetail.width" icon="icon-size")
+            template(v-slot:size)
+              .grid(v-if='isEditBox')
+                .col-4.p-0.pl-2.pt-1
+                  InputNumber.w-full(:disabled='!isEditBox', v-model='boxDetail.length')
+                .col-4.p-0.pt-1
+                  InputNumber.w-full(:disabled='!isEditBox', v-model='boxDetail.width')
+                .col-4.p-0.pt-1
+                  InputNumber.w-full(:disabled='!isEditBox', v-model='boxDetail.height')
+              span.font-semibold.mr-1.uppercase(v-else) {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }} 
+            template(v-slot:button-size='')
               span.font-bold.text-600.bg-primary.ml-1.border-round(:class='boxDetail.boxSize? "p-1" : ""') {{ boxDetail.boxSize | boxSize }}
-              .mt-1
-                span.font-bold {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }}
-          div(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col.border-bottom-1.border-gray-300
-            .col.flex.my-3.mx-1
-              .col.flex.align-items-center
-                .icon-sender-info.icon.bg-primary.mr-2
-                span.font-bold.text-800.uppercase Seller Information
-            .col
-              BoxDetailValue(v-for='item in sellerInfor' :key='item.id' :item='item' :boxSellerInfor='boxSellerInfor')
-          .grid.m-1(v-if='isEditBox')
-            .col
-              .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='btnEdit')
-                span.uppercase.font-semibold cancel
-            .col
-              .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='handleUpdateData')
-                span.uppercase save
+        div(:class='isEditBox? "opacity-40" : "opacity-100"')
+          .col.border-bottom-1.border-gray-300
+          .col.flex.my-3.mx-1
+            .col.flex.align-items-center
+              .icon-sender-info.icon.bg-primary.mr-2
+              span.font-bold.text-800.uppercase Seller Information
+          .col
+            BoxDetailValue(v-for='item in sellerInfor' :key='item.id' :item='item' :boxSellerInfor='boxSellerInfor')
+        .grid.m-1(v-if='isEditBox')
+          .col
+            .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='btnEdit')
+              span.uppercase.font-semibold cancel
+          .col
+            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='handleUpdateData')
+              span.uppercase save
     div.ml-5.flex-1(class=' col-7  md:col-8  lg:col-8 xl:col-8')
       .grid.justify-content-between
         .col-fixed
