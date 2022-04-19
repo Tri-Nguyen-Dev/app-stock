@@ -199,4 +199,24 @@ export namespace Stock {
       }]
     }
   }
+
+  export interface CreateStock {
+    id?: string,
+    name?: string,
+    imagePath?: string,
+    barCode?: string,
+    totalInventoryQuantity?: number,
+    unit?: {
+      id:number,
+    },
+    height?: number,
+    width?: number,
+    length?: number,
+    weight?: number,
+    category?: {
+      id: string
+    },
+    stockStatus?: string,
+    deleted?: boolean
+  }
 }

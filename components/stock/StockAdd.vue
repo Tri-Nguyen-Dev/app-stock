@@ -10,37 +10,41 @@
       h5.mb-1 SKU
       InputText(v-model='stockInformation.sku').w-full
       h5.mb-1 Name
-      InputText(v-model='stockInformation.name').w-full
+      InputText(v-model='stockInformation.name' :class="{'name--error' : $v.stockInformation.name.$error}").w-full
+      .error-message(v-if='$v.stockInformation.name.$dirty && !$v.stockInformation.name.required') Name cannot be empty!
       h5.mb-1 Category
-      Dropdown(v-model='stockInformation.category' :options="cities" optionLabel="name" :filter="true" placeholder="Select a category" :showClear="true").w-full
+      Dropdown(v-model='stockInformation.category' :options="warehouseList" optionLabel="name" :filter="true" placeholder="Select a category" :showClear="true" :class="{'category--error' : $v.stockInformation.category.$error}").w-full
         template(#value='slotProps')
-      h5.mb-1 Quantity
-          InputNumber(v-model='stockInformation.quantity' showButtons buttonLayout="horizontal" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus").w-full
+      .error-message(v-if='$v.stockInformation.category.$dirty && !$v.stockInformation.category.required') Please choose category!
       .grid
         .col-6
-          h5.mb-1 Weight
-          .p-input-icon-right.w-full
-            .icon.icon--right Kg
-            InputText(type="number" v-model='stockInformation.weight').w-full
+          h5.mb-1 Quantity
+          InputText(type="number" :min="1" v-model='stockInformation.quantity' :class="{'quantity--error' : $v.stockInformation.quantity.$error}").w-full
+          .error-message(v-if='$v.stockInformation.quantity.$dirty && !$v.stockInformation.quantity.required') Please enter quantity of stock!
         .col-6
           h5.mb-1 Unit
-          Dropdown(v-model='stockInformation.unit' :options="cities" optionLabel="name")
+          Dropdown(v-model='stockInformation.unit' :options="unitList" optionLabel="name" :class="{'unit--error' : $v.stockInformation.unit.$error}").w-full
+          .error-message(v-if='$v.stockInformation.unit.$dirty && !$v.stockInformation.unit.required') Please choose unit!
+      h5.mb-1 Weight
+          .p-input-icon-right.w-full
+            .icon.icon--right Kg
+            InputText(type="number" :min="1" v-model='stockInformation.weight').w-full
       .grid.mb-3
         .col
           h5.mb-1 Length
           .p-input-icon-right.w-full
             .icon.icon--right cm
-            InputText(type="number" v-model='stockInformation.length').w-full
+            InputText(type="number" :min="1" v-model='stockInformation.length').w-full
         .col
           h5.mb-1 Width
           .p-input-icon-right.w-full
             .icon.icon--right cm
-            InputText(type="number" v-model='stockInformation.width').w-full
+            InputText(type="number" :min="1" v-model='stockInformation.width').w-full
         .col
           h5.mb-1 Height
           .p-input-icon-right.w-full
             .icon.icon--right cm
-            InputText(type="number" v-model='stockInformation.height').w-full
+            InputText(type="number" :min="1" v-model='stockInformation.height').w-full
       FileUpload(accept="image/*" :maxFileSize="1000000" :fileLimit="1" :showCancelButton='false' @upload="onUpload")
         template(#empty)
           .grid
@@ -60,37 +64,68 @@
     Toast
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { required } from 'vuelidate/lib/validators'
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreUnit = namespace('stock/unit')
 
-@Component
+@Component({
+  validations: {
+    stockInformation: {
+      name: {
+        required
+      },
+      quantity: {
+        required
+      },
+      unit: {
+        required
+      },
+      category: {
+        required
+      }
+    }
+  }
+})
 class AddNewStock extends Vue {
-  cities = [
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
-  ]
-
   stockInformation: any = {
     barCode: '',
     sku: '',
     name: '',
     category: '',
-    quantity: 0,
-    weight: 0,
+    quantity: 1,
+    weight: null,
     unit: '',
-    length: '',
-    width: '',
-    height: '',
+    length: null,
+    width: null,
+    height: null,
     imageUrl: ''
   }
+
+  @nsStoreWarehouse.State
+  warehouseList!: any
+
+  @nsStoreUnit.State
+  unitList!: any
+
+  @nsStoreWarehouse.Action
+  actWarehouseList!: () => Promise<void>
+
+  @nsStoreUnit.Action
+  actUnitList!: () => Promise<void>
 
   cancelAddStock() {
     this.$emit('cancelAddStock')
   }
 
   addItem() {
+    this.$v.stockInformation.name?.$touch()
+    this.$v.stockInformation.unit?.$touch()
+    this.$v.stockInformation.category?.$touch()
+    this.$v.stockInformation.quantity?.$touch()
+    if (this.$v.$invalid) {
+      return
+    }
     this.$emit('addItem', this.stockInformation)
   }
 
@@ -102,6 +137,13 @@ class AddNewStock extends Vue {
       life: 3000
     })
   }
+
+  async mounted() {
+    await Promise.all([
+      this.actUnitList(),
+      this.actWarehouseList()
+    ])
+  }
 }
 export default AddNewStock
 </script>
@@ -110,10 +152,14 @@ export default AddNewStock
   display: flex
   flex-direction: column
   height: 100%
+  .p-inputtext
+    box-shadow: none
   .addStockHeader
     border-bottom: 1px solid #E8EAEF
   .addStockContent
     flex: 1
+    .error-message
+      color: #ff0000
   .addStockFooter
     border-top: 1px solid #E8EAEF
   .p-fileupload-content

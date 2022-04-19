@@ -11,16 +11,15 @@ export default class StoreStockDetail extends VuexModule {
   private static readonly STATE_URL = {
     GET_STOCK_DETAIL: '/stock/:id/detail',
     GET_ITEMS_LIST: '/stock/:id/box/list',
-    GET_ITEM_INFO: '/stock/:stockId/box/:boxId/detail'
+    GET_ITEM_INFO: '/stock/:stockId/box/:boxId/detail',
+    CREATE_STOCK: '/stock/create'
   }
 
   public total?: number = 0
-
-  public stockDetail: any = {};
-
+  public stockDetail: any = {}
   public itemsList: any = {}
-
   public itemDetail: any = {}
+  public newStockDetail: any = {}
 
   @Mutation
   setStockDetail(data:StockModel.ModelDetail) {
@@ -36,6 +35,11 @@ export default class StoreStockDetail extends VuexModule {
   @Mutation
   setItemDetail(itemDetail: StockModel.BoxModel) {
     this.itemDetail = itemDetail
+  }
+
+  @Mutation
+  setNewStock(newStockDetail: StockModel.CreateStock) {
+    this.newStockDetail = newStockDetail
   }
 
   @Action({ commit: 'setStockDetail', rawError: true })
@@ -54,5 +58,14 @@ export default class StoreStockDetail extends VuexModule {
   async actGetItemsDetail(params: {stockId: number, boxId: number}): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_ITEM_INFO, params)
     return await $api.get(url)
+  }
+
+  @Action({ commit: 'setNewStock', rawError: true })
+  async actCreateNewStock(params: any): Promise<string | undefined> {
+    try{
+      const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.CREATE_STOCK)
+      const response = await $api.post(url, params)
+      return response.data
+    } catch (error) {}
   }
 }
