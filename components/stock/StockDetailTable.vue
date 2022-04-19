@@ -13,34 +13,18 @@
             div.cursor-pointer.refresh-filter(@click="handleRefreshFilter")
               img(:src="require(`~/assets/icons/rotate-left.svg`)")
     .grid(v-show="isShowFilter")
-      FilterTable(title="Seller" placeholder="Enter seller" :filter="filter.sellerEmail" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm SKU
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter SKU" v-model='filter.sku')
+        FilterTable(title="Seller" placeholder="Enter seller" name="sellerEmail" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Box Code
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter box code" v-model='filter.boxCode')
-      FilterTable(title="Warehouse" :options="warehouseList" :filter="filter.warehouse" )
+        FilterTable(title="SKU" placeholder="Enter SKU" name="sku" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Location
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model='filter.location')
+        FilterTable(title="Enter box code" placeholder="Enter box code" name="boxCode" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Status
-          Dropdown.w-full.border-0.mb-1(v-model="filter.status" :options="statusList" optionLabel="name" placeholder="Select")
+        FilterTable(title="Warehouse" :options="warehouseList" name="warehouse"  @updateFilter="handleFilter")
+      .col
+        FilterTable(title="Location" placeholder="Enter location" name="location" :searchText="true" @updateFilter="handleFilter")
+      .col
+        FilterTable(title="Status" :options="statusList" name="status"  @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
         DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
@@ -258,6 +242,10 @@ class StockDetailTable extends Vue {
       id: this.$route.params.sid
     }
     await this.actGetItemsList(params)
+  }
+
+  handleFilter(e: any, name: string){
+    this.filter[name] = e
   }
 
   @Watch('filter', { deep: true })

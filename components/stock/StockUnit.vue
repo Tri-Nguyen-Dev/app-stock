@@ -8,16 +8,16 @@
       span.font-semibold {{value}}
       .icon.icon-arrow-up-right.inline-block
     span.font-semibold.mr-1.uppercase(v-else) {{ value }}
-    template(v-if="type ==='weight'")
-      InputNumber(:disabled='!isEdit' v-model='weight' :input="$emit('updateUnit', weight, 'weight')")
+    template(v-if="type ==='normal'")
+      InputNumber(:disabled='!isEdit' :value='model' @input="handleUpdateUnit")
     template(v-if="type ==='size'")
       .grid(v-if='isEdit')
         .col-4.p-0.pl-2.pt-1
-          InputNumber.w-full(:disabled='!isEdit', v-model='length' :input="$emit('updateUnit', length, 'length')")
+          InputNumber.w-full(:disabled='!isEdit', :value='length' @input="(e)=> $emit('updateUnit', e, 'lengthBox')")
         .col-4.p-0.pt-1
-          InputNumber.w-full(:disabled='!isEdit', v-model='width' :input="$emit('updateUnit', width, 'width')")
+          InputNumber.w-full(:disabled='!isEdit', :value='width' @input="(e)=> $emit('updateUnit', e, 'widthBox')")
         .col-4.p-0.pt-1
-          InputNumber.w-full(:disabled='!isEdit', v-model='height' :input="$emit('updateUnit', height, 'height')")
+          InputNumber.w-full(:disabled='!isEdit', :value='height' @input="(e)=> $emit('updateUnit', e, 'heightBox')")
       span.font-semibold.mr-1.uppercase(v-else) {{ length }}*{{ width }}*{{ height }}
 </template>
 <script lang='ts'>
@@ -25,17 +25,21 @@ import { Component, Prop, Vue } from 'nuxt-property-decorator'
 
 @Component
 class StockUnit extends Vue {
+  @Prop() readonly name!: string | undefined
   @Prop() readonly value!: number | undefined
   @Prop() readonly title!: string | undefined
   @Prop() readonly isEdit!: boolean | false
   @Prop() readonly icon!: string | undefined
   @Prop() readonly type!: string | undefined
   @Prop() readonly link!: string | undefined
-  @Prop() weight!: number | undefined
+  @Prop() model!: number | undefined
   @Prop() height!: number | undefined
   @Prop() length!: number | undefined
   @Prop() width!: number | undefined
 
+  handleUpdateUnit(e: any){
+    this.$emit('updateUnit', e, this.name)
+  }
 }
 
 export default StockUnit

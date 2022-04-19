@@ -31,9 +31,9 @@
         .col-12.px-0
           StockUnit(title="Total inventory quantity" :value="total" :isEdit="isEditStockDetail" icon="icon-total-inventory")
         .col-12.px-0
-          StockUnit(title="Size (L*W*H)" type ="size" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size" @updateUnit='handleUpdateUnit')
+          StockUnit(title="Size (L*W*H)" type="size" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size" @updateUnit='handleUpdateUnit')
         .col-12.px-0
-          StockUnit(title="Weight" type ="weight" :weight="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
+          StockUnit(title="Weight" type="normal" name="weightBox" :model="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
         div
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col
@@ -82,23 +82,8 @@ class StockDetail extends Vue {
     this.isEditStockDetail = true
   }
 
-  handleUpdateUnit(val: number, type: string) {
-    switch (type) {
-    case 'weight':
-      this.weightBox = val
-      break
-    case 'width':
-      this.widthBox = val
-      break
-    case 'height':
-      this.heightBox = val
-      break
-    case 'length':
-      this.lengthBox = val
-      break
-    default:
-      break
-    }
+  handleUpdateUnit(val: any, name: string) {
+    this[name] = val
   }
 
   saveEditStockDetail() {
