@@ -6,41 +6,39 @@
           i.pi.pi-info-circle.mr-3
           span.font-semibold.text-base GENERAL INFORMATION
       template(#content='') GENERAL INFORMATION 
-    card
-      template(#title='')
-        div.grid
-          .col-10.d-flex
-            i.pi.pi-list.mr-2
-            span.font-semibold.text-base LIST BOX
-          .col-2.d-flex.justify-content-end
-              Button.p-button-primary.p-button-rounded.p-button-text(type ='button' icon="pi pi-plus" @click='addBox()')
-              Button.p-button-danger.p-button-rounded.p-button-text(type ='button' icon="pi pi-trash" @click='deleteBox()')
+    card.card-custom
       template(#content='')
-        TabView(:active-index="activeIndex" @tab-click='tabClick($event)')
-          TabPanel(
-            v-for='(attr, index) in listBox' v-bind:data='attr'  v-bind:key='attr.id'
-          )
-            template(#header='')
-              .icon.icon-box-view.bg-blue-700.mr-2
-              span.font-semibold.text-base {{attr.title}}
-            .grid.background-primary.text-white
-              .col-fixed.col-fixed-pading(style="width:60px")
-                Button.bacground-input.refresh-padding(type='button' icon='pi pi-refresh')
-              .col.d-flex
-                label.mr-1 Size
-                InputText.box-input(style='width = 20%')
-                InputText.box-input(style='width = 20%' value="L:")
-                InputText.box-input(style='width = 20%')
-                InputText.box-input(style='width = 20%')
-                Button.bacground-input(type='button' icon='pi pi-plus')
+        .grid
+          .col-1
+            span Listbox
+          .col-11
+            .grid.border-grid
+              div(class='d-flex col-4 md:col-2 lg:col-1 d-flex border-right')
+                span.uppercase.mr-1 item in box 1
+                i.pi.pi-refresh
+              div(class='d-flex col-12 md:col-5 lg:col-4 border-right')
+                span.font-semibold.text-base.mr-3.ml-3 Size
+                Dropdown.box-input(style='width:70%' :options ='listSizes'  optionLabel="text" placeholder="Select size" v-model='boxSize' )
+                span.font-semibold.text-base.ml-3 (cm)
+              div(class='d-flex col-12 md:col-5 lg:col-4 border-right pt-4 pb-4')
+                span.font-semibold.text-base.mr-1.ml-2 Estimate Inventory Fee:
+                InputNumber.number-input
+                span.font-semibold.text-base.ml-3 /day
+              div(class='d-flex col-12 md:col-5 lg:col-3 justify-content-center' )
+                Button(type='button' icon='pi pi-refresh' style = 'width: 80%') Scan Barcode
+            .grid.border-grid.border-right.mt-0(style='border-top:none; margin-right:0px')
+              ItemDataTable()
     Toast
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
+const nsStoreStockIn = namespace('stock-in/create-receipt')
 @Component({
   components: {
-    ConfirmDialogCustom
+    ConfirmDialogCustom,
+    ItemDataTable
   }
 })
 class Stock extends Vue {
@@ -50,14 +48,16 @@ class Stock extends Vue {
     header: string
   }
 
+  boxSize: number = 0;
   listBox=[{
     id: 0,
     index: 0,
     title:'Box 1'
-  }
-  ];
+  }];
 
   activeIndex = 0;
+  @nsStoreStockIn.Action
+  actGetReceiptDetail
 
   addBox(){
     const item = {
@@ -74,8 +74,11 @@ class Stock extends Vue {
       this.listBox.splice(this.listBox.length-1,1)
       this.activeIndex = this.listBox[this.listBox.length-1].id
     }
-    
   }
+
+  //  async mounted() {
+  //   await this.actGetReceiptDetail({ id: this.$route.params.sid })
+  // }
 }
 export default Stock
 </script>
@@ -84,32 +87,33 @@ export default Stock
   color: #1838BD !important
 .d-flex
   @include flex-center-vert
-::v-deep.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link
-  background: #ffffff
-  border-color: #486AE2
-::v-deep.p-tabview .p-tabview-nav li .p-tabview-nav-link
-  border: solid #dee2e6
-  border-width: 0 0 2px 0
-  border-color: transparent transparent #dee2e6 transparent
-  background: #ffffff
-  padding: 1.25rem
-  font-weight: 700
-  border-top-right-radius: 6px
-  border-top-left-radius: 6px
-  transition: box-shadow 0.2s
-  margin: 0 0 -2px 0
 .box-input
-  background: rgba(255, 255, 255, 0.15)
-  color: $color-white
-  margin-right: 7px
-  border: 0
-.bacground-input
-  background: rgba(255, 255, 255, 0.15)
-.refresh-padding
-  padding-top: 14px
-  padding-bottom: 17px
-  padding-left: 23px
-  padding-right: 23px
-.col-fixed-pading
-  padding: 0
+  background-color: #F1F3F6 !important
+.number-input
+  width: 30%
+  ::v-deep.p-inputnumber-input
+    background:  #F1F3F6 !important
+    width: 30%
+.box-retangle
+  background: #FFFFFF
+  border-radius: 3px
+  width: 1px
+.border-grid
+  border: solid 1px #E8EAEF
+  border-right: none
+.border-right
+  border-right: solid 1px #E8EAEF
+.border-left
+  border-left: solid 1px #E8EAEF
+.border-top
+  border-top: solid 1px #E8EAEF
+.border-bot
+  border-bottom: solid 1px #E8EAEF	
+.card-custom
+  ::v-deep.p-card-body
+    padding: 0 !important
+    .p-card-content
+      padding: 0 !important
+i:hover
+  cursor: pointer
 </style>

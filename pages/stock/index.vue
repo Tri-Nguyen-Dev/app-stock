@@ -35,7 +35,7 @@
         .text-sm.stock__filter-title Status
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
     .stock__table.bg-white.flex-1.relative.overflow-hidden
-        DataTable.table__sort-icon.h-full.flex.flex-column(@sort="sortData($event)" :class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
+        DataTable.table_ _sort-icon.h-full.flex.flex-column(@sort="sortData($event)" :class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
           Column(selectionMode='multiple' :styles="{'width': '1%'}" :headerClass="`${!stockList || stockList.length <= 0 || checkStockDisable ? 'checkbox-disable' : ''}`")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
@@ -50,6 +50,7 @@
           Column(header='Code' field='barCode' :sortable="true" :styles="{'width': '5%'}" headerClass="grid-heading-end" sortField="_barCode")
             template(#body='{ data }')
               div.grid-body-end.stock__table-barcode {{ data.barCode }}
+                span.stock__table__avv
           Column(header='Category' :sortable="true" field='category' :styles="{'width': '5%'}" sortField="_category")
               template(#body='{ data }')
                 div.grid-body-end {{ data.category.name }}
@@ -369,6 +370,8 @@ export default Stock
       margin-bottom: 5px
       padding-left: 10.5px
 .stock__table
+  &__avv 
+    
   border-radius: 4px
   &-no
     font-size: $font-size-medium

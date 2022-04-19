@@ -1,3 +1,4 @@
+import {Item as ItemModel } from './Item'
 export namespace Box {
   export interface Model {
     id: string,
@@ -26,6 +27,10 @@ export namespace Box {
       id:string,
       name:string
     },
-    status?: boolean
+    status?: boolean,
+    deleted: boolean,
+    rackLocation: string,
+    inventoryFee: number,
+    listStockWithAmount: ItemModel.Model
   }
 }
