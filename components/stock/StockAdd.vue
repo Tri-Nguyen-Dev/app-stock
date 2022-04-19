@@ -40,7 +40,7 @@
           h5.mb-1 Height
           .p-input-icon-right.w-full
             .icon.icon--right cm
-            InputText(type="number").w-full
+            InputText(type="number" v-model='stockInformation.height').w-full
       FileUpload(accept="image/*" :maxFileSize="1000000" :fileLimit="1" :showCancelButton='false' @upload="onUpload")
         template(#empty)
           .grid
@@ -55,7 +55,7 @@
           .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelAddStock')
             span.uppercase.font-semibold cancel
         .col
-          .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='addStock')
+          .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='addItem')
             span.uppercase save
     Toast
 </template>
@@ -90,8 +90,8 @@ class AddNewStock extends Vue {
     this.$emit('cancelAddStock')
   }
 
-  addStock() {
-    this.$emit('addStock')
+  addItem() {
+    this.$emit('addItem', this.stockInformation)
   }
 
   onUpload() {

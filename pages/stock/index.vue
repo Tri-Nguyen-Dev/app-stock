@@ -34,54 +34,55 @@
       .stock__filter-item.bg-white.border-round
         .text-sm.stock__filter-title Status
         Dropdown.w-full.border-0(v-model="filter.status"  :options="statusList" optionLabel="name" placeholder="Select")
-    //- .stock__table.bg-white.flex-1.relative.overflow-hidden
-    //-     DataTable.table__sort-icon.h-full.flex.flex-column(@sort="sortData($event)" :class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
-    //-       Column(selectionMode='multiple' :styles="{'width': '1%'}" :headerClass="`${!stockList || stockList.length <= 0 || checkStockDisable ? 'checkbox-disable' : ''}`")
-    //-       Column(field='no' header='NO' :styles="{'width': '1%'}" )
-    //-         template(#body='{ index }')
-    //-           span.grid-body-center.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
-    //-       Column(field='imageUrl' header='Image' :styles="{'width': '5%'}")
-    //-         template(#body='{ data }')
-    //-           .grid-body-center.stock__table__image.overflow-hidden
-    //-             img.h-2rem.w-2rem.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
-    //-       Column(header='Name' field='name' :sortable="true" sortField="_name")
-    //-         template(#body='{ data }')
-    //-           .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-    //-       Column(header='Code' field='barCode' :sortable="true" :styles="{'width': '5%'}" headerClass="grid-heading-end" sortField="_barCode")
-    //-         template(#body='{ data }')
-    //-           div.grid-body-end.stock__table-barcode {{ data.barCode }}
-    //-       Column(header='Category' :sortable="true" field='category' :styles="{'width': '5%'}" sortField="_category")
-    //-           template(#body='{ data }')
-    //-             div.grid-body-end {{ data.category.name }}
-    //-       Column(field='status' header="Status" :styles="{'width': '5%'}" headerClass="grid-heading-content")
-    //-         template(#body='{ data }')
-    //-           div.grid-body-end
-    //-             span.table__status.table__status--available(v-if="!data.deleted") Available
-    //-             span.table__status.table__status--disable(v-else) Disable
-    //-       Column(field='action' header="action" :styles="{'width': '2%'}" headerClass="grid-heading-content")
-    //-         template(#body='{ data }')
-    //-           .table__action(:class="{'action-disabled': data.deleted}")
-    //-             span(@click="handleEditStock(data.id)")
-    //-               .icon.icon-edit-btn
-    //-             span(@click="showModalDelete(data.id)")
-    //-               .icon.icon-btn-delete
-    //-       template(#footer)
-    //-         .pagination
-    //-           div.pagination__info(v-if='!selectedStockFilter.length > 0')
-    //-             img(:src="require('~/assets/icons/filter-left.svg')")
-    //-             span.pagination__total {{ getInfoPaginate }}
-    //-           div.pagination__delete(v-else @click="showModalDelete()")
-    //-             img(:src="require('~/assets/icons/trash-white.svg')")
-    //-             span Delete {{ selectedStockFilter.length }} items selected
-    //-           Paginator(:first.sync="firstPage" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)" :rowsPerPageOptions="[10,20,30]")
-    //-       template(#empty)
-    //-         div.flex.align-items-center.justify-content-center.flex-column
-    //-           img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
-    //-           img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-    //-           p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
-    //-             span.text-primary.underline.cursor-pointer &nbsp;here
-    //-             span &nbsp;to add item.
-    //-           p.text-900.font-bold.mt-3(v-else) Item not found!
+    .stock__table.bg-white.flex-1.relative.overflow-hidden
+        DataTable.table_ _sort-icon.h-full.flex.flex-column(@sort="sortData($event)" :class="{ 'table__empty': !stockList || stockList.length <= 0 }" :rowClass="rowClass" :value='stockList' responsiveLayout="scroll" @row-dblclick='rowdbClick' :selection.sync='selectedStock' dataKey='id' :rows='10' :rowHover='true')
+          Column(selectionMode='multiple' :styles="{'width': '1%'}" :headerClass="`${!stockList || stockList.length <= 0 || checkStockDisable ? 'checkbox-disable' : ''}`")
+          Column(field='no' header='NO' :styles="{'width': '1%'}" )
+            template(#body='{ index }')
+              span.grid-body-center.stock__table-no.text-white-active.text-900.font-bold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
+          Column(field='imageUrl' header='Image' :styles="{'width': '5%'}")
+            template(#body='{ data }')
+              .grid-body-center.stock__table__image.overflow-hidden
+                img.h-2rem.w-2rem.border-round(:src='data.imageUrl' alt='' width='100%' style="object-fit: cover;")
+          Column(header='Name' field='name' :sortable="true" sortField="_name")
+            template(#body='{ data }')
+              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
+          Column(header='Code' field='barCode' :sortable="true" :styles="{'width': '5%'}" headerClass="grid-heading-end" sortField="_barCode")
+            template(#body='{ data }')
+              div.grid-body-end.stock__table-barcode {{ data.barCode }}
+                span.stock__table__avv
+          Column(header='Category' :sortable="true" field='category' :styles="{'width': '5%'}" sortField="_category")
+              template(#body='{ data }')
+                div.grid-body-end {{ data.category.name }}
+          Column(field='status' header="Status" :styles="{'width': '5%'}" headerClass="grid-heading-content")
+            template(#body='{ data }')
+              div.grid-body-end
+                span.table__status.table__status--available(v-if="!data.deleted") Available
+                span.table__status.table__status--disable(v-else) Disable
+          Column(field='action' header="action" :styles="{'width': '2%'}" headerClass="grid-heading-content")
+            template(#body='{ data }')
+              .table__action(:class="{'action-disabled': data.deleted}")
+                span(@click="handleEditStock(data.id)")
+                  .icon.icon-edit-btn
+                span(@click="showModalDelete(data.id)")
+                  .icon.icon-btn-delete
+          template(#footer)
+            .pagination
+              div.pagination__info(v-if='!selectedStockFilter.length > 0')
+                img(:src="require('~/assets/icons/filter-left.svg')")
+                span.pagination__total {{ getInfoPaginate }}
+              div.pagination__delete(v-else @click="showModalDelete()")
+                img(:src="require('~/assets/icons/trash-white.svg')")
+                span Delete {{ selectedStockFilter.length }} items selected
+              Paginator(:first.sync="firstPage" :rows="paginate.pageSize" :totalRecords="total" @page="onPage($event)" :rowsPerPageOptions="[10,20,30]")
+          template(#empty)
+            div.flex.align-items-center.justify-content-center.flex-column
+              img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
+              img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+              p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
+                span.text-primary.underline.cursor-pointer &nbsp;here
+                span &nbsp;to add item.
+              p.text-900.font-bold.mt-3(v-else) Item not found!
     ConfirmDialogCustom(
       title="Confirm delete"
       :message="`Are you sure you want to delete ${ids.length} in this list stock?`"
@@ -369,6 +370,8 @@ export default Stock
       margin-bottom: 5px
       padding-left: 10.5px
 .stock__table
+  &__avv
+
   border-radius: 4px
   &-no
     font-size: $font-size-medium

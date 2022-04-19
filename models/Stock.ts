@@ -13,6 +13,31 @@ export namespace Stock {
     },
     type?: object,
     deleted?: boolean,
+    unit: {
+      id: number,
+      name: string
+    },
+    height:number,
+    width: number,
+    length: number,
+    weight: number,
+    totalInventoryQuantity: number,
+    stockStatus: string,
+    attributeValue: [
+      {
+        id: string,
+        attribute: {
+          id: string,
+          name: string,
+          icon: string,
+          displayOrder: number,
+          deleted: true
+        },
+        icon: string,
+        displayOrder: number,
+        value: string
+      }
+    ],
   }
 
   export interface ModelDetail {
