@@ -2,24 +2,24 @@ import {Item as ItemModel } from './Item'
 export namespace Box {
   export interface Model {
     id: string,
-    code: string,
-    receiptNoteId: string,
-    creatorId: string,
     barCode: string,
-    seller: {
-      id: string,
-      name: string,
-      email: string,
-      phone: string
-    },
-    createAt?: Date,
+    request: {
+      seller: {
+        id: string,
+        email: string
+      },
+      warehouse: {
+        id: string,
+        name: string
+      }
+    }
+    createdAt?: Date,
     updatedAt?: Date,
     length: number,
     width: number,
     height: number
     weight: number,
-    boxSize: string,
-    warehouse: {
+    rackLocation: {
       id: string,
       name: string
     },
@@ -29,8 +29,8 @@ export namespace Box {
     },
     status?: boolean,
     deleted: boolean,
-    rackLocation: string,
     inventoryFee: number,
-    listStockWithAmount: ItemModel.Model
+    listStockWithAmount: ItemModel.Model,
+    boxSize?: string
   }
 }

@@ -27,6 +27,9 @@
   align-items:     center
   justify-content: center
 
+@mixin flex-end
+  display:         flex
+  justify-content: end
 
 @mixin flex-center-column
   @include flex-center
@@ -45,6 +48,7 @@
   display:         flex
   align-items:     center
   justify-content: space-between
+
 
 //- Ellipsis
 @mixin text-ellipsis($num-line)
