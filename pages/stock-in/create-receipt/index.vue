@@ -32,10 +32,10 @@
                 InputText.box-input(style='width = 20%' value="L:")
                 InputText.box-input(style='width = 20%')
                 InputText.box-input(style='width = 20%')
-                Button.bacground-input(type='button' icon='pi pi-plus' @click='showModalAddStock = true')
+                Button.bacground-input(type='button' icon='pi pi-plus' @click='showModalAddStock')
     Toast
-    Sidebar(:visible.sync="showModalAddStock" :baseZIndex="1000" position="right" ariaCloseLabel='to')
-      StockAdd
+    Sidebar(:visible='isShowModalAddStock' :baseZIndex="1000" position="right" ariaCloseLabel='to')
+      StockAdd(@cancelAddStock='cancelAddStock' @addStock='addStock')
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
@@ -59,8 +59,8 @@ class Stock extends Vue {
   }
   ];
 
+  isShowModalAddStock: boolean = false
   activeIndex = 0;
-  showModalAddStock: boolean = false
 
   addBox(){
     const item = {
@@ -77,7 +77,18 @@ class Stock extends Vue {
       this.listBox.splice(this.listBox.length-1,1)
       this.activeIndex = this.listBox[this.listBox.length-1].id
     }
+  }
 
+  showModalAddStock() {
+    this.isShowModalAddStock = true
+  }
+
+  cancelAddStock() {
+    this.isShowModalAddStock = false
+  }
+
+  addStock() {
+    this.isShowModalAddStock = false
   }
 }
 export default Stock
@@ -117,8 +128,10 @@ export default Stock
   padding: 0
 ::v-deep.p-sidebar.p-sidebar-active
   width: 25rem
+  display: flex
   .p-sidebar-header
     display: none
   .p-sidebar-content
+    flex: 1
     padding: 0
 </style>
