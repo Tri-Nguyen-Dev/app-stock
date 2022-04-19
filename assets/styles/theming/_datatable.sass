@@ -1,24 +1,31 @@
 $bottom-td-color: rgb(21, 22, 34, 0.05)
-
 // custom table
 .p-datatable
-    font-family: $font-family-primary
+    font-family: $font-family-primary !important
     font-size: $font-size-base !important
-
-    &.table__empty
-        .p-datatable-table
-            height: 100%
-
-    .grid-heading-content
+    background-color: $color-white
+    height: 100%
+    .grid-cell-center
+        @include flex-center
+    .grid-cell-right
+        display: flex
+        justify-content: flex-end
+    .grid-header-right
         .p-column-header-content
-            @include flex-center-horiz
-    .grid-heading-end
-        .p-column-header-content
-           @include flex-end
-    .grid-body-center
-        @include flex-center-horiz
-    .grid-body-end
-        @include flex-end
+            display: flex
+            justify-content: flex-end
+    @include flex-column
+    .p-datatable-tbody tr:not(.p-highlight).p-datatable-emptymessage:hover
+        background-color: #fff !important
+    .table__empty
+        @include flex-center-column
+        color: $text-color-900
+        font-weight: $font-weight-bold
+        .empty__text
+            cursor: pointer
+            span:nth-child(1)
+                text-decoration: underline
+                color: $primary
     .checkbox-disable
         .p-checkbox
             cursor: auto !important
@@ -26,16 +33,17 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             .p-checkbox-box
                 background-color: $color-white
                 border: 1.5px solid $text-color-300 !important
+    &.table-wrapper-empty
+        .p-datatable-table
+            height: 100%
     .p-datatable-wrapper
         flex: 1
-
         &::-webkit-scrollbar
             width: 6px
             height: 6px
         &::-webkit-scrollbar-thumb
             border-radius: 10px
             background-color: $text-color-700
-
     .p-datatable-thead
         position: sticky
         top: 0
@@ -60,35 +68,15 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         border: none !important
         &:focus
             box-shadow: none !important
-        .p-column-resizer
-            width: 2.23px !important
-            border: none !important
-            &:hover
-                background-color: $primary
         &:nth-child(1)
             padding-left: 18px
-    .p-column-resizer-helper
-        width: 2.23px !important
-        border: none !important
-        background-color: $primary
     .p-datatable-tbody > tr > td
         white-space: nowrap
         border-top: 1px solid $bottom-td-color
         &:nth-child(1)
             padding-left: 18px
-    .p-checkbox-box
-        border: 1.5px solid $text-color-500
-        border-radius: 2px
-        &.p-highlight
-            background-color: $primary
-        &.focus, &:not(.p-checkbox-disabled)
-            box-shadow: none !important
-            border: 1.5px solid $text-color-500 !important
     .p-datatable-footer
         padding: 0
-    .p-datatable-emptymessage
-        &:hover
-            background-color: $color-white !important
     tr.p-highlight.row-disable
         background-color: unset
         color: unset
@@ -100,15 +88,25 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
             pointer-events: none !important
             .p-checkbox-box
                 border: 1.5px solid $text-color-300 !important
-    
-// pagination
+    .pi-sort-alt:before
+        content: url('~/assets/icons/sort-alt.svg')
+    .pi-sort-amount-up-alt:before
+        content: url('~/assets/icons/sort-alt-up.svg')
+    .pi-sort-amount-down:before
+        content: url('~/assets/icons/sort-alt-up.svg')
+        display: inline-block
+        transform: rotate(180deg) !important
+// custom pagination
 .pagination
-    @include flex-center-space-between
+    @include flex-center-vert
+    justify-content: space-between
     background-color: $color-white
     padding: 21px 18px
     &__info
         @include flex-center-horiz
         gap: 0 19px
+        .icon
+            background-color: $text-color-500
     &__total
         font-size: $font-size-small
         color: $text-color-500
@@ -122,6 +120,8 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         gap: 0 19px
         padding: 5px 10px
         cursor: pointer
+        .icon
+            background-color: $color-white
     .p-paginator
         padding: 0 !important
         .p-paginator-page
@@ -167,24 +167,5 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   &--available
     color: $text-color-status
   &--disable
-    color: $text-color-700
-.table__sort
-  cursor: pointer
-  @include flex-center-vert
-  gap: 0 7px
-.sortDes
-  transform: rotate(180deg) !important
-
-.datatable__head-right
-  .p-column-header-content
-    justify-content: end !important
-
-.table__sort-icon
-  .pi-sort-alt:before
-    content: url('~/assets/icons/sort-alt.svg')
-  .pi-sort-amount-up-alt:before
-    content: url('~/assets/icons/sort-alt-up.svg')
-  .pi-sort-amount-down
-    transform: rotate(180deg) !important
-    &:before
-      content: url('~/assets/icons/sort-alt-up.svg')
+    color: #979AA4
+  
