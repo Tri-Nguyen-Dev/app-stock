@@ -5,7 +5,42 @@
         div.d-flex
           i.pi.pi-info-circle.mr-3
           span.font-semibold.text-base GENERAL INFORMATION
-      template(#content='') GENERAL INFORMATION
+      template(#content='')
+         div.grid
+          .col
+            .filter__item.item--disabled
+              .filter__title ID receipt note
+              .filter__text 030133333
+          .col
+            .filter__item.item--disabled
+              .filter__title ID Creator
+              .filter__text NVN030133
+          .col
+            .filter__item.item--disabled
+              .filter__title Creator name
+              .filter__text Nguyen Khanh Hung
+          .col
+            .filter__item.item--disabled
+              .filter__title Create time
+              .filter__text 19-09-2022 9:24AM
+          .col
+            .filter__item
+              .filter__title Warehouse
+              Dropdown.general__filter(v-model="warehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
+          .col
+            .filter__item
+              .filter__title Seller email
+              .filter__autocomplete
+                AutoComplete(v-model="seller" :suggestions="sellerList" @complete="handleChangeSeller($event)" field="email" placeholder="Enter seller email")
+                .icon.icon--right.icon-add-items(@click="handleAddSeller")
+          .col
+            .filter__item.item--disabled
+              .filter__title Seller phone
+              .filter__text {{ sellerPhone }}
+          .col
+            .filter__item.item--disabled
+              .filter__title Seller name
+              .filter__text {{ sellerName }}
     card.card-custom
       template(#content='')
         .grid
@@ -31,20 +66,50 @@
     Toast
     Sidebar(:visible='isShowModalAddStock' :baseZIndex="1000" position="right" ariaCloseLabel='to')
       StockAdd(@cancelAddStock='cancelAddStock' @addItem='addItem')
+    FormAddSeller(:isShowForm="isShowFormAddSeller")
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
+import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
 import { Item as ItemModel } from '~/models/Item'
 const nsStoreStockIn = namespace('stock-in/create-receipt')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreSeller = namespace('seller/seller-list')
 @Component({
   components: {
     ConfirmDialogCustom,
-    ItemDataTable
+    ItemDataTable,
+    FormAddSeller
   }
 })
 class Stock extends Vue {
+  @nsStoreWarehouse.Action
+  actWarehouseList!: (params?: any) => Promise<void>
+
+  @nsStoreSeller.Action
+  actSellerList!: (params?: any) => Promise<void>
+
+  @nsStoreWarehouse.State
+  warehouseList!: any
+
+  @nsStoreSeller.State
+  sellerList!: any
+
+  warehouse: any = null
+  seller: any = null
+  sellerValidate: any = null
+  isShowFormAddSeller: boolean = false
+
+  get sellerName() {
+    return (this.seller && this.seller.name) ? this.seller.name : 'name'
+  }
+
+  get sellerPhone() {
+    return (this.seller && this.seller.phone) ? this.seller.phone : 'phone'
+  }
+
   tabItem :{
     id: number,
     index: number
@@ -125,6 +190,19 @@ class Stock extends Vue {
     })
   }
 
+  mounted() {
+    this.actWarehouseList()
+  }
+
+  handleChangeSeller(e) {
+    const params = { email: e.query }
+    this.actSellerList(params)
+  }
+
+  handleAddSeller() {
+    this.isShowFormAddSeller = !this.isShowFormAddSeller
+  }
+
   //  async mounted() {
   //   await this.actGetReceiptDetail({ id: this.$route.params.sid })
   // }
@@ -173,4 +251,7 @@ i:hover
   .p-sidebar-content
     flex: 1
     padding: 0
+.general__filter
+  @include size(100%, 40px)
+  border: none
 </style>
