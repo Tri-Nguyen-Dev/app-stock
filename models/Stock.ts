@@ -4,15 +4,15 @@ export namespace Stock {
     id: string,
     name?: string,
     description?: string,
-    imageUrl?: string,
+    imagePath?: string,
     barCode?: String
-    sku : String
-    category?: {
-      id: string
-      name: string
-    },
-    type?: object,
-    deleted?: boolean,
+    category?: Stock.Category,
+    stockStatus?: string,
+  }
+
+  export interface Category {
+    id: string,
+    name: string
   }
 
   export interface ModelDetail {
