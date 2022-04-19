@@ -8,7 +8,7 @@ module.exports = function (req, res, next) {
     } else if (req.originalUrl.endsWith('delete')) {
       req.method = 'DELETE'
     }
-  }
+  } 
   // Continue to JSON Server router
   next()
 }

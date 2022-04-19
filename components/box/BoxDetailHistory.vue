@@ -1,9 +1,9 @@
 <template lang="pug">
-    DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable(
-      responsiveLayout="scroll" 
-      dataKey="id" 
+    DataTable.h-full.flex.flex-column.p-datatable-customers.airtag-datatable.table__sort-icon.bg-white(
+      responsiveLayout="scroll"
+      dataKey="id"
       :value='stockList'
-      :resizableColumns="true" 
+      :resizableColumns="true"
       :paginator="false" :rows="100"
       )
       Column(field="no" header="NO" sortable)
@@ -18,19 +18,44 @@
         template(#body='{data}')
           span.font-bold {{data.creatorId}}
       template(#footer)
-        div
-          .flex.align-items-center
-            span.ml-3.text-400.font-size-small Showing 01 - 100 of 1280
-        Paginator(:rows="20" :totalRecords="totalItemsCount").p-0
+                .pagination
+                  div.pagination__info
+                    img(:src="require('~/assets/icons/filter-left.svg')")
+                    span.pagination__total {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
+                  Paginator(:rows="20" :totalRecords="totalStockRecords" @page="onPageHistory($event)").p-0
 
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
+const nsStoreBoxDetail = namespace('box/box-detail')
 
 @Component
 class BoxDetailHistory extends Vue {
   @Prop() stockList!: () => any
+  @Prop() totalStockRecords: () => any
+
   totalItemsCount = 32
+  pageSize: number = 20
+  pageNumber: number = 1
+
+  getParamApi(){
+    return {
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
+    }
+  }
+
+  @nsStoreBoxDetail.Action
+  actGetBoxDetailFilter!: (params: any) => Promise<void>
+
+  async mounted() {
+    await this.actGetBoxDetailFilter({ pageNumber: this.pageNumber, pageSize: this.pageSize })
+  }
+
+  async onPageHistory(event: any) {
+    this.pageNumber = event.page + 1
+    await this.actGetBoxDetailFilter(this.getParamApi())
+  }
 }
 
 export default BoxDetailHistory
@@ -68,6 +93,5 @@ export default BoxDetailHistory
     color: $text-color-900
   .p-disabled, .p-component:disabled
     opacity: 1
-
 </style>
 

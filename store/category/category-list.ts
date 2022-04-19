@@ -8,14 +8,13 @@ import { $api } from '~/utils'
 })
 export default class Category extends VuexModule {
   private static readonly STATE_URL = {
-    GET_CATEGORIES: '/api/category/list'
+    GET_CATEGORIES: '/category/list'
   }
 
   public categoryList: any = []
 
   @Mutation
-  setCategoryList(data: any) { 
-
+  setCategoryList(data: any) {
     this.categoryList = data.items
   }
 
@@ -24,11 +23,9 @@ export default class Category extends VuexModule {
     try {
       const url = PathBind.transform(
         this.context,
-        Category.STATE_URL.GET_CATEGORIES,
-        { pageNumber: 1 }
+        Category.STATE_URL.GET_CATEGORIES
       )
-      const response = await $api.get(url, { params: { pageNumber: 1 }})      
-  
+      const response = await $api.get(url)
       return response.data
     } catch (error) {}
   }

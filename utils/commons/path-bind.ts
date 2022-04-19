@@ -10,7 +10,6 @@ export class PathBind {
   static transform(context: any, base: string, bind: { [key: string]: any } = {}): string {
     let url = base.slice(0)
     const params = this.buildPlaceholder(base)
-
     for (const [name, phold] of Object.entries(params)) {
       let value = bind[name]
       const token = phold.token
@@ -27,9 +26,7 @@ export class PathBind {
       }
       url = url.replace(token, value)
     }
-
     return url
-
   }
 
   static buildPlaceholder(path: string): PathBindParameters {
@@ -38,10 +35,8 @@ export class PathBind {
     let tokName: string[] = []
     let tokRegex: string[] = []
     let tokToken: string[] = []
-
     let marked = false
     let stickiness = 0
-
     const toks = path.replace(/^(http:\/\/.*?\/|https:\/\/.*?\/)/gi, '').split('')
     const toksTail = toks.length - 1
     toks.forEach((c, pos) => {
@@ -50,54 +45,54 @@ export class PathBind {
       }
 
       switch (stickiness) {
-        case 0:
-          if (c === '<') {
-            throw new Error('Syntax error \'<\' : Invalid path specification.')
-          }
-          if (c === '>') {
-            throw new Error('Syntax error \'>\' : Invalid path specification.')
-          }
-          if (c === ':') {
-            tokToken.push(c)
-            stickiness++
-          }
-          break
-        case 1:
-          if (c === '>') {
-            throw new Error('Syntax error \'>\' : Invalid path specification.')
-          } else if (c === ':') {
-            throw new Error('Syntax error \':\' : Placeholder are duplicated registered on same dir.')
-          } else if (c === '<') {
-            tokToken.push(c)
-            stickiness++
-          } else if (c === '?') {
-            stickiness--
-            marked = true
-          } else if (c === '&') {
-            stickiness--
-            marked = true
-          } else if (c === '/') {
-            stickiness--
-            marked = true
-          } else {
-            tokToken.push(c)
-            tokName.push(c)
-          }
-          break
-        case 2:
-          if (c === '<') {
-            throw new Error('Syntax error \'<\' : Invalid path specification.')
-          } else if (c === '>') {
-            tokToken.push(c)
-            stickiness = 0
-            marked = true
-          } else {
-            tokToken.push(c)
-            tokRegex.push(c)
-          }
-          break
-        default:
-          throw new Error('Syntax error : Invalid path specification.')
+      case 0:
+        if (c === '<') {
+          throw new Error('Syntax error \'<\' : Invalid path specification.')
+        }
+        if (c === '>') {
+          throw new Error('Syntax error \'>\' : Invalid path specification.')
+        }
+        if (c === ':') {
+          tokToken.push(c)
+          stickiness++
+        }
+        break
+      case 1:
+        if (c === '>') {
+          throw new Error('Syntax error \'>\' : Invalid path specification.')
+        } else if (c === ':') {
+          throw new Error('Syntax error \':\' : Placeholder are duplicated registered on same dir.')
+        } else if (c === '<') {
+          tokToken.push(c)
+          stickiness++
+        } else if (c === '?') {
+          stickiness--
+          marked = true
+        } else if (c === '&') {
+          stickiness--
+          marked = true
+        } else if (c === '/') {
+          stickiness--
+          marked = true
+        } else {
+          tokToken.push(c)
+          tokName.push(c)
+        }
+        break
+      case 2:
+        if (c === '<') {
+          throw new Error('Syntax error \'<\' : Invalid path specification.')
+        } else if (c === '>') {
+          tokToken.push(c)
+          stickiness = 0
+          marked = true
+        } else {
+          tokToken.push(c)
+          tokRegex.push(c)
+        }
+        break
+      default:
+        throw new Error('Syntax error : Invalid path specification.')
       }
 
       if ((marked || pos === toksTail) && tokName.length > 0) {
@@ -111,7 +106,6 @@ export class PathBind {
         marked = false
       }
     })
-
     return params
   }
 }

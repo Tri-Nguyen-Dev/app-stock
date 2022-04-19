@@ -1,67 +1,52 @@
-<template>
-  <div class="menu-item font-bold" :class="{ 'active': active }">
-    <router-link :to="to" class="link">
-      <div class="item-icon">
-        <div v-if="!!icon" class="icon icon--large" :class="icon"></div>
-      </div>
-      <transition name="fade">
-        <div v-if="!collapsed" class="item-label">
-          <slot />
-          <span class="icon icon-chevron-down" :class="{ 'surface-500': !hasChild }"></span>
-        </div>
-      </transition>
-    </router-link>
-  </div>
+<template lang="pug">
+  .menu-item.flex-row(v-show="isShow" @click="select(item)")
+    nuxt-link(v-if="!!item.to" :to="item.to")
+      SidebarItemValue(:item="item")
+    div(v-if="!item.to")
+      SidebarItemValue(:item="item")
 </template>
 
 <script lang='ts'>
 
-import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
+import { Component, Emit, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItem extends Vue {
-
+  // -- [ Statement Properties ] ------------------------------------------------
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
-  @Prop(String) readonly to!:   string | undefined
+  @Prop() readonly item!: any | undefined
+  @InjectReactive() readonly selectedItem!: any
 
-  @Prop(String) readonly icon: string | undefined
+  @Emit()
+  select(item) {
+    return item
+  }
 
-  @Prop(Boolean) readonly active!: boolean | undefined
-
-  @Prop(Number) readonly level!: number | undefined
-
-  @Prop(Boolean) readonly hasChild: boolean = false
+  // -- [ Getters ] -------------------------------------------------------------
+  get isShow() {
+    return !this.item.parentId ||
+      (this.selectedItem?.parentId === this.item.parentId) ||
+      (this.selectedItem?.id === this.item.parentId)
+  }
 }
 
 export default SidebarItem
 </script>
 
 <style lang="sass" scoped>
-.menu-item
-  height: 60px
+.item-parent-link
+  width: 40px
+  height: 40px
 
-  &:hover, &.active
-    border-radius: 4px
-    background-color: $text-color-300
+a
+  cursor: pointer
+  position: relative
+  user-select: none
+  text-decoration: none
 
-  .link
-    @include flex-center-vert
-    height: 100%
-    color: $text-color-base
-    font-size: $font-size-medium
-    font-weight: $font-weight-bold
-    padding: $space-size-16 $space-size-18
-    cursor: pointer
-    position: relative
-    user-select: none
-    text-decoration: none
-  .item-label
-    @include flex-center-space-between
-    width: 100%
-    margin-left: $space-size-16
-  .item-icon
-    margin-right: 2px
+.ml-40
+  margin-left: 40px
 </style>

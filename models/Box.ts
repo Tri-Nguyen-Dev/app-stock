@@ -1,30 +1,28 @@
 export namespace Box {
   export interface Model {
     id: string,
-    code: string,
-    receiptNoteId: string,
-    creatorId: string
-    seller: {
-      id: string,
-      name: string,
-      email: string,
-      phone: string
-    },
-    createAt?: Date,
+    barCode: string,
+    request: {
+      seller: {
+        id: string,
+        email: string
+      },
+      warehouse: {
+        id: string,
+        name: string
+      }
+    }
+    createdAt?: Date,
     updatedAt?: Date,
     length: number,
     width: number,
     height: number
     weight: number,
-    boxSize: string,
-    warehouse: {
+    rackLocation: {
       id: string,
       name: string
-    },
-    location:{
-      id:string,
-      name:string
-    },
-    status?: boolean
+    }
+    status: string
+    boxSize?: string
   }
 }

@@ -1,41 +1,64 @@
-$heading-table-color: #F9F9FC
-$td-hover-color: #E8EAEF
 $bottom-td-color: rgb(21, 22, 34, 0.05)
-
 // custom table
 .p-datatable
-    font-family: $font-family-primary
+    font-family: $font-family-primary !important
     font-size: $font-size-base !important
-
+    background-color: $color-white
+    height: 100%
+    .grid-cell-center
+        @include flex-center
+    .grid-cell-right
+        display: flex
+        justify-content: flex-end
+    .grid-header-right
+        .p-column-header-content
+            display: flex
+            justify-content: flex-end
+    @include flex-column
+    .p-datatable-tbody tr:not(.p-highlight).p-datatable-emptymessage:hover
+        background-color: #fff !important
+    .table__empty
+        @include flex-center-column
+        color: $text-color-900
+        font-weight: $font-weight-bold
+        .empty__text
+            cursor: pointer
+            span:nth-child(1)
+                text-decoration: underline
+                color: $primary
+    .checkbox-disable
+        .p-checkbox
+            cursor: auto !important
+            pointer-events: none !important
+            .p-checkbox-box
+                background-color: $color-white
+                border: 1.5px solid $text-color-300 !important
+    &.table-wrapper-empty
+        .p-datatable-table
+            height: 100%
     .p-datatable-wrapper
         flex: 1
         &::-webkit-scrollbar
             width: 6px
             height: 6px
-
         &::-webkit-scrollbar-thumb
             border-radius: 10px
             background-color: $text-color-700
-
-        .p-datatable-table
-            height: 100%
-
     .p-datatable-thead
         position: sticky
         top: 0
         z-index: 1
-
-    .p-datatable-tbody > tr.p-highlight
-        background-color: $primary
-
+    .p-datatable-tbody > tr
+        height: 66px !important
+    .p-datatable-tbody > tr.p-highlight:not(.row-disable)
+        background-color: $primary !important
         .text-white-active
             color: $color-white !important
-
-    .p-datatable-thead tr:not(.p-highlight):hover
-        background: $td-hover-color !important
-
+    .p-datatable-tbody tr:not(.p-highlight):hover
+        background: $text-color-400 !important
     .p-datatable-thead > tr > th
-        background: $heading-table-color !important
+        padding-left: 18px
+        background: $text-color-100 !important
         font-weight: $font-weight-bold !important
         font-size: $font-size-small
         letter-spacing: 1px
@@ -43,215 +66,106 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
         color: $text-color-800 !important
         white-space: nowrap
         border: none !important
-        padding: 18px 26px
-
         &:focus
             box-shadow: none !important
-
-        .p-column-resizer
-            width: 2.23px !important
-            border: none !important
-
-            &:hover
-                background-color: $primary
-
-        .pi-sort-alt:before
-            content: url('~/assets/icons/sort-alt.svg')
-
-        .pi-sort-amount-up-alt:before
-            content: url('~/assets/icons/sort-alt-up.svg')
-
-        .pi-sort-amount-down
-            transform: rotate(180deg) !important
-            &:before
-                content: url('~/assets/icons/sort-alt-up.svg')
-
-    .p-column-resizer-helper
-        width: 2.23px !important
-        border: none !important
-        background-color: $primary
-
+        &:nth-child(1)
+            padding-left: 18px
     .p-datatable-tbody > tr > td
         white-space: nowrap
         border-top: 1px solid $bottom-td-color
-        padding: 23px 26px
-
-    .p-checkbox-box
-        border: 1.5px solid $text-color-500
-        border-radius: 2px
-
-        &.p-highlight
-            background-color: $primary
-
-        &.focus, &:not(.p-checkbox-disabled)
-            box-shadow: none !important
-            border: 1.5px solid $text-color-500 !important
-
+        &:nth-child(1)
+            padding-left: 18px
     .p-datatable-footer
         padding: 0
-
-    .p-datatable-emptymessage
-        &:hover
-            background-color: $color-white !important
-
+    tr.p-highlight.row-disable
+        background-color: unset
+        color: unset
+        .p-checkbox-box
+            background-color: unset
     tr.row-disable
         .p-checkbox
             cursor: auto !important
             pointer-events: none !important
-
             .p-checkbox-box
-                border: 1.5px solid #F1F3F6 !important
-
-// pagination
+                border: 1.5px solid $text-color-300 !important
+    .pi-sort-alt:before
+        content: url('~/assets/icons/sort-alt.svg')
+    .pi-sort-amount-up-alt:before
+        content: url('~/assets/icons/sort-alt-up.svg')
+    .pi-sort-amount-down:before
+        content: url('~/assets/icons/sort-alt-up.svg')
+        display: inline-block
+        transform: rotate(180deg) !important
+// custom pagination
 .pagination
-    display: flex
-    align-items: center
+    @include flex-center-vert
     justify-content: space-between
     background-color: $color-white
-    padding: 21px 26px
-
+    padding: 21px 18px
     &__info
-        display: flex
-        align-items: center
+        @include flex-center-horiz
         gap: 0 19px
-
+        .icon
+            background-color: $text-color-500
     &__total
         font-size: $font-size-small
         color: $text-color-500
         line-height: calc(24 / 12)
-
     &__delete
-        background-color: #FF7171
-        display: flex
-        align-items: center
+        @include flex-center-vert
+        background-color: $text-color-delete
         color: $color-white
         border: 1.5px solid $color-white
         border-radius: 4px
         gap: 0 19px
         padding: 5px 10px
         cursor: pointer
-
+        .icon
+            background-color: $color-white
     .p-paginator
         padding: 0 !important
-
         .p-paginator-page
             background-color: $color-white !important
             color: $text-color-500 !important
             font-weight: bold
             border: none !important
-
             &.p-highlight
                 color: $primary !important
-
         .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
             color: $text-color-900
             border: none
-
             &:hover
                 border-radius: 4px
                 color: $primary
-
         .p-link:focus
             box-shadow: none
-
+        .p-dropdown
+            @include flex-center-vert
 .table__action
-    display: flex
-    align-items: center
+    @include flex-center-vert
     gap: 0 8px
-
     span
+        @include flex-center
         width: 34px
         height: 34px
         border-radius: 4px
         background-color: $text-color-300
-        display: flex
-        align-items: center
-        justify-content: center
         cursor: pointer
-
     &.action-disabled
         span
             pointer-events: none
-
-        .icon-btn
+        .icon
             background-color: $text-color-500
-
 .table__status
-  background-color: #EAF3EB
+  background-color: $bg-table-status
   border-radius: 3px
   padding: 2px 8px
   font-size: $font-size-small
   text-transform: uppercase
   font-weight: $font-weight-bold
   line-height: calc(20 / 12)
-
   &--available
-    color: #00A469
-
+    color: $text-color-status
   &--disable
     color: #979AA4
-
-
-$header-table-color: #F9F9FC
-$table-bg-color: $color-white
-// TODO: Check css box list table
-.airtag-datatable
-  background: $header-table-color !important
-  .p-datatable-thead > tr > th
-    background: $header-table-color !important
-    font-weight: $font-weight-bold !important
-    font-size: $font-size-small
-    letter-spacing: 1px
-    border: unset !important
-    text-transform: uppercase
-    color: $text-color-800 !important
-    white-space: nowrap
-    .pi-sort-alt:before
-      content: url('~/assets/icons/sort.svg')
-    .pi-sort-amount-up-alt:before
-      content: url('~/assets/icons/sortDesc.svg')
-    .pi-sort-amount-down
-      transform: rotate(180deg) !important
-      &:before
-        content: url('~/assets/icons/sortDesc.svg')
-  .p-datatable-wrapper
-    flex: 1
-    background: $table-bg-color
-    .p-datatable-table
-      position: relative
-      .p-text-right
-        text-align: right
-        .p-column-header-content
-          justify-content: end
-      .p-datatable-thead
-        position: sticky
-        top: 0
-        z-index: 1
-  .p-datatable-footer
-    background-color: $table-bg-color
-    min-height: 65px
-    display: flex
-    align-items: center
-    justify-content: space-between
-    .p-paginator
-      > button
-        border: none
-        color: #151622
-      .p-paginator-pages > button
-        border: none
-        font-size: $font-size-base
-        font-weight: 700
-        color: $text-color-500
-      .p-highlight
-        background: $table-bg-color
-        color: $primary !important
-  tr.row-disable
-    .p-checkbox
-      cursor: auto !important
-      pointer-events: none !important
-      .p-checkbox-box
-        border: 1.5px solid #F1F3F6 !important
-
-.datatable-empty
-  .p-datatable-table
-    height: 100%
+  
