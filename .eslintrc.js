@@ -6,6 +6,7 @@ module.exports = {
   },
   extends: [
     '@nuxtjs/eslint-config-typescript',
+    // 'plugin:vue/recommended',
     'plugin:nuxt/recommended',
     'prettier'
   ],
@@ -16,9 +17,9 @@ module.exports = {
     'no-debugger': 'error',
     'comma-dangle': ['error', 'never'],
     'quotes': ['error', 'single'],
-    'indent': ['error', 2],
-    'vue/html-indent': ['error', 2],
-    'vue/script-indent': ['error', 2],
+    // 'indent': ['error', 2],
+    // 'vue/html-indent': ['error', 2],
+    // 'vue/script-indent': ['error', 2],
     'no-multiple-empty-lines': ['error', { 'max': 1 }],
     'padding-line-between-statements': ['error',
       { blankLine: 'always', prev: ['function', 'import'], next: ['class'] },
