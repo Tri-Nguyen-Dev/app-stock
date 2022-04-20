@@ -9,7 +9,7 @@ import { $api } from '~/utils'
 
 export default class Location extends VuexModule {
   private static readonly STATE_URL = {
-    GET_LOCATION: '/shelf-bin/list'
+    GET_LOCATION: '/rack-location/list'
   }
 
   public locationList: [] = []

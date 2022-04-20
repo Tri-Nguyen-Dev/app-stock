@@ -44,13 +44,22 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Location" link="https://rikkei.vn" :isEdit="isEditItemDetail" value="R03-AA-B02-02" icon="icon-location-2")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3' :class='isEditItemDetail ? "opacity-40" : "opacity-100"')
-            StockUnit(title="Size (L*W*H)" type ="size" :height="model.data.stock.height" :length="model.data.stock.length" :width="model.data.stock.width" :isEdit="isEditStockDetail" icon="icon-size")
+            StockUnit(title="Size (L*W*H)" icon="icon-size")
+              template(v-slot:size)
+              .grid(v-if='isEditItemDetail')
+                .col-4.p-0.pl-2.pt-1
+                  InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.length')
+                .col-4.p-0.pt-1
+                  InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.width')
+                .col-4.p-0.pt-1
+                  InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.height')
+              span.font-semibold.mr-1.uppercase(v-else) {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }} 
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Weight (Kg)" :value="model.data.stock.weight" :isEdit="isEditItemDetail" icon="icon-weight")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Boxcode" :value="model.data.box.barCode" :isEdit="isEditItemDetail" icon="icon-delivery")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 mt-2')
-            .surface-hover.wapprer-unit.opacity-100
+            .wapprer-unit.opacity-100
               .grid.align-items-center
                 .col-3.flex.justify-content-end
                   .icon--large.icon-price.bg-blue-700

@@ -29,11 +29,20 @@
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700 
         .col-12.px-0
-          StockUnit(title="Total inventory quantity" :value="total" :isEdit="isEditStockDetail" icon="icon-total-inventory")
+          StockUnit(title="Total inventory quantity" :value="total" icon="icon-total-inventory" :isEdit="isEditStockDetail")
         .col-12.px-0
-          StockUnit(title="Size (L*W*H)" type ="size" :height="heightBox" :length="lengthBox" :width="widthBox" :isEdit="isEditStockDetail" icon="icon-size" @updateUnit='handleUpdateUnit')
+          StockUnit(title="Size (L*W*H)" icon="icon-size")
+            template(v-slot:size)
+              .grid(v-if='isEditStockDetail')
+                .col-4.p-0.pl-2.pt-1
+                  InputNumber.w-full(:disabled='!isEditStockDetail', v-model='lengthBox')
+                .col-4.p-0.pt-1
+                  InputNumber.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
+                .col-4.p-0.pt-1
+                  InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
+              span.font-semibold.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }} 
         .col-12.px-0
-          StockUnit(title="Weight" type ="weight" :weight="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
+          StockUnit(title="Weight" name="weightBox" :model="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
         div
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col
@@ -82,23 +91,8 @@ class StockDetail extends Vue {
     this.isEditStockDetail = true
   }
 
-  handleUpdateUnit(val: number, type: string) {
-    switch (type) {
-    case 'weight':
-      this.weightBox = val
-      break
-    case 'width':
-      this.widthBox = val
-      break
-    case 'height':
-      this.heightBox = val
-      break
-    case 'length':
-      this.lengthBox = val
-      break
-    default:
-      break
-    }
+  handleUpdateUnit(val: any, name: string) {
+    this[name] = val
   }
 
   saveEditStockDetail() {
