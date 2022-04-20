@@ -25,24 +25,11 @@
     .col-8
       .grid
         .col
-          .bg-white.border-round
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Warehouse
-            Dropdown.w-full.border-0.mb-1(v-model="filter.warehouse" @change="handleFilter" :options="warehouseList" optionLabel="name" placeholder="Select")
+          FilterTable(title="Warehouse" :options="warehouseList" name="warehouse"  @updateFilter="handleFilterBox")
         .col
-          .bg-white.border-round
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Location
-            span.p-input-icon-right.w-full
-              .icon.icon--right.icon-search.surface-900.icon--absolute
-              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model="filter.location" v-on:input="validateText")
+          FilterTable(title="Location" placeholder="Enter location" name="location" :searchText="true" @updateFilter="handleFilterBox")
         .col
-          .bg-white.border-round
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Code
-            span.p-input-icon-right.w-full
-              .icon.icon--right.icon-search.surface-900.icon--absolute
-              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code" v-model="filter.barCode" v-on:input="validateText")
+          FilterTable(title="Code" placeholder="Enter code" name="barCode" :searchText="true" @updateFilter="handleFilterBox")
     .col-4
       .grid.grid-nogutter
         .col
@@ -194,6 +181,12 @@ class BoxList extends Vue {
       'sortByColumn': this.sortByColumn || null,
       'isDescending': this.isDescending
     }
+  }
+
+  async handleFilterBox(e: any, name: string){
+    this.filter[name] = e
+    await this.actGetBoxList(this.getParamAPi())
+    this.selectedBoxes = []
   }
 
   get isFilter(){
