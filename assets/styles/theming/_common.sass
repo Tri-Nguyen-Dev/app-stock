@@ -101,11 +101,11 @@
     border: none
 .filter__item
     background-color: $color-white
-    border-radius: 4px   
+    border-radius: 4px
     padding: 13px 8px 8px 8px
 .filter__item
     background-color: $color-white
-    border-radius: 4px   
+    border-radius: 4px
     padding: 13px 8px 8px 8px
     border: 1.5px solid $text-color-400
 .filter__title
@@ -151,15 +151,15 @@
     .p-dropdown-trigger-icon::before
         content: url('~/assets/icons/chevron-down.svg')
     .p-dropdown-items
-        padding: 0 
+        padding: 0
         .p-dropdown-item
             padding: 12px 0 12px 16px !important
-            color: $text-color-900 
+            color: $text-color-900
             &.p-highlight
                 background-color: $primary !important
-                color: $color-white 
+                color: $color-white
             &:not(.p-highlight):not(.p-disabled):hover
-                background-color: $bg-body-base 
+                background-color: $bg-body-base
 // custom multiSelect
 .p-multiselect
     font-family: $font-family-primary !important
@@ -211,15 +211,53 @@
             &:not(.p-highlight):not(.p-disabled):hover
                 background-color: $bg-body-base !important
             .p-checkbox
-                margin-right: 18px !important 
+                margin-right: 18px !important
             .p-checkbox-box
                 &.p-highlight
-                  background-color: $primary !important  
+                  background-color: $primary !important
                   border: 2px solid $color-white !important
             &:focus
                 box-shadow: none !important
     .p-multiselect-close
         display: none !important
-    
+// custom input seach code stock
+#inputSearchCode
+    border: none
+    font-family: $font-family-primary !important
+    color: $text-color-900 !important
+    font-weight: 400
+    outline: none
+    padding: 7px 0 7px 10.5px
+    height: 38px
+    &:focus
+        box-shadow: none !important
+        border: 1.5px solid #486AE2
+        border-radius: 4px
+    & + i
+        margin-top: 0
+        transform: translateY(-50%)
+    &:focus + i
+        background-color: $primary !important
+    &::placeholder
+        font-family: $font-family-primary !important
+        color: $text-color-700 !important
+        line-height: calc(24 / 14)
+        font-size: 14px
+//input search stock
+#inputSearch
+    height: 48px
+    border: none
+    width: 300px
+    border-radius: 4px
+    outline: none
+    padding-left: 50px
+    &::placeholder
+        font-size: $font-size-base
+        color: $text-color-500
+        line-height: calc(24 / 14)
 
-    
+// text detail have link
+.text-link
+   @include flex-center-vert
+   text-decoration: none
+   color: $text-color-900
