@@ -14,43 +14,17 @@
               img(:src="require(`~/assets/icons/rotate-left.svg`)")
     .grid(v-show="isShowFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Seller
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter seller" v-model='filter.sellerEmail')
+        FilterTable(title="Seller" placeholder="Enter seller" name="sellerEmail" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm SKU
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter SKU" v-model='filter.sku')
+        FilterTable(title="SKU" placeholder="Enter SKU" name="sku" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Box Code
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter box code" v-model='filter.boxCode')
+        FilterTable(title="Enter box code" placeholder="Enter box code" name="boxCode" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Warehouse
-          Dropdown.w-full.border-0.mb-1(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
+        FilterTable(title="Warehouse" :options="warehouseList" name="warehouse"  @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Location
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model='filter.location')
+        FilterTable(title="Location" placeholder="Enter location" name="location" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Status
-          Dropdown.w-full.border-0.mb-1(v-model="filter.status" :options="statusList" optionLabel="name" placeholder="Select")
+        FilterTable(title="Status" :options="statusList" name="status"  @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
         DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
@@ -72,7 +46,7 @@
           Column(field="box.rackLocation.name" header="LOCATION" sortable className="p-text-right")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.font-sm {{data.box.rackLocation.name}}
+                span.text-primary.font-bold.font-sm {{data.box.rackLocation ? (data.box.rackLocation.name ? data.box.rackLocation.name : '' ) : ''}}
                 .icon--small.icon-arrow-up-right.bg-primary
           Column(field="itemStatus" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
@@ -117,7 +91,7 @@
     )
 </template>
 <script lang="ts">
-import { Component, namespace, Prop, Vue,Watch } from 'nuxt-property-decorator'
+import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStockTable = namespace('stock/stock-detail')
@@ -270,8 +244,8 @@ class StockDetailTable extends Vue {
     await this.actGetItemsList(params)
   }
 
-  @Watch('filter', { deep: true })
-  getFilterList() {
+  handleFilter(e: any, name: string){
+    this.filter[name] = e
     this.getItemsList()
   }
 
@@ -283,6 +257,7 @@ class StockDetailTable extends Vue {
       barCode: null,
       status: null
     }
+    this.getItemsList()
   }
 
   redirectToDetail({ data }) {
