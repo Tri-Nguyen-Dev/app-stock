@@ -33,6 +33,7 @@
               .filter__autocomplete
                 AutoComplete(v-model="seller" :suggestions="sellerList" @complete="handleChangeSeller($event)" field="email" placeholder="Enter seller email")
                 .icon.icon--right.icon-add-items(@click="handleAddSeller")
+              span {{ sellerEmailError }}
           .col
             .filter__item.item--disabled
               .filter__title Seller phone
@@ -74,6 +75,7 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
 import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
 import { Item as ItemModel } from '~/models/Item'
+import { validateEmail } from '~/utils'
 const nsStoreStockIn = namespace('stock-in/create-receipt')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreSeller = namespace('seller/seller-list')
@@ -99,7 +101,7 @@ class Stock extends Vue {
 
   warehouse: any = null
   seller: any = null
-  sellerValidate: any = null
+  sellerEmailError: any = null
   isShowFormAddSeller: boolean = false
 
   get sellerName() {
@@ -195,6 +197,15 @@ class Stock extends Vue {
   }
 
   handleChangeSeller(e) {
+    if(!validateEmail(e.query) && this.sellerList.length <= 0 && !this.seller?.email) {
+      this.sellerEmailError = 'Incorrect email format.'
+    }
+    else if(e.query === '') {
+      this.sellerEmailError = null
+    }
+    else {
+      this.sellerEmailError = null
+    }
     const params = { email: e.query }
     this.actSellerList(params)
   }
