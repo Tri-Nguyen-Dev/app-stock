@@ -27,45 +27,21 @@
       .col-4
         .grid
           .col-3
-            .bg-white.border-round
-              div.pt-2.pl-3.pb-1
-                span.text-600.font-sm ID
-              span.p-input-icon-right.w-full
-                InputText.border-0.w-full.mb-1(type="text" placeholder="Enter ID" v-model="filter.id" v-on:input="debounceSearch")
+            FilterTable(title="ID" :value="filter.id" placeholder="Enter ID" name="id" :searchText="true" @updateFilter="handleFilter")
           .col-9
             .grid.grid-nogutter
               .col
-                .bg-white.border-round-left
-                  div.pt-2.pl-3.pb-1
-                    span.text-600.font-sm From
-                  Calendar.w-full.mb-1(v-model="filter.dateFrom" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
+                  FilterCalendar(title="From" :value="filter.dateFrom" name="dateFrom"  inputClass="border-0" dateFormat="dd-mm-yy" :showIcon="true" @updateFilter="handleFilter")
               .col.ml-1
-                .bg-white.border-round-right
-                  div.pt-2.pl-3.pb-1
-                    span.text-600.font-sm To
-                  Calendar.w-full.mb-1.pl-1(v-model="filter.dateTo" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
+                  FilterCalendar(title="From" :value="filter.dateTo" name="dateTo"  inputClass="border-0" dateFormat="dd-mm-yy" :showIcon="true" @updateFilter="handleFilter")
       .col-2
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Warehouse
-          Dropdown.w-full.border-0.pl-1(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
+        FilterTable(title="Warehouse" :value="filter.warehouse" :options="warehouseList" name="warehouse" @updateFilter="handleFilter")
       .col-2
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Seller Email
-          span.p-input-icon-right.w-full
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Seller Email" v-model="filter.sellerEmail" v-on:input="debounceSearch")
+        FilterTable(title="Seller" placeholder="Enter seller" name="sellerEmail" :value="filter.sellerEmail" :searchText="true" @updateFilter="handleFilter")
       .col-2
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Creator ID
-          span.p-input-icon-right.w-full
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter ID" v-model="filter.creatorId" v-on:input="debounceSearch")
+        FilterTable(title="Creator ID" placeholder="Enter ID" name="creatorId" :value="filter.creatorId" :searchText="true" @updateFilter="handleFilter")
       .col-2
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Status
-          Dropdown.w-full.border-0.pl-1(v-model="filter.status" :options="statusRequest" optionLabel="name" placeholder="Select")
+        FilterTable(title="Status" :value="filter.status" :options="statusRequest" name="status" @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="stockIn" :value="stockIn" responsiveLayout="scroll" :selection="selectedStockIn"
@@ -252,6 +228,11 @@ class StockIn extends Vue {
 
   async refreshFilter() {
     handleRefreshFilter(this.filter)
+    await this.actGetStockIn(this.getParamApi())
+  }
+
+  async handleFilter(e: any, name: string) {
+    this.filter[name] = e
     await this.actGetStockIn(this.getParamApi())
   }
 
