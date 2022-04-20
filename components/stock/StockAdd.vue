@@ -140,7 +140,7 @@ class AddNewStock extends Vue {
     this.$emit('cancelAddStock')
   }
 
-  addItem() {
+  async addItem() {
     this.$v.stockInformation.name?.$touch()
     this.$v.stockInformation.unit?.$touch()
     this.$v.stockInformation.category?.$touch()
@@ -148,11 +148,12 @@ class AddNewStock extends Vue {
     if (this.$v.$invalid) {
       return
     }
-    this.actCreateNewStock(this.stockInformation)
-    if(this.newStockDetail?.id){
+    await this.actCreateNewStock(this.stockInformation)
+    if(this.newStockDetail){
       this.$emit('addItem', this.stockInformation)
-    } else
+    } else {
       this.$toast.add({severity:'error', summary: 'Error Message', detail:'Create stock', life: 3000})
+    }
   }
 
   getGenerateUrl(file: any) {
