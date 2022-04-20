@@ -1,5 +1,5 @@
 <template lang="pug">
-.grid.wapprer-unit(:class='isEdit && !model? "opacity-40" : "opacity-100"') 
+.grid.wapprer-unit(:class='isEdit && !model ? "opacity-40" : "opacity-100"') 
   .col-2.flex.align-items-center.justify-content-center
     .icon--large.bg-blue-700(:class='icon')
   .col-10.flex.flex-column.justify-content-center
@@ -26,9 +26,6 @@ class StockUnit extends Vue {
   @Prop() readonly icon!: string | undefined
   @Prop() readonly link!: string | undefined
   @Prop() model!: number | undefined
-  @Prop() height!: number | undefined
-  @Prop() length!: number | undefined
-  @Prop() width!: number | undefined
 
   handleUpdateUnit(e: any){
     this.$emit('updateUnit', e, this.name)
