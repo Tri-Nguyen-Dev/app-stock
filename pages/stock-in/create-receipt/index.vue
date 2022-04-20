@@ -36,9 +36,7 @@
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
-import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStockIn = namespace('stock-in/create-receipt')
-const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
   components: {
@@ -64,14 +62,8 @@ class Stock extends Vue {
   isShowModalAddStock: boolean = false
   activeIndex = 0
 
-  @nsStoreStock.State
-  newStockDetail!: StockModel.CreateStock
-
   @nsStoreStockIn.Action
   actGetReceiptDetail
-
-  @nsStoreStock.Action
-  actCreateNewStock
 
   addBox(){
     const item = {
@@ -101,7 +93,6 @@ class Stock extends Vue {
   addItem(stockInformation:any) {
     this.isShowModalAddStock = false
     this.listItemInBox.push(stockInformation)
-    this.actCreateNewStock(stockInformation)
   }
 
   //  async mounted() {

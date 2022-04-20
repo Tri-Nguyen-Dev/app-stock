@@ -45,7 +45,7 @@
           .p-input-icon-right.w-full
             .icon.icon--right cm
             InputText(type="number" :min="1" v-model='stockInformation.height').w-full
-      FileUpload(accept="image/*" :maxFileSize="1000000" :fileLimit="1" :showCancelButton='false' @upload="onUpload")
+      FileUpload(accept="image/*" :maxFileSize="1000000" :fileLimit="1" :showCancelButton='false' :showUploadButton='false' @select='getGenerateUrl')
         template(#empty)
           .grid
             .col-3.align-items-center.flex
@@ -61,13 +61,17 @@
         .col
           .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='addItem')
             span.uppercase save
-    Toast
 </template>
 <script lang="ts">
+import axios from 'axios'
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { required } from 'vuelidate/lib/validators'
+import { GenerateUploadUrl } from '~/models/common/UploadImage'
+import { Stock as StockModel } from '~/models/Stock'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreUnit = namespace('stock/unit')
+const nsStoreUploadImage = namespace('upload-image/aws-upload')
+const nsStoreStock = namespace('stock/stock-detail')
 
 @Component({
   validations: {
@@ -102,17 +106,34 @@ class AddNewStock extends Vue {
     imageUrl: ''
   }
 
+  extension!: string
+
   @nsStoreWarehouse.State
   warehouseList!: any
 
   @nsStoreUnit.State
   unitList!: any
 
+  @nsStoreStock.State
+  newStockDetail!: StockModel.CreateStock
+
+  @nsStoreUploadImage.State
+  generateUploadUrl!: {
+    key: ''
+    url: ''
+  }
+
   @nsStoreWarehouse.Action
   actWarehouseList!: () => Promise<void>
 
   @nsStoreUnit.Action
   actUnitList!: () => Promise<void>
+
+  @nsStoreStock.Action
+  actCreateNewStock
+
+  @nsStoreUploadImage.Action
+  actGetGenerateUrl!: (params: GenerateUploadUrl) => Promise<void>
 
   cancelAddStock() {
     this.$emit('cancelAddStock')
@@ -126,23 +147,35 @@ class AddNewStock extends Vue {
     if (this.$v.$invalid) {
       return
     }
-    this.$emit('addItem', this.stockInformation)
+    this.actCreateNewStock(this.stockInformation)
+    if(this.newStockDetail?.id){
+      this.$emit('addItem', this.stockInformation)
+    } else
+      this.$toast.add({severity:'error', summary: 'Error Message', detail:'Create stock', life: 3000})
   }
 
-  onUpload() {
-    this.$toast.add({
-      severity: 'info',
-      summary: 'Success',
-      detail: 'File Uploaded',
-      life: 3000
+  getGenerateUrl(file: any) {
+    if (file.files[0].type.includes('image/jpg') || file.files[0].type.includes('image/jpeg')) {
+      this.extension = 'jpg'
+    }
+    if (file.files[0].type.includes('image/png')) {
+      this.extension = 'png'
+    }
+    this.actGetGenerateUrl({
+      contentType: file.files[0].type,
+      expiration: 300000,
+      extension: this.extension
+    }).then(() => {
+      axios.create().put(this.generateUploadUrl.url,file, {
+        headers: {
+          'Content-Type': file.files[0].type
+        }
+      })
     })
   }
 
   async mounted() {
-    await Promise.all([
-      this.actUnitList(),
-      this.actWarehouseList()
-    ])
+    await Promise.all([this.actUnitList(), this.actWarehouseList()])
   }
 }
 export default AddNewStock
