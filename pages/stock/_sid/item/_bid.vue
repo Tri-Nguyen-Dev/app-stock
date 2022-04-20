@@ -1,11 +1,11 @@
 <template lang="pug">
- .grid.grid-nogutter.item__detail-container.overflow-hidden
+ .grid.grid-nogutter.item__detail-container.overflow-hidden(v-if='model.data')
     .col-4.p-0.surface-0.border-round.left__information--stock.h-full.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
        .col.p-4.flex.align-items-center
         Button(@click='backToStockList').p-button-link.mr-2
           .icon.icon-btn-back.bg-blue-700
-        Breadcrumb(:home="home" :model="breadcrumbItems")
+        span.font-semibold.text-lg Stock list / Stock Detail / Item Detail
       .stock__information.p-4
         .grid.mb-3
           .col-9.flex
@@ -14,136 +14,68 @@
           .col.flex.justify-content-end
             .surface-hover.border-round.cursor-pointer.p-2(@click='editItemDetail' :class='isEditItemDetail ? "hidden" : " "')
               .icon.icon-btn-edit
-            Button(:class='isEditItemDetail ? " " : "hidden"' @click='saveEditItemDetail')
-              .icon-btn.icon-check-lg.bg-white.mr-1
-              span.uppercase save
-        .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
+        .grid(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-4').stock__information--image
-            //- img(:src='itemDetail.imageUrl').border-round.w-full
-            img(:src='require("~/assets/images/sample.png")').border-round.w-full
+            img(:src='model.data.stock.imagePath' alt="stock").border-round.w-full
           .col
-            //- Tag(severity="success").uppercase {{itemDetail.deleted ? 'Disable' : 'Available'}}
-            //- h3.font-bold.my-2 {{itemDetail.name}}
-            Tag(severity="success").uppercase Available
-            h3.font-bold.my-2 Macbook ProMax 1TB
+            Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
+              span.font-bold.text-green-400.font-sm AVAILABLE
+            Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200
+              span.font-bold.text-400.font-sm DISABLE
+            Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_DRAFT'").px-2.bg-blue-500
+              span.font-bold.text-white.font-sm DRAFT
+            h3.font-bold.my-2 
             div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 code:
-              //- span.uppercase.font-semibold.text-blue-700 {{itemDetail.boxCode}}
-              span.uppercase.font-semibold.text-blue-700 sdf090s
+              span.uppercase.font-semibold.text-blue-700 {{model.data.stock.barCode}}
             div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 sku:
-              //- span.uppercase.font-semibold.text-blue-700 {{itemDetail.sku}}
-              span.uppercase.font-semibold.text-blue-700 lgjlk9
+              span.uppercase.font-semibold.text-blue-700 {{model.data.sku}}
             div
               p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-              span.uppercase.font-semibold.text-blue-700 piece
-        .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
-          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
-           div.surface-hover.p-3
-            .grid.align-items-center
-              .col-3.flex.justify-content-end
-                .icon--large.icon-receipt-note.bg-blue-700
-              .col
-                div.text-500 Receipt note ID
-                //- span.font-semibold {{itemDetail.receiptNote}}
-                span.font-semibold.uppercase asadfgkl80
-                .icon-btn.icon-export.inline-block
-          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
-           div.surface-hover.p-3
-            .grid.align-items-center
-              .col-3.flex.justify-content-end
-                .icon--large.icon-tag-user.bg-blue-700
-              .col
-                div.text-500 Creator ID
-                //- span.font-semibold {{itemDetail.creatorId}}
-                span.font-semibold.uppercase asdgasga56
-        .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
-          .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
-           div.surface-hover.p-3
-            .grid.align-items-center
-              .col-3.flex.justify-content-end
-                .icon--large.icon-warehouse.bg-blue-700
-              .col
-                div.text-500 Warehouse
-                //- span.font-semibold.mr-1.uppercase {{itemWarehouse}}
-                span.font-semibold.mr-1.uppercase asdgasg43
-                .icon-btn.icon-arrow-up-right.inline-block
-          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
-           div.surface-hover.p-3
-            .grid.align-items-center
-              .col-3.flex.justify-content-end
-                .icon--large.icon-location-2.bg-blue-700
-              .col
-                div.text-500 Location
-                //- span.font-semibold.mr-1.uppercase {{itemLocation}}
-                span.font-semibold.mr-1.uppercase asdf-35-g
-                .icon-btn.icon-arrow-up-right.inline-block
-        .grid.mb-3(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
-          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
-           div.surface-hover.p-3
-            .grid.align-items-center
-              .col-3.flex.justify-content-end
-                .icon--large.icon-size.bg-blue-700
-              .col
-                div.text-500 Size (cm)
-                span.font-semibold 180x180x180
-          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
-           div.surface-hover.p-3
-            .grid.align-items-center
-              .col-3.flex.justify-content-end
-                .icon--large.icon-weight.bg-blue-700
-              .col
-                div.text-500 Weight (Kg)
-                span.font-semibold  20.8
-        .grid
-          .col(:class='isEditItemDetail ? "opacity-40" : "opacity-100"' class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
-            .surface-hover.p-3
-              .grid.align-items-center
-                .col-3.flex.justify-content-end
-                  .icon--large.icon-boxcode.bg-blue-700
-                .col
-                  div.text-500 Boxcode
-                  //- span.font-semibold.mr-1.uppercase {{itemDetail.boxCode}}
-                  span.font-semibold.mr-1.uppercase asdg543
-                  .icon-btn.icon-export.inline-block
-          .col(class='xl:col-6 lg:col-12 md:col-12 sm:col-12')
-            .surface-hover.p-3
+              span.uppercase.font-semibold.text-blue-700 {{model.data.stock.unit.name}}
+        .grid.mt-2
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
+            StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="model.data.box.request.id" :isEdit="isEditItemDetail" icon="icon-receipt-note")
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
+            StockUnit(title="Creator ID" :value="model.data.box.request.createBy" value="NVN030133" :isEdit="isEditItemDetail" icon="icon-tag-user")
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
+            StockUnit(title="Warehouse" link="https://rikkei.vn" :isEdit="isEditItemDetail" value="NTH001" icon="icon-warehouse")
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
+            StockUnit(title="Location" link="https://rikkei.vn" :isEdit="isEditItemDetail" value="R03-AA-B02-02" icon="icon-location-2")
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3' :class='isEditItemDetail ? "opacity-40" : "opacity-100"')
+            StockUnit(title="Size (L*W*H)" type ="size" :height="model.data.stock.height" :length="model.data.stock.length" :width="model.data.stock.width" :isEdit="isEditStockDetail" icon="icon-size")
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
+            StockUnit(title="Weight (Kg)" :value="model.data.stock.weight" :isEdit="isEditItemDetail" icon="icon-weight")
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
+            StockUnit(title="Boxcode" :value="model.data.box.barCode" :isEdit="isEditItemDetail" icon="icon-delivery")
+          .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 mt-2')
+            .surface-hover.wapprer-unit.opacity-100
               .grid.align-items-center
                 .col-3.flex.justify-content-end
                   .icon--large.icon-price.bg-blue-700
                 .col
                   div.text-500 Value
-                  //- InputText(:disabled='isEditItemDetail == 0' v-model='itemDetail.price').w-6
-                  InputText(:disabled='isEditItemDetail == 0' v-model='isEditItemDetail').w-6
+                  InputText(:disabled='isEditItemDetail == 0' v-model='model.data.value').w-6
+            //- StockUnit(title="Value" type ="weight" :weight="model.data.value" :isEdit="isEditItemDetail" icon="icon-price" @updateUnit='handleUpdateUnit')
+        .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
+          .col
+            .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditItemDetail')
+              span.uppercase.font-semibold cancel
+          .col
+            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditItemDetail')
+              span.uppercase save
       .sender__information.p-4(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
         .grid.mb-3
           .col
             .icon.icon-sender-info.mr-2.bg-blue-700.inline-block
             span.uppercase.font-bold Seller information
-        .surface-hover.mb-5
-          .grid.p-3.align-items-center
-            .col-1(class='xl:col-1 lg:col-2').sender__information--name
-              .icon--large.icon-sender-name.bg-blue-700
-            .col
-              div.text-500 Seller
-              //- span.font-semibold {{sellerName}}
-              span.font-semibold Obama Yamaha
-        .surface-hover.mb-5
-          .grid.p-3.align-items-center
-            .col-1(class='xl:col-1 lg:col-2').sender__information--name
-              .icon--large.icon-sender-email.bg-blue-700
-            .col
-              div.text-500 Email Address
-              //- span.font-semibold {{sellerEmail}}
-              span.font-semibold DonaldTrump@JoeBiden.com
-        .surface-hover.mb-5
-          .grid.p-3.align-items-center
-            .col-1(class='xl:col-1 lg:col-2').sender__information--name
-              .icon--large.icon-sender-phone.bg-blue-700
-            .col
-              div.text-500 Phone number
-              //- span.font-semibold {{sellerPhone}}
-              span.font-semibold 091234567
+        .col-12(class='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Seller" :value="model.data.box.request.seller.name" :isEdit="isEditItemDetail" icon="icon-sender-name")
+        .col-12(class='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Email Address" :value="model.data.box.request.seller.email" :isEdit="isEditItemDetail" icon="icon-sender-email")
+        .col-12(class='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Phone number" :value="model.data.box.request.seller.phone" :isEdit="isEditItemDetail" icon="icon-sender-phone")
     .col-8.px-5.right__information--stock
       TabView
         TabPanel
@@ -151,44 +83,35 @@
             .icon.icon-history.mr-2.surface-600
             span Stock history
           .overflow-auto.stock__log--history
-            StockLogInformation(v-for='item in 4' :key='item.index').mb-3
+            StockLogInformation.mb-3
         TabPanel
           template(#header)
             .icon.icon-location-2.mr-2.surface-600
             span Location history
           .overflow-auto.stock__log--history
             StockDetailHistoryTable
-
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
-// import { Stock as StockModel } from '~/models/Stock'
-// const nsStoreStock = namespace('stock/stock-detail')
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Stock as StockModel } from '~/models/Stock'
+const nsStoreStock = namespace('stock/stock-detail')
+const _ = require('lodash')
 
 @Component({
   layout: 'dashboard'
 })
 class ItemDetail extends Vue {
   isEditItemDetail: boolean = false
-  home = { to: '/stock', label: 'Stock list' }
-  breadcrumbItems = [
-    { to: `/stock/${ this.sid }`, label: 'Stock detail' },
-    { to: `/stock/${ this.sid }/item/${ this.bid }`, label: 'Item detail' }
-  ]
+  model: StockModel.ModelDetail | any = {}
 
-  // @nsStoreStock.State
-  // itemDetail!: StockModel.ModelDetail
+  @nsStoreStock.State
+  itemDetail!: StockModel.ModelDetail
 
-  // @nsStoreStock.Action
-  // actGetItemsDetail
+  @nsStoreStock.Action
+  actGetItemsDetail
 
-  get sid() {
-    return this.$route.params.sid || ''
-  }
-
-  get bid() {
-    return this.$route.params.bid || ''
-  }
+  @nsStoreStock.Action
+  actUpdateItem!: (any) => Promise<any>
 
   backToStockList() {
     this.$router.push(`/stock/${this.$route.params.sid}`)
@@ -199,34 +122,30 @@ class ItemDetail extends Vue {
   }
 
   saveEditItemDetail() {
+    const pathParams = {
+      stockId: this.$route.params.sid,
+      boxId: this.$route.params.bid
+    }
+    this.actUpdateItem({ path: pathParams, body: {
+      value: this.model.data.value
+    } })
     this.isEditItemDetail = false
   }
 
-  // get itemLocation() {
-  //   return this.itemDetail.data.location?.name
-  // }
+  cancelEditItemDetail() {
+    this.isEditItemDetail = false
+  }
 
-  // get itemWarehouse() {
-  //   return this.itemDetail.data.warehouse?.name
-  // }
+  handleUpdateUnit() {
 
-  // get sellerName() {
-  //   return this.itemDetail.data.seller?.name
-  // }
+  }
 
-  // get sellerEmail() {
-  //   return this.itemDetail.data.seller?.email
-  // }
-
-  // get sellerPhone() {
-  //   return this.itemDetail.data.seller?.phone
-  // }
-
-  mounted() {
+  async mounted() {
     if(this.$route.query.plan === 'edit') {
       this.isEditItemDetail = true
     }
-    // await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
+    await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
+    this.model = _.cloneDeep(this.itemDetail)
   }
 }
 export default ItemDetail
@@ -267,7 +186,7 @@ $small: 1025px
       color: #000 !important
       border-bottom: 2px solid #486AE2 !important
 
-      .icon-btn
+      .icon
         background-color: #094db1 !important
 
 ::-webkit-scrollbar
@@ -285,6 +204,9 @@ $small: 1025px
  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
  background-color: #979AA4
 
+.wapprer-unit
+  height: 72px
+  border-radius: 4px
 @media (max-width: $large) and (min-width: $small)
   .stock__information--image
     width: 100%

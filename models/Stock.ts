@@ -15,6 +15,16 @@ export namespace Stock {
     name: string
   }
 
+  export interface ModelDetailEdit {
+    height?: number
+    length?: number
+    weight?: number
+    width?: number
+  }
+
+  export interface ModelEditItem {
+    value?: number
+  }
   export interface ModelDetail {
     data: {
       id: string,
@@ -28,6 +38,10 @@ export namespace Stock {
       imageUrl?: string,
       barCode?: string
       unit?: string
+      height?: number
+      length?: number
+      weight?: number
+      width?: number
       sku? : string
       attributeValue: [{
         id: string
