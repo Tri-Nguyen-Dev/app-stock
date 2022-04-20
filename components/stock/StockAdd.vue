@@ -77,12 +77,12 @@ class AddNewStock extends Vue {
     sku: '',
     name: '',
     category: '',
-    quantity: 0,
-    weight: 0,
+    quantity: 1,
+    weight: null,
     unit: '',
-    length: '',
-    width: '',
-    height: '',
+    length: null,
+    width: null,
+    height: null,
     imageUrl: ''
   }
 

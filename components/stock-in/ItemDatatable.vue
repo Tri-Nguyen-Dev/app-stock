@@ -90,6 +90,15 @@
 			)
 				template(#body='{data}')
 					span.font-bold {{data.stock.category.name}}
+			column( header="ACTION" className="text-right")
+				template(#body="{data}")
+					.grid.table__action
+						//- span(@click="handleEditBox(data.id)")
+						span
+							.icon.icon-edit-btn
+						//- span(:class="{'disable-button': itemsBoxDelete.length > 0}" @click="showModalDelete(data.id)")
+						span
+							.icon.icon-btn-delete
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'nuxt-property-decorator'

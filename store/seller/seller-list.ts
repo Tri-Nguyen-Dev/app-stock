@@ -22,7 +22,7 @@ export default class Seller extends VuexModule {
   }
 
   @Action({ commit: 'setSellerList', rawError: true })
-  async actSellerList(params?: any): Promise<string | undefined> {
+  async actSellerList(params?: any): Promise<any | undefined> {
     try {
       const url = PathBind.transform(
         this.context,
