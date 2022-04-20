@@ -11,6 +11,10 @@ export const STATUS_MAP = new Map<string, string>([
   ['BOX_STATUS_DISABLE', 'DISABLE'],
   ['BOX_STATUS_DRAFT', 'DRAFT']
 ])
+export const STATUS_REQUEST_MAP = new Map<string, string>([
+  ['REQUEST_STATUS_SAVED', 'SAVED'],
+  ['REQUEST_STATUS_DRAFT', 'DRAFT']
+])
 // -- [ Convert Box size ] ------------------------------------------------
 Vue.filter('boxSize', (value) => {
   return BOX_SIZE_MAP.get(value) || ''
@@ -19,6 +23,9 @@ Vue.filter('boxSize', (value) => {
 // -- [ Convert Status ] ------------------------------------------------
 Vue.filter('boxStatus', (value) => {
   return STATUS_MAP.get(value) || ''
+})
+Vue.filter('requestStatus', (value) => {
+  return STATUS_REQUEST_MAP.get(value) || ''
 })
 
 // -- [ Format date time 12hour type] ------------------------------------------------
