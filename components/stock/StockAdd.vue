@@ -61,6 +61,7 @@
         .col
           .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='addItem')
             span.uppercase save
+    Toast(:baseZIndex='99999')
 </template>
 <script lang="ts">
 import axios from 'axios'
@@ -155,7 +156,7 @@ class AddNewStock extends Vue {
   }
 
   getGenerateUrl(file: any) {
-    if (file.files[0].type.includes('image/jpg') || file.files[0].type.includes('image/jpeg')) {
+    if (file.files[0].type.includes('image/jpeg')) {
       this.extension = 'jpg'
     }
     if (file.files[0].type.includes('image/png')) {
