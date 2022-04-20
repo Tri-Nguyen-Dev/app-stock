@@ -6,6 +6,8 @@
 			:row-hover='true'
 			responsiveLayout="scroll"
 			columnResizeMode="fit"
+			editMode="cell"
+			class="editable-cells-table" 
 		)
 			template(#empty)
 					div.flex.align-items-center.justify-content-center.flex-column
@@ -47,9 +49,11 @@
 				header='QUANTITY',       
 				:show-filter-match-modes='false'
 				className="p-text-right"
+				style='width:10%'
 			)
-				template(#body='{data}')
-						span.font-bold.text-right {{data.amount}}
+				template(#body='{data,field}')
+					InputNumber(v-model='data.amount' autofocus)
+						//- span.font-bold.text-right {{data.amount}}
 			column(
 				field='unit.name',
 				header='UNIT',
@@ -122,7 +126,7 @@ class ItemDataTable extends Vue {
 
   @Prop() listItemInBox!: ItemModel.Model[]
   @Prop() getParam: () => any
-
+				
 }
 export default ItemDataTable
 </script>
