@@ -59,7 +59,7 @@
 									icon='pi pi-trash',
 									@click='deleteBox()'
 								)
-						.overflow-y-auto(style='height: 61vh', v-if='listBox')
+						.overflow-y-auto(style='height: 55vh', v-if='listBox')
 							.grid.box-card.m-2(
 								v-for='box in listBox',
 								@click='selectBox(box)',
@@ -144,8 +144,6 @@
 					.d-flex.col-6(class='md:col-2 lg:col-2')
 						Button.p-button-secondary.mr-2(label='Save draft' icon="pi pi-file-o" @click='saveDrapReceipt()')
 						Button(label='Next' @click='getLocationSuggest()')
-		StockAdd(@cancelAddStock='cancelAddStock' @addItem='addItem')
-		FormAddSeller(:isShowForm="isShowFormAddSeller")
 		Toast
 		Sidebar(
 			:visible='isShowModalAddStock',
@@ -153,7 +151,8 @@
 			position='right',
 			ariaCloseLabel='to'
 		)
-			StockAdd(@cancelAddStock='cancelAddStock', @addItem='addItem')
+			StockAdd(@cancelAddStock='cancelAddStock' @addItem='addItem')
+			FormAddSeller(:isShowForm="isShowFormAddSeller")
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
@@ -395,7 +394,7 @@ export default CreateReceipt
 	border-bottom: solid 1px #E8EAEF
 .card-custom
 	::v-deep.p-datatable
-		height: 61vh
+		height: 55vh
 	::v-deep.p-card-body
 		padding: 0 !important
 		.p-card-content
