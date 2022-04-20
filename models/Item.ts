@@ -4,41 +4,41 @@ export namespace Item {
 		stock: {
 			id: string,
 			name: string,
-			description: string,
+			description?: string,
 			imageUrl: string,
 			barCode: string,
-			unit: {
-				id: 0,
-				name: string
+			unit?: {
+				id?: string,
+				name?: string
 			},
-			height: 0,
-			width: 0,
-			length: 0,
-			weight: 0,
+			height: number,
+			width: number,
+			length: number,
+			weight: number,
 			category: {
-				id: 0,
+				id: string,
 				name: string,
 				icon: string,
-				displayOrder: 0,
-				deleted: true
+				displayOrder: number,
+				deleted: boolean
 			},
-			attributeValue: [
+			attributeValue?: [
 				{
-					id: 0,
+					id: string,
 					attribute: {
 						id: string,
 						name: string,
 						description: string,
 						icon: string,
-						displayOrder: 0,
+						displayOrder: number,
 						deleted: true
 					},
 					icon: string,
-					displayOrder: 0,
+					displayOrder: number,
 					value: string
 				}
 			],
-			deleted: true
+			deleted: boolean
 		},
 		box: string,
 		amount: number,

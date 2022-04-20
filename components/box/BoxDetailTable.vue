@@ -92,6 +92,14 @@
       )
         template(#body='{data}')
           span.font-bold {{data.category.name}}
+      column(header="ACTION" className="text-right")
+          template(#body="{data}")
+              //- span(@click="handleEditBox(data.id)")
+              span
+                .icon.icon-edit-btn
+              //- span(:class="{'disable-button': itemsBoxDelete.length > 0}" @click="showModalDelete(data.id)")
+              span
+                .icon.icon-btn-delete    
       template(#footer)
         .pagination
           div.pagination__info

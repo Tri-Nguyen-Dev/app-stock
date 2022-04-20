@@ -4,13 +4,9 @@ export namespace Stock {
     id: string,
     name?: string,
     description?: string,
-    imageUrl?: string,
+    imagePath?: string,
     barCode?: String
-    sku : String
-    category?: {
-      id: string
-      name: string
-    },
+    sku : String,
     type?: object,
     deleted?: boolean,
     unit: {
@@ -38,6 +34,12 @@ export namespace Stock {
         value: string
       }
     ],
+    category?: Stock.Category,
+  }
+
+  export interface Category {
+    id: string,
+    name: string
   }
 
   export interface ModelDetail {
