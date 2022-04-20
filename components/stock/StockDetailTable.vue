@@ -46,7 +46,7 @@
           Column(field="box.rackLocation.name" header="LOCATION" sortable className="p-text-right")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.font-sm {{data.box.rackLocation.name}}
+                span.text-primary.font-bold.font-sm {{data.box.rackLocation ? (data.box.rackLocation.name ? data.box.rackLocation.name : '' ) : ''}}
                 .icon--small.icon-arrow-up-right.bg-primary
           Column(field="itemStatus" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
@@ -91,7 +91,7 @@
     )
 </template>
 <script lang="ts">
-import { Component, namespace, Prop, Vue,Watch } from 'nuxt-property-decorator'
+import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStockTable = namespace('stock/stock-detail')
@@ -246,10 +246,6 @@ class StockDetailTable extends Vue {
 
   handleFilter(e: any, name: string){
     this.filter[name] = e
-  }
-
-  @Watch('filter', { deep: true })
-  getFilterList() {
     this.getItemsList()
   }
 
@@ -261,6 +257,7 @@ class StockDetailTable extends Vue {
       barCode: null,
       status: null
     }
+    this.getItemsList()
   }
 
   redirectToDetail({ data }) {
