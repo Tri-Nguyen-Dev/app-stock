@@ -74,7 +74,11 @@
 										@click='deleteBox()'
 									)
 								.col-12.flex.align-items-center
-									span.uppercase.mr-1 box {{ box.index + 1 }}
+									.grid
+										.col-12.pb-0
+											span.uppercase.font-semibold.mr-1 box {{ box.index + 1 }}
+										.col-12.pb-0(v-if='box.location.name!=""')
+											span.uppercase.mr-1  {{ box.location.name }}
 					.col-10
 						.grid.border-grid
 							//- div(class='d-flex col-4 md:col-2 lg:col-1 d-flex border-right')
@@ -97,13 +101,15 @@
 									v-model='listBox[activeIndex].inventoryFee'
 								)
 								span.font-semibold.text-base.ml-3 /day
-							.d-flex.col-12.justify-content-center(class='md:col-5 lg:col-3')
+							.d-flex.col-6.justify-content-center(class='md:col-3 lg:col-2')
+								InputText.ml-2(placeholder='Enter barcode')
+							.d-flex.col-6.justify-content-center(class='md:col-2 lg:col-2')
 								Button(
 									type='button',
-									icon='pi pi-refresh',
-									style='width: 80%',
+									label='Scan barcode'
+									style='width:80% !importan'
 									@click='showModalAddStock'
-								) Scan Barcode
+								) 
 						.grid.border-left.border-right.mt-0.pb-3(
 							style='margin-right: 0px',
 							v-if='listBox'
@@ -111,13 +117,12 @@
 							ItemDataTable(:listItemInBox='listBox[activeIndex].listItemInBox')
 			template(#footer='')
 				.grid(v-if='listBox')
-					.d-flex.col-12.d-flex(class='md:col-4 lg:col-4')
+					.d-flex.pt-2(class='col-12 md:col-4 lg:col-4')
 						.grid.w-full
 							.col.align-items-center.ml-4
 								span.font-semibold.text-base.mr-1 Note:
-								br
 								InputText
-					.d-flex.col-6(class='md:col-2 lg:col-2')
+					.d-flex(class='col-6 md:col-2 lg:col-2')
 						.grid.w-full.border-right
 							.col-3.flex.align-items-center.justify-content-end
 								img(src='~/assets/icons/box-border.svg')
@@ -125,7 +130,7 @@
 								span.font-semibold.text-base.mr-1 Total boxs:
 								br
 								span.font-semibold.text-primary  {{listBox.length}}
-					.d-flex.col-6(class='md:col-2 lg:col-2')
+					.d-flex(class='col-6 md:col-2 lg:col-2')
 						.grid.w-full.border-right
 							.col-3.flex.align-items-center.justify-content-end
 								img(src='~/assets/icons/total-items-border.svg')
@@ -133,15 +138,15 @@
 								span.font-semibold.text-base.mr-1 Total items:
 								br
 								span.font-semibold.text-primary {{listBox[activeIndex].listItemInBox.length}}
-					.d-flex.col-6(class='md:col-2 lg:col-2')
+					.d-flex(class='col-6 md:col-2 lg:col-2')
 						.grid.w-full.border-right
 							.col-3.flex.align-items-center.justify-content-end
-								.icon--large.icon-total-inventory.bg-blue-700
+								img(src='~/assets/icons/total-fee.svg')
 							.col-9
 								span.font-semibold.text-base.mr-1 Total fee:
 								br
 								span.font-semibold.text-primary 3$/day
-					.d-flex.col-6(class='md:col-2 lg:col-2')
+					.d-flex(class='col-6 md:col-2 lg:col-2')
 						Button.p-button-secondary.mr-2(label='Save draft' icon="pi pi-file-o" @click='saveDrapReceipt()')
 						Button(label='Next' @click='getLocationSuggest()')
 		Toast
@@ -241,7 +246,12 @@ class CreateReceipt extends Vue {
       index: this.listBox[this.listBox.length - 1].index + 1,
       listItemInBox: [],
       boxSize: '',
-      status: RECEIPT_STATUS.REQUEST_STATUS_DRAFT
+      status: RECEIPT_STATUS.REQUEST_STATUS_DRAFT,
+      location:{
+        id:'',
+        name:'',
+        index:0
+      }
     }
     if (this.listBox.length < 10) {
       this.listBox.push(item)
@@ -356,6 +366,9 @@ class CreateReceipt extends Vue {
       return element.boxSize
     })
     await this.actLocationSuggestion(listBoxSize)
+    this.boxLocation.forEach(element => {
+      this.listBox[element.index].location.name = element.name
+    })
   }
 
   mounted() {

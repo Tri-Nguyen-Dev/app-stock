@@ -14,10 +14,21 @@ export namespace Receipt{
     // seller: string,
     // driver: string
   }
+
+  export interface BoxLocation {
+    id: string,
+    name:string
+    index: number
+  }
   export class Box {
     constructor(){
       this.listItemInBox = []
       this.index = 0
+      this.location = {
+        id:'',
+        name:'',
+        index:0
+      }
     }
 
 		index: number
@@ -25,6 +36,7 @@ export namespace Receipt{
     inventoryFee?: number
     boxSize: string
     status: string
+    location: BoxLocation
   }
 
   export  class ItemDraft{   
@@ -79,11 +91,5 @@ export namespace Receipt{
     warehouse: {
         id: 1
     }
-  }
-
-  export interface BoxLocation {
-    id: string,
-    name:string
-    index: number
   }
 }

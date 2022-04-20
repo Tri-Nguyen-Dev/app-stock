@@ -140,7 +140,7 @@ class AddNewStock extends Vue {
     this.$emit('cancelAddStock')
   }
 
-  addItem() {
+  async addItem() {
     this.$v.stockInformation.name?.$touch()
     this.$v.stockInformation.unit?.$touch()
     this.$v.stockInformation.category?.$touch()
@@ -148,7 +148,7 @@ class AddNewStock extends Vue {
     if (this.$v.$invalid) {
       return
     }
-    this.actCreateNewStock(this.stockInformation)
+    await  this.actCreateNewStock(this.stockInformation)
     if(this.newStockDetail?.id){
       this.$emit('addItem', this.stockInformation)
     } else
