@@ -171,7 +171,7 @@ class AddNewStock extends Vue {
       this.stockInformation.id = this.newStockDetail.id
       this.$emit('addItem', this.stockInformation)
     } else {
-      this.$toast.add({severity:'error', summary: 'Error Message', detail:'Create stock', life: 3000})
+      this.$toast.add({ severity:'error', summary: 'Error Message', detail:'Create stock', life: 3000 })
     }
   }
 

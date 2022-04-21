@@ -109,7 +109,7 @@ import { Component, Prop, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Item as ItemModel } from '~/models/Item'
 @Component({
-  components: {ConfirmDialogCustom}
+  components: { ConfirmDialogCustom }
 })
 class ItemDataTable extends Vue {
 

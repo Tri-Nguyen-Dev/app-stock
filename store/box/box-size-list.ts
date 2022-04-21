@@ -22,7 +22,7 @@ export default class StoreBoxSize extends VuexModule {
   @Action({ commit: 'setBoxSizeList', rawError: true })
   async actGetBoxSizeList(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBoxSize.STATE_URL.GET_BOX_SIZE, params)
-    const response: any = await $api.get(url, {params})
+    const response: any = await $api.get(url, { params })
     return response.data
   }
 

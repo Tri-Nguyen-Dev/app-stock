@@ -18,7 +18,7 @@ export default class StoreUnit extends VuexModule {
     this.unitList = data.items
   }
 
-  @Action({commit: 'setUnitList', rawError: true })
+  @Action({ commit: 'setUnitList', rawError: true })
   async actUnitList(): Promise<string | undefined> {
     try {
       const url = PathBind.transform(this.context, StoreUnit.STATE_URL.GET_UNIT_LIST)
