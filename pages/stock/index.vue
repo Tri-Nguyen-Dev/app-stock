@@ -20,33 +20,13 @@
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
       .col
-        .filter__item
-          .filter__title Catagory
-          MultiSelect.filter__multiselect(
-            v-model='filter.categories'
-            @change="handleChangeFilter"
-            :options='categoryList'
-            optionLabel="name"
-            placeholder='Select'
-            :filter='true')
+        FilterTable(title="Catagory" name="categories" :value="filter.categories")
+          template(v-slot:multi-select)
+            MultiSelect.filter__multiselect(v-model='filter.categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
       .col
-        .filter__item
-          .filter__title Code
-          .filter__search
-              InputText(
-                type="text" 
-                placeholder="Search code" 
-                v-model="filter.barCode" v-on:input="debounceSearchCode" )
-              .icon.icon--right.icon-search
+        FilterTable(title="Code" placeholder="Search code" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
       .col
-        .filter__item
-          .filter__title Status
-          Dropdown.filter__dropdown(
-            v-model="filter.status"
-            @change="handleChangeFilter"
-            :options="statusList"
-            optionLabel="name"
-            placeholder="Select")
+        FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .stock__table
         DataTable(
           @sort="sortData($event)"
@@ -257,6 +237,11 @@ class Stock extends Vue {
   mounted() {
     this.getProductList()
     this.actCategoryList()
+  }
+
+  handleFilter(e: any, name: string){
+    this.filter[name] = e
+    this.getProductList()
   }
 
   async getProductList() {

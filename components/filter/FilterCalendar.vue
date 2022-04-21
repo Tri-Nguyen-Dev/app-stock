@@ -1,34 +1,28 @@
 <template lang="pug">
-  .bg-white.border-round.wrapper-filter.px-2
+  .bg-white.border-round-left.wrapper-filter
     div.pt-2.pb-1.title
       span.text-600.font-sm {{title}}
-    span.p-input-icon-right.w-full
-      i(v-if="value" class="pi pi-times clear" @click.stop="clearValue")
-      .icon--small.icon--right.icon-search.surface-900.icon--absolute
-      InputText.border-0.w-full.mb-1(v-if="searchText" type="text" :placeholder="placeholder || 'Select'" :value="value" @input="validateText" ) 
-      Dropdown.w-full.border-0(v-else-if="options" :options="options" optionLabel="name" :placeholder="placeholder || 'Select'" :value="value" @input="handleFilter")
-      slot(name="multi-select")
+    Calendar.w-full.mb-1(@date-select="handleFilter" :value="value" :showIcon="showIcon" :inputClass="inputClass" :placeholder="placeholder || 'Select'" :dateFormat="dateFormat || 'dd-mm-yy'")
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
+
 @Component
 class FilterTable extends Vue {
+
   @Prop() value!: any | undefined
   @Prop() readonly title!: any | undefined
-  @Prop() readonly searchText!: boolean
+  @Prop() readonly searchText!: boolean | false
   @Prop() readonly options!:any | undefined
-  @Prop() readonly placeholder!:string 
+  @Prop() readonly placeholder!:string | 'Select'
   @Prop() readonly name!: any | undefined
-
-  validateText =  _.debounce(this.handleFilter, 500);
-
+  @Prop() readonly dateFormat!: any | undefined
+  @Prop() readonly inputClass!: any | undefined
+  @Prop() readonly showIcon!: Boolean | false  
   handleFilter(e :any){
     this.$emit('updateFilter', e, this.name)
   }
-
-  clearValue() {
-    this.$emit('updateFilter', '', this.name)
-  }
+  
 }
 
 export default FilterTable
@@ -43,9 +37,10 @@ export default FilterTable
     .title 
         margin-left: 12px
     ::v-deep.p-inputtext 
+      box-shadow: none !important
       color: $text-color-900
       font-weight: 500
-      // box-shadow: 0 0 0 0.2rem #486AE2 !important
+      box-shadow: none !important
       &.p-placeholder
         color: $text-color-700
     .pi-times.clear
@@ -54,5 +49,4 @@ export default FilterTable
       cursor: pointer
     ::v-deep.p-input-icon-right .p-inputtext
       padding-right: 4rem
-
 </style>
