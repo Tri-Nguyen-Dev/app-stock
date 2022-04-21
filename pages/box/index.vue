@@ -51,7 +51,7 @@
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
         Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold")
-          template(#body="{data}") {{ data.length }} * {{ data.width }} * {{ data.height }}
+          template(#body="{data}") {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
         Column(field="weight" header="WEIGHT(KG)" className="text-right" bodyClass="font-semibold")
           template(#body="{data}") {{ data.weight }}
         Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right" sortField="_request.warehouse.name")
@@ -61,7 +61,7 @@
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right" sortField="_rackLocation.name")
           template(#body="{data}")
-            .flex.align-items-center.cursor-pointer.justify-content-end
+            .flex.align-items-center.cursor-pointer.justify-content-end(v-if="data.rackLocation")
               span.text-primary.font-bold.font-sm.text-white-active {{ data.rackLocation.name }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(field="status" header="STATUS" :sortable="true" className="text-right" sortField="_status")
