@@ -14,7 +14,7 @@
 </template>
 
 <script lang='ts'>
-import { Component, namespace, ProvideReactive, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, ProvideReactive, Vue, Watch } from 'nuxt-property-decorator'
 import { User } from '~/models/User'
 import { PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
@@ -42,7 +42,6 @@ class MenuSidebar extends Vue {
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
   // -- [ Getters ] -------------------------------------------------------------
-
   get user() {
     return this.$auth.user as unknown as User.Model
   }
@@ -63,17 +62,15 @@ class MenuSidebar extends Vue {
     }
   }
 
-  handleSelect() {
+  @Watch('$route.path',{ immediate: true, deep: true })
+  handleSelect (){
     if( _.isEmpty(this.$route.params)){
       this.selectedItem = this.pageMenu.filter((item)=> this.$route.path === item.to )[0]
     }else {
       this.selectedItem = this.pageMenu.filter((item)=> this.$route.path.slice(0, item.to?.length) === item.to )[0]
     }
   }
-  
-  mounted() {
-    this.handleSelect()
-  }
+
 }
 
 export default MenuSidebar
