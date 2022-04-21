@@ -1,14 +1,14 @@
 <template lang="pug">
-.grid.wapprer-unit(:class='isEdit && !model? "opacity-40" : "opacity-100"') 
+.grid.wapprer-unit(:class='isEdit && !model ? "opacity-40" : "opacity-100"') 
   .col-2.flex.align-items-center.justify-content-center
     .icon--large.bg-blue-700(:class='icon')
   .col-10.flex.flex-column.justify-content-center
-    div.font-bold.text-700 {{ title }}  
+    div.font-normal.text-700.text-small {{ title }}  
       slot(name='button-size')
     a(v-if="link" :href="link" target="_blank").text-link
-      span.font-semibold {{value}} 
+      span.font-bold.text-small {{value}} 
       .icon.icon-arrow-up-right.inline-block
-    span.font-semibold.mr-1.uppercase(v-else) {{ value }}
+    span.font-bold.text-small.mr-1.uppercase(v-else) {{ value }}
     template(v-if="model")
       InputNumber(:disabled='!model' :value='model' @input="handleUpdateUnit")
     slot(name='size')
@@ -26,9 +26,6 @@ class StockUnit extends Vue {
   @Prop() readonly icon!: string | undefined
   @Prop() readonly link!: string | undefined
   @Prop() model!: number | undefined
-  @Prop() height!: number | undefined
-  @Prop() length!: number | undefined
-  @Prop() width!: number | undefined
 
   handleUpdateUnit(e: any){
     this.$emit('updateUnit', e, this.name)

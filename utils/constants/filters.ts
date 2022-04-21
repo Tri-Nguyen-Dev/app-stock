@@ -10,4 +10,8 @@ export namespace FilterConstants {
     ['BOX_STATUS_DISABLE', 'DISABLE'],
     ['BOX_STATUS_DRAFT', 'DRAFT']
   ])
+  export const STATUS_REQUEST_MAP = new Map<string, string>([
+    ['REQUEST_STATUS_SAVED', 'SAVED'],
+    ['REQUEST_STATUS_DRAFT', 'DRAFT']
+  ])
 }

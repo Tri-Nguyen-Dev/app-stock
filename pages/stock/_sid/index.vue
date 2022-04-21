@@ -1,6 +1,6 @@
 <template lang="pug">
   .grid.grid-nogutter.stock__information-detail
-    .col-2.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden(v-if='model.data')
+    .col-3.p-0.surface-0.border-round.h-full.overflow-y-auto.sub-tab(v-if='model.data')
       .grid.border-bottom-1.border-gray-300
         .col.flex.align-items-center.breadcrumb-section
           Button(@click='backToStockList').p-button-link
@@ -14,23 +14,23 @@
           .col.flex.justify-content-end
             .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon.icon-btn-edit
-        .grid.mb-3(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+        .grid.mb-3.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           img(:src='model.data.imagePath').border-round.w-full
-        .grid.my-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+        .grid.my-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           Tag(severity="success" v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"').uppercase Available
           Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DISABLE"').uppercase.surface-200 Disable
           Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DRAFT"').uppercase Draft
-        .grid.mb-2(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+        .grid.mb-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           h3.font-bold.my-2 {{model.data.name}}
-        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
+        .grid.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 code:
           span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
-        .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
+        .grid.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
           span.uppercase.font-semibold.text-blue-700
-        .col-12.px-0
+        .wrap-unit.px-4
           StockUnit(title="Total inventory quantity" :value="total" icon="icon-total-inventory" :isEdit="isEditStockDetail")
-        .col-12.px-0
+        .wrap-unit.px-4
           StockUnit(title="Size (L*W*H)" icon="icon-size")
             template(v-slot:size)
               .grid(v-if='isEditStockDetail')
@@ -40,16 +40,16 @@
                   InputNumber.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
                 .col-4.p-0.pt-1
                   InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
-              span.font-semibold.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
-        .col-12.px-0
+              span.font-bold.text-small.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
+        .wrap-unit.px-4
           StockUnit(
             title="Weight"
-             name="weightBox"
-             :model="weightBox"
-             :isEdit="isEditStockDetail"
-             icon="icon-weight"
-             @updateUnit='handleUpdateUnit'
-            )
+            name="weightBox"
+            :model="weightBox"
+            :isEdit="isEditStockDetail"
+            icon="icon-weight"
+            @updateUnit='handleUpdateUnit'
+          )
         div
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col
@@ -58,7 +58,7 @@
           .col
             .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditStockDetail')
               span.uppercase save
-    .col-10.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
+    .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
       StockDetailTable
 </template>
 <script lang="ts">
@@ -206,4 +206,15 @@ export default StockDetail
 
 .grid.surface-hover
   background-color: #F8F7FA !important
+.wrap-unit
+  width: 300px
+  margin-bottom: 16px
+.sub-tab
+  height: calc(100vh - 32px)
+  max-width: 21.5rem
+  overflow: hidden
+.sub--scroll
+  height: calc(100vh - 280px)
+  max-width: 21.5rem
+  overflow: auto
 </style>

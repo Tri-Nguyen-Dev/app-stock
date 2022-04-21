@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import { FilterConstants } from '~/utils'
 const dayjs = require('dayjs')
-
 // -- [ Convert Box size ] ------------------------------------------------
 Vue.filter('boxSize', (value) => {
   return FilterConstants.BOX_SIZE_MAP.get(value) || ''
@@ -10,6 +9,9 @@ Vue.filter('boxSize', (value) => {
 // -- [ Convert Status ] ------------------------------------------------
 Vue.filter('boxStatus', (value) => {
   return FilterConstants.STATUS_MAP.get(value) || ''
+})
+Vue.filter('requestStatus', (value) => {
+  return FilterConstants.STATUS_REQUEST_MAP.get(value) || ''
 })
 
 // -- [ Format date time 12hour type] ------------------------------------------------

@@ -14,17 +14,17 @@
               img(:src="require(`~/assets/icons/rotate-left.svg`)")
     .grid(v-show="isShowFilter")
       .col
-        FilterTable(title="Seller" placeholder="Enter seller" name="sellerEmail" :searchText="true" @updateFilter="handleFilter")
+        FilterTable(title="Seller" placeholder="Enter seller" name="sellerEmail" :value="filter.sellerEmail" :searchText="true" @updateFilter="handleFilter")
       .col
-        FilterTable(title="SKU" placeholder="Enter SKU" name="sku" :searchText="true" @updateFilter="handleFilter")
+        FilterTable(title="SKU" placeholder="Enter SKU" name="sku" :value="filter.sku" :searchText="true" @updateFilter="handleFilter")
       .col
-        FilterTable(title="Enter box code" placeholder="Enter box code" name="boxCode" :searchText="true" @updateFilter="handleFilter")
+        FilterTable(title="Enter box code" placeholder="Enter box code" name="boxCode" :value="filter.boxCode" :searchText="true" @updateFilter="handleFilter")
       .col
-        FilterTable(title="Warehouse" :options="warehouseList" name="warehouse"  @updateFilter="handleFilter")
+        FilterTable(title="Warehouse" :value="filter.warehouse" :options="warehouseList" name="warehouse" @updateFilter="handleFilter")
       .col
-        FilterTable(title="Location" placeholder="Enter location" name="location" :searchText="true" @updateFilter="handleFilter")
+        FilterTable(title="Location" placeholder="Enter location" name="location" :value="filter.location" :searchText="true" @updateFilter="handleFilter")
       .col
-        FilterTable(title="Status" :options="statusList" name="status"  @updateFilter="handleFilter")
+        FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
         DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(
