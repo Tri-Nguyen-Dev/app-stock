@@ -1,5 +1,5 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
-import { Request } from '~/models/Request-list'
+import { Request } from '~/models/RequestList'
 import { $api, PathBind } from '~/utils'
 @Module({
   stateFactory: true,

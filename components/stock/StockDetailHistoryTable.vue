@@ -1,5 +1,12 @@
 <template lang="pug">
-  DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(responsiveLayout="scroll" dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" @sort="sortData($event)")
+  DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(
+    responsiveLayout="scroll"
+    dataKey="id"
+    :resizableColumns="true"
+    :rows="20"
+    :scrollable="false"
+    @sort="sortData($event)"
+  )
     Column(field="no" header="NO" :styles="{'width': '1%'}")
       template(#body="{ index }")
         span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
