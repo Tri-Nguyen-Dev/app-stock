@@ -252,7 +252,6 @@ class Stock extends Vue {
           detail: 'Successfully deleted stock',
           life: 3000
         })
-        this.paginate.pageNumber = 0
         this.getProductList()
       }
     } catch (error) {
