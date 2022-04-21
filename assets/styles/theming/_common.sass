@@ -8,26 +8,32 @@
   font-weight: $font-weight-bold
   line-height: calc(38 / 30)
   margin: 0
+
 .text-subheading
   font-size: $font-size-small
   color: $text-color-700
   font-weight: $font-weight-regular
   line-height: calc(24 / 12)
+
 .header__search
   position: relative
+
   input
     @include size(300px, 48px)
     border-radius: 4px
     padding: 0 0 0 50px
     border: none
     outline: none
+
     &::placeholder
-        font-size: $font-size-base
-        color: $text-color-500
-        line-height: calc(24 / 14)
+      font-size: $font-size-base
+      color: $text-color-500
+      line-height: calc(24 / 14)
+
     &:focus
-        border: 1.5px solid $primary
-        box-shadow: none
+      border: 1.5px solid $primary
+      box-shadow: none
+
 .btn__filter
     @include size(166px, 48px)
     @include flex-center-space-between

@@ -27,7 +27,7 @@
           span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
         .grid.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 
+          span.uppercase.font-semibold.text-blue-700
         .wrap-unit.px-4
           StockUnit(title="Total inventory quantity" :value="total" icon="icon-total-inventory" :isEdit="isEditStockDetail")
         .wrap-unit.px-4
@@ -40,9 +40,16 @@
                   InputNumber.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
                 .col-4.p-0.pt-1
                   InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
-              span.font-bold.text-small.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }} 
+              span.font-bold.text-small.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
         .wrap-unit.px-4
-          StockUnit(title="Weight" name="weightBox" :model="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
+          StockUnit(
+            title="Weight"
+            name="weightBox"
+            :model="weightBox"
+            :isEdit="isEditStockDetail"
+            icon="icon-weight"
+            @updateUnit='handleUpdateUnit'
+          )
         div
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col
@@ -202,7 +209,7 @@ export default StockDetail
 .wrap-unit
   width: 300px
   margin-bottom: 16px
-.sub-tab 
+.sub-tab
   height: calc(100vh - 32px)
   max-width: 21.5rem
   overflow: hidden

@@ -1,19 +1,23 @@
 // button
 .btn
-    cursor: pointer
-    height: 48px
-    @include flex-center
-    gap: 0 18px
-    padding: 0 20px
-    border-radius: 4px
-    &.btn-primary
-        background-color: $primary
-        color: $color-white
-        .icon
-            background-color: $color-white
-    &.btn-outline
-        background-color: $color-white
-        border: 1.5px solid $primary
-        color: $primary
-        .icon
-            background-color: $primary
+  cursor: pointer
+  height: 48px
+  @include flex-center
+  gap: 0 18px
+  padding: 0 20px
+  border-radius: 4px
+
+  &.btn-primary
+    background-color: $primary
+    color: $color-white
+
+    .icon
+      background-color: $color-white
+
+  &.btn-outline
+    background-color: $color-white
+    border: 1.5px solid $primary
+    color: $primary
+
+    .icon
+      background-color: $primary

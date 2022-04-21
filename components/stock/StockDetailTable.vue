@@ -27,18 +27,47 @@
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
-        DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
-          dataKey="id" :resizableColumns="true" :rowClass="rowClass" :rows="20" :scrollable="false" @row-dblclick='redirectToDetail'
-          :class="{ 'table__empty': !itemsList.data.items || itemsList.data.items.length <= 0 }" @sort="sortData($event)")
+        DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(
+          v-if="itemsList.data"
+          :value="itemsList.data.items"
+          responsiveLayout="scroll"
+          :selection.sync="selectedStock"
+          dataKey="id"
+          :resizableColumns="true"
+          :rowClass="rowClass"
+          :rows="20"
+          :scrollable="false"
+          @row-dblclick='redirectToDetail'
+          :class="{ 'table__empty': !itemsList.data.items || itemsList.data.items.length <= 0 }"
+          @sort="sortData($event)"
+        )
           Column(selectionMode="multiple" :styles="{'width': '1%'}" :exportable="false")
           Column(field="no" header="NO" :styles="{'width': '1%'}")
             template(#body="{ index }")
               span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
           Column(field="box.request.seller.email" header="SELLER EMAIL" sortable className="w-3")
           Column(field="sku" header="SKU" sortable className="p-text-right")
-          Column(field="amount" header="INVENTORY QUANTITY" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
-          Column(field="box.barCode" header="BOX CODE" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
-          Column(field="box.request.warehouse.name" sortable header="WAREHOUSE" className="p-text-right" :styles="{'width': '5%'}")
+          Column(
+            field="amount"
+            header="INVENTORY QUANTITY"
+            sortable className="p-text-right"
+            bodyClass="font-semibold"
+            :styles="{'width': '5%'}"
+          )
+          Column(
+            field="box.barCode"
+            header="BOX CODE"
+            sortable
+            className="p-text-right"
+            bodyClass="font-semibold"
+            :styles="{'width': '5%'}"
+          )
+          Column(
+            field="box.request.warehouse.name"
+            sortable header="WAREHOUSE"
+            className="p-text-right"
+            :styles="{'width': '5%'}"
+          )
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.font-sm {{data.box.request.warehouse.name}}
@@ -46,7 +75,8 @@
           Column(field="box.rackLocation.name" header="LOCATION" sortable className="p-text-right")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.font-sm {{data.box.rackLocation ? (data.box.rackLocation.name ? data.box.rackLocation.name : '' ) : ''}}
+                span.text-primary.font-bold.font-sm
+                | {{ data.box.rackLocation ? (data.box.rackLocation.name ? data.box.rackLocation.name : '' ) : ''}}
                 .icon--small.icon-arrow-up-right.bg-primary
           Column(field="itemStatus" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
@@ -59,9 +89,15 @@
                   span.font-bold.text-green-400.font-sm AVAILABLE
           Column(:exportable="false" header="ACTION" className="p-text-right")
             template(#body="{data}")
-              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="data.itemStatus == 'ITEM_STATUS_DISABLE'" @click='editItemDetail(data.id)')
+              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(
+                :disabled="data.itemStatus == 'ITEM_STATUS_DISABLE'"
+                 @click='editItemDetail(data.id)'
+                )
                 .icon--small.icon-btn-edit
-              Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.itemStatus === 'ITEM_STATUS_DISABLE'")
+              Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(
+                @click="showModalDelete(data.id)"
+                :disabled="data.itemStatus === 'ITEM_STATUS_DISABLE'"
+              )
                 .icon--small.icon-btn-delete
           template(#footer)
             .pagination
@@ -124,9 +160,9 @@ class StockDetailTable extends Vue {
   }
 
   statusList: any = [
-    { name: 'Available', value: 1 },
-    { name: 'Draft', value: 2 },
-    { name: 'Disable', value: 0 }
+    { name: 'Available', value: 'ITEM_STATUS_AVAILABLE' },
+    { name: 'Draft', value: 'ITEM_STATUS_DRAFT' },
+    { name: 'Disable', value: 'ITEM_STATUS_DISABLE' }
   ]
 
   paginate: any = {
