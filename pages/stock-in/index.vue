@@ -101,10 +101,10 @@
             template(#body='{ data }') {{ data.sellerName }}
           Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_sellerEmail")
             template(#body='{ data }') {{ data.sellerEmail }}
-          Column(field="warehouseName" header="WAREHOUSE" :sortable="true" sortField="_warehouseName" :styles="{'width': '1%'}")
+          Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.text-white-active {{ data.warehouseName }}
+                span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
                 .icon.icon-arrow-up-right.bg-primary.bg-white-active
           Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_data.creatorId")
             template(#body='{ data }') {{ data.creatorId }}
