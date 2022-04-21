@@ -1,5 +1,5 @@
 <template lang="pug">
-	.receipt-note
+.receipt-note
 		card.mb-5
 				template(#title='')
 					div.d-flex
@@ -86,7 +86,8 @@
 							//- 	i.pi.pi-refresh
 							.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-3 Size
-								Dropdown.box-input(v-if ='boxSizeList'
+								Dropdown.box-input(
+                  v-if ='boxSizeList'
 									style='width: 70%',
 									:options='boxSizeList',
 									optionLabel='name',
@@ -110,8 +111,8 @@
 									label='--'
 									style='width:10%'
 									@click='showModalAddStock'
-								) 
-						.grid.border__left.border__right.mt-0.pb-3(
+								)
+						.grid.border-left.border-right.mt-0.pb-3(
 							style='margin-right: 0px',
 							v-if='listBox'
 						)
@@ -314,7 +315,7 @@ class CreateReceipt extends Vue {
           id: stockInformation.id,
           name: stockInformation.name,
           barCode: stockInformation.barCode,
-          imageUrl: '',
+          imagePath: stockInformation.imagePath,
           unit: {
             id: stockInformation.unit.code,
             name: stockInformation.unit.name
@@ -341,8 +342,6 @@ class CreateReceipt extends Vue {
       }
     ]
     this.listBox[this.activeIndex].listItemInBox?.push(...itemInBox)
-    this.checkActiveAction()
-    this.activeSave =true
   }
 
   selectBox(box) {
@@ -399,7 +398,7 @@ class CreateReceipt extends Vue {
     this.listBox.forEach(element => {
       if(!element.location.id || element.location.id===''){
         this.activeSave = false
-				
+
       }else{
         this.activeSave = true
       }
