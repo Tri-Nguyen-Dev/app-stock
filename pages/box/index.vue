@@ -171,8 +171,8 @@ class BoxList extends Vue {
       'location': this.filter.location || null,
       'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
       'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
-      'sortByColumn': this.sortByColumn || null,
-      'isDescending': this.isDescending
+      'sortBy': this.sortByColumn || null,
+      'desc': this.isDescending
     }
   }
 
