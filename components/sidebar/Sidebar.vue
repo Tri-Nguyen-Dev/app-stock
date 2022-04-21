@@ -63,9 +63,16 @@ class MenuSidebar extends Vue {
     }
   }
 
+  handleSelect() {
+    if( _.isEmpty(this.$route.params)){
+      this.selectedItem = this.pageMenu.filter((item)=> this.$route.path === item.to )[0]
+    }else {
+      this.selectedItem = this.pageMenu.filter((item)=> this.$route.path.slice(0, item.to?.length) === item.to )[0]
+    }
+  }
+  
   mounted() {
-    const path = this.$route.path
-    this.selectedItem = this.pageMenu.filter((item)=>  path.slice(0, item.to?.length) === item.to )[0]
+    this.handleSelect()
   }
 }
 
