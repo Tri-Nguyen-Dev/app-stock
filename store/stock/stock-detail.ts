@@ -63,7 +63,7 @@ export default class StoreStockDetail extends VuexModule {
     return await $api.get(url)
   }
 
-  @Action({rawError: true })
+  @Action({ rawError: true })
   async actUpdateStock(params: StockModel.ModelDetailEdit): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.UPDATE_STOCK, { id: this.stockDetail.data.id })
     return await $api.post(url, params)
@@ -78,7 +78,7 @@ export default class StoreStockDetail extends VuexModule {
   @Action({ rawError: true })
   async actDeleteItemsById(ids?: string[]): Promise<string | undefined> {
     try {
-      const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.DELETE_ITEMS, {id: this.stockDetail.data.id})
+      const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.DELETE_ITEMS, { id: this.stockDetail.data.id })
       const response = await $api.post(url, { ids })
       if(!response.data) {
         return
@@ -88,7 +88,7 @@ export default class StoreStockDetail extends VuexModule {
     }
   }
 
-  @Action({rawError: true })
+  @Action({ rawError: true })
   async actUpdateItem(params: {path: any, body: StockModel.ModelEditItem}): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.UPDATE_ITEM, params.path)
     return await $api.post(url, params.body)

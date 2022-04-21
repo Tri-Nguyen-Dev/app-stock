@@ -118,7 +118,6 @@ import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
-const _ = require('lodash')
 const dayjs = require('dayjs')
 
 @Component({
@@ -166,7 +165,7 @@ class BoxList extends Vue {
 
   async mounted() {
     await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
-    this.actWarehouseList()
+    await this.actWarehouseList()
   }
 
   getParamAPi() {
@@ -242,7 +241,7 @@ class BoxList extends Vue {
   validateText =  _.debounce(this.handleFilter, 500);
 
   async sortData(e: any) {
-    const {sortField, sortOrder} = e
+    const { sortField, sortOrder } = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '')
@@ -253,12 +252,12 @@ class BoxList extends Vue {
     await this.actGetBoxList(this.getParamAPi())
   }
 
-  onRowClick({data}){
+  onRowClick({ data }){
     this.$router.push(`/box/${data.id}`)
   }
 
   handleEditBox(id: any) {
-    this.$router.push({ path: `/box/${id}`, query: { plan: 'edit' }})
+    this.$router.push({ path: `/box/${id}`, query: { plan: 'edit' } })
   }
 
   async handleFilter() {
@@ -275,9 +274,9 @@ class BoxList extends Vue {
     this.filter.dateTo = null
     await this.actGetBoxList(this.getParamAPi())
   }
-  
+
   rowSelectAll({ data }) {
-    this.selectedBoxes = _.union(this.selectedBoxes, data) 
+    this.selectedBoxes = _.union(this.selectedBoxes, data)
   }
 
   rowUnSelectAll() {
