@@ -2,15 +2,15 @@
   .grid.grid-nogutter.stock__information-detail
     .col-2.p-0.surface-0.border-round.h-full.overflow-y-auto.overflow-x-hidden(v-if='model.data')
       .grid.border-bottom-1.border-gray-300
-       .col.p-4.flex.align-items-center
-        Button(@click='backToStockList').p-button-link.mr-2
-          .icon.icon-btn-back.bg-blue-700
-        span.font-semibold.text-base Stock list / Stock Detail
+        .col.flex.align-items-center.breadcrumb-section
+          Button(@click='backToStockList').p-button-link
+            .icon.icon-btn-back.bg-blue-700
+          Breadcrumb(:home="homeItem" :model="breadcrumbItem")
       .stock__information--gerenal.p-4.border-bottom-1.border-gray-300
         .grid.mb-3.align-items-center
           .col-9.pl-0.flex
             .icon.icon-box-info.mr-1.bg-blue-700
-            span.uppercase.font-bold.text-sm general infomation
+            span.uppercase.font-bold.text-sm general information
           .col.flex.justify-content-end
             .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon.icon-btn-edit
@@ -27,7 +27,7 @@
           span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
         .grid(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
           p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700 
+          span.uppercase.font-semibold.text-blue-700
         .col-12.px-0
           StockUnit(title="Total inventory quantity" :value="total" icon="icon-total-inventory" :isEdit="isEditStockDetail")
         .col-12.px-0
@@ -40,7 +40,7 @@
                   InputNumber.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
                 .col-4.p-0.pt-1
                   InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
-              span.font-semibold.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }} 
+              span.font-semibold.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
         .col-12.px-0
           StockUnit(title="Weight" name="weightBox" :model="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
         div
@@ -55,22 +55,20 @@
       StockDetailTable
 </template>
 <script lang="ts">
-import { Component, Vue, namespace} from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStock = namespace('stock/stock-detail')
-const _ = require('lodash')
 
-@Component({
-  layout: 'dashboard'
-})
+@Component
 class StockDetail extends Vue {
+  // -- [ Properties ] ----------------------------------------------------------
   isEditStockDetail: boolean = false
   model: StockModel.ModelDetail | any = {}
   heightBox: any = ''
   weightBox: any = ''
   lengthBox: any = ''
   widthBox: any = ''
-
+  // -- [ Statement Properties ] ------------------------------------------------
   @nsStoreStock.State
   stockDetail!: StockModel.ModelDetail
 
@@ -82,6 +80,24 @@ class StockDetail extends Vue {
 
   @nsStoreStock.Action
   actUpdateStock!: (params: StockModel.ModelDetailEdit) => Promise<any>
+
+  // -- [ Getters ] ----------------------------------------------------------
+
+  get sid() {
+    return this.$route.params.sid || ''
+  }
+
+  get homeItem() {
+    return { label: 'Stock List', to: '/stock' }
+  }
+
+  get breadcrumbItem() {
+    return [
+      { label: 'Stock Detail', to: `/stock/${this.sid}` }
+    ]
+  }
+
+  // -- [ Functions ] ----------------------------------------------------------
 
   backToStockList() {
     this.$router.push('/stock')
@@ -117,6 +133,7 @@ class StockDetail extends Vue {
     this.widthBox = item.width
   }
 
+  // -- [ Hooks ] ----------------------------------------------------------
   async mounted() {
     if(this.$route.query.plan === 'edit') {
       this.isEditStockDetail = true

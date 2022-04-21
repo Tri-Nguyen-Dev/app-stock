@@ -11,7 +11,6 @@
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
-const _ = require('lodash')
 @Component
 class FilterTable extends Vue {
   @Prop() value!: any | undefined
@@ -22,7 +21,7 @@ class FilterTable extends Vue {
   @Prop() readonly name!: any | undefined
 
   validateText =  _.debounce(this.handleFilter, 500);
-  
+
   handleFilter(e :any){
     this.$emit('updateFilter', e, this.name)
   }

@@ -98,7 +98,7 @@ const nsStoreStockTable = namespace('stock/stock-detail')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component({
-  components: {ConfirmDialogCustom}
+  components: { ConfirmDialogCustom }
 })
 class StockDetailTable extends Vue {
 
@@ -190,7 +190,7 @@ class StockDetailTable extends Vue {
   }
 
   sortData(e: any){
-    const {sortField, sortOrder} = e
+    const { sortField, sortOrder } = e
     if(sortOrder){
       this.sort.sortDescending = sortOrder !== 1
       this.sort.sortByColumn = sortField.replace('_', '')
@@ -265,7 +265,7 @@ class StockDetailTable extends Vue {
   }
 
   editItemDetail(id:any) {
-    this.$router.push({ path: `${this.$route.params.sid}/item/${id}`, query: {plan: 'edit'}})
+    this.$router.push({ path: `${this.$route.params.sid}/item/${id}`, query: { plan: 'edit' } })
   }
 
   mounted() {
