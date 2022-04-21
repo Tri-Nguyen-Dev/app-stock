@@ -48,13 +48,13 @@
         removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"  @sort="sortData($event)"  @row-select="rowSelect"
         @row-dblclick="onRowClick($event)" :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }" @row-select-all="rowSelectAll"
         @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect' )
-                Column(selectionMode='multiple' :styles="{'width': '1%'}" )
-                Column(field='no' header='NO' :styles="{'width': '1%'}" )
+                Column(selectionMode='multiple')
+                Column(field='no' header='NO' )
                   template(#body='{ index }')
                     span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
                 Column(field='id' header='ID' :sortable="true" sortField="_id" )
                   template(#body='{ data }')
-                    span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ data.id }}
+                    span.text-white-active.text-900.font-bold {{ data.id }}
                 Column(header='Create Time' field='data.createdA' :sortable="true" sortField="_data.createdA")
                   template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
                 Column(header='SELLER NAME' field='seller.name' :sortable="true" sortField="_seller.name")
@@ -66,7 +66,7 @@
                     .flex.align-items-center.cursor-pointer.justify-content-end
                       span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
                       .icon.icon-arrow-up-right.bg-primary.bg-white-active
-                Column(header='CREATOR ID' field='data.createBy' :sortable="true" sortField="_data.createBy")
+                Column(header='CREATOR ID' field='data.createBy' :sortable="true" sortField="_data.createId")
                   template(#body='{ data }') {{ data.createBy }}
                 Column(header='CREATOR NAME' field='data.createBy' :sortable="true" sortField="_data.createBy")
                   template(#body='{ data }') {{ data.createBy }}
@@ -107,10 +107,9 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/Request-list'
-import { REQUEST_STATUS, handleRefreshFilter, calculateIndex, PAGINATE_DEFAULT } from '~/utils'
+import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT } from '~/utils'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockIn = namespace('stock-in/request-list')
-const _ = require('lodash')
 const dayjs = require('dayjs')
 
 @Component({
@@ -130,7 +129,7 @@ class StockIn extends Vue {
   firstPage: number = 1
   ids: string[] = []
   sortByColumn: string = ''
-  isDescending: boolean|null = null
+  isDescending: boolean | null = null
   paginate = PAGINATE_DEFAULT
   filter: any = {
     id: null,
@@ -230,7 +229,7 @@ class StockIn extends Vue {
   }
 
   async refreshFilter() {
-    handleRefreshFilter(this.filter)
+    refreshAllFilter(this.filter)
     await this.actGetStockIn(this.getParamApi())
   }
 
