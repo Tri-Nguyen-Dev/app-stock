@@ -174,7 +174,7 @@ class Stock extends Vue {
       categoryIds: categoryIds || null,
       stockStatus: this.filter.status?.value,
       sortBy: this.filter.sortBy || null,
-      sortDescending: this.filter.desc || null
+      desc: this.filter.desc
     }
   }
 
