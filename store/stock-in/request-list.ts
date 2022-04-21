@@ -14,9 +14,9 @@ export default class StoreStockIn extends VuexModule {
   public stockIn?: Request.Model[] = []
   public total?: number = 0
   @Mutation
-  setStockIn(data: any) {
-    this.total = data?.total
-    this.stockIn = data?.items
+  setStockIn({ data }) {
+    this.total = data.total
+    this.stockIn = data.items
   }
 
   @Action({ commit: 'setStockIn', rawError: true })
