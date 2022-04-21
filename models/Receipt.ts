@@ -34,7 +34,10 @@ export namespace Receipt {
     index: number
     listItemInBox: ItemModel.Model[]
     inventoryFee?: number
-    boxSize: string
+    boxSize: {
+      id: number
+    }
+
     status: string
     location: BoxLocation
   }
@@ -61,11 +64,17 @@ export namespace Receipt {
       this.rackLocation = {
         id: ''
       }
+      this.boxSize ={
+        id:0
+      }
     }
 
     inventoryFee?: number
     listStockWithAmount?: ItemDraft[]
-    boxSize?: string
+    boxSize: {
+      id: number
+    }
+
     status?: string
     rackLocation: {
       id: string

@@ -245,7 +245,9 @@ class CreateReceipt extends Vue {
     const item: ReceiptModel.Box = {
       index: this.listBox[this.listBox.length - 1].index + 1,
       listItemInBox: [],
-      boxSize: '',
+      boxSize: {
+        id:0
+      },
       status: RECEIPT_STATUS.REQUEST_STATUS_DRAFT,
       location:{
         id:'',
@@ -344,7 +346,7 @@ class CreateReceipt extends Vue {
     this.listBox.forEach((element) => {
       const box: ReceiptModel.BoxDraft = new ReceiptModel.BoxDraft()
       box.inventoryFee = element.inventoryFee
-      box.boxSize = element.boxSize
+      box.boxSize.id = element.boxSize.id
       element.listItemInBox?.forEach((item) => {
         const itemDraft: ReceiptModel.ItemDraft = new ReceiptModel.ItemDraft()
         itemDraft.stock.id = item.stock.id
