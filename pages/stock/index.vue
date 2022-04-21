@@ -20,7 +20,7 @@
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
       .col
-        FilterTable(title="Catagory" name="categories" :value="filter.categories")
+        FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(v-model='filter.categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
       .col
