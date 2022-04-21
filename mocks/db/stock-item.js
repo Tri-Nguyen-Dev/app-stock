@@ -7,7 +7,7 @@ function generateItems (stocks, boxes) {
   for (let i = 0; i < stocks.length; i++) {
     const stock = stocks[i]
 
-    lodash.range(faker.datatype.number({ min: 3, max: 30})).forEach(_ => {
+    lodash.range(faker.datatype.number({ min: 3, max: 30 })).forEach(_ => {
       const box = lodash.sample(boxes)
       const inventoryQuantity = faker.datatype.number({ min: 1, max: 500 })
       const receiptNote = faker.random.alphaNumeric(9)

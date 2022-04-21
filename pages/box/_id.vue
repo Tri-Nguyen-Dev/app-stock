@@ -48,7 +48,7 @@
         .col.px-4(:class='isEditBox ? "opacity-40" : "opacity-100"')
           StockUnit(title="Box size:" type ="size" :height="boxDetail.height" :length="boxDetail.length" :width="boxDetail.width" icon="icon-size")
             template(v-slot:size)
-              span.font-semibold.mr-1.uppercase {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }} 
+              span.font-semibold.mr-1.uppercase {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }}
             template(v-slot:button-size='')
               span.font-bold.text-600.bg-primary.ml-1.border-round(:class='boxDetail.boxSize? "p-1" : ""') {{ boxDetail.boxSize | boxSize }}
         div(:class='isEditBox? "opacity-40" : "opacity-100"')
@@ -120,7 +120,6 @@
 <script lang="ts">
 import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import { ITEM_SELLER_INFO } from '~/utils/constants/box'
-const _ = require('lodash')
 const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
 const nsStoreLocationList = namespace('location/location-list')
@@ -179,7 +178,7 @@ class BoxDetail extends Vue {
       return [
         ...this.boxDetail.listStockWithAmount.map((item: any) => ({
           ...(item.stock || []),
-          sku: item.sku, 
+          sku: item.sku,
           amount: item.amount
         }))
       ]
