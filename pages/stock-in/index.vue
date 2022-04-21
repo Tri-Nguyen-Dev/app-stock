@@ -17,7 +17,7 @@
           .col-fixed
             .btn.btn-primary(@click='createStockIn')
                 .icon.icon-add-items.surface-900.bg-white
-                span.text-900.text-white.mr-3 Add recepit note 
+                span.text-900.text-white.mr-3 Add recepit note
           .col-fixed
             .btn__filter(class='active')
               .btn.btn-toggle.bg-white
@@ -32,60 +32,60 @@
             .grid.grid-nogutter
               .col
                   FilterCalendar(
-                    title="From" 
-                    :value="filter.dateFrom" 
-                    name="dateFrom"  
-                    inputClass="border-0" 
-                    dateFormat="dd-mm-yy" 
-                    :showIcon="true" 
+                    title="From"
+                    :value="filter.dateFrom"
+                    name="dateFrom"
+                    inputClass="border-0"
+                    dateFormat="dd-mm-yy"
+                    :showIcon="true"
                     @updateFilter="handleFilter")
               .col.ml-1
                   FilterCalendar(
-                  title="From" 
-                  :value="filter.dateTo" 
-                  name="dateTo"  
-                  inputClass="border-0" 
-                  dateFormat="dd-mm-yy" 
-                  :showIcon="true" 
+                  title="From"
+                  :value="filter.dateTo"
+                  name="dateTo"
+                  inputClass="border-0"
+                  dateFormat="dd-mm-yy"
+                  :showIcon="true"
                   @updateFilter="handleFilter")
       .col-2
         FilterTable(
-          title="Warehouse" 
-          :value="filter.warehouse" 
-          :options="warehouseList" 
-          name="warehouse" 
+          title="Warehouse"
+          :value="filter.warehouse"
+          :options="warehouseList"
+          name="warehouse"
           @updateFilter="handleFilter")
       .col-2
         FilterTable(
-          title="Seller" 
-          placeholder="Enter seller" 
-          name="sellerEmail" 
-          :value="filter.sellerEmail" 
-          :searchText="true" 
+          title="Seller"
+          placeholder="Enter seller"
+          name="sellerEmail"
+          :value="filter.sellerEmail"
+          :searchText="true"
           @updateFilter="handleFilter")
       .col-2
         FilterTable(
-          title="Creator ID" 
-          placeholder="Enter ID" 
-          name="creatorId" 
-          :value="filter.creatorId" 
-          :searchText="true" 
+          title="Creator ID"
+          placeholder="Enter ID"
+          name="creatorId"
+          :value="filter.creatorId"
+          :searchText="true"
           @updateFilter="handleFilter")
       .col-2
         FilterTable(title="Status" :value="filter.status" :options="statusRequest" name="status" @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
-          v-if="stockIn" :value="stockIn" 
-          responsiveLayout="scroll" 
+          v-if="stockIn" :value="stockIn"
+          responsiveLayout="scroll"
           :selection="selectedStockIn"
-        removableSort dataKey="id" 
-        :resizableColumns="true" :rows="20" 
-        :scrollable="false"  
-        @sort="sortData($event)"  
+        removableSort dataKey="id"
+        :resizableColumns="true" :rows="20"
+        :scrollable="false"
+        @sort="sortData($event)"
         @row-select="rowSelect"
-        @row-dblclick="onRowClick($event)" 
-        :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }" 
+        @row-dblclick="onRowClick($event)"
+        :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }"
         @row-select-all="rowSelectAll"
         @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect' )
           Column(selectionMode='multiple')
@@ -97,23 +97,23 @@
               span.text-white-active.text-900.font-bold {{ data.id }}
           Column(header='Create Time' field='data.createdA' :sortable="true" sortField="_data.createdA")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
-          Column(header='SELLER NAME' field='seller.name' :sortable="true" sortField="_seller.name")
-            template(#body='{ data }') {{ data.seller.name }}
-          Column(header='SELLER EMAIL' field='seller.email' :sortable="true" sortField="_seller.email")
-            template(#body='{ data }') {{ data.seller.email }}
+          Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_sellerName")
+            template(#body='{ data }') {{ data.sellerName }}
+          Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_sellerEmail")
+            template(#body='{ data }') {{ data.sellerEmail }}
           Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
                 .icon.icon-arrow-up-right.bg-primary.bg-white-active
-          Column(header='CREATOR ID' field='data.createBy' :sortable="true" sortField="_data.createId")
-            template(#body='{ data }') {{ data.createBy }}
-          Column(header='CREATOR NAME' field='data.createBy' :sortable="true" sortField="_data.createBy")
-            template(#body='{ data }') {{ data.createBy }}
+          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_data.creatorId")
+            template(#body='{ data }') {{ data.creatorId }}
+          Column(header='CREATOR NAME' field='data.creatorName' :sortable="true" sortField="_data.creatorName")
+            template(#body='{ data }') {{ data.creatorName }}
           Column(header='STATUS' field=' data.status' :sortable="true" sortField="_data.status")
-            template(#body='{ data }') 
+            template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
-                :class=" data.status === 'REQUEST_STATUS_SAVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ") 
+                :class=" data.status === 'REQUEST_STATUS_SAVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")
                 | {{ data.status | requestStatus }}
           template(#empty)
             div.table__empty
@@ -127,15 +127,15 @@
             .pagination
               div.pagination__info(v-if="itemsBoxDelete.length <= 0 ")
                 img(:src="require('~/assets/icons/filter-left.svg')")
-                span(v-if="stockIn.length > 0").pagination__total 
+                span(v-if="stockIn.length > 0").pagination__total
                 | {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + stockIn.length }} of {{ total }}
               div.pagination__delete(v-else @click="showModalDelete()")
                 img(:src="require('~/assets/icons/trash-white.svg')")
                 span Delete {{ itemsBoxDelete.length }} items selected
               Paginator(
-                :first.sync="firstPage" 
-                :rows="pageSize" :totalRecords="total" 
-                @page="onPage($event)" 
+                :first.sync="firstPage"
+                :rows="pageSize" :totalRecords="total"
+                @page="onPage($event)"
                 :rowsPerPageOptions="[10,20,30]")
       ConfirmDialogCustom(
         title="Confirm delete"
@@ -153,7 +153,7 @@
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
-import { Request } from '~/models/Request-list'
+import { Request } from '~/models/RequestList'
 import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT } from '~/utils'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockIn = namespace('stock-in/request-list')
@@ -214,8 +214,8 @@ class StockIn extends Vue {
       'creatorId': this.filter.creatorId || null ,
       'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
       'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
-      'sortByColumn': this.sortByColumn || null,
-      'isDescending': this.isDescending,
+      'sortBy': this.sortByColumn || null,
+      'desc': this.isDescending,
       'status': this.filter.status?.value,
       'warehouseId': this.filter.warehouse?.id
     }
@@ -354,4 +354,5 @@ export default StockIn
     .p-button
       background: none
       border: none
+
 </style>

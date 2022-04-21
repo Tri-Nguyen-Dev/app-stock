@@ -36,9 +36,19 @@
               span.uppercase.font-semibold.text-blue-700 {{model.data.stock.unit.name}}
         .grid.mt-2
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="model.data.box.request.id" :isEdit="isEditItemDetail" icon="icon-receipt-note")
+            StockUnit(
+              title="Receipt note ID"
+              :value="model.data.box.request.id"
+              :isEdit="isEditItemDetail"
+              icon="icon-receipt-note")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Creator ID" :value="model.data.box.request.createBy" value="NVN030133" :isEdit="isEditItemDetail" icon="icon-tag-user")
+            StockUnit(
+              title="Creator ID"
+              :value="model.data.box.request.createBy"
+              value="NVN030133"
+              :isEdit="isEditItemDetail"
+              icon="icon-tag-user"
+            )
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Warehouse" link="https://rikkei.vn" :isEdit="isEditItemDetail" value="NTH001" icon="icon-warehouse")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
@@ -53,7 +63,8 @@
                   InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.width')
                 .col-4.p-0.pt-1
                   InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.height')
-              span.font-semibold.mr-1.uppercase(v-else) {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }}
+              span.font-semibold.mr-1.uppercase(v-else)
+              | {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }}
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Weight (Kg)" :value="model.data.stock.weight" :isEdit="isEditItemDetail" icon="icon-weight")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
@@ -66,7 +77,14 @@
                 .col
                   div.text-500 Value
                   InputText(:disabled='!isEditItemDetail' v-model='model.data.value').w-6
-            //- StockUnit(title="Value" type ="weight" :weight="model.data.value" :isEdit="isEditItemDetail" icon="icon-price" @updateUnit='handleUpdateUnit')
+            //- StockUnit(
+              title="Value"
+              type ="weight"
+              :weight="model.data.value"
+              :isEdit="isEditItemDetail"
+              icon="icon-price"
+              @updateUnit='handleUpdateUnit'
+              )
         .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
           .col
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditItemDetail')
@@ -182,66 +200,66 @@ export default ItemDetail
 $large: 1440px
 $small: 1025px
 .item__detail-container
-  height: calc(100vh - 64px)
-  .left__information--stock
-    .stock__information
-      border-bottom: 1px solid #eeeff2
+	height: calc(100vh - 64px)
+	.left__information--stock
+		.stock__information
+			border-bottom: 1px solid #eeeff2
 
-      .p-disabled, .p-component:disabled
-        opacity: 1
+			.p-disabled, .p-component:disabled
+				opacity: 1
 
-      .p-inputtext
-        border: none
-        background: transparent
-        padding: 0
-        color: #000
-        font-weight: 600
+			.p-inputtext
+				border: none
+				background: transparent
+				padding: 0
+				color: #000
+				font-weight: 600
 
-  .right__information--stock
-    .stock__log--history
-      height: calc(100vh - 130px)
-    ::v-deep.p-tabview .p-tabview-nav li
-      .p-tabview-nav-link
-        background: #e9ecef
-        border: none
-        box-shadow: none !important
+	.right__information--stock
+		.stock__log--history
+			height: calc(100vh - 130px)
+		::v-deep.p-tabview .p-tabview-nav li
+			.p-tabview-nav-link
+				background: #e9ecef
+				border: none
+				box-shadow: none !important
 
-    ::v-deep.p-tabview .p-tabview-panels
-      background: #e9ecef
-      padding: 1.25rem 0 0 0
+		::v-deep.p-tabview .p-tabview-panels
+			background: #e9ecef
+			padding: 1.25rem 0 0 0
 
-    ::v-deep.p-highlight .p-tabview-nav-link
-      color: #000 !important
-      border-bottom: 2px solid #486AE2 !important
+		::v-deep.p-highlight .p-tabview-nav-link
+			color: #000 !important
+			border-bottom: 2px solid #486AE2 !important
 
-      .icon
-        background-color: #094db1 !important
+	.icon
+		background-color: #094db1 !important
 
 ::-webkit-scrollbar
- width: 7px
- height: 7px
- background-color: #F5F5F5
+	width: 7px
+	height: 7px
+	background-color: #F5F5F5
 
 ::-webkit-scrollbar-track
- -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
- border-radius: 10px
- background-color: #F5F5F5
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+	border-radius: 10px
+	background-color: #F5F5F5
 
 ::-webkit-scrollbar-thumb
- border-radius: 10px
- -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
- background-color: #979AA4
+	border-radius: 10px
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
+	background-color: #979AA4
 
 .wapprer-unit
-  height: 72px
-  border-radius: 4px
+	height: 72px
+	border-radius: 4px
 @media (max-width: $large) and (min-width: $small)
-  .stock__information--image
-    width: 100%
-  .stock__information--icon
-    margin-right: 1rem
-  .sender__information--logs
-    width: 100%
-  .sender__information--name
-    margin-right: 2rem
+	.stock__information--image
+		width: 100%
+	.stock__information--icon
+		margin-right: 1rem
+	.sender__information--logs
+		width: 100%
+	.sender__information--name
+		margin-right: 2rem
 </style>
