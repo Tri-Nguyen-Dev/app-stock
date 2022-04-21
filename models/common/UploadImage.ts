@@ -1,5 +1,5 @@
-export interface  GenerateUploadUrl {
+export interface GenerateUploadUrl {
   contentType?: string
-    extension?: string
-    expiration?: number
+  extension?: string
+  expiration?: number
 }

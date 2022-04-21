@@ -6,14 +6,14 @@ export namespace Stock {
     description?: string,
     imagePath?: string,
     barCode?: String
-    sku : String,
+    sku: String,
     type?: object,
     deleted?: boolean,
     unit: {
       id: number,
       name: string
     },
-    height:number,
+    height: number,
     width: number,
     length: number,
     weight: number,
@@ -52,6 +52,7 @@ export namespace Stock {
   export interface ModelEditItem {
     value?: number
   }
+
   export interface ModelDetail {
     data: {
       id: string,
@@ -69,7 +70,7 @@ export namespace Stock {
       length?: number
       weight?: number
       width?: number
-      sku? : string
+      sku?: string
       attributeValue: [{
         id: string
         name: string
@@ -89,10 +90,11 @@ export namespace Stock {
       },
     }
   }
-  export class BoxModel{
-    data:{
+
+  export class BoxModel {
+    data: {
       total: number,
-      items:[{
+      items: [{
         id: string,
         stock: {
           id: string,
@@ -115,7 +117,7 @@ export namespace Stock {
           id: string,
           icon: string,
           barCode: string,
-          qrCode:string,
+          qrCode: string,
           inventoryFee: string,
           request: {
             id: string,
@@ -135,7 +137,7 @@ export namespace Stock {
               airTagAttribute: {
                 id: string,
                 model: string,
-                productionBatch:string,
+                productionBatch: string,
                 costPrice: number,
                 retailPrice: number,
                 size: number,
@@ -170,7 +172,7 @@ export namespace Stock {
               id: string,
               name: string,
               icon: string,
-              address:string,
+              address: string,
               description: string,
               phone: string,
               maxNumberShelf: number,
@@ -200,8 +202,8 @@ export namespace Stock {
             shelfColumnNumber: 1,
             status: string,
             createdAt: Date,
-            updatedAt:Date,
-            deleted: Boolean,
+            updatedAt: Date,
+            deleted: boolean,
             createBy: string,
             updateBy: string
           },
@@ -211,7 +213,7 @@ export namespace Stock {
           updateBy: string
         },
         amount: 10,
-        deleted: Boolean
+        deleted: boolean
       }]
     }
   }
@@ -223,7 +225,7 @@ export namespace Stock {
     barCode?: string,
     totalInventoryQuantity?: number,
     unit?: {
-      id:number,
+      id: number,
     },
     height?: number,
     width?: number,
