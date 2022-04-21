@@ -6,8 +6,35 @@ export namespace Stock {
     description?: string,
     imagePath?: string,
     barCode?: String
+    sku : String,
+    type?: object,
+    deleted?: boolean,
+    unit: {
+      id: number,
+      name: string
+    },
+    height:number,
+    width: number,
+    length: number,
+    weight: number,
+    totalInventoryQuantity: number,
+    stockStatus: string,
+    attributeValue: [
+      {
+        id: string,
+        attribute: {
+          id: string,
+          name: string,
+          icon: string,
+          displayOrder: number,
+          deleted: true
+        },
+        icon: string,
+        displayOrder: number,
+        value: string
+      }
+    ],
     category?: Stock.Category,
-    stockStatus?: string,
   }
 
   export interface Category {
@@ -187,5 +214,25 @@ export namespace Stock {
         deleted: Boolean
       }]
     }
+  }
+
+  export interface CreateStock {
+    id?: string,
+    name?: string,
+    imagePath?: string,
+    barCode?: string,
+    totalInventoryQuantity?: number,
+    unit?: {
+      id:number,
+    },
+    height?: number,
+    width?: number,
+    length?: number,
+    weight?: number,
+    category?: {
+      id: string
+    },
+    stockStatus?: string,
+    deleted?: boolean
   }
 }
