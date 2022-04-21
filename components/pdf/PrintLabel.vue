@@ -1,21 +1,19 @@
 <template lang="pug">
   Dialog.print-label(:visible.sync="visibleVue" :modal="true")
     div(v-if='labelUrl')
-      pdf(
+      pdf.pdf-viewer-container(
         v-if="!isAllPage"
         :src='labelUrl',
         :page="page"
-        class="pdf-viewer-container"
         :style="btnStyles"
         ref="pdfOnePage"
       )
-      pdf(
+      pdf.pdf-viewer-container(
         v-else
         v-for="(page, index) in pageCount"
         :key="index"
         :src="labelUrl"
         :page="index + 1"
-        class="pdf-viewer-container"
         :style="btnStyles"
         ref="pdfAllPage"
       )
@@ -23,20 +21,20 @@
       Dropdown.print-label__page(placeholder="Select page" v-model="pageSelect" :options="pages" optionLabel="name" @change="handelChangePage")
       .grid.print-label__buttons
         .col
-          Button.header-button(@click='handleZoomOut')
+          Button(@click='handleZoomOut')
             .icon--large.icon--center.icon-zoom-out
         .col
-          Button.header-button(@click='handleZoomIn')
+          Button(@click='handleZoomIn')
             .icon--large.icon--center.icon-zoom-in
         .col
-          Button.header-button.bg-primary(@click="handlePrinter")
+          Button.bg-primary(@click="handlePrinter")
             .icon--large.icon--center.icon-printer.bg-white
         .col
-          Button.header-button(@click="handleDownload")
+          Button(@click="handleDownload")
             .icon--large.icon--center.icon-download-label
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, namespace, Ref } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, namespace, Ref, Watch } from 'nuxt-property-decorator'
 import pdf from 'vue-pdf'
 const nsStoreLabel = namespace('stock-in/request-label')
 
@@ -46,14 +44,25 @@ const nsStoreLabel = namespace('stock-in/request-label')
   }
 })
 class PrintLabel extends Vue {
-  @Prop({ default: false }) isShow!: boolean
-
-  @Ref('pdfOnePage') readonly pdfOnePage!: any
-  @Ref('pdfAllPage') readonly pdfAllPage!: any
   pageSelect = { name: 'All Page', page: -1 }
   pageCount: number = 0
   page = 1
   zoom = 80
+  @Prop({ default: false }) displayLable!: boolean
+  @Prop({ default: '' }) requestId!: string
+  @Prop({ default: '' }) boxId!: string
+  @Ref('pdfOnePage') readonly pdfOnePage!: any
+  @Ref('pdfAllPage') readonly pdfAllPage!: any
+
+  @Watch('displayLable')
+  getLabelBox() {
+    if(this.displayLable) {
+      this.callApiLabel({
+        requestId: this.requestId || null,
+        boxId: this.boxId || null
+      })
+    }
+  }
 
   get pages() {
     const pages = [{ name: 'All Page', page: -1 }]
@@ -66,7 +75,7 @@ class PrintLabel extends Vue {
   }
 
   get visibleVue() {
-    return this.isShow
+    return this.displayLable
   }
 
   set visibleVue(value) {
@@ -79,8 +88,8 @@ class PrintLabel extends Vue {
   @nsStoreLabel.Action
   actGetLabel!: (params: any) => Promise<void>
 
-  async mounted() {
-    const result: any = await this.actGetLabel({ id: 'RN000000000001', boxId: 'psuh1w1r60hcozh3uof77fv0' })
+  async callApiLabel({ requestId, boxId }) {
+    const result: any = await this.actGetLabel({ id: requestId || null, boxId: boxId || null })
     if(result) {
       const src = pdf.createLoadingTask(result)
       if(src){
@@ -91,11 +100,11 @@ class PrintLabel extends Vue {
     }
   }
 
-  handelChangePage({ value }){
+  handelChangePage({ value }) {
     this.page =  value.page
   }
 
-  get isAllPage(){
+  get isAllPage() {
     return this.pageSelect.page === -1
   }
 
@@ -125,7 +134,7 @@ class PrintLabel extends Vue {
   handleDownload() {
     const link = this.labelUrl
     const a = document.createElement('a')
-    a.setAttribute('download', 'fileName')
+    a.setAttribute('download', `${this.requestId}-label-${this.boxId}`)
     a.setAttribute('href', link)
     document.body.appendChild(a)
     a.click()
@@ -147,7 +156,7 @@ export default PrintLabel
   .p-dialog-content
     min-height: 60vh
   &__buttons
-    .header-button
+    .p-button
       color: $text-color-900
       background: $color-white
       border: none
