@@ -108,7 +108,7 @@ class AddNewStock extends Vue {
     length: null,
     width: null,
     height: null,
-    imageUrl: ''
+    imagePath: ''
   }
 
   extension!: string
@@ -176,6 +176,8 @@ class AddNewStock extends Vue {
         headers: {
           'Content-Type': file.files[0].type
         }
+      }) .then(() => {
+        this.stockInformation.imagePath = this.generateUploadUrl.key
       })
     })
   }
