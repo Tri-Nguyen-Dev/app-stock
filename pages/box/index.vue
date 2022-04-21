@@ -25,29 +25,66 @@
     .col-8
       .grid
         .col
-          FilterTable(title="Warehouse" :value="filter.warehouse" :options="warehouseList" name="warehouse" @updateFilter="handleFilterBox")
+          FilterTable(
+            title="Warehouse"
+            :value="filter.warehouse"
+            :options="warehouseList"
+            name="warehouse"
+            @updateFilter="handleFilterBox"
+          )
         .col
-          FilterTable(title="Location" :value="filter.location" placeholder="Enter location"  name="location" :searchText="true" @updateFilter="handleFilterBox")
+          FilterTable(
+            title="Location"
+            :value="filter.location"
+            placeholder="Enter location"
+            name="location"
+            :searchText="true"
+            @updateFilter="handleFilterBox"
+          )
         .col
-          FilterTable(title="Code" :value="filter.barCode" placeholder="Enter code" name="barCode" :searchText="true" @updateFilter="handleFilterBox")
+          FilterTable(
+            title="Box Code"
+            :value="filter.barCode"
+            placeholder="Enter code"
+            name="barCode"
+            :searchText="true"
+            @updateFilter="handleFilterBox"
+          )
     .col-4
       .grid.grid-nogutter
         .col
-          FilterCalendar(title="From" :value="filter.dateFrom" name="dateFrom"  inputClass="border-0" dateFormat="dd-mm-yy" :showIcon="true" @updateFilter="handleFilterBox")
+          FilterCalendar(
+            title="From"
+            :value="filter.dateFrom"
+            name="dateFrom"
+            inputClass="border-0"
+            dateFormat="dd-mm-yy"
+            :showIcon="true"
+            @updateFilter="handleFilterBox"
+          )
         .col.ml-1
-          FilterCalendar(title="From" :value="filter.dateTo" name="dateTo"  inputClass="border-0" dateFormat="dd-mm-yy" :showIcon="true" @updateFilter="handleFilterBox")
+          FilterCalendar(
+            title="From"
+            :value="filter.dateTo"
+            name="dateTo"
+            inputClass="border-0"
+            dateFormat="dd-mm-yy"
+            :showIcon="true"
+            @updateFilter="handleFilterBox"
+          )
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
-      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection="selectedBoxes"
-      removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :rowClass="rowClass" @sort="sortData($event)"
-      @row-dblclick="onRowClick($event)" :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
+      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" 
+      :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" 
+      :rowClass="rowClass" @sort="sortData($event)" @row-dblclick="onRowClick($event)"
+      :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
       @row-unselect-all="rowUnSelectAll" @row-select="rowSelect" @row-unselect="rowUnselect")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO")
           template(#body="slotProps")
             span.font-semibold {{ (pageNumber - 1) * pageSize + slotProps.index +1 }}
         Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_barCode")
-        Column(field="request.seller.email" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
+        Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
         Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold")
@@ -57,34 +94,47 @@
         Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right" sortField="_request.warehouse.name")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{ data.request.warehouse.name }}
+              span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right" sortField="_rackLocation.name")
           template(#body="{data}")
-            .flex.align-items-center.cursor-pointer.justify-content-end(v-if="data.rackLocation")
-              span.text-primary.font-bold.font-sm.text-white-active {{ data.rackLocation.name }}
+            .flex.align-items-center.cursor-pointer.justify-content-end
+              span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(field="status" header="STATUS" :sortable="true" className="text-right" sortField="_status")
           template(#body="{data}")
             .flex.justify-content-end
-              Tag(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'bg-green-100' : data.status === 'BOX_STATUS_DRAFT' ? 'bg-blue-100' : 'surface-200'").px-2
-                span(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'text-green-400' : data.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'").font-bold.font-sm {{ data.status | boxStatus }}
+              span.table__status.table__status--available(
+                v-if="data.status === 'BOX_STATUS_AVAILABLE'"
+              ) {{ data.status | boxStatus }}
+              span.table__status.table__status--disable(
+                v-else-if="data.status === 'BOX_STATUS_DISABLE'"
+              ) {{ data.status | boxStatus }}
+              span.table__status.table__status--draft(v-else) {{ data.status | boxStatus }}
         Column(:exportable="false" header="ACTION" className="text-right")
           template(#body="{data}")
             .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
               span(@click="handleEditBox(data.id)")
                 .icon.icon-edit-btn
-              span(:class="{'disable-button': itemsBoxDelete.length > 0}" @click="showModalDelete(data.id)")
+              span(:class="{'disable-button': itemsBoxDelete.length > 0}" @click="showModalDelete(data)")
                 .icon.icon-btn-delete
         template(#footer)
           .pagination
             div.pagination__info(v-if="itemsBoxDelete.length <= 0")
               img(:src="require('~/assets/icons/filter-left.svg')")
-              span(v-if="boxList.length > 0").pagination__total {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + boxList.length }} of {{ totalBoxRecords }}
+              span.pagination__total(
+                v-if="boxList.length > 0"
+              ) {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + boxList.length }} of {{ totalBoxRecords }}
             div.pagination__delete(v-else @click="showModalDelete()")
               img(:src="require('~/assets/icons/trash-white.svg')")
               span Delete {{ itemsBoxDelete.length }} items selected
-            Paginator(:first.sync="firstPage" :rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)" :rowsPerPageOptions="[10,20,30]")
+            Paginator(
+              :first.sync="firstPage"
+              :rows="pageSize"
+              :totalRecords="totalBoxRecords"
+              @page="onPage($event)"
+              :rowsPerPageOptions="[10,20,30]"
+            )
         template(#empty)
           div.flex.align-items-center.justify-content-center.flex-column
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
@@ -96,13 +146,17 @@
 
     ConfirmDialogCustom(
       title="Confirm delete"
-      :message="`Are you sure you want to delete in this list stock?`"
       image="confirm-delete"
       :isShow="isModalDelete"
       :onOk="handleDeleteStock"
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
+      template(slot="message")
+        p 
+        | Are you sure you want to delete 
+        span(style="font-weight: 700") {{ itemsBoxDelete.length > 1 ? itemsBoxDelete.length : boxCodeDelete }} 
+        | in this list box?
     Toast
 </template>
 
@@ -130,6 +184,7 @@ class BoxList extends Vue {
   firstPage = 1
   sortByColumn: string = ''
   isDescending: boolean|null = null
+  boxCodeDelete: string = ''
   filter: any = {
     sellerEmail:  '',
     warehouse: null,
@@ -223,8 +278,13 @@ class BoxList extends Vue {
     return itemsDelete
   }
 
-  showModalDelete(id?: string) {
-    this.ids = id? [id] : this.itemsBoxDelete
+  showModalDelete(data?: any) {
+    if(data) {
+      this.boxCodeDelete = data.barCode
+      this.ids = [data.id]
+    } else {
+      this.ids = this.itemsBoxDelete
+    }
     this.isModalDelete = true
   }
 
