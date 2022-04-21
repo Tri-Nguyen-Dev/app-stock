@@ -15,7 +15,7 @@
               .btn-refresh(@click="refreshFilter")
                 .icon.icon-rotate-left.bg-white
           .col-fixed
-            .btn.btn-primary
+            .btn.btn-primary(@click='createStockIn')
                 .icon.icon-add-items.surface-900.bg-white
                 span.text-900.text-white.mr-3 Add recepit note 
           .col-fixed
@@ -48,48 +48,48 @@
         removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"  @sort="sortData($event)"  @row-select="rowSelect"
         @row-dblclick="onRowClick($event)" :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }" @row-select-all="rowSelectAll"
         @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect' )
-                Column(selectionMode='multiple')
-                Column(field='no' header='NO' )
-                  template(#body='{ index }')
-                    span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
-                Column(field='id' header='ID' :sortable="true" sortField="_id" )
-                  template(#body='{ data }')
-                    span.text-white-active.text-900.font-bold {{ data.id }}
-                Column(header='Create Time' field='data.createdA' :sortable="true" sortField="_data.createdA")
-                  template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
-                Column(header='SELLER NAME' field='seller.name' :sortable="true" sortField="_seller.name")
-                  template(#body='{ data }') {{ data.seller.name }}
-                Column(header='SELLER EMAIL' field='seller.email' :sortable="true" sortField="_seller.email")
-                  template(#body='{ data }') {{ data.seller.email }}
-                Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
-                  template(#body="{data}")
-                    .flex.align-items-center.cursor-pointer.justify-content-end
-                      span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
-                      .icon.icon-arrow-up-right.bg-primary.bg-white-active
-                Column(header='CREATOR ID' field='data.createBy' :sortable="true" sortField="_data.createId")
-                  template(#body='{ data }') {{ data.createBy }}
-                Column(header='CREATOR NAME' field='data.createBy' :sortable="true" sortField="_data.createBy")
-                  template(#body='{ data }') {{ data.createBy }}
-                Column(header='STATUS' field=' data.status' :sortable="true" sortField="_data.status")
-                  template(#body='{ data }') 
-                    span.border-round.py-2.px-3.uppercase.font-bold.font-sm(:class=" data.status === 'REQUEST_STATUS_SAVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ") {{ data.status | requestStatus }}
-                template(#empty)
-                  div.table__empty
-                    img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
-                    img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-                    p.empty__text(v-if="!isFilter") List is empty!, Click
-                      span &nbsp;here
-                      span &nbsp;to add item.
-                    p.notfound__text(v-else) Item not found!
-                template(#footer)
-                  .pagination
-                    div.pagination__info(v-if="itemsBoxDelete.length <= 0 ")
-                      img(:src="require('~/assets/icons/filter-left.svg')")
-                      span(v-if="stockIn.length > 0").pagination__total {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + stockIn.length }} of {{ total }}
-                    div.pagination__delete(v-else @click="showModalDelete()")
-                      img(:src="require('~/assets/icons/trash-white.svg')")
-                      span Delete {{ itemsBoxDelete.length }} items selected
-                    Paginator(:first.sync="firstPage" :rows="pageSize" :totalRecords="total" @page="onPage($event)" :rowsPerPageOptions="[10,20,30]")
+          Column(selectionMode='multiple')
+          Column(field='no' header='NO' )
+            template(#body='{ index }')
+              span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
+          Column(field='id' header='ID' :sortable="true" sortField="_id" )
+            template(#body='{ data }')
+              span.text-white-active.text-900.font-bold {{ data.id }}
+          Column(header='Create Time' field='data.createdA' :sortable="true" sortField="_data.createdA")
+            template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
+          Column(header='SELLER NAME' field='seller.name' :sortable="true" sortField="_seller.name")
+            template(#body='{ data }') {{ data.seller.name }}
+          Column(header='SELLER EMAIL' field='seller.email' :sortable="true" sortField="_seller.email")
+            template(#body='{ data }') {{ data.seller.email }}
+          Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
+            template(#body="{data}")
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
+                .icon.icon-arrow-up-right.bg-primary.bg-white-active
+          Column(header='CREATOR ID' field='data.createBy' :sortable="true" sortField="_data.createId")
+            template(#body='{ data }') {{ data.createBy }}
+          Column(header='CREATOR NAME' field='data.createBy' :sortable="true" sortField="_data.createBy")
+            template(#body='{ data }') {{ data.createBy }}
+          Column(header='STATUS' field=' data.status' :sortable="true" sortField="_data.status")
+            template(#body='{ data }') 
+              span.border-round.py-2.px-3.uppercase.font-bold.font-sm(:class=" data.status === 'REQUEST_STATUS_SAVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ") {{ data.status | requestStatus }}
+          template(#empty)
+            div.table__empty
+              img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
+              img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+              p.empty__text(v-if="!isFilter") List is empty!, Click
+                span &nbsp;here
+                span &nbsp;to add item.
+              p.notfound__text(v-else) Item not found!
+          template(#footer)
+            .pagination
+              div.pagination__info(v-if="itemsBoxDelete.length <= 0 ")
+                img(:src="require('~/assets/icons/filter-left.svg')")
+                span(v-if="stockIn.length > 0").pagination__total {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + stockIn.length }} of {{ total }}
+              div.pagination__delete(v-else @click="showModalDelete()")
+                img(:src="require('~/assets/icons/trash-white.svg')")
+                span Delete {{ itemsBoxDelete.length }} items selected
+              Paginator(:first.sync="firstPage" :rows="pageSize" :totalRecords="total" @page="onPage($event)" :rowsPerPageOptions="[10,20,30]")
       ConfirmDialogCustom(
         title="Confirm delete"
         :message="`Are you sure you want to delete in this list stock?`"
@@ -283,6 +283,10 @@ class StockIn extends Vue {
       this.sortByColumn = ''
     }
     await this.actGetStockIn(this.getParamApi())
+  }
+
+  createStockIn() {
+    this.$router.push('stock-in/create-receipt')
   }
 
 }
