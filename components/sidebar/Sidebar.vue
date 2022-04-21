@@ -20,7 +20,7 @@ import { PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
-class Sidebar extends Vue {
+class MenuSidebar extends Vue {
   // -- [ Statement Properties ] ------------------------------------------------
 
   @nsSidebar.Getter('sidebarWidth')
@@ -69,7 +69,7 @@ class Sidebar extends Vue {
   }
 }
 
-export default Sidebar
+export default MenuSidebar
 </script>
 
 <style lang="sass" scoped>

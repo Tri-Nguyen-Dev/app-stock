@@ -1,5 +1,6 @@
 import { Box as BoxModel } from './Box'
 import { Item as ItemModel } from '~/models/Item'
+
 export namespace Receipt {
 
   export class Model {
@@ -20,6 +21,7 @@ export namespace Receipt {
     name: string
     index: number
   }
+
   export class Box {
     constructor() {
       this.listItemInBox = []
@@ -67,8 +69,8 @@ export namespace Receipt {
       this.rackLocation = {
         id: undefined
       }
-      this.boxSize ={
-        id:0
+      this.boxSize = {
+        id: 0
       }
     }
 
@@ -83,6 +85,7 @@ export namespace Receipt {
       id?: string
     }
   }
+
   export class CreateReceiptDraft {
     constructor() {
       this.boxList = []

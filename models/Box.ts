@@ -1,4 +1,5 @@
 import { Item as ItemModel } from './Item'
+
 export namespace Box {
   export interface Model {
     id: string,

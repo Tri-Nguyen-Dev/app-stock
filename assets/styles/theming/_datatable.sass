@@ -1,165 +1,214 @@
 $bottom-td-color: rgb(21, 22, 34, 0.05)
 // custom table
 .p-datatable
-    font-family: $font-family-primary !important
-    font-size: $font-size-base !important
-    background-color: $color-white
-    height: 100%
-    .grid-cell-center
-        @include flex-center
-    .grid-cell-right
-        display: flex
-        justify-content: flex-end
-    .grid-header-right
-        .p-column-header-content
-            display: flex
-            justify-content: flex-end
-    .grid-header-center
-        .p-column-header-content
-            display: flex
-            justify-content: center
-    @include flex-column
-    .p-datatable-tbody tr:not(.p-highlight).p-datatable-emptymessage:hover
-        background-color: #fff !important
-    .table__empty
-        @include flex-center-column
-        color: $text-color-900
-        font-weight: $font-weight-bold
-        .empty__text
-            cursor: pointer
-            span:nth-child(1)
-                text-decoration: underline
-                color: $primary
-    .checkbox-disable
-        .p-checkbox
-            cursor: auto !important
-            pointer-events: none !important
-            .p-checkbox-box
-                background-color: $color-white
-                border: 1.5px solid $text-color-300 !important
-    &.table-wrapper-empty
-        .p-datatable-table
-            height: 100%
-    .p-datatable-wrapper
-        flex: 1
-        &::-webkit-scrollbar
-            width: 6px
-            height: 6px
-        &::-webkit-scrollbar-thumb
-            border-radius: 10px
-            background-color: $text-color-700
-    .p-datatable-thead
-        position: sticky
-        top: 0
-        z-index: 1
-    .p-datatable-tbody > tr
-        height: 66px !important
-    .p-datatable-tbody > tr.p-highlight:not(.row-disable)
-        background-color: $primary !important
-        .text-white-active
-            color: $color-white !important
-    .p-datatable-tbody tr:not(.p-highlight):hover
-        background: $text-color-400 !important
-    .p-datatable-thead > tr > th
-        padding-left: 18px
-        background: $text-color-100 !important
-        font-weight: $font-weight-bold !important
-        font-size: $font-size-small
-        letter-spacing: 1px
-        text-transform: uppercase
-        color: $text-color-800 !important
-        white-space: nowrap
-        border: none !important
-        &:focus
-            box-shadow: none !important
-        &:nth-child(1)
-            padding-left: 18px
-    .p-datatable-tbody > tr > td
-        white-space: nowrap
-        border-top: 1px solid $bottom-td-color
-        &:nth-child(1)
-            padding-left: 18px
-    .p-datatable-footer
-        padding: 0
-    tr.p-highlight.row-disable
-        background-color: unset
-        color: unset
-        .p-checkbox-box
-            background-color: unset
-    tr.row-disable
-        .p-checkbox
-            cursor: auto !important
-            pointer-events: none !important
-            .p-checkbox-box
-                border: 1.5px solid $text-color-300 !important
-    .pi-sort-alt:before
-        content: url('~/assets/icons/sort-alt.svg')
-    .pi-sort-amount-up-alt:before
-        content: url('~/assets/icons/sort-alt-up.svg')
-    .pi-sort-amount-down:before
-        content: url('~/assets/icons/sort-alt-up.svg')
-        display: inline-block
-        transform: rotate(180deg) !important
+  font-family: $font-family-primary !important
+  font-size: $font-size-base !important
+  background-color: $color-white
+  height: 100%
+
+  .grid-cell-center
+    @include flex-center
+
+  .grid-cell-right
+    display: flex
+    justify-content: flex-end
+
+  .grid-header-right
+    .p-column-header-content
+      display: flex
+      justify-content: flex-end
+
+  .grid-header-center
+    .p-column-header-content
+      display: flex
+      justify-content: center
+  @include flex-column
+
+  .p-datatable-tbody tr:not(.p-highlight).p-datatable-emptymessage:hover
+    background-color: #fff !important
+
+  .table__empty
+    @include flex-center-column
+    color: $text-color-900
+    font-weight: $font-weight-bold
+
+    .empty__text
+      cursor: pointer
+
+      span:nth-child(1)
+        text-decoration: underline
+        color: $primary
+
+  .checkbox-disable
+    .p-checkbox
+      cursor: auto !important
+      pointer-events: none !important
+
+      .p-checkbox-box
+        background-color: $color-white
+        border: 1.5px solid $text-color-300 !important
+
+  &.table-wrapper-empty
+    .p-datatable-table
+      height: 100%
+
+  .p-datatable-wrapper
+    flex: 1
+
+    &::-webkit-scrollbar
+      width: 6px
+      height: 6px
+
+    &::-webkit-scrollbar-thumb
+      border-radius: 10px
+      background-color: $text-color-700
+
+  .p-datatable-thead
+    position: sticky
+    top: 0
+    z-index: 1
+
+  .p-datatable-tbody > tr
+    height: 66px !important
+
+  .p-datatable-tbody > tr.p-highlight:not(.row-disable)
+    background-color: $primary !important
+
+    .text-white-active
+      color: $color-white !important
+
+  .p-datatable-tbody tr:not(.p-highlight):hover
+    background: $text-color-400 !important
+
+  .p-datatable-thead > tr > th
+    padding-left: 18px
+    background: $text-color-100 !important
+    font-weight: $font-weight-bold !important
+    font-size: $font-size-small
+    letter-spacing: 1px
+    text-transform: uppercase
+    color: $text-color-800 !important
+    white-space: nowrap
+    border: none !important
+
+    &:focus
+      box-shadow: none !important
+
+    &:nth-child(1)
+      padding-left: 18px
+
+  .p-datatable-tbody > tr > td
+    white-space: nowrap
+    border-top: 1px solid $bottom-td-color
+
+    &:nth-child(1)
+      padding-left: 18px
+
+  .p-datatable-footer
+    padding: 0
+
+  tr.p-highlight.row-disable
+    background-color: unset
+    color: unset
+
+    .p-checkbox-box
+      background-color: unset
+
+  tr.row-disable
+    .p-checkbox
+      cursor: auto !important
+      pointer-events: none !important
+
+      .p-checkbox-box
+        border: 1.5px solid $text-color-300 !important
+
+  .pi-sort-alt:before
+    content: url('~/assets/icons/sort-alt.svg')
+
+  .pi-sort-amount-up-alt:before
+    content: url('~/assets/icons/sort-alt-up.svg')
+
+  .pi-sort-amount-down:before
+    content: url('~/assets/icons/sort-alt-up.svg')
+    display: inline-block
+    transform: rotate(180deg) !important
 // custom pagination
 .pagination
+  @include flex-center-vert
+  justify-content: space-between
+  background-color: $color-white
+  padding: 21px 18px
+
+  &__info
+    @include flex-center-horiz
+    gap: 0 19px
+
+    .icon
+      background-color: $text-color-500
+
+  &__total
+    font-size: $font-size-small
+    color: $text-color-500
+    line-height: calc(24 / 12)
+
+  &__delete
     @include flex-center-vert
-    justify-content: space-between
-    background-color: $color-white
-    padding: 21px 18px
-    &__info
-        @include flex-center-horiz
-        gap: 0 19px
-        .icon
-            background-color: $text-color-500
-    &__total
-        font-size: $font-size-small
-        color: $text-color-500
-        line-height: calc(24 / 12)
-    &__delete
-        @include flex-center-vert
-        background-color: $text-color-delete
-        color: $color-white
-        border: 1.5px solid $color-white
+    background-color: $text-color-delete
+    color: $color-white
+    border: 1.5px solid $color-white
+    border-radius: 4px
+    gap: 0 19px
+    padding: 5px 10px
+    cursor: pointer
+
+    .icon
+      background-color: $color-white
+
+  .p-paginator
+    padding: 0 !important
+
+    .p-paginator-page
+      background-color: $color-white !important
+      color: $text-color-500 !important
+      font-weight: bold
+      border: none !important
+
+      &.p-highlight
+        color: $primary !important
+
+    .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
+      color: $text-color-900
+      border: none
+
+      &:hover
         border-radius: 4px
-        gap: 0 19px
-        padding: 5px 10px
-        cursor: pointer
-        .icon
-            background-color: $color-white
-    .p-paginator
-        padding: 0 !important
-        .p-paginator-page
-            background-color: $color-white !important
-            color: $text-color-500 !important
-            font-weight: bold
-            border: none !important
-            &.p-highlight
-                color: $primary !important
-        .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
-            color: $text-color-900
-            border: none
-            &:hover
-                border-radius: 4px
-                color: $primary
-        .p-link:focus
-            box-shadow: none
-        .p-dropdown
-            @include flex-center-vert
+        color: $primary
+
+    .p-link:focus
+      box-shadow: none
+
+    .p-dropdown
+      @include flex-center-vert
+
 .table__action
-    @include flex-center-vert
-    gap: 0 8px
+  @include flex-center-vert
+  gap: 0 8px
+
+  span
+    @include flex-center
+    width: 34px
+    height: 34px
+    border-radius: 4px
+    background-color: $text-color-300
+    cursor: pointer
+
+  &.action-disabled
     span
-        @include flex-center
-        width: 34px
-        height: 34px
-        border-radius: 4px
-        background-color: $text-color-300
-        cursor: pointer
-    &.action-disabled
-        span
-            pointer-events: none
-        .icon
-            background-color: $text-color-500
+      pointer-events: none
+
+    .icon
+      background-color: $text-color-500
+
 .table__status
   background-color: $bg-table-status
   border-radius: 3px
@@ -168,52 +217,56 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   text-transform: uppercase
   font-weight: $font-weight-bold
   line-height: calc(20 / 12)
+
   &--available
     color: $text-color-status
+
   &--disable
     color: #979AA4
+
 .text-small
-   font-size: $font-size-small !important
+  font-size: $font-size-small !important
+
 .text-micro
-   font-size: $font-size-micro !important
+  font-size: $font-size-micro !important
 // text detail have link
 .text-link
-   @include flex-center-vert
-   text-decoration: none
-   color: $text-color-900
+  @include flex-center-vert
+  text-decoration: none
+  color: $text-color-900
 
 // header filter
 .filter__item.item--disabled
-    background-color: $text-color-200
-    border: none
-.filter__item
-    background-color: $color-white
-    border-radius: 4px
-    padding: 13px 8px 8px 8px
+  background-color: $text-color-200
+  border: none
+
 .filter__item
     background-color: $color-white
     border-radius: 4px
     padding: 13px 8px 8px 8px
     border: 1.5px solid $text-color-400
 .filter__title
-    font-size: 12px
-    color: $text-color-700
-    line-height: calc(16 / 12)
-    margin-bottom: 5px
-    margin-left: 8px
+  font-size: 12px
+  color: $text-color-700
+  line-height: calc(16 / 12)
+  margin-bottom: 5px
+  margin-left: 8px
+
 .filter__text
-    margin-left: 8px
-    height: 40px
-    line-height: 40px
-    color: $text-color-900
-    font-size: $font-size-base
-    font-weight: $font-weight-regular
+  margin-left: 8px
+  height: 40px
+  line-height: 40px
+  color: $text-color-900
+  font-size: $font-size-base
+  font-weight: $font-weight-regular
+
 .header__filter
-    visibility: hidden
-    max-height: 0
-    transition: all 0.25s ease-in
-    &.active
-      visibility: visible
-      max-height: 200px
-      margin-bottom: 24px
+  visibility: hidden
+  max-height: 0
+  transition: all 0.25s ease-in
+
+  &.active
+    visibility: visible
+    max-height: 200px
+    margin-bottom: 24px
 

@@ -1,24 +1,24 @@
 export namespace User {
 
   export interface Model {
-    id:         number,
-    email:      string,
-    role:       number,
-    status:     number,
+    id: number,
+    email: string,
+    role: number,
+    status: number,
     userDetail: User.Detail
   }
 
   export interface Detail {
-    firstName:   string,
-    lastName:    string,
+    firstName: string,
+    lastName: string,
     displayName: string,
     phoneNumber: string
-    pictureUrl:  string
+    pictureUrl: string
   }
 
   export interface Token {
     userId: string
-    token:  string
-    user?:  User.Model
+    token: string
+    user?: User.Model
   }
 }
