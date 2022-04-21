@@ -45,7 +45,9 @@ export default FilterTable
     ::v-deep.p-inputtext 
       color: $text-color-900
       font-weight: 500
-      // box-shadow: 0 0 0 0.2rem #486AE2 !important
+      box-shadow: none !important
+      &:hover
+        box-shadow: 0 0 0 0.1rem #486AE2 !important
       &.p-placeholder
         color: $text-color-700
     .pi-times.clear

@@ -2,7 +2,7 @@
   .bg-white.border-round-left.wrapper-filter
     div.pt-2.pb-1.title
       span.text-600.font-sm {{title}}
-    Calendar.w-full.mb-1(@date-select="handleFilter" :value="value" :showIcon="showIcon" :inputClass="inputClass" :placeholder="placeholder || 'Select'" :dateFormat="dateFormat || 'dd-mm-yy'")
+    Calendar.w-full.pl-2.mb-1(@date-select="handleFilter" :value="value" :showIcon="showIcon" :inputClass="inputClass" :placeholder="placeholder || 'Select'" :dateFormat="dateFormat || 'dd-mm-yy'")
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
@@ -37,10 +37,12 @@ export default FilterTable
     .title 
         margin-left: 12px
     ::v-deep.p-inputtext 
-      box-shadow: none !important
       color: $text-color-900
+      border-radius: 4px !important
       font-weight: 500
       box-shadow: none !important
+      &:hover
+        box-shadow: 0 0 0 0.1rem #486AE2 !important
       &.p-placeholder
         color: $text-color-700
     .pi-times.clear
