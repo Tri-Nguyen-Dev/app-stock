@@ -25,23 +25,17 @@
     .col-8
       .grid
         .col
-          FilterTable(title="Warehouse" :options="warehouseList" name="warehouse"  @updateFilter="handleFilterBox")
+          FilterTable(title="Warehouse" :value="filter.warehouse" :options="warehouseList" name="warehouse" @updateFilter="handleFilterBox")
         .col
-          FilterTable(title="Location" placeholder="Enter location" name="location" :searchText="true" @updateFilter="handleFilterBox")
+          FilterTable(title="Location" :value="filter.location" placeholder="Enter location"  name="location" :searchText="true" @updateFilter="handleFilterBox")
         .col
-          FilterTable(title="Code" placeholder="Enter code" name="barCode" :searchText="true" @updateFilter="handleFilterBox")
+          FilterTable(title="Code" :value="filter.barCode" placeholder="Enter code" name="barCode" :searchText="true" @updateFilter="handleFilterBox")
     .col-4
       .grid.grid-nogutter
         .col
-          .bg-white.border-round-left
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm From
-            Calendar.w-full.mb-1(@date-select="handleFilter" v-model="filter.dateFrom" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
+          FilterCalendar(title="From" :value="filter.dateFrom" name="dateFrom"  inputClass="border-0" dateFormat="dd-mm-yy" :showIcon="true" @updateFilter="handleFilterBox")
         .col.ml-1
-          .bg-white.border-round-right
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm To
-            Calendar.w-full.mb-1(@date-select="handleFilter" v-model="filter.dateTo" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
+          FilterCalendar(title="From" :value="filter.dateTo" name="dateTo"  inputClass="border-0" dateFormat="dd-mm-yy" :showIcon="true" @updateFilter="handleFilterBox")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection="selectedBoxes"
