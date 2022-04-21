@@ -1,3 +1,5 @@
+import webpack from 'webpack'
+
 export default {
   ssr: false,
 
@@ -65,7 +67,8 @@ export default {
       'ScrollPanel',
       'TieredMenu',
       'AutoComplete',
-      'InputNumber'
+      'InputNumber',
+      'Breadcrumb'
     ],
     directives: ['Tooltip', 'Badge']
   },
@@ -115,6 +118,12 @@ export default {
   },
 
   build: {
+    plugins: [
+      new webpack.ProvidePlugin({
+        // global modules
+        _: 'lodash'
+      })
+    ],
     babel: {
       compact: true,
       plugins: [

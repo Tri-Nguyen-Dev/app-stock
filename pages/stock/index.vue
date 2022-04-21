@@ -29,13 +29,13 @@
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .stock__table
         DataTable(
-          @sort="sortData($event)" 
-          :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }" 
+          @sort="sortData($event)"
+          :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }"
           :rowClass="rowClass" :value='stockList' responsiveLayout="scroll"
-          @row-dblclick='rowdbClick' 
-          :selection='selectedStock' 
-          dataKey='id' 
-          :rows='10' 
+          @row-dblclick='rowdbClick'
+          :selection='selectedStock'
+          dataKey='id'
+          :rows='10'
           :rowHover='true'
           @row-select-all="rowSelectAll"
           @row-unselect-all="rowUnSelectAll"
@@ -52,13 +52,13 @@
                 img.h-2rem.w-2rem.border-round(:src='data.imagePath' alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
-              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden 
+              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden
           Column(header='Code' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
             template(#body='{ data }')
               .stock__table-barcode.grid-cell-right {{ data.barCode }}
           Column(header='Category' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right 
+                div.grid-cell-right
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
@@ -102,10 +102,15 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import  _ from 'lodash'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
-import { STOCK_STATUS_LIST, LIMIT_PAGE_OPTIONS, PAGINATE_DEFAULT, calculateInfoPaginate, calculateIndex } from '~/utils'
+import {
+  LIMIT_PAGE_OPTIONS,
+  PAGINATE_DEFAULT,
+  calculateInfoPaginate,
+  calculateIndex,
+  StockConstants
+} from '~/utils'
 const nsCategoryStock = namespace('category/category-list')
 const nsStoreStock = namespace('stock/stock-list')
 @Component({
@@ -123,10 +128,10 @@ class Stock extends Vue {
   loadingSubmit: boolean = false
   isFilter: boolean = false
   paginate = PAGINATE_DEFAULT
-  statusList = STOCK_STATUS_LIST
+  statusList = StockConstants.STOCK_STATUS_OPTIONS
   limitOptions = LIMIT_PAGE_OPTIONS
   stockNameDelete: string = ''
-  filter: any = { 
+  filter: any = {
     name: null,
     barCode: null,
     warehouse: null,
@@ -166,7 +171,7 @@ class Stock extends Vue {
       sortDescending: this.filter.isDescending || null
     }
   }
- 
+
   get selectedStockFilter() {
     const itemsDelete: string[] = []
     _.forEach(this.selectedStock, function(stock: any) {
@@ -259,7 +264,7 @@ class Stock extends Vue {
   }
 
   handleEditStock(id: any) {
-    this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' }})
+    this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' } })
   }
 
   rowdbClick({ data }) {
@@ -297,7 +302,7 @@ class Stock extends Vue {
   }
 
   rowSelectAll({ data }) {
-    this.selectedStock = _.union(this.selectedStock, data) 
+    this.selectedStock = _.union(this.selectedStock, data)
   }
 
   rowUnSelectAll() {
@@ -323,7 +328,7 @@ export default Stock
     margin-bottom: 24px
   .header__action
       @include flex-center
-      gap: 0 16px    
+      gap: 0 16px
 .stock__table
   border-radius: 4px
   flex: 1

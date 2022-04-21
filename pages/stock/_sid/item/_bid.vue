@@ -2,10 +2,10 @@
  .grid.grid-nogutter.item__detail-container.overflow-hidden(v-if='model.data')
     .col-4.p-0.surface-0.border-round.left__information--stock.h-full.overflow-y-auto.overflow-x-hidden
       .grid.border-bottom-1.border-gray-300
-       .col.p-4.flex.align-items-center
-        Button(@click='backToStockList').p-button-link.mr-2
+       .col.flex.align-items-center.breadcrumb-section
+        Button(@click='backToStockList').p-button-link
           .icon.icon-btn-back.bg-blue-700
-        span.font-semibold.text-lg Stock list / Stock Detail / Item Detail
+        Breadcrumb(:home="homeItem" :model="breadcrumbItem")
       .stock__information.p-4
         .grid.mb-3
           .col-9.flex
@@ -24,7 +24,7 @@
               span.font-bold.text-400.font-sm DISABLE
             Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_DRAFT'").px-2.bg-blue-500
               span.font-bold.text-white.font-sm DRAFT
-            h3.font-bold.my-2 
+            h3.font-bold.my-2
             div.mb-2
               p.uppercase.inline.font-semibold.text-400.mr-2 code:
               span.uppercase.font-semibold.text-blue-700 {{model.data.stock.barCode}}
@@ -53,7 +53,7 @@
                   InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.width')
                 .col-4.p-0.pt-1
                   InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.height')
-              span.font-semibold.mr-1.uppercase(v-else) {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }} 
+              span.font-semibold.mr-1.uppercase(v-else) {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }}
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Weight (Kg)" :value="model.data.stock.weight" :isEdit="isEditItemDetail" icon="icon-weight")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
@@ -65,7 +65,7 @@
                   .icon--large.icon-price.bg-blue-700
                 .col
                   div.text-500 Value
-                  InputText(:disabled='isEditItemDetail == 0' v-model='model.data.value').w-6
+                  InputText(:disabled='!isEditItemDetail' v-model='model.data.value').w-6
             //- StockUnit(title="Value" type ="weight" :weight="model.data.value" :isEdit="isEditItemDetail" icon="icon-price" @updateUnit='handleUpdateUnit')
         .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
           .col
@@ -104,15 +104,10 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStock = namespace('stock/stock-detail')
-const _ = require('lodash')
 
-@Component({
-  layout: 'dashboard'
-})
+@Component
 class ItemDetail extends Vue {
-  isEditItemDetail: boolean = false
-  model: StockModel.ModelDetail | any = {}
-
+  // -- [ Statement Properties ] ------------------------------------------------
   @nsStoreStock.State
   itemDetail!: StockModel.ModelDetail
 
@@ -122,8 +117,35 @@ class ItemDetail extends Vue {
   @nsStoreStock.Action
   actUpdateItem!: (any) => Promise<any>
 
+  // -- [ Properties ] ----------------------------------------------------------
+  isEditItemDetail: boolean = false
+  model: StockModel.ModelDetail | any = {}
+
+  // -- [ Getters ] ----------------------------------------------------------
+
+  get sid() {
+    return this.$route.params.sid || ''
+  }
+
+  get bid() {
+    return this.$route.params.bid || ''
+  }
+
+  get homeItem() {
+    return { label: 'Stock List', to: '/stock' }
+  }
+
+  get breadcrumbItem() {
+    return [
+      { label: 'Stock Detail', to: `/stock/${this.sid}` },
+      { label: 'Item Detail', to: `/stock/${this.bid}` }
+    ]
+  }
+
+  // -- [ Functions ] ----------------------------------------------------------
+
   backToStockList() {
-    this.$router.push(`/stock/${this.$route.params.sid}`)
+    this.$router.push(`/stock/${this.sid}`)
   }
 
   editItemDetail() {
@@ -135,9 +157,9 @@ class ItemDetail extends Vue {
       stockId: this.$route.params.sid,
       boxId: this.$route.params.bid
     }
-    this.actUpdateItem({path: pathParams, body: {
+    this.actUpdateItem({ path: pathParams, body: {
       value: this.model.data.value
-    }})
+    } })
     this.isEditItemDetail = false
   }
 
@@ -145,15 +167,12 @@ class ItemDetail extends Vue {
     this.isEditItemDetail = false
   }
 
-  handleUpdateUnit() {
-
-  }
-
+  // -- [ Hooks ] ----------------------------------------------------------
   async mounted() {
     if(this.$route.query.plan === 'edit') {
       this.isEditItemDetail = true
     }
-    await this.actGetItemsDetail({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
+    await this.actGetItemsDetail({ stockId: this.sid, boxId: this.bid })
     this.model = _.cloneDeep(this.itemDetail)
   }
 }

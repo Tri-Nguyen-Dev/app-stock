@@ -49,7 +49,7 @@
         @row-dblclick="onRowClick($event)" :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }" @row-select-all="rowSelectAll"
         @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect' )
                 Column(selectionMode='multiple' :styles="{'width': '1%'}" )
-                Column(field='no' header='NO' :styles="{'width': '1%'}" :sortable="true" sortField="_no" )
+                Column(field='no' header='NO' :styles="{'width': '1%'}" )
                   template(#body='{ index }')
                     span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
                 Column(field='id' header='ID' :sortable="true" sortField="_id" )
@@ -61,8 +61,11 @@
                   template(#body='{ data }') {{ data.seller.name }}
                 Column(header='SELLER EMAIL' field='seller.email' :sortable="true" sortField="_seller.email")
                   template(#body='{ data }') {{ data.seller.email }}
-                Column(header='WAREHOUSE' field='warehouse.name' :sortable="true" sortField="_warehouse.name")
-                  template(#body='{ data }') {{ data.warehouse.name }}
+                Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
+                  template(#body="{data}")
+                    .flex.align-items-center.cursor-pointer.justify-content-end
+                      span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
+                      .icon.icon-arrow-up-right.bg-primary.bg-white-active
                 Column(header='CREATOR ID' field='data.createBy' :sortable="true" sortField="_data.createBy")
                   template(#body='{ data }') {{ data.createBy }}
                 Column(header='CREATOR NAME' field='data.createBy' :sortable="true" sortField="_data.createBy")
@@ -104,7 +107,7 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/Request-list'
-import { REQUEST_STATUS, handleRefreshFilter, calculateIndex, PAGINATE_DEFAULT} from '~/utils'
+import { REQUEST_STATUS, handleRefreshFilter, calculateIndex, PAGINATE_DEFAULT } from '~/utils'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockIn = namespace('stock-in/request-list')
 const _ = require('lodash')
@@ -234,6 +237,7 @@ class StockIn extends Vue {
   async handleFilter(e: any, name: string) {
     this.filter[name] = e
     await this.actGetStockIn(this.getParamApi())
+    this.selectedStockIn = []
   }
 
   debounceSearch = _.debounce(async () => {
@@ -271,7 +275,7 @@ class StockIn extends Vue {
   }
 
   async sortData(e: any) {
-    const {sortField, sortOrder} = e
+    const { sortField, sortOrder } = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '')
