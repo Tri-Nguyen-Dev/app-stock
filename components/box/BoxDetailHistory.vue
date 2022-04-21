@@ -21,7 +21,8 @@
                 .pagination
                   div.pagination__info
                     img(:src="require('~/assets/icons/filter-left.svg')")
-                    span.pagination__total {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
+                    span.pagination__total 
+                    | {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
                   Paginator(:rows="20" :totalRecords="totalStockRecords" @page="onPageHistory($event)").p-0
 
 </template>
