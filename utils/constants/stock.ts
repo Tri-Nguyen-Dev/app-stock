@@ -1,8 +1,8 @@
 export namespace StockConstants {
   // -- [ Option List ] ------------------------------------------------
   export const STOCK_STATUS_OPTIONS = [
-    { name: 'Available', value: 1 },
-    { name: 'Disable', value: 0 }
+    { name: 'Available', value: 'STOCK_STATUS_AVAILABLE' },
+    { name: 'Disable', value: 'STOCK_STATUS_DISABLE' }
   ]
 
 }
