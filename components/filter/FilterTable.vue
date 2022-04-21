@@ -43,10 +43,9 @@ export default FilterTable
     .title 
         margin-left: 12px
     ::v-deep.p-inputtext 
-      box-shadow: none !important
       color: $text-color-900
       font-weight: 500
-      box-shadow: none !important
+      // box-shadow: 0 0 0 0.2rem #486AE2 !important
       &.p-placeholder
         color: $text-color-700
     .pi-times.clear
