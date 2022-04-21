@@ -9,7 +9,7 @@ import { $api } from '~/utils'
 
 export default class Location extends VuexModule {
   private static readonly STATE_URL = {
-    GET_LOCATION: '/shelf-bin/list'
+    GET_LOCATION: '/rack-location/list'
   }
 
   public locationList: [] = []
@@ -22,7 +22,7 @@ export default class Location extends VuexModule {
   @Action({ commit: 'setLocationList', rawError: true })
   async actLocationList(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, Location.STATE_URL.GET_LOCATION, params)
-    const response: any = await $api.get(url, {params})
+    const response: any = await $api.get(url, { params })
     return response.data
   }
 }

@@ -12,11 +12,8 @@
           .icon-box-info.icon.bg-primary.mr-2
           span.font-bold.text-800.uppercase Box Detail
         .col-fixed
-          Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" :class='isEditBox? "hidden " : "" ' )
-            .icon-edit-btn.icon
-          Button.border-1.p-0.h-2rem.w-5rem.justify-content-center.bg-primary.shadow-none(@click="btnEdit" :class='isEditBox? "" : "hidden"'  )
-            .icon-check-lg.icon.bg-white.mr-1
-            span Save
+            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" v-if='!isEditBox' )
+              .icon-edit-btn.icon
       div
         .col.px-3
           div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
@@ -25,81 +22,50 @@
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
-                span.text-primary.uppercase.ml-2 {{boxDetail.barCode}}
-      .grid.grid-nogutter.sub--scroll
-        .col.px-3
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-receipt-note.bg-primary.icon--large
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Receipt note ID
-              div.mt-1.flex.align-items-center.w-7rem.overflow-hidden.white-space-nowrap.text-overflow-ellipsis
-                span.font-bold.uppercase {{ receiptNoteId }}
-                .icon-arrow-up-right.icon--base
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(v-if='boxDetail.createBy' :class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-tag-user.bg-primary.icon--large
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Create ID
+                span.text-primary.uppercase.ml-2 {{ boxDetail.barCode }}
+      div.sub--scroll
+        .col.px-4
+          StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
+        .col.px-4
+          StockUnit(title="Create ID" :value="boxDetail.createBy" :isEdit="isEditBox" icon="icon-tag-user")
+        .col.px-4
+          StockUnit(title="Warehouse" link="https://rikkei.vn" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
+        .col.px-4
+          StockUnit(title="Location" icon="icon-location-2")
+            template(v-slot:auto-complete)
               .mt-1.flex.align-items-center
-                span.font-bold.uppercase {{ boxDetail.createBy }}
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-warehouse.bg-primary.icon--large
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Warehouse
-              .mt-1.flex.align-items-center
-                span.font-bold.uppercase {{ boxWarehouse }}
-                .icon-arrow-up-right.icon
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
-            .col-fixed.mr-2
-              .icon-location-2.icon--large.bg-primary
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Location
-              .mt-1.flex.align-items-center
-                AutoComplete.edit-location( v-model="isLocation" :suggestions='locationList'  :disabled='isEditBox == 0' :placeholder='boxLocation'  )
+                AutoComplete.edit-location(v-model="isLocation" field='name' :suggestions='locationList' forceSelection :readOnly='!isEditBox' :placeholder='boxLocation' @complete="searchLocation($event)"  )
                   template(#item="slotProps")
                     .grid.align-items-center.grid-nogutter
                       span.font-bold {{ slotProps.item.name }}
                       .icon-arrow-up-right.icon
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-calendar.icon--large.bg-primary
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Create Time
-              .mt-1
-                span.font-bold  {{ boxDetail.createdAt | dateTimeHour12 }}
-            div
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-frame.icon--large.bg-primary
-            div(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Box Items
-              .mt-1
-                span.font-bold {{ boxDetail.length }}
-          .grid.align-items-center.m-0.pl-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-price.icon--large.bg-primary
-            div(class='col-12 lg:col-12 xl:col-9')
-              span.font-bold.text-600 Estimated inventory Fee
-              .mt-1
-                span.font-bold {{ boxDetail.inventoryFee }}$ PER DAY
-          .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2(:class='isEditBox? "opacity-40" : "opacity-100"')
-            .col-fixed.mr-2
-              .icon-size.icon--large.bg-primary
-            div.align-items(class='col-12 lg:col-12 xl:col-8')
-              span.font-bold.text-600 Box Size:
+        .col.px-4
+          StockUnit(title="Create Time" :value="boxDetail.createdAt | dateTimeHour12" :isEdit="isEditBox" icon="icon-calendar")
+        .col.px-4
+          StockUnit(title="Box Items" :value="boxDetail.length" :isEdit="isEditBox" icon="icon-frame")
+        .col.px-4
+          StockUnit(title="Estimated inventory Fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
+        .col.px-4(:class='isEditBox ? "opacity-40" : "opacity-100"')
+          StockUnit(title="Box size:" type ="size" :height="boxDetail.height" :length="boxDetail.length" :width="boxDetail.width" icon="icon-size")
+            template(v-slot:size)
+              span.font-semibold.mr-1.uppercase {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }}
+            template(v-slot:button-size='')
               span.font-bold.text-600.bg-primary.ml-1.border-round(:class='boxDetail.boxSize? "p-1" : ""') {{ boxDetail.boxSize | boxSize }}
-              .mt-1
-                span.font-bold {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }}
-        .col(:class='isEditBox? "opacity-40" : "opacity-100"')
-          .div.mb-6
-            .col.border-bottom-1.border-gray-300
-            .col.flex.my-3
-              .col.flex.align-items-center
-                .icon-sender-info.icon.bg-primary.mr-2
-                span.font-bold.text-800.uppercase Seller Information
+        div(:class='isEditBox? "opacity-40" : "opacity-100"')
+          .col.border-bottom-1.border-gray-300
+          .col.flex.my-3.mx-1
+            .col.flex.align-items-center
+              .icon-sender-info.icon.bg-primary.mr-2
+              span.font-bold.text-800.uppercase Seller Information
+          .col
             BoxDetailValue(v-for='item in sellerInfor' :key='item.id' :item='item' :boxSellerInfor='boxSellerInfor')
+        .grid.m-1(v-if='isEditBox')
+          .col
+            .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='btnEdit')
+              span.uppercase.font-semibold cancel
+          .col
+            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='handleUpdateData')
+              span.uppercase save
     div.ml-5.flex-1(class=' col-7  md:col-8  lg:col-8 xl:col-8')
       .grid.justify-content-between
         .col-fixed
@@ -110,7 +76,7 @@
             TabPanel
               template(#header)
                 .icon.icon-history.mr-2.surface-600
-                span Item history
+                span Item list
               .grid(v-if="isFilter")
                 .col
                   .bg-white.border-round
@@ -130,7 +96,7 @@
                   .bg-white.border-round
                     div.pt-1.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Category
-                      Dropdown.w-full.border-0.mb-1.text-900.font-bold(v-model="filterParams.category" :options='categoryList' optionLabel="name" optionValue="id" placeholder="Select")
+                      MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(v-model="filterParams.category" :options='categoryList' optionLabel="name" optionValue="id" placeholder="Select" :filter='true')
               BoxDetailTable(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
             TabPanel
               template(#header)
@@ -139,19 +105,21 @@
               .overflow-auto.box__detail--history
                 //- BoxDetailHistory( v-if="listStockWithAmount.length > 0" :listStockWithAmount='listStockWithAmount' :totalStockRecords='totalStockRecords' )
         .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
-          .col
+          div.mr-3
             span.p-input-icon-left
               .icon.icon--left.icon-search.surface-900
               InputText.w-23rem.font-bold.h-3rem.py-4.text-900(type="text" placeholder="Search" v-model='filterParams.name' )
-          .col
+          div
             Button.border-0.bg-white.w-7rem.shadow-none.border-primary.h-3rem.py-4(@click="isFilter = !isFilter")
               .icon-filter.bg-primary.icon
               span.text-900.ml-3.text-primary Filter
+          div.refresh-filter(@click="handleRefreshFilter")
+            img(:src="require(`~/assets/icons/rotate-left.svg`)")
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
-import { ITEM_BOX_DETAIL, ITEM_SELLER_INFO } from '~/utils/constants/box'
+import { ITEM_SELLER_INFO } from '~/utils/constants/box'
 const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
 const nsStoreLocationList = namespace('location/location-list')
@@ -162,7 +130,6 @@ class BoxDetail extends Vue {
   isEditBox: boolean = false
   isItemHistory: boolean = false
   isLocation: any = null
-  isEditStockDetail: boolean = false
   filterParams: any = {
     sku: null,
     category: null,
@@ -170,30 +137,29 @@ class BoxDetail extends Vue {
     name: null
   }
 
-  pageNumber: number = 1
-  pageSize: number = 20
-  boxDetailData: any = []
-
-  itemBoxDetail = ITEM_BOX_DETAIL
   sellerInfor = ITEM_SELLER_INFO
 
   @nsStoreLocationList.State
-  locationList: []
+  locationList: {}
 
   @nsStoreBoxDetail.State
   totalItems!: number
 
   @nsStoreBoxDetail.State
   boxDetail!: {
+    id: number
     warehouse: string
     request: any
     location: any
     listStockWithAmount: []
-    shelfBin: any
+    rackLocation: any
   }
 
+  @nsStoreBoxDetail.State
+  updateSuccess!: boolean
+
   @nsStoreCategoryList.State
-  categoryList!:any
+  categoryList!: any
 
   @nsStoreBoxDetail.Action
   actGetBoxDetail!: (params: any) => Promise<void>
@@ -204,11 +170,15 @@ class BoxDetail extends Vue {
   @nsStoreLocationList.Action
   actLocationList!: (params: any) => Promise<void>
 
+  @nsStoreBoxDetail.Action
+  actUpdateBoxDetail!: (params: any) => Promise<void>
+
   get convertBoxDetailData() {
     if (this.boxDetail && this.boxDetail.listStockWithAmount) {
       return [
         ...this.boxDetail.listStockWithAmount.map((item: any) => ({
           ...(item.stock || []),
+          sku: item.sku,
           amount: item.amount
         }))
       ]
@@ -217,12 +187,16 @@ class BoxDetail extends Vue {
   }
 
   get filteredBoxDetailData() {
-    return this.convertBoxDetailData.filter(item => {
+    return this.convertBoxDetailData.filter((item) => {
       let filter = true
-      Object.keys(this.filterParams).map(key => {
+      Object.keys(this.filterParams).forEach((key) => {
         if (this.filterParams[key]) {
           if (key === 'category') {
-            filter = filter && item[key]?.id === this.filterParams[key]
+            if (this.filterParams.category.length > 0) {
+              filter = filter && this.filterParams[key].includes(item[key]?.id)
+            } else {
+              return filter
+            }
           } else {
             filter = filter && item[key]?.includes(this.filterParams[key])
           }
@@ -233,17 +207,16 @@ class BoxDetail extends Vue {
     })
   }
 
-  saveEditStockDetail() {
-    this.isEditStockDetail = false
+  saveEditBoxDetail() {
+    this.isEditBox = false
   }
 
   async mounted() {
-    if(this.$route.query.plan === 'edit') {
-      this.isEditStockDetail = false
+    if (this.$route.query.plan === 'edit') {
+      this.isEditBox = true
     }
     await this.actGetBoxDetail({ id: this.$route.params.id })
     await this.actCategoryList()
-    await this.actLocationList({name: null})
   }
 
   backToBox() {
@@ -252,7 +225,11 @@ class BoxDetail extends Vue {
 
   btnEdit() {
     this.isEditBox = !this.isEditBox
-    this.saveEditStockDetail()
+  }
+
+  @Watch('updateSuccess')
+  updateBtnSuccess() {
+    this.isEditBox = !this.isEditBox
   }
 
   onTabClick() {
@@ -260,15 +237,25 @@ class BoxDetail extends Vue {
     this.isFilter = false
   }
 
-  @Watch('isLocation')
-  async filterLocation() {
+  handleRefreshFilter() {
+    for (const items in this.filterParams) this.filterParams[items] = null
+  }
+
+  searchLocation = _.debounce(async (e) => {
     await this.actLocationList({
-      name: this.isLocation === '' ? null : this.isLocation
+      location: e.query
+    })
+  }, 400)
+
+  async handleUpdateData() {
+    await this.actUpdateBoxDetail({
+      id: this.boxDetail.id,
+      shelfBinId: this.boxLocation.id?this.boxLocation.id:this.boxDetail.rackLocation?.id
     })
   }
 
   get boxWarehouse() {
-    return this.boxDetail.request?.warehouse.name || ''
+    return this.boxDetail.request?.warehouse.name || null
   }
 
   get boxSellerInfor() {
@@ -276,7 +263,7 @@ class BoxDetail extends Vue {
   }
 
   get boxLocation() {
-    return this.boxDetail.shelfBin?.name || null
+    return this.boxDetail.rackLocation?.name || null
   }
 
   get receiptNoteId() {
@@ -336,6 +323,15 @@ export default BoxDetail
     border-bottom: 2px solid #486AE2 !important
     .icon
       background-color: var(--primary-color) !important
+
+.refresh-filter
+  background-color: $primary
+  display: flex
+  align-items: center
+  width: 50px
+  justify-content: center
+  border-top-right-radius: 4px
+  border-bottom-right-radius: 4px
 
 .edit-location
   ::v-deep input

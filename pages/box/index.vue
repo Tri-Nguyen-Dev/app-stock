@@ -2,103 +2,95 @@
 .box-page-container.flex.flex-column
   .grid.justify-content-between
     .col-fixed
-      h1.font-bold.m-0.font-size-4xlarge.line-height-1 Box list
-      span.text-600.font-sm(v-if="boxList") {{totalBoxRecords}} products found
+      h1.text-heading Box list
+      span.text-subheading(v-if="boxList") {{ totalBoxRecords }} products found
     .col-fixed
       .grid
         .col-fixed
-          span.p-input-icon-left
-            .icon.icon--left.icon-search.surface-900
-            InputText.w-21rem.h-3rem(type="text" placeholder="Search" v-model="textSearch" v-on:input="validateText")
+          .header__search
+            .icon.icon--left.icon-search
+            InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
         .col-fixed
-          Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isShowFilter = !isShowFilter")
-            .icon.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
-            span.text-900.ml-3.text-primary Filter
+          .btn__filter
+            .btn-toggle(@click="isShowFilter = !isShowFilter")
+              .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
+              span Filter
+            .btn-refresh(@click="handleRefeshFilter")
+              .icon.icon-rotate-left.bg-white
         .col-fixed
-          Button.w-9rem.h-3rem.bg-primary
-            .icon.icon-add-items.surface-900.bg-white
-            span.text-900.ml-3.text-white Add box
+          .btn.btn-primary
+            .icon.icon-add-items
+            span Add box
   .grid(v-if="isShowFilter")
     .col-8
       .grid
         .col
-          .bg-white.border-round
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Warehouse
-            Dropdown.w-full.border-0.mb-1(v-model="selectedWarehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
+          FilterTable(title="Warehouse" :options="warehouseList" name="warehouse"  @updateFilter="handleFilterBox")
         .col
-          .bg-white.border-round
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Location
-            span.p-input-icon-right.w-full
-              .icon.icon--right.icon-search.surface-900.icon--absolute
-              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model="textLocation" v-on:input="validateText")
+          FilterTable(title="Location" placeholder="Enter location" name="location" :searchText="true" @updateFilter="handleFilterBox")
         .col
-          .bg-white.border-round
-            div.pt-2.pl-3.pb-1
-              span.text-600.font-sm Code
-            span.p-input-icon-right.w-full
-              .icon.icon--right.icon-search.surface-900.icon--absolute
-              InputText.border-0.w-full.mb-1(type="text" placeholder="Enter code" v-model="textCode" v-on:input="validateText")
+          FilterTable(title="Code" placeholder="Enter code" name="barCode" :searchText="true" @updateFilter="handleFilterBox")
     .col-4
       .grid.grid-nogutter
         .col
           .bg-white.border-round-left
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm From
-            Calendar.w-full.mb-1(v-model="dateFrom" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
+            Calendar.w-full.mb-1(@date-select="handleFilter" v-model="filter.dateFrom" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
         .col.ml-1
           .bg-white.border-round-right
             div.pt-2.pl-3.pb-1
               span.text-600.font-sm To
-            Calendar.w-full.mb-1(v-model="dateTo" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
+            Calendar.w-full.mb-1(@date-select="handleFilter" v-model="filter.dateTo" :showIcon="true" inputClass="border-0" placeholder="Select" dateFormat="dd-mm-yy")
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
-      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection.sync="selectedBoxes"
+      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" :selection="selectedBoxes"
       removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" :rowClass="rowClass" @sort="sortData($event)"
-      @row-dblclick="onRowClick($event)" :class="{ 'table__empty': !boxList || boxList.length <= 0 }")
+      @row-dblclick="onRowClick($event)" :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
+      @row-unselect-all="rowUnSelectAll" @row-select="rowSelect" @row-unselect="rowUnselect")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO")
           template(#body="slotProps")
-            span.font-semibold {{(pageNumber - 1) * pageSize + slotProps.index +1}}
+            span.font-semibold {{ (pageNumber - 1) * pageSize + slotProps.index +1 }}
         Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_barCode")
         Column(field="request.seller.email" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
-        Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right datatable__head-right" sortField="_createdAt")
+        Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
-        Column(field="attributes" header="SIZE(CM)" className="text-right datatable__head-right" bodyClass="font-semibold")
-          template(#body="{data}") {{data.length}}*{{data.width}}*{{data.height}}
-        Column(field="weight" header="WEIGHT(KG)" className="text-right datatable__head-right" bodyClass="font-semibold")
-          template(#body="{data}") {{data.weight}}
-        Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right datatable__head-right" sortField="_request.warehouse.name")
+        Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold")
+          template(#body="{data}") {{ data.length }} * {{ data.width }} * {{ data.height }}
+        Column(field="weight" header="WEIGHT(KG)" className="text-right" bodyClass="font-semibold")
+          template(#body="{data}") {{ data.weight }}
+        Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right" sortField="_request.warehouse.name")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{data.request.warehouse.name}}
+              span.text-primary.font-bold.font-sm.text-white-active {{ data.request.warehouse.name }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(field="shelfBin.name" header="LOCATION" :sortable="true" className="text-right datatable__head-right" sortField="_shelfBin.name")
+        Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right" sortField="_rackLocation.name")
           template(#body="{data}")
             .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{data.shelfBin.name}}
+              span.text-primary.font-bold.font-sm.text-white-active {{ data.rackLocation.name }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(field="status" header="STATUS" :sortable="true" className="p-text-right datatable__head-right" sortField="_status")
+        Column(field="status" header="STATUS" :sortable="true" className="text-right" sortField="_status")
           template(#body="{data}")
             .flex.justify-content-end
               Tag(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'bg-green-100' : data.status === 'BOX_STATUS_DRAFT' ? 'bg-blue-100' : 'surface-200'").px-2
-                span(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'text-green-400' : data.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'").font-bold.font-sm {{data.status | boxStatus}}
-        Column(:exportable="false" header="ACTION" className="text-right datatable__head-right")
+                span(:class="data.status === 'BOX_STATUS_AVAILABLE' ? 'text-green-400' : data.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'").font-bold.font-sm {{ data.status | boxStatus }}
+        Column(:exportable="false" header="ACTION" className="text-right")
           template(#body="{data}")
-            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(@click="handleEditBox(data.id)" :disabled="data.status === 'BOX_STATUS_DISABLE'")
-              .icon.icon-edit-btn
-            Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.status === 'BOX_STATUS_DISABLE'")
-              .icon.icon-btn-delete
+            .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
+              span(@click="handleEditBox(data.id)")
+                .icon.icon-edit-btn
+              span(:class="{'disable-button': itemsBoxDelete.length > 0}" @click="showModalDelete(data.id)")
+                .icon.icon-btn-delete
         template(#footer)
           .pagination
             div.pagination__info(v-if="itemsBoxDelete.length <= 0")
               img(:src="require('~/assets/icons/filter-left.svg')")
-              span.pagination__total {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + boxList.length}} of {{totalBoxRecords}}
+              span(v-if="boxList.length > 0").pagination__total {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + boxList.length }} of {{ totalBoxRecords }}
             div.pagination__delete(v-else @click="showModalDelete()")
               img(:src="require('~/assets/icons/trash-white.svg')")
-              span Delete {{itemsBoxDelete.length}} items selected
-            Paginator(:first.sync="firstPage" :rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)")
+              span Delete {{ itemsBoxDelete.length }} items selected
+            Paginator(:first.sync="firstPage" :rows="pageSize" :totalRecords="totalBoxRecords" @page="onPage($event)" :rowsPerPageOptions="[10,20,30]")
         template(#empty)
           div.flex.align-items-center.justify-content-center.flex-column
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
@@ -121,13 +113,12 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
-import moment from 'moment'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
-const _ = require('lodash')
+const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -135,22 +126,24 @@ const _ = require('lodash')
   }
 })
 class BoxList extends Vue {
-  selectedBoxes = [];
-  selectedWarehouse : any = null;
-  textLocation: any = null;
-  textSearch: any = null;
-  textCode: any = null;
-  dateFrom: any = null;
-  dateTo: any = null;
-  pageNumber: number = 1;
-  pageSize: number = 20;
-  isModalDelete: boolean = false;
-  loadingSubmit: boolean = false;
-  ids: string[] = [];
-  isShowFilter = false;
-  firstPage = 1;
-  sortByColumn: string|null = null;
-  isDescending: boolean|null = null;
+  selectedBoxes: Box.Model[] = []
+  pageNumber: number = 1
+  pageSize: number = 20
+  isModalDelete: boolean = false
+  loadingSubmit: boolean = false
+  ids: string[] = []
+  isShowFilter = false
+  firstPage = 1
+  sortByColumn: string = ''
+  isDescending: boolean|null = null
+  filter: any = {
+    sellerEmail:  '',
+    warehouse: null,
+    location: '',
+    barCode: '',
+    dateFrom: null,
+    dateTo: null
+  }
 
   @nsStoreBox.State
   boxList!: Box.Model[]
@@ -172,30 +165,27 @@ class BoxList extends Vue {
 
   async mounted() {
     await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
-    this.actWarehouseList()
+    await this.actWarehouseList()
   }
 
-  @Watch('selectedWarehouse')
-  @Watch('dateFrom')
-  @Watch('dateTo')
-  async filterChange() {
-    this.firstPage = 1
-    this.pageNumber = 1
-    await this.actGetBoxList(this.getParamAPi())
-  }
-
-  getParamAPi(){
+  getParamAPi() {
     return {
       pageNumber: this.pageNumber - 1, pageSize: this.pageSize,
-      'sellerEmail': this.textSearch === '' ? null : this.textSearch,
-      'barCode': this.textCode === '' ? null : this.textCode,
-      'warehouseId': this.selectedWarehouse?.id,
-      'location': this.textLocation === '' ? null : this.textLocation,
-      'from': this.dateFrom ? moment(this.dateFrom).format('yyyy-MM-DD'): null,
-      'to': this.dateTo ? moment(this.dateTo).format('yyyy-MM-DD'): null,
-      'sortByColumn': this.sortByColumn === '' ? null : this.sortByColumn,
+      'sellerEmail': this.filter.sellerEmail || null,
+      'barCode': this.filter.barCode || null,
+      'warehouseId': this.filter.warehouse?.id,
+      'location': this.filter.location || null,
+      'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
+      'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
+      'sortByColumn': this.sortByColumn || null,
       'isDescending': this.isDescending
     }
+  }
+
+  async handleFilterBox(e: any, name: string){
+    this.filter[name] = e
+    await this.actGetBoxList(this.getParamAPi())
+    this.selectedBoxes = []
   }
 
   get isFilter(){
@@ -204,6 +194,7 @@ class BoxList extends Vue {
   }
 
   async onPage(event: any) {
+    this.pageSize = event.rows
     this.pageNumber = event.page + 1
     await this.actGetBoxList(this.getParamAPi())
   }
@@ -212,6 +203,7 @@ class BoxList extends Vue {
     const result = await this.actDeleteBoxById({ ids: this.ids })
     if(result) {
       this.isModalDelete = false
+      this.selectedBoxes = []
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
@@ -228,7 +220,7 @@ class BoxList extends Vue {
     this.isModalDelete = false
   }
 
-  get itemsBoxDelete(){
+  get itemsBoxDelete() {
     const itemsDelete: string[] = []
     _.forEach(this.selectedBoxes, function(box: any) {
       if(box.status !== 'BOX_STATUS_DISABLE')
@@ -246,28 +238,57 @@ class BoxList extends Vue {
     return data.status === 'BOX_STATUS_DISABLE' && 'row-disable'
   }
 
-  validateText =  _.debounce(async ()=>{
-    await this.actGetBoxList(this.getParamAPi())
-  }, 500);
+  validateText =  _.debounce(this.handleFilter, 500);
 
-  async sortData(e: any){
-    const {sortField, sortOrder} = e
+  async sortData(e: any) {
+    const { sortField, sortOrder } = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '')
     }else{
       this.isDescending = null
-      this.sortByColumn = null
+      this.sortByColumn = ''
     }
     await this.actGetBoxList(this.getParamAPi())
   }
 
-  onRowClick({data}){
+  onRowClick({ data }){
     this.$router.push(`/box/${data.id}`)
   }
 
   handleEditBox(id: any) {
-    this.$router.push({ path: `/box/${id}`, query: { plan: 'edit' }})
+    this.$router.push({ path: `/box/${id}`, query: { plan: 'edit' } })
+  }
+
+  async handleFilter() {
+    await this.actGetBoxList(this.getParamAPi())
+    this.selectedBoxes = []
+  }
+
+  async handleRefeshFilter() {
+    this.filter.warehouse = null
+    this.filter.location = ''
+    this.filter.sellerEmail = ''
+    this.filter.barCode = ''
+    this.filter.dateFrom = null
+    this.filter.dateTo = null
+    await this.actGetBoxList(this.getParamAPi())
+  }
+
+  rowSelectAll({ data }) {
+    this.selectedBoxes = _.union(this.selectedBoxes, data)
+  }
+
+  rowUnSelectAll() {
+    this.selectedBoxes = _.differenceWith(this.selectedBoxes, this.boxList, _.isEqual)
+  }
+
+  rowSelect({ data }) {
+    this.selectedBoxes.push(data)
+  }
+
+  rowUnselect({ data }) {
+    this.selectedBoxes = _.filter(this.selectedBoxes, (box: Box.Model) => box.id !== data.id)
   }
 }
 export default BoxList
@@ -284,4 +305,13 @@ export default BoxList
     .p-button
       background: none
       border: none
+  ::v-deep.text-right
+    text-align: right !important
+    .p-column-header-content
+      justify-content: end !important
+  ::v-deep.disable-button
+    pointer-events: none
+    background-color: $text-color-300
+    .icon
+      background-color: $text-color-500
 </style>

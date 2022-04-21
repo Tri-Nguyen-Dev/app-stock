@@ -25,14 +25,14 @@ export default class StoreBox extends VuexModule {
   @Action({ commit: 'setBoxList', rawError: true })
   async actGetBoxList(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX, params)
-    const response: any = await $api.get(url, {params})
+    const response: any = await $api.get(url, { params })
     return response.data
   }
 
   @Action({ rawError: true })
-  async actDeleteBoxById({ids}): Promise<string | undefined> {
+  async actDeleteBoxById({ ids }): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.DELETE_BOX, ids)
-    const response: any = await $api.post(url, {ids})
+    const response: any = await $api.post(url, { ids })
     return response.data
   }
 }

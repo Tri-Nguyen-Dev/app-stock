@@ -2,5 +2,7 @@
   "semi": false,
   "singleQuote": true,
   "trailingComma": "es5",
-  "htmlWhitespaceSensitivity": "ignore"
+  "htmlWhitespaceSensitivity": "ignore",
+  "endOfLine": "auto",
+  "tabWidth": 2
 }
