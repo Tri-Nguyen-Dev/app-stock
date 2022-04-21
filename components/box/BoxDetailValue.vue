@@ -1,7 +1,7 @@
 <template lang="pug">
   div
-    .grid.align-items-center.m-0.px-2.py-1.border-round.surface-100.mb-2
-      .col-fixed.mr-2
+    .grid.align-items-center.m-0.border-round.surface-100.mb-2
+      .col-12-fixed.mr-2
         .icon--large.bg-primary(:class="`icon-${item.icon}`")
       div(class='col-12 lg:col-12 xl:col-8')
         span.font-bold.text-600 {{ item.label }}

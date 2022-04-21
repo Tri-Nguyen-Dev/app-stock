@@ -64,7 +64,8 @@ class Sidebar extends Vue {
   }
 
   mounted() {
-    this.selectedItem = this.pageMenu.filter((item)=> item.to === this.$route.path)[0]
+    const path = this.$route.path
+    this.selectedItem = this.pageMenu.filter((item)=>  path.slice(0, item.to?.length) === item.to )[0]
   }
 }
 

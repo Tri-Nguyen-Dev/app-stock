@@ -24,48 +24,52 @@
               span Box Code:
                 span.text-primary.uppercase.ml-2 {{ boxDetail.barCode }}
       div.sub--scroll
-        .col.px-4
-          StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
-        .col.px-4
-          StockUnit(title="Create ID" :value="boxDetail.createBy" :isEdit="isEditBox" icon="icon-tag-user")
-        .col.px-4
-          StockUnit(title="Warehouse" link="https://rikkei.vn" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
-        .col.px-4
-          StockUnit(title="Location" icon="icon-location-2")
-            template(v-slot:auto-complete)
-              .mt-1.flex.align-items-center
-                AutoComplete.edit-location(v-model="isLocation" field='name' :suggestions='locationList' forceSelection :readOnly='!isEditBox' :placeholder='boxLocation' @complete="searchLocation($event)"  )
-                  template(#item="slotProps")
-                    .grid.align-items-center.grid-nogutter
-                      span.font-bold {{ slotProps.item.name }}
-                      .icon-arrow-up-right.icon
-        .col.px-4
-          StockUnit(title="Create Time" :value="boxDetail.createdAt | dateTimeHour12" :isEdit="isEditBox" icon="icon-calendar")
-        .col.px-4
-          StockUnit(title="Box Items" :value="boxDetail.length" :isEdit="isEditBox" icon="icon-frame")
-        .col.px-4
-          StockUnit(title="Estimated inventory Fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
-        .col.px-4(:class='isEditBox ? "opacity-40" : "opacity-100"')
-          StockUnit(title="Box size:" type ="size" :height="boxDetail.height" :length="boxDetail.length" :width="boxDetail.width" icon="icon-size")
-            template(v-slot:size)
-              span.font-semibold.mr-1.uppercase {{ boxDetail.length }}*{{ boxDetail.width }}*{{ boxDetail.height }}
-            template(v-slot:button-size='')
-              span.font-bold.text-600.bg-primary.ml-1.border-round(:class='boxDetail.boxSize? "p-1" : ""') {{ boxDetail.boxSize | boxSize }}
-        div(:class='isEditBox? "opacity-40" : "opacity-100"')
-          .col.border-bottom-1.border-gray-300
-          .col.flex.my-3.mx-1
-            .col.flex.align-items-center
-              .icon-sender-info.icon.bg-primary.mr-2
-              span.font-bold.text-800.uppercase Seller Information
-          .col
-            BoxDetailValue(v-for='item in sellerInfor' :key='item.id' :item='item' :boxSellerInfor='boxSellerInfor')
-        .grid.m-1(v-if='isEditBox')
-          .col
-            .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='btnEdit')
-              span.uppercase.font-semibold cancel
-          .col
-            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='handleUpdateData')
-              span.uppercase save
+          div.wrap-unit.px-4
+            StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
+          div.wrap-unit.px-4
+            StockUnit(title="Create ID" :value="boxDetail.createBy" :isEdit="isEditBox" icon="icon-tag-user")
+          div.wrap-unit.px-4
+            StockUnit(title="Warehouse" link="https://rikkei.vn" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
+          div.wrap-unit.px-4
+            StockUnit(title="Location" icon="icon-location-2")
+              template(v-slot:auto-complete)
+                .mt-1.flex.align-items-center
+                  AutoComplete.edit-location(v-model="isLocation" field='name' :suggestions='locationList' forceSelection :readOnly='!isEditBox' :placeholder='boxLocation' @complete="searchLocation($event)"  )
+                    template(#item="slotProps")
+                      .grid.align-items-center.grid-nogutter
+                        span.font-bold.text-small {{ slotProps.item.name }}
+                        .icon-arrow-up-right.icon
+          div.wrap-unit.px-4
+            StockUnit(title="Create Time" :value="boxDetail.createdAt | dateTimeHour12" :isEdit="isEditBox" icon="icon-calendar")
+          div.wrap-unit.px-4(v-if='boxDetail.listStockWithAmount')
+            StockUnit(title="Box Items" :value="boxDetail.listStockWithAmount.length" :isEdit="isEditBox" icon="icon-frame")
+          div.wrap-unit.px-4
+            StockUnit(title="Estimated inventory Fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
+          div.wrap-unit.px-4(v-if="boxDetail.boxSize" :class='isEditBox ? "opacity-40" : "opacity-100"')
+            StockUnit(title="Box size:" type ="size" :height="boxDetail.boxSize.height" :length="boxDetail.boxSize.length" :width="boxDetail.boxSize.width" icon="icon-size")
+              template(v-slot:size)
+                span.font-bold.text-small.mt-1.uppercase {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
+              template(v-slot:button-size='')
+                span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(:class='boxDetail.boxSize.name ? "p-1" : ""') {{ boxDetail.boxSize.name }}
+          div.col-12(:class='isEditBox? "opacity-40" : "opacity-100"')
+            .col.border-bottom-1.border-gray-300
+            .col.flex.my-3.mx-1
+              .col.flex.align-items-center
+                .icon-sender-info.icon.bg-primary.mr-2
+                span.font-bold.text-800.uppercase Seller Information
+          .wrap-unit.px-4
+            StockUnit(title="Sender" :value="boxSellerInfor.name" :isEdit="isEditBox" icon="icon-sender-name")
+          .wrap-unit.px-4
+            StockUnit(title="Email Address" :value="boxSellerInfor.email" :isEdit="isEditBox" icon="icon-sender-email")
+          .wrap-unit.px-4
+            StockUnit(title="Phone number" :value="boxSellerInfor.phone" :isEdit="isEditBox" icon="icon-sender-phone")
+          .grid.m-1(v-if='isEditBox')
+            .col
+              .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='btnEdit')
+                span.uppercase.font-semibold cancel
+            .col
+              .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='handleUpdateData')
+                span.uppercase save
     div.ml-5.flex-1(class=' col-7  md:col-8  lg:col-8 xl:col-8')
       .grid.justify-content-between
         .col-fixed
@@ -337,6 +341,7 @@ export default BoxDetail
   ::v-deep input
     border: none
     box-shadow: none !important
+    font-size: $font-size-small
     text-transform: uppercase
     font-weight: bold
     color: var(--surface-900)
@@ -365,4 +370,7 @@ export default BoxDetail
   background-color: #979AA4
 .p-disabled, .p-component:disabled
   opacity: 1
+.wrap-unit 
+  width: 300px
+  margin-bottom: 16px
 </style>
