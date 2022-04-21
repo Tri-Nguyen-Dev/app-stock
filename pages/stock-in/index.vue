@@ -97,19 +97,19 @@
               span.text-white-active.text-900.font-bold {{ data.id }}
           Column(header='Create Time' field='data.createdA' :sortable="true" sortField="_data.createdA")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
-          Column(header='SELLER NAME' field='seller.name' :sortable="true" sortField="_seller.name")
-            template(#body='{ data }') {{ data.seller.name }}
-          Column(header='SELLER EMAIL' field='seller.email' :sortable="true" sortField="_seller.email")
-            template(#body='{ data }') {{ data.seller.email }}
-          Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
+          Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_sellerName")
+            template(#body='{ data }') {{ data.sellerName }}
+          Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_sellerEmail")
+            template(#body='{ data }') {{ data.sellerEmail }}
+          Column(field="warehouseName" header="WAREHOUSE" :sortable="true" sortField="_warehouseName" :styles="{'width': '1%'}")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
+                span.text-primary.font-bold.text-white-active {{ data.warehouseName }}
                 .icon.icon-arrow-up-right.bg-primary.bg-white-active
-          Column(header='CREATOR ID' field='data.createBy' :sortable="true" sortField="_data.createId")
-            template(#body='{ data }') {{ data.createBy }}
-          Column(header='CREATOR NAME' field='data.createBy' :sortable="true" sortField="_data.createBy")
-            template(#body='{ data }') {{ data.createBy }}
+          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_data.creatorId")
+            template(#body='{ data }') {{ data.creatorId }}
+          Column(header='CREATOR NAME' field='data.creatorName' :sortable="true" sortField="_data.creatorName")
+            template(#body='{ data }') {{ data.creatorName }}
           Column(header='STATUS' field=' data.status' :sortable="true" sortField="_data.status")
             template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
@@ -214,8 +214,8 @@ class StockIn extends Vue {
       'creatorId': this.filter.creatorId || null ,
       'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
       'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
-      'sortByColumn': this.sortByColumn || null,
-      'isDescending': this.isDescending,
+      'sortBy': this.sortByColumn || null,
+      'desc': this.isDescending,
       'status': this.filter.status?.value,
       'warehouseId': this.filter.warehouse?.id
     }
@@ -354,4 +354,5 @@ export default StockIn
     .p-button
       background: none
       border: none
+
 </style>
