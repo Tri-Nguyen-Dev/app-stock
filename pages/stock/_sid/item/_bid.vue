@@ -36,9 +36,19 @@
               span.uppercase.font-semibold.text-blue-700 {{model.data.stock.unit.name}}
         .grid.mt-2
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="model.data.box.request.id" :isEdit="isEditItemDetail" icon="icon-receipt-note")
+            StockUnit(
+              title="Receipt note ID"
+              :value="model.data.box.request.id"
+              :isEdit="isEditItemDetail"
+              icon="icon-receipt-note")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Creator ID" :value="model.data.box.request.createBy" value="NVN030133" :isEdit="isEditItemDetail" icon="icon-tag-user")
+            StockUnit(
+              title="Creator ID"
+              :value="model.data.box.request.createBy"
+              value="NVN030133"
+              :isEdit="isEditItemDetail"
+              icon="icon-tag-user"
+            )
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Warehouse" link="https://rikkei.vn" :isEdit="isEditItemDetail" value="NTH001" icon="icon-warehouse")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
@@ -53,7 +63,8 @@
                   InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.width')
                 .col-4.p-0.pt-1
                   InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.height')
-              span.font-semibold.mr-1.uppercase(v-else) {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }}
+              span.font-semibold.mr-1.uppercase(v-else)
+              | {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }}
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Weight (Kg)" :value="model.data.stock.weight" :isEdit="isEditItemDetail" icon="icon-weight")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
@@ -66,7 +77,14 @@
                 .col
                   div.text-500 Value
                   InputText(:disabled='!isEditItemDetail' v-model='model.data.value').w-6
-            //- StockUnit(title="Value" type ="weight" :weight="model.data.value" :isEdit="isEditItemDetail" icon="icon-price" @updateUnit='handleUpdateUnit')
+            //- StockUnit(
+              title="Value"
+              type ="weight"
+              :weight="model.data.value"
+              :isEdit="isEditItemDetail"
+              icon="icon-price"
+              @updateUnit='handleUpdateUnit'
+              )
         .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
           .col
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditItemDetail')

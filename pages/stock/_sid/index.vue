@@ -42,7 +42,14 @@
                   InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
               span.font-semibold.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
         .col-12.px-0
-          StockUnit(title="Weight" name="weightBox" :model="weightBox" :isEdit="isEditStockDetail" icon="icon-weight" @updateUnit='handleUpdateUnit')
+          StockUnit(
+            title="Weight"
+             name="weightBox"
+             :model="weightBox"
+             :isEdit="isEditStockDetail"
+             icon="icon-weight"
+             @updateUnit='handleUpdateUnit'
+            )
         div
         .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
           .col

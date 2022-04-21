@@ -4,8 +4,21 @@
       span.text-600.font-sm {{title}}
     span.p-input-icon-right.w-full
       .icon.icon--right.icon-search.surface-900.icon--absolute
-      InputText.border-0.w-full.mb-1(v-if="searchText" type="text" :placeholder="placeholder" :value="value" @input="validateText")
-      Dropdown.w-full.border-0.mb-1(v-else-if="options"  :options="options" optionLabel="name" placeholder="Select" v-model="value" @input="handleFilter")
+      InputText.border-0.w-full.mb-1(
+        v-if="searchText"
+        type="text"
+        :placeholder="placeholder"
+        :value="value"
+        @input="validateText"
+      )
+      Dropdown.w-full.border-0.mb-1(
+        v-else-if="options"
+        :options="options"
+        optionLabel="name"
+        placeholder="Select"
+        v-model="value"
+        @input="handleFilter"
+      )
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
