@@ -55,16 +55,16 @@
           Column(field='imageUrl' header='Image')
             template(#body='{ data }')
               .stock__table__image.overflow-hidden
-                img.h-2rem.w-2rem.border-round(:src='data.imagePath' alt='' width='100%' style="object-fit: cover;")
+                img.h-2rem.w-2rem.border-round(:src='`http://dtplo60ij00vm.cloudfront.net/thumbnail/${data.imagePath}`' alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
-              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden
+              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
           Column(header='Code' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
             template(#body='{ data }')
               .stock__table-barcode.grid-cell-right {{ data.barCode }}
           Column(header='Category' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right
+                div.grid-cell-right {{ data.categoryName }}
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
@@ -143,8 +143,8 @@ class Stock extends Vue {
     warehouse: null,
     categories: null,
     status: null,
-    sortByColumn: null,
-    isDescending: null
+    sortBy: null,
+    desc: null
   }
 
   @nsStoreStock.State
@@ -173,8 +173,8 @@ class Stock extends Vue {
       warehouseId: this.filter.warehouse?.id,
       categoryIds: categoryIds || null,
       stockStatus: this.filter.status?.value,
-      sortByColumn: this.filter.sortByColumn || null,
-      sortDescending: this.filter.isDescending || null
+      sortBy: this.filter.sortBy || null,
+      desc: this.filter.desc
     }
   }
 
@@ -275,11 +275,11 @@ class Stock extends Vue {
   sortData(e: any){
     const { sortField, sortOrder } = e
     if(sortOrder) {
-      this.filter.isDescending = sortOrder !== 1
-      this.filter.sortByColumn = sortField.replace('_', '')
+      this.filter.desc = sortOrder !== 1
+      this.filter.sortBy = sortField.replace('_', '')
     } else {
-      this.filter.isDescending = null
-      this.filter.sortByColumn = null
+      this.filter.desc = null
+      this.filter.sortBy = null
     }
     this.getProductList()
   }
