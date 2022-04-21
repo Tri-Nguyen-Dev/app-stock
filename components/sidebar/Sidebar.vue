@@ -7,10 +7,8 @@
           span.user-name {{ userDisplayName }}
           span.user-role Role Ex
       .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
-
     .menu-section.sidebar-menu
       SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
-
     .menu-section.sidebar-foot
       SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
 </template>
@@ -38,9 +36,11 @@ class Sidebar extends Vue {
   @ProvideReactive()
   selectedItem: any = null
 
+  @ProvideReactive()
+  parentItems: any = []
+
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
-
   // -- [ Getters ] -------------------------------------------------------------
 
   get user() {
@@ -58,6 +58,13 @@ class Sidebar extends Vue {
 
   onSelectMenu(item) {
     this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
+    if(!item.parentId) {
+      this.parentItems = this.pageMenu.filter(value => value.parentId === item.id)
+    }
+  }
+
+  mounted() {
+    this.selectedItem = this.pageMenu.filter((item)=> item.to === this.$route.path)[0]
   }
 }
 

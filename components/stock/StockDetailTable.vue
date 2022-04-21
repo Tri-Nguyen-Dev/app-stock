@@ -6,49 +6,25 @@
         span.text-600.font-sm(v-if="itemsList.data") {{itemsList.data.total}} results found
       .col-fixed
         .grid
-          .col-fixed
-            Button.border-0.bg-white.w-8rem.h-3rem.border-primary(@click="isShowFilter = !isShowFilter")
+          .col-fixed.flex.btn-filter
+            div.cursor-pointer.bg-white.btn-filter-toggle.flex.align-items-center.h-full.flex-1(@click="isShowFilter = !isShowFilter")
               .icon.bg-primary(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
               span.text-900.ml-3.text-primary Filter
+            div.cursor-pointer.refresh-filter(@click="handleRefreshFilter")
+              img(:src="require(`~/assets/icons/rotate-left.svg`)")
     .grid(v-show="isShowFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Seller
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter seller" v-model='filter.sellerEmail')
+        FilterTable(title="Seller" placeholder="Enter seller" name="sellerEmail" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm SKU
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter SKU" v-model='filter.sku')
+        FilterTable(title="SKU" placeholder="Enter SKU" name="sku" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Box Code
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter box code" v-model='filter.boxCode')
+        FilterTable(title="Enter box code" placeholder="Enter box code" name="boxCode" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Warehouse
-          Dropdown.w-full.border-0.mb-1(v-model="filter.warehouse" :options="warehouseList" optionLabel="name" placeholder="Select")
+        FilterTable(title="Warehouse" :options="warehouseList" name="warehouse"  @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Location
-          span.p-input-icon-right.w-full
-            .icon.icon--right.icon-search.surface-900.icon--absolute
-            InputText.border-0.w-full.mb-1(type="text" placeholder="Enter location" v-model='filter.location')
+        FilterTable(title="Location" placeholder="Enter location" name="location" :searchText="true" @updateFilter="handleFilter")
       .col
-        .bg-white.border-round
-          div.pt-2.pl-3.pb-1
-            span.text-600.font-sm Status
-          Dropdown.w-full.border-0.mb-1(v-model="filter.status" :options="statusList" optionLabel="name" placeholder="Select")
+        FilterTable(title="Status" :options="statusList" name="status"  @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
         DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(v-if="itemsList.data" :value="itemsList.data.items" responsiveLayout="scroll" :selection.sync="selectedStock"
@@ -59,7 +35,7 @@
             template(#body="{ index }")
               span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
           Column(field="box.request.seller.email" header="SELLER EMAIL" sortable className="w-3")
-          Column(field="stock.sku" header="SKU" sortable className="p-text-right")
+          Column(field="sku" header="SKU" sortable className="p-text-right")
           Column(field="amount" header="INVENTORY QUANTITY" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
           Column(field="box.barCode" header="BOX CODE" sortable className="p-text-right" bodyClass="font-semibold" :styles="{'width': '5%'}")
           Column(field="box.request.warehouse.name" sortable header="WAREHOUSE" className="p-text-right" :styles="{'width': '5%'}")
@@ -67,23 +43,25 @@
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.font-sm {{data.box.request.warehouse.name}}
                 .icon--small.icon-arrow-up-right.bg-primary
-          //- Column(field="location.name" header="LOCATION" sortable className="p-text-right")
-          //-   template(#body="{data}")
-          //-     .flex.align-items-center.cursor-pointer.justify-content-end
-          //-       span.text-primary.font-bold.font-sm {{data.location.name}}
-          //-       .icon--small.icon-arrow-up-right.bg-primary
-          Column(field="box.deleted" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
+          Column(field="box.rackLocation.name" header="LOCATION" sortable className="p-text-right")
+            template(#body="{data}")
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                span.text-primary.font-bold.font-sm {{data.box.rackLocation ? (data.box.rackLocation.name ? data.box.rackLocation.name : '' ) : ''}}
+                .icon--small.icon-arrow-up-right.bg-primary
+          Column(field="itemStatus" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
             template(#body="{data}")
               div
-                Tag(v-if="data.box.deleted" severity="success").px-2.surface-200
+                Tag(v-show="data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200
                   span.font-bold.text-400.font-sm DISABLE
-                Tag(v-else severity="success").px-2.bg-green-100
+                Tag(v-show="data.itemStatus === 'ITEM_STATUS_DRAFT'").px-2.bg-blue-500
+                  span.font-bold.text-400.font-sm DRAFT
+                Tag(v-show="data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
                   span.font-bold.text-green-400.font-sm AVAILABLE
           Column(:exportable="false" header="ACTION" className="p-text-right")
             template(#body="{data}")
-              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="!data.box.status" @click='editItemDetail(data.id)')
+              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(:disabled="data.itemStatus == 'ITEM_STATUS_DISABLE'" @click='editItemDetail(data.id)')
                 .icon--small.icon-btn-edit
-              Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.box.deleted")
+              Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(@click="showModalDelete(data.id)" :disabled="data.itemStatus === 'ITEM_STATUS_DISABLE'")
                 .icon--small.icon-btn-delete
           template(#footer)
             .pagination
@@ -99,7 +77,7 @@
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
               p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
-                span.text-primary.underline here
+                span.text-primary.underline  &nbsp;here&nbsp;
                 span to add item.
               p.text-900.font-bold.mt-3(v-else) Item not found!
     ConfirmDialogCustom(
@@ -107,21 +85,20 @@
       :message="`Are you sure you want to delete ${ids.length} in this list stock?`"
       image="confirm-delete"
       :isShow="isModalDelete"
-      :onOk="handleDeleteStock"
+      :onOk="handleDeleteItems"
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
 </template>
 <script lang="ts">
-import { Component, namespace, Prop, Vue,Watch } from 'nuxt-property-decorator'
+import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStockTable = namespace('stock/stock-detail')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
-const nsStoreStock = namespace('stock/stock-list')
 
 @Component({
-  components: {ConfirmDialogCustom}
+  components: { ConfirmDialogCustom }
 })
 class StockDetailTable extends Vue {
 
@@ -143,12 +120,13 @@ class StockDetailTable extends Vue {
     sku: null,
     warehouse: null,
     location: null,
-    status: false
+    status: null
   }
 
   statusList: any = [
-    { name: 'Disable', value: true },
-    { name: 'Available', value: false }
+    { name: 'Available', value: 1 },
+    { name: 'Draft', value: 2 },
+    { name: 'Disable', value: 0 }
   ]
 
   paginate: any = {
@@ -176,8 +154,8 @@ class StockDetailTable extends Vue {
   @nsStoreWarehouse.Action
   actWarehouseList!: () => Promise<void>
 
-  @nsStoreStock.Action
-  actDeleteStockByIds!: (ids: string[]) => Promise<void>
+  @nsStoreStockTable.Action
+  actDeleteItemsById!: (ids: string[]) => Promise<void>
 
   get getInfoPaginate() {
     const { pageNumber, pageSize } = this.paginate
@@ -188,7 +166,7 @@ class StockDetailTable extends Vue {
   }
 
   get selectedStockFilter() {
-    return this.selectedStock.filter((item: any) => !item.box.deleted)
+    return this.selectedStock.filter((item: any) => item.itemStatus !== 'ITEM_STATUS_DISABLE')
   }
 
   onPage(event: any) {
@@ -212,7 +190,7 @@ class StockDetailTable extends Vue {
   }
 
   sortData(e: any){
-    const {sortField, sortOrder} = e
+    const { sortField, sortOrder } = e
     if(sortOrder){
       this.sort.sortDescending = sortOrder !== 1
       this.sort.sortByColumn = sortField.replace('_', '')
@@ -221,32 +199,28 @@ class StockDetailTable extends Vue {
   }
 
   rowClass(data: any) {
-    return data.box.deleted ? 'row-disable' : ''
+    return data.itemStatus === 'ITEM_STATUS_DISABLE' ? 'row-disable' : ''
   }
 
   handleCancel() {
     this.isModalDelete = false
   }
 
-  async handleDeleteStock() {
-    try {
-      this.loadingSubmit = true
-      await this.actDeleteStockByIds(this.ids)
-      this.loadingSubmit = false
-      this.isModalDelete = false
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Success Message',
-        detail: 'Successfully deleted stock',
-        life: 3000
-      })
-      this.paginate.pageNumber = 0
-      this.firstPage = 0
-      this.getItemsList()
-      this.selectedStock = []
-    } catch (error) {
-      this.loadingSubmit = false
-    }
+  async handleDeleteItems() {
+    this.loadingSubmit = true
+    await this.actDeleteItemsById(this.ids)
+    this.loadingSubmit = false
+    this.isModalDelete = false
+    this.$toast.add({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Successfully deleted stock',
+      life: 3000
+    })
+    this.paginate.pageNumber = 0
+    this.firstPage = 0
+    this.getItemsList()
+    this.selectedStock = []
   }
 
   async getItemsList() {
@@ -256,7 +230,7 @@ class StockDetailTable extends Vue {
       barCode: this.filter?.boxCode,
       location: this.filter?.location,
       warehouseId: this.filter?.warehouse?.id,
-      deleted: this.filter.status?.value,
+      itemStatus: this.filter.status?.value,
       pageNumber:this.paginate.pageNumber,
       pageSize: this.paginate.pageSize,
       sortByColumn: this.sort?.sortByColumn,
@@ -270,17 +244,28 @@ class StockDetailTable extends Vue {
     await this.actGetItemsList(params)
   }
 
-  @Watch('filter', { deep: true })
-  getFilterList() {
+  handleFilter(e: any, name: string){
+    this.filter[name] = e
+    this.getItemsList()
+  }
+
+  handleRefreshFilter () {
+    this.filter = {
+      name: null,
+      warehouse: null,
+      categories: null,
+      barCode: null,
+      status: null
+    }
     this.getItemsList()
   }
 
   redirectToDetail({ data }) {
-    this.$router.push(`${this.$route.params.sid}/item/${data.id}`)
+    this.$router.push(`${this.$route.params.sid}/item/${data.box.id}`)
   }
 
   editItemDetail(id:any) {
-    this.$router.push({ path: `${this.$route.params.sid}/item/${id}`, query: {plan: 'edit'}})
+    this.$router.push({ path: `${this.$route.params.sid}/item/${id}`, query: { plan: 'edit' } })
   }
 
   mounted() {
@@ -291,10 +276,28 @@ class StockDetailTable extends Vue {
 export default StockDetailTable
 </script>
 <style lang="sass" scoped>
-    .stock__mutidelete
-      background-color: #FF7171
-    ::v-deep.p-inputtext,
-    ::v-deep.p-dropdown,
-    ::v-deep.p-button
-      box-shadow: none !important
+  .btn-filter
+    height: 58px
+    width: 166px
+    .refresh-filter
+      background-color: $primary
+      display: flex
+      align-items: center
+      width: 50px
+      justify-content: center
+      border-top-right-radius: 4px
+      border-bottom-right-radius: 4px
+    .btn-filter-toggle
+      // gap: 18px
+      border-top-left-radius: 4px
+      border-bottom-left-radius: 4px
+      display: flex
+      justify-content: center
+
+  .stock__mutidelete
+    background-color: #FF7171
+  ::v-deep.p-inputtext,
+  ::v-deep.p-dropdown,
+  ::v-deep.p-button
+    box-shadow: none !important
 </style>

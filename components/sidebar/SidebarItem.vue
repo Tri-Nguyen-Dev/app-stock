@@ -1,5 +1,5 @@
 <template lang="pug">
-  .menu-item.flex-row(v-show="isShow" @click="select(item)")
+  .menu-item.flex-row.pt-1(v-show="isShow" @click="select(item)")
     nuxt-link(v-if="!!item.to" :to="item.to")
       SidebarItemValue(:item="item")
     div(v-if="!item.to")
