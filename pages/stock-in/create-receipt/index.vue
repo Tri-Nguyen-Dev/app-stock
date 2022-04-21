@@ -109,7 +109,7 @@
 									label='Scan barcode'
 									style='width:80% !importan'
 									@click='showModalAddStock'
-								) 
+								)
 						.grid.border-left.border-right.mt-0.pb-3(
 							style='margin-right: 0px',
 							v-if='listBox'
@@ -303,7 +303,7 @@ class CreateReceipt extends Vue {
           id: stockInformation.id,
           name: stockInformation.name,
           barCode: stockInformation.barCode,
-          imageUrl: '',
+          imagePath: stockInformation.imagePath,
           unit: {
             id: stockInformation.unit.code,
             name: stockInformation.unit.name
@@ -330,7 +330,6 @@ class CreateReceipt extends Vue {
       }
     ]
     this.listBox[this.activeIndex].listItemInBox?.push(...itemInBox)
-
   }
 
   selectBox(box) {
