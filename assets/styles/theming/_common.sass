@@ -8,64 +8,284 @@
   font-weight: $font-weight-bold
   line-height: calc(38 / 30)
   margin: 0
+
 .text-subheading
   font-size: $font-size-small
   color: $text-color-700
   font-weight: $font-weight-regular
   line-height: calc(24 / 12)
+
 .header__search
   position: relative
+
   input
     @include size(300px, 48px)
     border-radius: 4px
     padding: 0 0 0 50px
     border: none
     outline: none
+
     &::placeholder
-        font-size: $font-size-base
-        color: $text-color-500
-        line-height: calc(24 / 14)
+      font-size: $font-size-base
+      color: $text-color-500
+      line-height: calc(24 / 14)
+
     &:focus
-        border: 1.5px solid $primary
-        box-shadow: none
+      border: 1.5px solid $primary
+      box-shadow: none
+
 .btn__filter
-    @include size(166px, 48px)
-    @include flex-center-space-between
-    cursor: pointer
-    .btn-toggle
-        @include flex-center
-        gap: 0 18px
-        background-color: $color-white
-        flex: 1
-        height: 100%
-        border-top-left-radius: 4px
-        border-bottom-left-radius: 4px
-        padding: 0 20px
-    &.active .btn-toggle
-        color: $primary
-        border: 1.5px solid $primary
-    .btn-refresh
-        @include flex-center
-        width: 50px
-        height: 100%
-        background-color: $primary
-        border-top-right-radius: 4px
-        border-bottom-right-radius: 4px
+  @include size(166px, 48px)
+  @include flex-center-space-between
+  cursor: pointer
+
+  .btn-toggle
+    @include flex-center
+    gap: 0 18px
+    background-color: $color-white
+    flex: 1
+    height: 100%
+    border-top-left-radius: 4px
+    border-bottom-left-radius: 4px
+    padding: 0 20px
+
+  &.active .btn-toggle
+    color: $primary
+    border: 1.5px solid $primary
+
+  .btn-refresh
+    @include flex-center
+    width: 50px
+    height: 100%
+    background-color: $primary
+    border-top-right-radius: 4px
+    border-bottom-right-radius: 4px
+
 .filter__search
-    position: relative
-    @include size(100%, 40px)
-    input
-        color: $text-color-900
-        @include size(100%, 100%)
-        padding: 0 0 0 8px
-        border-radius: 4px
-        border: none
-        outline: none
-        &:focus
-            border: 1.5px solid #486AE2
-            box-shadow: none
-        &:focus + .icon
-            background-color: $primary
-        &::placeholder
-            color: $text-color-700
-            line-height: calc(24 / 14)
+  position: relative
+  @include size(100%, 40px)
+
+  input
+    color: $text-color-900
+    @include size(100%, 100%)
+    padding: 0 0 0 8px
+    border-radius: 4px
+    border: none
+    outline: none
+
+    &:focus
+      border: 1.5px solid #486AE2
+      box-shadow: none
+
+    &:focus + .icon
+      background-color: $primary
+
+    &::placeholder
+      color: $text-color-700
+      line-height: calc(24 / 14)
+// button
+.btn
+  cursor: pointer
+  height: 48px
+  @include flex-center
+  gap: 0 18px
+  padding: 0 20px
+  border-radius: 4px
+
+  &.btn-primary
+    background-color: $primary
+    color: $color-white
+
+    .icon
+      background-color: $color-white
+
+  &.btn-outline
+    background-color: $color-white
+    border: 1.5px solid $primary
+    color: $primary
+
+    .icon
+      background-color: $primary
+// custom checkbox
+.p-checkbox
+  .p-checkbox-box
+    border: 1.5px solid $text-color-500
+    border-radius: 2px !important
+
+    &.p-highlight
+      background-color: $primary
+
+    &.focus, &:not(.p-checkbox-disabled)
+      box-shadow: none !important
+      border: 1.5px solid $text-color-500 !important
+// header filter
+.filter__item.item--disabled
+  background-color: $text-color-200
+  border: none
+
+.filter__item
+  background-color: $color-white
+  border-radius: 4px
+  padding: 13px 8px 8px 8px
+  border: 1.5px solid $text-color-400
+
+.filter__title
+  font-size: 12px
+  color: $text-color-700
+  line-height: calc(16 / 12)
+  margin-bottom: 5px
+  margin-left: 8px
+
+.filter__text
+  margin-left: 8px
+  height: 40px
+  line-height: 40px
+  color: $text-color-900
+  font-size: $font-size-base
+  font-weight: $font-weight-regular
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.filter__autocomplete
+  position: relative
+
+  .icon
+    cursor: pointer
+
+.header__filter
+  visibility: hidden
+  max-height: 0
+  transition: all 0.25s ease-in
+
+  &.active
+    visibility: visible
+    max-height: 200px
+    margin-bottom: 24px
+// custom dropdown
+.p-dropdown
+  font-family: $font-family-primary !important
+
+  &:not(.p-disable).p-focus
+    box-shadow: none
+    border-color: none
+
+  .p-inputtext.p-placeholder
+    color: $text-color-700
+
+  .p-inputtext
+    color: $text-color-900
+    padding: 8px !important
+
+  .p-dropdown-items-wrapper
+    max-height: 288px
+    box-shadow: none
+
+    &::-webkit-scrollbar
+      width: 6px
+
+    &::-webkit-scrollbar-thumb
+      background: $text-color-secondary
+      border-radius: 10px
+
+  .p-dropdown-trigger-icon::before
+    content: url('~/assets/icons/chevron-down.svg')
+
+  .p-dropdown-items
+    padding: 0
+
+    .p-dropdown-item
+      padding: 12px 0 12px 16px !important
+      color: $text-color-900
+
+      &.p-highlight
+        background-color: $primary !important
+        color: $color-white
+
+      &:not(.p-highlight):not(.p-disabled):hover
+        background-color: $bg-body-base
+// custom multiSelect
+.p-multiselect
+  font-family: $font-family-primary !important
+
+  .p-multiselect-trigger-icon::before
+    content: url('~/assets/icons/chevron-down.svg')
+
+  .p-multiselect-label
+    padding: 8px !important
+
+    &.p-placeholder
+      color: $text-color-700 !important
+
+  &:not(.p-disable).p-focus
+    box-shadow: none !important
+    border-color: none !important
+
+  .p-multiselect-items-wrapper
+    max-height: 288px !important
+    box-shadow: none
+
+    &::-webkit-scrollbar
+      width: 6px
+
+    &::-webkit-scrollbar-thumb
+      background: $text-color-secondary
+      border-radius: 10px
+
+  .p-multiselect-header
+    padding: 0 !important
+    background-color: $color-white
+
+    .p-checkbox
+      position: absolute !important
+      z-index: 1
+      border-bottom: none
+      margin-left: 16px
+
+    .p-inputtext
+      width: 100% !important
+      padding: 14px 0 14px 52px
+      border: none
+      color: $text-color-900 !important
+      line-height: calc(24 / 14)
+      font-weight: 400
+
+      &:focus
+        box-shadow: none
+        border: 1px solid $primary !important
+
+    .p-multiselect-filter-icon::before
+      content: url('~/assets/icons/search-mutiselect.svg')
+
+  .p-multiselect-items
+    padding: 0 !important
+
+    .p-multiselect-item
+      padding: 12px 0 12px 16px !important
+      color: $text-color-900 !important
+
+      &.p-highlight
+        background-color: $primary !important
+        color: $color-white !important
+
+      &:not(.p-highlight):not(.p-disabled):hover
+        background-color: $bg-body-base !important
+
+      .p-checkbox
+        margin-right: 18px !important
+
+      .p-checkbox-box
+        &.p-highlight
+          background-color: $primary !important
+          border: 2px solid $color-white !important
+
+      &:focus
+        box-shadow: none !important
+
+  .p-multiselect-close
+    display: none !important
+// text detail have link
+.text-link
+  @include flex-center-vert
+  text-decoration: none
+  color: $text-color-900

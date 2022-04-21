@@ -1,17 +1,19 @@
 <template lang="pug">
   .layout-wrapper.layout-static
-    Sidebar
+    MenuSidebar
     .main-container(:style="{ marginLeft: sidebarWidth }")
       Nuxt
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import MenuSidebar from '~/components/sidebar/Sidebar.vue'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component({
   // TODO: Update authen logic when BE updated
   // middleware: 'authenticate'
+  components: { MenuSidebar }
 })
 class Dashboard extends Vue {
   @nsSidebar.Getter('sidebarWidth')
