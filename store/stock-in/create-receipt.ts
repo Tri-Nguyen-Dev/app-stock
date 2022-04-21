@@ -10,8 +10,8 @@ import { Receipt as ReceiptModel } from '~/models/Receipt'
 export default class StoreCreateReceipt extends VuexModule {
   private static readonly STATE_URL = {
     GET_DETAIL_RECEIPT: '/request/:id/detail',
-    GET_BOX_LOCATION: '/request/:id/detail',
-    CREATE_RECEIPT: '/location/suggest'
+    GET_BOX_LOCATION: '/location/suggest',
+    CREATE_RECEIPT:'/request/create'
   }
 
   public total?: number = 0

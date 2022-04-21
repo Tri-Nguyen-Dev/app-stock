@@ -86,11 +86,11 @@
 							//- 	i.pi.pi-refresh
 							.d-flex.col-12.border-right(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-3 Size
-								Dropdown.box-input(
+								Dropdown.box-input(v-if ='boxSizeList'
 									style='width: 70%',
-									:options='listSizes',
-									optionLabel='text',
-									optionValue='value',
+									:options='boxSizeList',
+									optionLabel='name',
+									optionValue='id',
 									placeholder='Select size',
 									v-model='listBox[activeIndex].boxSize'
 								)
@@ -169,11 +169,11 @@ import { validateEmail } from '~/utils'
 import { Receipt as ReceiptModel } from '~/models/Receipt'
 import { Stock as StockModel } from '~/models/Stock'
 import { RECEIPT_ACTION, RECEIPT_STATUS } from '~/utils/constants/rececipt'
-import { Box as BoxModel } from '~/models/Box'
 const nsStoreStock = namespace('stock/stock-detail')
 const nsStoreStockIn = namespace('stock-in/create-receipt')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreSeller = namespace('seller/seller-list')
+const nsStoreBoxSize = namespace('box/box-size-list')
 
 @Component({
   components: {
@@ -183,12 +183,6 @@ const nsStoreSeller = namespace('seller/seller-list')
   }
 })
 class CreateReceipt extends Vue {
-  listSizes = [
-    {
-      text: 'Small(10*10*10)',
-      value: BoxModel.BOX_SIZE.BOX_SIZE_SMALL
-    }
-  ]
 
   boxSize: number = 0
   listBox: ReceiptModel.Box[] = [new ReceiptModel.Box()]
@@ -203,11 +197,17 @@ class CreateReceipt extends Vue {
   @nsStoreSeller.Action
   actSellerList!: (params?: any) => Promise<void>
 
+  @nsStoreBoxSize.Action
+  actGetBoxSizeList!: (params?: any) => Promise<void>
+
   @nsStoreWarehouse.State
   warehouseList!: any
 
   @nsStoreSeller.State
   sellerList!: any
+
+  @nsStoreBoxSize.State
+  boxSizeList!: any
 
   warehouse: any = null
   seller: any = null
@@ -298,7 +298,7 @@ class CreateReceipt extends Vue {
       {
         id: '',
         stock: {
-          id: '',
+          id: stockInformation.id,
           name: stockInformation.name,
           barCode: stockInformation.barCode,
           imageUrl: '',
@@ -328,7 +328,7 @@ class CreateReceipt extends Vue {
       }
     ]
     this.listBox[this.activeIndex].listItemInBox?.push(...itemInBox)
-    this.actCreateNewStock(stockInformation)
+
   }
 
   selectBox(box) {
@@ -347,11 +347,13 @@ class CreateReceipt extends Vue {
       box.boxSize = element.boxSize
       element.listItemInBox?.forEach((item) => {
         const itemDraft: ReceiptModel.ItemDraft = new ReceiptModel.ItemDraft()
-        itemDraft.stock.id = item.id
+        itemDraft.stock.id = item.stock.id
         itemDraft.value = item.value
         itemDraft.sku = item.sku
+        itemDraft.amount = item.amount
         box.listStockWithAmount?.push(itemDraft)
       })
+      box.rackLocation.id = element.location.id
       receiptDraft.boxList?.push(box)
     })
     this.actCreateNewReceipt(receiptDraft)
@@ -373,6 +375,7 @@ class CreateReceipt extends Vue {
 
   mounted() {
     this.actWarehouseList()
+    this.actGetBoxSizeList()
   }
 }
 

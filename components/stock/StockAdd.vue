@@ -20,7 +20,7 @@
         .col-6
           h5.mb-1 Quantity
           InputText(type="number" :min="1" v-model='stockInformation.quantity' :class="{'quantity--error' : $v.stockInformation.quantity.$error}").w-full
-          .error-message(v-if='$v.stockInformation.quantity.$dirty && !$v.stockInformation.quantity.required') Please enter quantity of stock!
+          .error-message(v-if='($v.stockInformation.quantity.$dirty && !$v.stockInformation.quantity.required) || stockInformation.quantity < 0') Please enter quantity!
         .col-6
           h5.mb-1 Unit
           Dropdown(v-model='stockInformation.unit' :options="unitList" optionLabel="name" :class="{'unit--error' : $v.stockInformation.unit.$error}").w-full
@@ -29,22 +29,26 @@
           .p-input-icon-right.w-full
             .icon.icon--right Kg
             InputText(type="number" :min="1" v-model='stockInformation.weight').w-full
+            .error-message(v-if='stockInformation.weight < 0') Weight cannot be negative!
       .grid.mb-3
         .col
           h5.mb-1 Length
           .p-input-icon-right.w-full
             .icon.icon--right cm
             InputText(type="number" :min="1" v-model='stockInformation.length').w-full
+            .error-message(v-if='stockInformation.length < 0') Length cannot be negative!
         .col
           h5.mb-1 Width
           .p-input-icon-right.w-full
             .icon.icon--right cm
             InputText(type="number" :min="1" v-model='stockInformation.width').w-full
+            .error-message(v-if='stockInformation.width < 0') Width cannot be negative!
         .col
           h5.mb-1 Height
           .p-input-icon-right.w-full
             .icon.icon--right cm
             InputText(type="number" :min="1" v-model='stockInformation.height').w-full
+            .error-message(v-if='stockInformation.height < 0') Height cannot be negative!
       FileUpload(accept="image/*" :maxFileSize="1000000" :fileLimit="1" :showCancelButton='false' :showUploadButton='false' @select='getGenerateUrl')
         template(#empty)
           .grid
@@ -148,11 +152,27 @@ class AddNewStock extends Vue {
     if (this.$v.$invalid) {
       return
     }
-    await  this.actCreateNewStock(this.stockInformation)
-    if(this.newStockDetail?.id){
+    await this.actCreateNewStock(
+      {
+        barCode: this.stockInformation.barCode,
+        sku: this.stockInformation.sku,
+        name: this.stockInformation.name,
+        category: this.stockInformation.category,
+        quantity: this.stockInformation.quantity,
+        weight: this.stockInformation.weight,
+        unit: this.stockInformation.unit,
+        length: this.stockInformation.length,
+        width: this.stockInformation.width,
+        height: this.stockInformation.height,
+        imageUrl: this.stockInformation.imageUrl
+      }
+    )
+    if(this.newStockDetail){
+      this.stockInformation.id = this.newStockDetail.id
       this.$emit('addItem', this.stockInformation)
-    } else
+    } else {
       this.$toast.add({severity:'error', summary: 'Error Message', detail:'Create stock', life: 3000})
+    }
   }
 
   getGenerateUrl(file: any) {
@@ -167,7 +187,7 @@ class AddNewStock extends Vue {
       expiration: 300000,
       extension: this.extension
     }).then(() => {
-      axios.create().put(this.generateUploadUrl.url,file, {
+      axios.create().put(this.generateUploadUrl.url,file.files[0], {
         headers: {
           'Content-Type': file.files[0].type
         }

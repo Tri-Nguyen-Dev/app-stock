@@ -1,13 +1,13 @@
-import { Box as BoxModel} from './Box'
+import { Box as BoxModel } from './Box'
 import { Item as ItemModel } from '~/models/Item'
-export namespace Receipt{ 
-  
-  export class Model{ 
-    constructor(){
+export namespace Receipt {
+
+  export class Model {
+    constructor() {
       this.boxList = []
     }
 
-    id?:string
+    id?: string
     action: string
     status: string
     boxList: BoxModel.Model[]
@@ -17,79 +17,86 @@ export namespace Receipt{
 
   export interface BoxLocation {
     id: string,
-    name:string
+    name: string
     index: number
   }
   export class Box {
-    constructor(){
+    constructor() {
       this.listItemInBox = []
       this.index = 0
       this.location = {
-        id:'',
-        name:'',
-        index:0
+        id: '',
+        name: '',
+        index: 0
       }
     }
 
-		index: number
-		listItemInBox: ItemModel.Model[]
+    index: number
+    listItemInBox: ItemModel.Model[]
     inventoryFee?: number
     boxSize: string
     status: string
     location: BoxLocation
   }
 
-  export  class ItemDraft{   
-    constructor(){
+  export class ItemDraft {
+    constructor() {
       this.stock = {
-        id:''
+        id: ''
       }
     }
 
-      stock:{
-          id: string
-      };
+    stock: {
+      id: string
+    };
 
-      value?: number
-      sku?: string
-      amount?: number  
+    value?: number
+    sku?: string
+    amount?: number
   }
 
   export class BoxDraft {
-    constructor(){
+    constructor() {
       this.listStockWithAmount = []
+      this.rackLocation = {
+        id: ''
+      }
     }
 
     inventoryFee?: number
     listStockWithAmount?: ItemDraft[]
     boxSize?: string
     status?: string
-    rackLocation?: {
-        id: 1
+    rackLocation: {
+      id: string
     }
   }
-  export class CreateReceiptDraft {   
-    constructor (){
+  export class CreateReceiptDraft {
+    constructor() {
       this.boxList = []
+      this.seller = { id: 1 }
+      this.airtagE = { id: 1 }
+      this.driver = { id: 2 }
+      this.warehouse = { id: 1 }
     }
 
     action: string;
     status: string;
     boxList: BoxDraft[]
     seller: {
-        id: 1
+      id: number
     };
 
-    airtagE:{
-        id: 1
+    airtagE: {
+      id: number
     };
 
     driver: {
-        id: 2
+      id: number
     };
 
     warehouse: {
-        id: 1
+      id: number
     }
   }
 }
