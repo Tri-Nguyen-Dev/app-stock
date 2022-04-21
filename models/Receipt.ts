@@ -16,7 +16,7 @@ export namespace Receipt {
   }
 
   export interface BoxLocation {
-    id: string,
+    id?: string,
     name: string
     index: number
   }
@@ -25,9 +25,12 @@ export namespace Receipt {
       this.listItemInBox = []
       this.index = 0
       this.location = {
-        id: '',
+        id: undefined,
         name: '',
         index: 0
+      }
+      this.boxSize = {
+        id: 0
       }
     }
 
@@ -62,7 +65,7 @@ export namespace Receipt {
     constructor() {
       this.listStockWithAmount = []
       this.rackLocation = {
-        id: ''
+        id: undefined
       }
       this.boxSize ={
         id:0
@@ -77,7 +80,7 @@ export namespace Receipt {
 
     status?: string
     rackLocation: {
-      id: string
+      id?: string
     }
   }
   export class CreateReceiptDraft {

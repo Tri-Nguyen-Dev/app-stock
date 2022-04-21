@@ -27,17 +27,12 @@ export default class StoreCreateReceipt extends VuexModule {
   }
 
   @Mutation
-  setLocation(data:ReceiptModel.Model) {
-    this.receiptDetail = data
-  }
-
-  @Mutation
   setNewReceipt(data:ReceiptModel.Model) {
     this.newReceipt = data
   }
 
   @Mutation
-  setLocationSuccess(data:ReceiptModel.BoxLocation[]) {
+  setLocationSuggestion(data:ReceiptModel.BoxLocation[]) {
     this.boxLocation = data
   }
   // @Mutation
@@ -72,10 +67,10 @@ export default class StoreCreateReceipt extends VuexModule {
     } catch (error) {}
   }
 
-  @Action({ commit: 'setLocationSuccess', rawError: true })
+  @Action({ commit: 'setLocationSuggestion', rawError: true })
   async actLocationSuggestion(params: any): Promise<string | undefined> {
     try{
-      const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.CREATE_RECEIPT)
+      const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.GET_BOX_LOCATION)
       const response = await $api.post(url, params)
       return response.data
     } catch (error) {}

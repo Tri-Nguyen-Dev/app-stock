@@ -47,18 +47,18 @@
 				.grid
 					.col-2.border-top.pl-3
 						.grid.mb-2
-							.col.flex.align-items-center.justify-content-end.mb-4
-								//- Button.text-primary(type='button' icon='pi pi-plus' style='width: 90%; background-color: #F1F3FF; border: none' @click='addBox' label='Add box')
-								Button.p-button-primary.p-button-rounded.p-button-text(
-									type='button',
-									icon='pi pi-plus',
-									@click='addBox()'
-								)
-								Button.p-button-danger.p-button-rounded.p-button-text(
-									type='button',
-									icon='pi pi-trash',
-									@click='deleteBox()'
-								)
+							.col.flex.align-items-center.justify-content-center.mb-1.pt-4
+								Button.text-primary(type='button' icon='pi pi-plus' style='width: 90%; background-color: #F1F3FF; border: none' @click='addBox' label='Add box')
+								//- Button.p-button-primary.p-button-rounded.p-button-text(
+								//- 	type='button',
+								//- 	icon='pi pi-plus',
+								//- 	@click='addBox()'
+								//- )
+								//- Button.p-button-danger.p-button-rounded.p-button-text(
+								//- 	type='button',
+								//- 	icon='pi pi-trash',
+								//- 	@click='deleteBox()'
+								//- )
 						.overflow-y-auto(style='height: 55vh', v-if='listBox')
 							.grid.box-card.m-2(
 								v-for='box in listBox',
@@ -80,11 +80,11 @@
 										.col-12.pb-0(v-if='box.location.name!=""')
 											span.uppercase.mr-1  {{ box.location.name }}
 					.col-10
-						.grid.border-grid
+						.grid.border__grid
 							//- div(class='d-flex col-4 md:col-2 lg:col-1 d-flex border-right')
 							//- 	span.uppercase.mr-1 item in box 1
 							//- 	i.pi.pi-refresh
-							.d-flex.col-12.border-right(class='md:col-5 lg:col-4')
+							.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-3 Size
 								Dropdown.box-input(v-if ='boxSizeList'
 									style='width: 70%',
@@ -92,25 +92,26 @@
 									optionLabel='name',
 									optionValue='id',
 									placeholder='Select size',
-									v-model='listBox[activeIndex].boxSize'
+									v-model='listBox[activeIndex].boxSize.id'
 								)
 								span.font-semibold.text-base.ml-3 (cm)
-							.d-flex.col-12.border-right.pt-4.pb-4(class='md:col-5 lg:col-4')
+							.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-2 Estimate Inventory Fee
 								InputNumber.number-input(
 									v-model='listBox[activeIndex].inventoryFee'
 								)
 								span.font-semibold.text-base.ml-3 /day
-							.d-flex.col-6.justify-content-center(class='md:col-3 lg:col-2')
-								InputText.ml-2(placeholder='Enter barcode')
-							.d-flex.col-6.justify-content-center(class='md:col-2 lg:col-2')
+							.d-flex.col-6(class='md:col-5 lg:col-4')
+								span.font-semibold.text-base.mr-2.ml-2 Barcode
+								InputText.mr-2(placeholder='Enter barcode' style='width:40%')
+								span.font-semibold.text-base.mr-2 Or Scan
 								Button(
 									type='button',
-									label='Scan barcode'
-									style='width:80% !importan'
+									label='--'
+									style='width:10%'
 									@click='showModalAddStock'
 								) 
-						.grid.border-left.border-right.mt-0.pb-3(
+						.grid.border__left.border__right.mt-0.pb-3(
 							style='margin-right: 0px',
 							v-if='listBox'
 						)
@@ -119,11 +120,15 @@
 				.grid(v-if='listBox')
 					.d-flex.pt-2(class='col-12 md:col-4 lg:col-4')
 						.grid.w-full
-							.col.align-items-center.ml-4
+							//- .col.align-items-center.ml-4
+							.col-2.flex.align-items-center.justify-content-center.pl-4
+								img(src='~/assets/icons/note.svg')
+							.col-10
 								span.font-semibold.text-base.mr-1 Note:
-								InputText
+								br
+								InputText.pt-0.pl-0(placeholder='Write something...' style='border:none')
 					.d-flex(class='col-6 md:col-2 lg:col-2')
-						.grid.w-full.border-right
+						.grid.w-full.border__right
 							.col-3.flex.align-items-center.justify-content-end
 								img(src='~/assets/icons/box-border.svg')
 							.col-9
@@ -131,7 +136,7 @@
 								br
 								span.font-semibold.text-primary  {{listBox.length}}
 					.d-flex(class='col-6 md:col-2 lg:col-2')
-						.grid.w-full.border-right
+						.grid.w-full.border__right
 							.col-3.flex.align-items-center.justify-content-end
 								img(src='~/assets/icons/total-items-border.svg')
 							.col-9
@@ -139,16 +144,18 @@
 								br
 								span.font-semibold.text-primary {{listBox[activeIndex].listItemInBox.length}}
 					.d-flex(class='col-6 md:col-2 lg:col-2')
-						.grid.w-full.border-right
+						.grid.w-full.border__right
 							.col-3.flex.align-items-center.justify-content-end
 								img(src='~/assets/icons/total-fee.svg')
 							.col-9
 								span.font-semibold.text-base.mr-1 Total fee:
 								br
 								span.font-semibold.text-primary 3$/day
-					.d-flex(class='col-6 md:col-2 lg:col-2')
-						Button.p-button-secondary.mr-2(label='Save draft' icon="pi pi-file-o" @click='saveDrapReceipt()')
-						Button(label='Next' @click='getLocationSuggest()')
+					.d-flex.justify-content-center(class='col-6 md:col-2 lg:col-2')
+						Button.p-button-secondary.mr-2(label='Save draft' icon="pi pi-file-o" @click='saveReceipt(0)')
+						Button.p-button-secondary(label='Back' @click='clearLocation()' v-if='activeSave')
+						Button(label='Next' @click='getLocationSuggest()' v-if='!activeSave')
+						Button(label='Save' @click='saveReceipt(1)' v-if='activeSave && activeAction')
 		Toast
 		Sidebar(
 			:visible='isShowModalAddStock',
@@ -190,7 +197,8 @@ class CreateReceipt extends Vue {
   isShowModalAddStock: boolean = false
   activeIndex = 0
   activeAction = false
-
+  activeSave = false
+  receiptNoteId:string
   @nsStoreWarehouse.Action
   actWarehouseList!: (params?: any) => Promise<void>
 
@@ -208,6 +216,9 @@ class CreateReceipt extends Vue {
 
   @nsStoreBoxSize.State
   boxSizeList!: any
+
+  @nsStoreStockIn.State
+  newReceipt!: any
 
   warehouse: any = null
   seller: any = null
@@ -330,19 +341,20 @@ class CreateReceipt extends Vue {
       }
     ]
     this.listBox[this.activeIndex].listItemInBox?.push(...itemInBox)
-
+    this.checkActiveAction()
+    this.activeSave =true
   }
 
   selectBox(box) {
     this.activeIndex = box.index
   }
 
-  saveDrapReceipt() {
+  async saveReceipt(type) {
     if (!this.checkActiveAction()) return
     const receiptDraft: ReceiptModel.CreateReceiptDraft =
       new ReceiptModel.CreateReceiptDraft()
     receiptDraft.action = RECEIPT_ACTION.REQUEST_ACTION_UNKNOWN
-    receiptDraft.status = RECEIPT_STATUS.REQUEST_STATUS_DRAFT
+    receiptDraft.status = type===0?RECEIPT_STATUS.REQUEST_STATUS_DRAFT:RECEIPT_STATUS.REQUEST_STATUS_SAVED
     this.listBox.forEach((element) => {
       const box: ReceiptModel.BoxDraft = new ReceiptModel.BoxDraft()
       box.inventoryFee = element.inventoryFee
@@ -358,26 +370,51 @@ class CreateReceipt extends Vue {
       box.rackLocation.id = element.location.id
       receiptDraft.boxList?.push(box)
     })
-    this.actCreateNewReceipt(receiptDraft)
+    await this.actCreateNewReceipt(receiptDraft)
   }
 
   checkActiveAction() {
-    return this.listBox[this.activeIndex].listItemInBox.length > 0
+    this.activeAction = this.listBox[this.activeIndex].listItemInBox.length > 0
+    return this.activeAction
   }
 
   async getLocationSuggest(){
     const	listBoxSize = this.listBox.map(element=>{
-      return element.boxSize
+      return ''+element.boxSize
     })
     await this.actLocationSuggestion(listBoxSize)
     this.boxLocation.forEach(element => {
       this.listBox[element.index].location.name = element.name
+      this.listBox[element.index].location.id = element.id
     })
+    this.checkLocation()
   }
 
   mounted() {
     this.actWarehouseList()
     this.actGetBoxSizeList()
+  }
+
+  checkLocation(){
+    this.listBox.forEach(element => {
+      if(!element.location.id || element.location.id===''){
+        this.activeSave = false
+				
+      }else{
+        this.activeSave = true
+      }
+    })
+  }
+
+  clearLocation(){
+    this.listBox.forEach((element,index)=>{
+      element.location= {
+        id:'',
+        name:'',
+        index
+      }
+    })
+    this.activeSave=false
   }
 }
 
@@ -399,17 +436,18 @@ export default CreateReceipt
 	background: #FFFFFF
 	border-radius: 3px
 	width: 1px
-.border-grid
-	border: solid 1px #E8EAEF
-	border-right: none
-.border-right
-	border-right: solid 1px #E8EAEF
-.border-left
-	border-left: solid 1px #E8EAEF
-.border-top
-	border-top: solid 1px #E8EAEF
-.border-bot
-	border-bottom: solid 1px #E8EAEF
+.border
+	&__grid
+		border: solid 1px #E8EAEF
+		border-right: none
+	&__right
+		border-right: solid 1px #E8EAEF
+	&__left
+		border-left: solid 1px #E8EAEF
+	&__top
+		border-top: solid 1px #E8EAEF
+	&__bot
+		border-bottom: solid 1px #E8EAEF
 .card-custom
 	::v-deep.p-datatable
 		height: 55vh
