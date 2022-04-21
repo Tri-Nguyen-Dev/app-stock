@@ -200,66 +200,66 @@ export default ItemDetail
 $large: 1440px
 $small: 1025px
 .item__detail-container
-  height: calc(100vh - 64px)
-  .left__information--stock
-    .stock__information
-      border-bottom: 1px solid #eeeff2
+	height: calc(100vh - 64px)
+	.left__information--stock
+		.stock__information
+			border-bottom: 1px solid #eeeff2
 
-      .p-disabled, .p-component:disabled
-        opacity: 1
+			.p-disabled, .p-component:disabled
+				opacity: 1
 
-      .p-inputtext
-        border: none
-        background: transparent
-        padding: 0
-        color: #000
-        font-weight: 600
+			.p-inputtext
+				border: none
+				background: transparent
+				padding: 0
+				color: #000
+				font-weight: 600
 
-  .right__information--stock
-    .stock__log--history
-      height: calc(100vh - 130px)
-    ::v-deep.p-tabview .p-tabview-nav li
-      .p-tabview-nav-link
-        background: #e9ecef
-        border: none
-        box-shadow: none !important
+	.right__information--stock
+		.stock__log--history
+			height: calc(100vh - 130px)
+		::v-deep.p-tabview .p-tabview-nav li
+			.p-tabview-nav-link
+				background: #e9ecef
+				border: none
+				box-shadow: none !important
 
-    ::v-deep.p-tabview .p-tabview-panels
-      background: #e9ecef
-      padding: 1.25rem 0 0 0
+		::v-deep.p-tabview .p-tabview-panels
+			background: #e9ecef
+			padding: 1.25rem 0 0 0
 
-    ::v-deep.p-highlight .p-tabview-nav-link
-      color: #000 !important
-      border-bottom: 2px solid #486AE2 !important
+		::v-deep.p-highlight .p-tabview-nav-link
+			color: #000 !important
+			border-bottom: 2px solid #486AE2 !important
 
-      .icon
-        background-color: #094db1 !important
+	.icon
+		background-color: #094db1 !important
 
 ::-webkit-scrollbar
- width: 7px
- height: 7px
- background-color: #F5F5F5
+	width: 7px
+	height: 7px
+	background-color: #F5F5F5
 
 ::-webkit-scrollbar-track
- -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
- border-radius: 10px
- background-color: #F5F5F5
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+	border-radius: 10px
+	background-color: #F5F5F5
 
 ::-webkit-scrollbar-thumb
- border-radius: 10px
- -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
- background-color: #979AA4
+	border-radius: 10px
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
+	background-color: #979AA4
 
 .wapprer-unit
-  height: 72px
-  border-radius: 4px
+	height: 72px
+	border-radius: 4px
 @media (max-width: $large) and (min-width: $small)
-  .stock__information--image
-    width: 100%
-  .stock__information--icon
-    margin-right: 1rem
-  .sender__information--logs
-    width: 100%
-  .sender__information--name
-    margin-right: 2rem
+	.stock__information--image
+		width: 100%
+	.stock__information--icon
+		margin-right: 1rem
+	.sender__information--logs
+		width: 100%
+	.sender__information--name
+		margin-right: 2rem
 </style>
