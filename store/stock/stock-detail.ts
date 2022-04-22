@@ -17,7 +17,8 @@ export default class StoreStockDetail extends VuexModule {
     UPDATE_STOCK: '/stock/:id/update',
     GET_STOCK_HISTORY: '/stock/:stockId/box/:boxId/history',
     DELETE_ITEMS: '/stock/:id/box/delete',
-    UPDATE_ITEM: '/stock/:stockId/box/:boxId/update'
+    UPDATE_ITEM: '/stock/:stockId/box/:boxId/update',
+    GET_STOCK_BY_BARCODE: '/stock/barcode/:barcode'
   }
 
   public total?: number = 0
@@ -109,5 +110,11 @@ export default class StoreStockDetail extends VuexModule {
   async actUpdateItem(params: {path: any, body: StockModel.ModelEditItem}): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.UPDATE_ITEM, params.path)
     return await $api.post(url, params.body)
+  }
+  
+  @Action({ commit: 'setStockDetail', rawError: true })
+  async actGetStockByBarcode(params: { id: number }): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_STOCK_BY_BARCODE,params)
+    return await $api.get(url)
   }
 }

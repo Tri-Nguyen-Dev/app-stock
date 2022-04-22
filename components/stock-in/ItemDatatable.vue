@@ -122,40 +122,40 @@ class ItemDataTable extends Vue {
     sortDescending: null
   }
 
-  listItemInBox = [
-    {
-      stock: {
-        id: '65rt4u4qldua8lesz4yomaw9o',
-        name: 'test 2',
-        sku: 'test test',
-        height: 89,
-        width: 89,
-        length: 89,
-        value: 69,
-        description: null,
-        imagePath: null,
-        barCode: '3135515655388',
-        amount: 12,
-        unit: {
-          id: 1,
-          name: 'piece'
-        },
-        weight: 89,
-        category: {
-          id: 1,
-          name: 'warehouse1',
-          icon: null,
-          displayOrder: null,
-          deleted: null
-        },
-        stockStatus: 'STOCK_STATUS_DISABLE',
-        attributeValue: [],
-        deleted: false
-      }
-    }
-  ]
+  // listItemInBox = [
+  //   {
+  //     stock: {
+  //       id: '65rt4u4qldua8lesz4yomaw9o',
+  //       name: 'test 2',
+  //       sku: 'test test',
+  //       height: 89,
+  //       width: 89,
+  //       length: 89,
+  //       value: 69,
+  //       description: null,
+  //       imagePath: null,
+  //       barCode: '3135515655388',
+  //       amount: 12,
+  //       unit: {
+  //         id: 1,
+  //         name: 'piece'
+  //       },
+  //       weight: 89,
+  //       category: {
+  //         id: 1,
+  //         name: 'warehouse1',
+  //         icon: null,
+  //         displayOrder: null,
+  //         deleted: null
+  //       },
+  //       stockStatus: 'STOCK_STATUS_DISABLE',
+  //       attributeValue: [],
+  //       deleted: false
+  //     }
+  //   }
+  // ]
 
-  // @Prop() listItemInBox!: ItemModel.Model[]
+  @Prop() listItemInBox!: ItemModel.Model[]
   @Prop() getParam: () => any
 
   // onCellEditComplete(event) {}

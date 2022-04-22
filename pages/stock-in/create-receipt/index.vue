@@ -62,7 +62,7 @@
 						.overflow-y-auto(style='height: 55vh', v-if='listBox')
 							.grid.box-card.m-2(
 								v-for='box in listBox',
-								@click='selectBox(box)',
+								@click='selectBox(box)'
 								:class='{ "box-card-active": box.index == activeIndex }'
 							)
 								.col-6.flex.align-items-center
@@ -71,7 +71,7 @@
 									Button.p-button-default.p-button-rounded.p-button-text(
 										type='button',
 										icon='pi pi-ellipsis-h',
-										@click='deleteBox()'
+										@click.stop='deleteBox(box.index)'
 									)
 								.col-12.flex.align-items-center
 									.grid
@@ -80,14 +80,13 @@
 										.col-12.pb-0(v-if='box.location.name!=""')
 											span.uppercase.mr-1  {{ box.location.name }}
 					.col-10
-						.grid.border__grid
+						.grid.border__grid(v-if ='boxSizeList && listBox[activeIndex]')
 							//- div(class='d-flex col-4 md:col-2 lg:col-1 d-flex border-right')
 							//- 	span.uppercase.mr-1 item in box 1
 							//- 	i.pi.pi-refresh
 							.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-3 Size
 								Dropdown.box-input(
-                  v-if ='boxSizeList'
 									style='width: 70%',
 									:options='boxSizeList',
 									optionLabel='name',
@@ -104,21 +103,21 @@
 								span.font-semibold.text-base.ml-3 /day
 							.d-flex.col-6(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-2.ml-2 Barcode
-								InputText.mr-2(placeholder='Enter barcode' style='width:40%')
-								span.font-semibold.text-base.mr-2 Or Scan
-								Button(
-									type='button',
-									label='--'
-									style='width:10%'
-									@click='showModalAddStock'
-								)
-						.grid.border-left.border-right.mt-0.pb-3(
+								InputText.mr-2(placeholder='Enter barcode' style='width:40%' @change='changeBarcode($event)')
+								//- span.font-semibold.text-base.mr-2 Or Scan
+								//- Button(
+								//- 	type='button',
+								//- 	label='--'
+								//- 	style='width:10%'
+								//- 	@click='showModalAddStock'
+								//- )
+						.grid.border__left.border__right.mt-0.pb-3(
 							style='margin-right: 0px',
-							v-if='listBox'
+							v-if='listBox && listBox[activeIndex]'
 						)
 							ItemDataTable(:listItemInBox='listBox[activeIndex].listItemInBox')
 			template(#footer='')
-				.grid(v-if='listBox')
+				.grid(v-if='listBox && listBox[activeIndex]')
 					.d-flex.pt-2(class='col-12 md:col-4 lg:col-4')
 						.grid.w-full
 							//- .col.align-items-center.ml-4
@@ -234,11 +233,17 @@ class CreateReceipt extends Vue {
   @nsStoreStock.State
   newStockDetail!: StockModel.CreateStock
 
+  @nsStoreStock.State
+  stockDetail!: any
+
   @nsStoreStockIn.State
   newReceipt!: any
 
   @nsStoreStockIn.State
   boxLocation!: ReceiptModel.BoxLocation[]
+	
+  @nsStoreStock.Action
+  actGetStockByBarcode
 
   @nsStoreStockIn.Action
   actGetReceiptDetail
@@ -273,10 +278,10 @@ class CreateReceipt extends Vue {
     this.activeIndex = this.listBox[this.listBox.length - 1].index
   }
 
-  deleteBox() {
+  deleteBox(index) {
     if (this.listBox.length > 1) {
-      this.listBox.splice(this.listBox.length - 1, 1)
-      this.activeIndex = this.listBox[this.listBox.length - 1].index
+      this.listBox.splice(index, 1)
+      this.selectBox(this.listBox[index-1])
     }
   }
 
@@ -416,6 +421,39 @@ class CreateReceipt extends Vue {
       }
     })
     this.activeSave=false
+  }
+
+  async	changeBarcode(event){
+    if(event.target.value.length===13){
+      const item = this.listBox[this.activeIndex].listItemInBox.findIndex(element=>{
+        return element.stock.barCode === event.target.value
+      })
+      if(item>=0){
+        this.listBox[this.activeIndex].listItemInBox[item].amount++
+      } else {
+        await this.actGetStockByBarcode({ barcode: event.target.value })
+        const	stock = this.stockDetail.data
+        if(this.stockDetail.data){
+          const stockInformation: any = {
+            barCode: stock.barCode,
+            sku: stock.sku,
+            name: stock.name,
+            category: stock.category,
+            quantity: 1,
+            weight: stock.weight,
+            unit: stock.unit,
+            length: stock.length,
+            width: stock.width,
+            height: stock.height,
+            imagePath: stock.imagePath,
+            id: stock.id
+          }
+          this.addItem(stockInformation)
+        } else {
+          this.showModalAddStock()
+        }	
+      }
+    }
   }
 }
 
