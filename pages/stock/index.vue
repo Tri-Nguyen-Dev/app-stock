@@ -24,7 +24,7 @@
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(v-model='filter.categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
       .col
-        FilterTable(title="Code" placeholder="Search code" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
+        FilterTable(title="Barcode" placeholder="Search barcode" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
       .col
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .stock__table
@@ -98,7 +98,7 @@
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
               p.empty__text(v-if="!checkIsFilter") List is empty!, Click
                 span &nbsp;here
-                span &nbsp;to add item.
+                span(@click="handleAddStock") &nbsp;to add item.
               p.notfound__text(v-else) Item not found!
     ConfirmDialogCustom(
       title="Confirm delete"
