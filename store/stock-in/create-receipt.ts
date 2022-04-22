@@ -27,7 +27,7 @@ export default class StoreCreateReceipt extends VuexModule {
   }
 
   @Mutation
-  setNewReceipt(data:ReceiptModel.Model) {
+  setNewReceipt(data:any) {
     this.newReceipt = data
   }
 
