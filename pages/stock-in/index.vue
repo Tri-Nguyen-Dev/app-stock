@@ -110,7 +110,12 @@
             template(#body='{ data }')
               .flex.align-items-center.cursor-pointer.justify-content-end
                   span.text-white-active {{ data.creatorId }}
-          Column(header='CREATOR NAME' field='data.creatorName' :sortable="true" sortField="_createdBy.displayName" :styles="{'width': '1%'}")
+          Column(
+          header='CREATOR NAME' 
+          field='data.creatorName' 
+          :sortable="true" 
+          sortField="_createdBy.displayName" 
+          :styles="{'width': '1%'}")
             template(#body='{ data }')
               .flex.align-items-center.cursor-pointer.justify-content-end
                   span.text-white-active {{ data.creatorName }}
