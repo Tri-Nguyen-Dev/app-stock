@@ -66,7 +66,7 @@
 							//- 	i.pi.pi-refresh
 							.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-3 Size:
-								span {{`${listBox[activeIndex].boxSize.name}(${listBox[activeIndex].boxSize.length}*${listBox[activeIndex].boxSize.width}*${listBox[activeIndex].boxSize.height})`}} 
+								span {{`${listBox[activeIndex].boxSize.name}(${listBox[activeIndex].boxSize.length}*${listBox[activeIndex].boxSize.width}*${listBox[activeIndex].boxSize.height})`}}
 								span.font-semibold.text-base.ml-3 (cm)
 							.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-2 Estimate Inventory Fee:
@@ -99,7 +99,11 @@
 										filter-match-mode='contains'
 									)
 										template(#body="slotProps")
-											//- img(:src='process.env.BASE_IMAGE_URL + `thumbnail/${slotProps.data.stock.imagePath}`' :alt="slotProps.data.image" style="width:3rem; height: 3rem")
+											img(
+                        :src="slotProps.data.stock.imagePath | getThumbnailUrl"
+                        :alt="slotProps.data.image"
+                        style="width:3rem; height: 3rem"
+                      )
 									column.text-overflow-ellipsis(
 										field='stock.barCode'
 										header='BARCODE',
@@ -269,7 +273,7 @@ class CreateReceipt extends Vue {
   }
 
   export(){
-    
+
   }
 
   setShowLabel(value: any) {

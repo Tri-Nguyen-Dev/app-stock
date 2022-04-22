@@ -15,7 +15,7 @@
             .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon.icon-btn-edit
         .grid.mb-3.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          img(:src='model.data.imagePath').border-round.w-full
+          img(:src="model.data.imagePath | getImageUrl").border-round.w-full
         .grid.my-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           Tag(severity="success" v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"').uppercase Available
           Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DISABLE"').uppercase.surface-200 Disable
