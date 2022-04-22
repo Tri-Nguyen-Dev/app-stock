@@ -48,16 +48,6 @@
 						.grid.mb-2
 							.col.flex.align-items-center.justify-content-center.mb-1.pt-4
 								Button.text-primary(type='button' icon='pi pi-plus' style='width: 90%; background-color: #F1F3FF; border: none' @click='addBox' label='Add box')
-								//- Button.p-button-primary.p-button-rounded.p-button-text(
-								//- 	type='button',
-								//- 	icon='pi pi-plus',
-								//- 	@click='addBox()'
-								//- )
-								//- Button.p-button-danger.p-button-rounded.p-button-text(
-								//- 	type='button',
-								//- 	icon='pi pi-trash',
-								//- 	@click='deleteBox()'
-								//- )
 						.overflow-y-auto(style='height: 55vh', v-if='listBox')
 							.grid.box-card.m-2(
 								v-for='box in listBox',
@@ -80,9 +70,6 @@
 											span.uppercase.mr-1  {{ box.location.name }}
 					.col-10
 						.grid.border__grid(v-if ='boxSizeList && listBox[activeIndex]')
-							//- div(class='d-flex col-4 md:col-2 lg:col-1 d-flex border-right')
-							//- 	span.uppercase.mr-1 item in box 1
-							//- 	i.pi.pi-refresh
 							.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-3 Size
 								Dropdown.box-input(
@@ -103,13 +90,6 @@
 							.d-flex.col-6(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-2.ml-2 Barcode
 								InputText.mr-2(placeholder='Enter barcode' style='width:40%' @change='changeBarcode($event)' v-model='boxQrCode')
-								//- span.font-semibold.text-base.mr-2 Or Scan
-								//- Button(
-								//- 	type='button',
-								//- 	label='--'
-								//- 	style='width:10%'
-								//- 	@click='showModalAddStock'
-								//- )
 						.grid.border__left.border__right.mt-0.pb-3(
 							style='margin-right: 0px',
 							v-if='listBox && listBox[activeIndex]'
@@ -170,7 +150,6 @@ import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
 import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
-import { Item as ItemModel } from '~/models/Item'
 import { Receipt as ReceiptModel } from '~/models/Receipt'
 import { Stock as StockModel } from '~/models/Stock'
 import { RECEIPT_ACTION, RECEIPT_STATUS } from '~/utils/constants/rececipt'
@@ -191,12 +170,10 @@ class CreateReceipt extends Vue {
 
   boxSize: number = 0
   listBox: ReceiptModel.Box[] = [new ReceiptModel.Box()]
-  itemInBox: ItemModel.Model
   isShowModalAddStock: boolean = false
   activeIndex = 0
   activeAction = false
   activeSave = false
-  receiptNoteId:string
   boxQrCode: string = ''
   @nsStoreWarehouse.Action
   actWarehouseList!: (params?: any) => Promise<void>
@@ -240,7 +217,7 @@ class CreateReceipt extends Vue {
 
   @nsStoreStockIn.State
   boxLocation!: ReceiptModel.BoxLocation[]
-	
+
   @nsStoreStock.Action
   actGetStockByBarcode
 
@@ -262,13 +239,13 @@ class CreateReceipt extends Vue {
       index: this.listBox[this.listBox.length - 1].index + 1,
       listItemInBox: [],
       boxSize: {
-        id:0
+        id: 0
       },
       status: RECEIPT_STATUS.REQUEST_STATUS_DRAFT,
-      location:{
-        id:'',
-        name:'',
-        index:0
+      location: {
+        id: '',
+        name: '',
+        index: 0
       }
     }
     if (this.listBox.length < 10) {
@@ -281,7 +258,7 @@ class CreateReceipt extends Vue {
   deleteBox(index) {
     if (this.listBox.length > 1) {
       this.listBox.splice(index, 1)
-      this.selectBox(this.listBox[index-1])
+      this.selectBox(this.listBox[index - 1])
     }
   }
 
@@ -351,7 +328,7 @@ class CreateReceipt extends Vue {
     const receiptDraft: ReceiptModel.CreateReceiptDraft =
       new ReceiptModel.CreateReceiptDraft()
     receiptDraft.action = RECEIPT_ACTION.REQUEST_ACTION_TO_IMPORT_BOX
-    receiptDraft.status = type===0?RECEIPT_STATUS.REQUEST_STATUS_DRAFT:RECEIPT_STATUS.REQUEST_STATUS_SAVED
+    receiptDraft.status = type === 0 ? RECEIPT_STATUS.REQUEST_STATUS_DRAFT : RECEIPT_STATUS.REQUEST_STATUS_SAVED
     this.listBox.forEach((element) => {
       const box: ReceiptModel.BoxDraft = new ReceiptModel.BoxDraft()
       box.inventoryFee = element.inventoryFee
@@ -368,27 +345,22 @@ class CreateReceipt extends Vue {
       receiptDraft.boxList?.push(box)
     })
     await this.actCreateNewReceipt(receiptDraft)
-    if(type===1){
-      this.$router.push(`/stock-in/${this.newReceipt.id}/detail`)
+    if (type === 1) {
+      await this.$router.push(`/stock-in/${this.newReceipt.id}/detail`)
     }
   }
 
   checkActiveAction() {
     this.activeAction = true
     this.listBox.forEach(element => {
-      if(element.listItemInBox.length<=0){
-        this.activeAction = false
-					
-      } else {
-        this.activeAction = true
-      }	
+      this.activeAction = element.listItemInBox.length > 0
     })
     return this.activeAction
   }
 
-  async getLocationSuggest(){
-    const	listBoxSize = this.listBox.map(element=>{
-      return ''+element.boxSize
+  async getLocationSuggest() {
+    const listBoxSize = this.listBox.map(element => {
+      return '' + element.boxSize
     })
     await this.actLocationSuggestion(listBoxSize)
     this.boxLocation.forEach(element => {
@@ -403,47 +375,43 @@ class CreateReceipt extends Vue {
     this.actGetBoxSizeList()
   }
 
-  checkLocation(){
+  checkLocation() {
     this.listBox.forEach(element => {
-      if(!element.location.id || element.location.id===''){
-        this.activeSave = false
-
-      }else{
-        this.activeSave = true
-      }
+      this.activeSave = !(!element.location.id || element.location.id === '')
     })
   }
 
-  clearLocation(){
-    this.listBox.forEach((element,index)=>{
-      element.location= {
-        id:'',
-        name:'',
+  clearLocation() {
+    this.listBox.forEach((element, index) => {
+      element.location = {
+        id: '',
+        name: '',
         index
       }
     })
-    this.activeSave=false
+    this.activeSave = false
   }
 
-  totalItem(){
-    let	total=0
+  totalItem() {
+    let total = 0
     this.listBox.forEach(element => {
-      total+=element.listItemInBox.length
+      total += element.listItemInBox.length
     })
     return total
   }
 
-  async	changeBarcode(event){
-    if(event.target.value.length===13){
-      const item = this.listBox[this.activeIndex].listItemInBox.findIndex(element=>{
+  async changeBarcode(event) {
+    if (event.target.value.length === 13) {
+      const item = this.listBox[this.activeIndex].listItemInBox.findIndex(element => {
         return element.stock.barCode === event.target.value
       })
-      if(item>=0){
+      if (item >= 0) {
         this.listBox[this.activeIndex].listItemInBox[item].amount++
+        this.boxQrCode = ''
       } else {
         await this.actGetStockByBarcode({ barcode: event.target.value })
-        const	stock = this.stockDetail.data
-        if(this.stockDetail.data){
+        const stock = this.stockDetail.data
+        if (this.stockDetail.data) {
           const stockInformation: any = {
             barCode: stock.barCode,
             sku: stock.sku,
@@ -461,9 +429,9 @@ class CreateReceipt extends Vue {
           this.addItem(stockInformation)
           this.boxQrCode = ''
         } else {
-          this.boxQrCode=event.target.value
+          this.boxQrCode = event.target.value
           this.showModalAddStock()
-        }	
+        }
       }
     }
   }
