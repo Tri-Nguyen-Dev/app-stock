@@ -154,8 +154,8 @@
 								span.font-semibold.text-primary 3$/day
 					.d-flex.justify-content-center(class='col-6 md:col-2 lg:col-2')
 						Button.p-button-secondary.mr-2(label='Save draft' icon="pi pi-file-o" @click='saveReceipt(0)')
-						Button.p-button-secondary(label='Back' @click='clearLocation()' v-if='activeSave')
-						Button(label='Next' @click='getLocationSuggest()' v-if='!activeSave')
+						Button.p-button-secondary.mr-2(label='Back' @click='clearLocation()' v-if='activeSave')
+						Button(label='Next' @click='getLocationSuggest()' v-if='!activeSave' :disabled='!activeAction')
 						Button(label='Save' @click='saveReceipt(1)' v-if='activeSave && activeAction')
 		Toast
 		Sidebar(
@@ -218,9 +218,6 @@ class CreateReceipt extends Vue {
   @nsStoreBoxSize.State
   boxSizeList!: any
 
-  @nsStoreStockIn.State
-  newReceipt!: any
-
   warehouse: any = null
   seller: any = null
   sellerEmailError: any = null
@@ -236,6 +233,9 @@ class CreateReceipt extends Vue {
 
   @nsStoreStock.State
   newStockDetail!: StockModel.CreateStock
+
+  @nsStoreStockIn.State
+  newReceipt!: any
 
   @nsStoreStockIn.State
   boxLocation!: ReceiptModel.BoxLocation[]
@@ -342,6 +342,8 @@ class CreateReceipt extends Vue {
       }
     ]
     this.listBox[this.activeIndex].listItemInBox?.push(...itemInBox)
+    this.checkActiveAction()
+    this.checkLocation()
   }
 
   selectBox(box) {
@@ -352,7 +354,7 @@ class CreateReceipt extends Vue {
     if (!this.checkActiveAction()) return
     const receiptDraft: ReceiptModel.CreateReceiptDraft =
       new ReceiptModel.CreateReceiptDraft()
-    receiptDraft.action = RECEIPT_ACTION.REQUEST_ACTION_UNKNOWN
+    receiptDraft.action = RECEIPT_ACTION.REQUEST_ACTION_TO_IMPORT_BOX
     receiptDraft.status = type===0?RECEIPT_STATUS.REQUEST_STATUS_DRAFT:RECEIPT_STATUS.REQUEST_STATUS_SAVED
     this.listBox.forEach((element) => {
       const box: ReceiptModel.BoxDraft = new ReceiptModel.BoxDraft()

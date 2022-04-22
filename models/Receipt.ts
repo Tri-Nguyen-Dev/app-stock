@@ -36,13 +36,19 @@ export namespace Receipt {
       }
     }
 
+    qrCode?:string
     index: number
     listItemInBox: ItemModel.Model[]
     inventoryFee?: number
     boxSize: {
       id: number
+      name?:string
+      height?:number,
+      width?: number,
+      length?: number
     }
 
+    id?:string
     status: string
     location: BoxLocation
   }
