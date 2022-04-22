@@ -51,6 +51,9 @@ export namespace Receipt {
     id?:string
     status: string
     location: BoxLocation
+    amount?:number
+    sku?:string
+    value?:number
   }
 
   export class ItemDraft {

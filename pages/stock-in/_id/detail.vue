@@ -75,7 +75,7 @@
 							.d-flex.col-6(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-2.ml-2 Barcode:
 								span {{listBox[activeIndex].qrCode}}
-						.grid.border-left.border-right.mt-0.pb-3(
+						.grid.border__left.border__right.mt-0.pb-3(
 							style='margin-right: 0px'
 							v-if='listBox[activeIndex]'
 						)
@@ -109,11 +109,11 @@
 										template(#body='{data}')
 											span.text-primary.font-bold {{data.stock.barCode}}
 									column(
-										field='stock.sku',
+										field='sku',
 										header='SKU'
 									)
 										template(#body='{data}')
-											span.text-primary.font-bold {{data.stock.sku}}
+											span.text-primary.font-bold {{data.sku}}
 									column(
 										field='stock.name'
 										header='NAME'
@@ -121,14 +121,14 @@
 										template(#body='{data}')
 											span.font-bold.text-right {{data.stock.name}}
 									column(
-										field='stock.amount'
+										field='amount'
 										header='QUANTITY'
 										:show-filter-match-modes='false'
 										className="p-text-right"
 										style='width:10%'
 									)
 										template(#body='{data}')
-												span.text-primary.font-bold.text-right {{data.stock.amount}}
+												span.text-primary.font-bold.text-right {{data.amount}}
 									column(
 										field='unit.name',
 										header='UNIT',
@@ -154,13 +154,13 @@
 										template(#body='{data}')
 											span.font-bold {{data.stock.weight}}
 									column(
-										field='stock.value',
+										field='value',
 										header='VALUE',
 										:show-filter-match-modes='false'
 										className="p-text-right"
 									)
 										template(#body='{data}')
-											span.font-bold {{data.stock.value}}
+											span.font-bold {{data.value}}
 									column(
 										field='category.name',
 										header='CATEGORY',

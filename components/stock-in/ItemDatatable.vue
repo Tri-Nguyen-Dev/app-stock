@@ -1,108 +1,107 @@
 <template lang="pug">
 DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
-  :value='listItemInBox'
-  dataKey='stock.barCode'
-  :paginator='false'
-  :row-hover='true'
-  responsiveLayout="scroll"
-  columnResizeMode="fit"
-  editMode="cell"
-  class="editable-cells-table"
-  @cell-edit-complete="onCellEditComplete"
+	:value='listItemInBox'
+	dataKey='stock.barCode'
+	:paginator='false'
+	:row-hover='true'
+	responsiveLayout="scroll"
+	columnResizeMode="fit"
+	editMode="cell"
+	class="editable-cells-table"
 )
-    template(#empty)
-        div.flex.align-items-center.justify-content-center.flex-column
-            img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
-            p.text-900.font-bold.mt-3 List is empty!
-    column(field='no', header='NO')
-      template(#body="slotProps")
-        span.font-bold {{slotProps.index + 1 }}
-    column(
-      field='',
-      header='IMAGE',
-      filter-match-mode='contains'
-    )
-      template(#body="slotProps")
-        //- img(:src='process.env.BASE_IMAGE_URL + `thumbnail/${slotProps.data.stock.imagePath}`' :alt="slotProps.data.image" style="width:3rem; height: 3rem")
-    column.text-overflow-ellipsis(
-      field='stock.barCode'
-      header='BARCODE',
-      :sortable='true',
-      sort-field='representative.name',
-    )
-      template(#body='{data}')
-        span.text-primary.font-bold {{data.stock.barCode}}
-    column(
-      field='stock.sku',
-      header='SKU'
-    )
-      template(#editor="{ data, field }")
-        InputText(v-model='data.stock.sku' autofocus)
-    column(
-      field='stock.name'
-      header='NAME'
-      )
-        template(#body='{data}')
-          span.font-bold.text-right {{data.stock.name}}
-    column(
-      field='stock.amount'
-      header='QUANTITY'
-      :show-filter-match-modes='false'
-      className="p-text-right"
-      style='width:10%'
-    )
-      template(#editor="{ data, field }")
-        InputNumber(v-model='data.stock.amount' autofocus)
-          //- span.font-bold.text-right {{data.amount}}
-    column(
-      field='unit.name',
-      header='UNIT',
-      :show-filter-match-modes='false'
-      className="p-text-right"
-    )
-      template(#body='{data}')
-        span.font-bold {{data.stock.unit.name}}
-    column(
-      field='size',
-      header='SIZE',
-      :show-filter-match-modes='false'
-      className="p-text-right"
-    )
-      template(#body='{data}')
-        span.font-bold {{data.stock.length}}*{{data.stock.width}}*{{data.stock.height}}
-    column(
-      field='weight',
-      header='WEIGHT(KG)',
-      :show-filter-match-modes='false'
-      className="p-text-right"
-    )
-      template(#body='{data}')
-        span.font-bold {{data.stock.weight}}
-    column(
-      field='stock.value',
-      header='VALUE',
-      :show-filter-match-modes='false'
-      className="p-text-right"
-    )
-      template(#editor="{ data, field }")
-        InputNumber(v-model='data.stock.value' autofocus)
-    column(
-      field='category.name',
-      header='CATEGORY',
-      :show-filter-match-modes='false'
-      className="p-text-right"
-    )
-      template(#body='{data}')
-        span.font-bold.text-right {{data.stock.name}}
-    column( header="ACTION" className="text-right")
-      template(#body="{data}")
-        .grid.table__action
-          //- span(@click="handleEditBox(data.id)")
-          span
-            .icon.icon-edit-btn
-          //- span(:class="{'disable-button': itemsBoxDelete.length > 0}" @click="showModalDelete(data.id)")
-          span
-            .icon.icon-btn-delete
+		template(#empty)
+				div.flex.align-items-center.justify-content-center.flex-column
+						img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
+						p.text-900.font-bold.mt-3 List is empty!
+		column(field='no', header='NO')
+			template(#body="slotProps")
+				span.font-bold {{slotProps.index + 1 }}
+		column(
+			field='',
+			header='IMAGE',
+			filter-match-mode='contains'
+		)
+			template(#body="slotProps")
+				//- img(:src='process.env.BASE_IMAGE_URL + `thumbnail/${slotProps.data.stock.imagePath}`' :alt="slotProps.data.image" style="width:3rem; height: 3rem")
+		column.text-overflow-ellipsis(
+			field='stock.barCode'
+			header='BARCODE',
+			:sortable='true',
+			sort-field='representative.name',
+		)
+			template(#body='{data}')
+				span.text-primary.font-bold {{data.stock.barCode}}
+		column(
+			field='sku',
+			header='SKU'
+      className="font-bold"
+		)
+			template(#editor="{ data, field }")
+				InputText(v-model='data.sku' autofocus)
+		column(
+			field='stock.name'
+			header='NAME'
+			)
+				template(#body='{data}')
+					span.font-bold.text-right {{data.stock.name}}
+		column(
+			field='amount'
+			header='QUANTITY'
+			:show-filter-match-modes='false'
+			className="text-right font-bold"
+			style='width:10%'
+		)
+			template(#editor="{ data, field }").font-bold
+				InputNumber(v-model='data.amount' autofocus)
+					//- span.font-bold.text-right {{data.amount}}
+		column(
+			field='unit.name',
+			header='UNIT',
+			:show-filter-match-modes='false'
+			className="text-right font-bold"
+		)
+			template(#body='{data}')
+				span.font-bold {{data.stock.unit.name}}
+		column(
+			field='size',
+			header='SIZE',
+			:show-filter-match-modes='false'
+		)
+			template(#body='{data}')
+				span.font-bold {{data.stock.length}}*{{data.stock.width}}*{{data.stock.height}}
+		column(
+			field='weight',
+			header='WEIGHT(KG)',
+			:show-filter-match-modes='false'
+			className="text-right"
+		)
+			template(#body='{data}')
+				span.font-bold {{data.stock.weight}}
+		column(
+			field='value',
+			header='VALUE',
+			:show-filter-match-modes='false'
+			className="text-right font-bold"
+		)
+			template(#editor="{ data, field }")
+				InputNumber(v-model='data.stock.value' autofocus)
+		column(
+			field='category.name',
+			header='CATEGORY',
+			:show-filter-match-modes='false'
+			className="text-right"
+		)
+			template(#body='{data}')
+				span.font-bold.text-right {{data.stock.name}}
+		column( header="ACTION" className="text-right")
+			template(#body="{data}")
+				.grid.table__action
+					//- span(@click="handleEditBox(data.id)")
+					span
+						.icon.icon-edit-btn
+					//- span(:class="{'disable-button': itemsBoxDelete.length > 0}" @click="showModalDelete(data.id)")
+					span
+						.icon.icon-btn-delete
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
@@ -158,8 +157,6 @@ class ItemDataTable extends Vue {
   @Prop() listItemInBox!: ItemModel.Model[]
   @Prop() getParam: () => any
 
-  // onCellEditComplete(event) {}
-
   isPositiveInteger(val) {
     let str = String(val)
     str = str.trim()
@@ -174,8 +171,12 @@ class ItemDataTable extends Vue {
 export default ItemDataTable
 </script>
 <style lang="sass" scoped>
-.box-page-container
+::v-deep.box-page-container
 	height: calc(100vh - 18rem)
+	.p-inputtext,
+  .p-inputtext.p-inputnumber-input
+		box-shadow: none
+		width: 6rem !important
 	.p-column-header-content
 		.p-column-title
 			color: #464D64

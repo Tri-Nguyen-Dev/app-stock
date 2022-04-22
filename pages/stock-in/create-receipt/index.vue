@@ -377,6 +377,9 @@ class CreateReceipt extends Vue {
       receiptDraft.boxList?.push(box)
     })
     await this.actCreateNewReceipt(receiptDraft)
+    if(type===1){
+      this.$router.push(`/stock-in/${this.newReceipt.id}/detail`)
+    }
   }
 
   checkActiveAction() {
@@ -460,78 +463,81 @@ class CreateReceipt extends Vue {
 export default CreateReceipt
 </script>
 <style lang="sass" scoped>
-.pi
-	color: #1838BD !important
-.d-flex
-	@include flex-center-vert
-.box-input
-	background-color: #F1F3F6 !important
-.number-input
-	width: 30%
-	::v-deep.p-inputnumber-input
-		background: #F1F3F6 !important
-		width: 30%
-.box-retangle
-	background: #FFFFFF
-	border-radius: 3px
-	width: 1px
-.border
-	&__grid
-		border: solid 1px #E8EAEF
-		border-right: none
-	&__right
-		border-right: solid 1px #E8EAEF
-	&__left
-		border-left: solid 1px #E8EAEF
-	&__top
-		border-top: solid 1px #E8EAEF
-	&__bot
-		border-bottom: solid 1px #E8EAEF
-.card-custom
-	::v-deep.p-datatable
-		height: 55vh
-	::v-deep.p-card-body
-		padding: 0 !important
-		.p-card-content
-			padding: 0 !important
-	::v-deep.p-card-footer
-		box-shadow: 0px 10px 45px rgba(0, 10, 24, 0.1)
-		border-radius: 8px 8px 0px 0px
-		padding-top: 0
-i:hover
-	cursor: pointer
-::v-deep.p-sidebar.p-sidebar-active
-	width: 25rem
-	display: flex
-	.p-sidebar-header
-		display: none
-	.p-sidebar-content
-		flex: 1
-		padding: 0
-.general__filter
-	display: flex
-	.p-sidebar-header
-		display: none
-	.p-sidebar-content
-		flex: 1
-		padding: 0
-.general__dropdown
-	@include size(100%, 40px)
-	border: none
-.justify-content-right
-	justify-content: right
-.box-card
-	background: #F1F3FF
-	border-radius: 4px
-	color: var(--primary-color) !important
-.box-card-active
-	cursor: pointer
-	background: #486AE2
-	color: $color-white !important
-	button
-		color: $color-white !important
-	.icon--large
-		background-color: $color-white !important
-.box-card:hover
-	@extend .box-card-active
+.receipt-note
+  .p-inputtext
+    box-shadow: none
+  .pi
+    color: #1838BD !important
+  .d-flex
+    @include flex-center-vert
+  .box-input
+    background-color: #F1F3F6 !important
+  .number-input
+    width: 30%
+    ::v-deep.p-inputnumber-input
+      background: #F1F3F6 !important
+      width: 30%
+  .box-retangle
+    background: #FFFFFF
+    border-radius: 3px
+    width: 1px
+  .border
+    &__grid
+      border: solid 1px #E8EAEF
+      border-right: none
+    &__right
+      border-right: solid 1px #E8EAEF
+    &__left
+      border-left: solid 1px #E8EAEF
+    &__top
+      border-top: solid 1px #E8EAEF
+    &__bot
+      border-bottom: solid 1px #E8EAEF
+  .card-custom
+    ::v-deep.p-datatable
+      height: 55vh
+    ::v-deep.p-card-body
+      padding: 0 !important
+      .p-card-content
+        padding: 0 !important
+    ::v-deep.p-card-footer
+      box-shadow: 0px 10px 45px rgba(0, 10, 24, 0.1)
+      border-radius: 8px 8px 0px 0px
+      padding-top: 0
+  i:hover
+    cursor: pointer
+  ::v-deep.p-sidebar.p-sidebar-active
+    width: 25rem
+    display: flex
+    .p-sidebar-header
+      display: none
+    .p-sidebar-content
+      flex: 1
+      padding: 0
+  .general__filter
+    display: flex
+    .p-sidebar-header
+      display: none
+    .p-sidebar-content
+      flex: 1
+      padding: 0
+  .general__dropdown
+    @include size(100%, 40px)
+    border: none
+  .justify-content-right
+    justify-content: right
+  .box-card
+    background: #F1F3FF
+    border-radius: 4px
+    color: var(--primary-color) !important
+  .box-card-active
+    cursor: pointer
+    background: #486AE2
+    color: $color-white !important
+    button
+      color: $color-white !important
+    .icon--large
+      background-color: $color-white !important
+  .box-card:hover
+    @extend .box-card-active
 </style>
