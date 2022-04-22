@@ -103,7 +103,7 @@
 								span.font-semibold.text-base.ml-3 /day
 							.d-flex.col-6(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-2.ml-2 Barcode
-								InputText.mr-2(placeholder='Enter barcode' style='width:40%' @change='changeBarcode($event)')
+								InputText.mr-2(placeholder='Enter barcode' style='width:40%' @change='changeBarcode($event)' v-model='boxQrCode')
 								//- span.font-semibold.text-base.mr-2 Or Scan
 								//- Button(
 								//- 	type='button',
@@ -142,7 +142,7 @@
 							.col-9
 								span.font-semibold.text-base.mr-1 Total items:
 								br
-								span.font-semibold.text-primary {{listBox[activeIndex].listItemInBox.length}}
+								span.font-semibold.text-primary {{totalItem()}}
 					.d-flex(class='col-6 md:col-2 lg:col-2')
 						.grid.w-full.border__right
 							.col-3.flex.align-items-center.justify-content-end
@@ -163,7 +163,7 @@
 			position='right',
 			ariaCloseLabel='to'
 		)
-			StockAdd(@cancelAddStock='cancelAddStock' @addItem='addItem')
+			StockAdd(@cancelAddStock='cancelAddStock' @addItem='addItem' :barcode='boxQrCode')
 			FormAddSeller(:isShowForm="isShowFormAddSeller")
 </template>
 <script lang="ts">
@@ -199,6 +199,7 @@ class CreateReceipt extends Vue {
   activeAction = false
   activeSave = false
   receiptNoteId:string
+  boxQrCode: string = ''
   @nsStoreWarehouse.Action
   actWarehouseList!: (params?: any) => Promise<void>
 
@@ -276,6 +277,7 @@ class CreateReceipt extends Vue {
       this.listBox.push(item)
     }
     this.activeIndex = this.listBox[this.listBox.length - 1].index
+    this.checkActiveAction()
   }
 
   deleteBox(index) {
@@ -383,7 +385,15 @@ class CreateReceipt extends Vue {
   }
 
   checkActiveAction() {
-    this.activeAction = this.listBox[this.activeIndex].listItemInBox.length > 0
+    this.activeAction = true
+    this.listBox.forEach(element => {
+      if(element.listItemInBox.length<=0){
+        this.activeAction = false
+					
+      } else {
+        this.activeAction = true
+      }	
+    })
     return this.activeAction
   }
 
@@ -426,6 +436,14 @@ class CreateReceipt extends Vue {
     this.activeSave=false
   }
 
+  totalItem(){
+    let	total=0
+    this.listBox.forEach(element => {
+      total+=element.listItemInBox.length
+    })
+    return total
+  }
+
   async	changeBarcode(event){
     if(event.target.value.length===13){
       const item = this.listBox[this.activeIndex].listItemInBox.findIndex(element=>{
@@ -452,7 +470,9 @@ class CreateReceipt extends Vue {
             id: stock.id
           }
           this.addItem(stockInformation)
+          this.boxQrCode = ''
         } else {
+          this.boxQrCode=event.target.value
           this.showModalAddStock()
         }	
       }
