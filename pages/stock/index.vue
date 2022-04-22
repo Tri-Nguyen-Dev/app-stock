@@ -43,8 +43,8 @@
           @row-unselect="rowUnselect"
         )
           Column(
-            selectionMode='multiple' 
-            :styles="{'width': '1%'}" 
+            selectionMode='multiple'
+            :styles="{'width': '1%'}"
             :headerClass="classHeaderMuti")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
@@ -76,19 +76,12 @@
                 span(@click="showModalDelete(data)")
                   .icon.icon-btn-delete
           template(#footer)
-            .pagination
-              .pagination__info(v-if='!selectedStockFilter.length > 0')
-                .icon.icon-filter-left
-                span.pagination__total {{ getInfoPaginate }}
-              .pagination__delete(v-else @click="showModalDelete()")
-                .icon.icon-btn-delete
-                span Delete {{ selectedStockFilter.length }} items selected
-              Paginator(
-                :first.sync="firstPage" 
-                :rows="paginate.pageSize" 
-                :totalRecords="total" 
-                @page="onPage($event)" 
-                :rowsPerPageOptions="limitOptions")
+            Pagination(
+              :paging="paging"
+              :total="total"
+              :deleted-list="selectedStockFilter"
+              @onDelete="showModalDelete"
+              @onPage="onPage")
           template(#empty)
             div.table__empty
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
@@ -105,11 +98,9 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
-      template(slot="message")
-        p 
-        | Are you sure you want to delete 
-        span(style="font-weight: 700") {{ ids.length > 1 ? ids.length : stockNameDelete }} 
-        | in this list stock?
+      template(v-slot="message")
+        p {{ deleteMessage() }}
+
     Toast
 </template>
 <script lang="ts">
@@ -119,19 +110,21 @@ import { Stock as StockModel } from '~/models/Stock'
 import {
   LIMIT_PAGE_OPTIONS,
   PAGINATE_DEFAULT,
-  calculateInfoPaginate,
   calculateIndex,
   StockConstants
 } from '~/utils'
+import { Paging } from '~/models/common/Paging'
+import Pagination from '~/components/common/Pagination.vue'
+import { MessageConstants } from '~/utils/constants/messages'
 const nsCategoryStock = namespace('category/category-list')
 const nsStoreStock = namespace('stock/stock-list')
 @Component({
   components: {
-    ConfirmDialogCustom
+    ConfirmDialogCustom,
+    Pagination
   }
 })
 class Stock extends Vue {
-  firstPage: any = 0
   selectedStock: StockModel.Model[] = []
   isShowFilter: boolean = false
   loading: boolean = false
@@ -139,7 +132,7 @@ class Stock extends Vue {
   ids: string[] = []
   loadingSubmit: boolean = false
   isFilter: boolean = false
-  paginate = PAGINATE_DEFAULT
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList = StockConstants.STOCK_STATUS_OPTIONS
   limitOptions = LIMIT_PAGE_OPTIONS
   stockNameDelete: string = ''
@@ -171,21 +164,7 @@ class Stock extends Vue {
   @nsCategoryStock.Action
   actCategoryList!: () => Promise<void>
 
-  getParamApi() {
-    const categoryIds = this.filter.categories
-      ? this.filter.categories.map((item: any) => item?.id).toString()
-      : null
-    return {
-      name: this.filter.name || null,
-      barCode: this.filter.barCode || null,
-      warehouseId: this.filter.warehouse?.id,
-      categoryIds: categoryIds || null,
-      stockStatus: this.filter.status?.value,
-      sortBy: this.filter.sortBy || null,
-      desc: this.filter.desc
-    }
-  }
-
+  // -- [ Getters ] -------------------------------------------------------------
   get selectedStockFilter() {
     const itemsDelete: string[] = []
     _.forEach(this.selectedStock, function (stock: any) {
@@ -214,19 +193,32 @@ class Stock extends Vue {
     return Object.values(params).some((item) => item)
   }
 
-  get getInfoPaginate() {
-    return calculateInfoPaginate(
-      this.paginate.pageNumber,
-      this.paginate.pageSize,
-      this.total
-    )
+  // -- [ Functions ] ------------------------------------------------------------
+
+  get deleteMessage(name) {
+    return _.template(MessageConstants.DELETE_MESSAGE_TEMPLATE, name)
+  }
+
+  getParamApi() {
+    const categoryIds = this.filter.categories
+      ? this.filter.categories.map((item: any) => item?.id).toString()
+      : null
+    return {
+      name: this.filter.name || null,
+      barCode: this.filter.barCode || null,
+      warehouseId: this.filter.warehouse?.id,
+      categoryIds: categoryIds || null,
+      stockStatus: this.filter.status?.value,
+      sortBy: this.filter.sortBy || null,
+      desc: this.filter.desc
+    }
   }
 
   getIndexPaginate(index: number) {
     return calculateIndex(
       index,
-      this.paginate.pageNumber,
-      this.paginate.pageSize
+      this.paging.pageNumber,
+      this.paging.pageSize
     )
   }
 
@@ -245,7 +237,11 @@ class Stock extends Vue {
   }
 
   async getProductList() {
-    await this.actGetStockList({ ...this.getParamApi(), ...this.paginate })
+    await this.actGetStockList({
+      pageSize: this.paging.pageSize,
+      pageNumber: this.paging.pageNumber,
+      ...this.getParamApi()
+    })
   }
 
   handleChangeFilter() {
@@ -253,12 +249,13 @@ class Stock extends Vue {
   }
 
   onPage(event: any) {
-    this.paginate.pageSize = event.rows
-    this.paginate.pageNumber = event.page
+    this.paging.pageSize = event.rows
+    this.paging.pageNumber = event.page
     this.getProductList()
   }
 
-  showModalDelete(data: any) {
+  showModalDelete(deletedList: StockModel.Model[]) {
+    if (!deletedList) { return }
     if (data) {
       this.stockNameDelete = data.name
       this.ids = [data.id]
@@ -282,7 +279,7 @@ class Stock extends Vue {
           detail: 'Successfully deleted stock',
           life: 3000
         })
-        this.getProductList()
+        await this.getProductList()
       }
     } catch (error) {
       this.loadingSubmit = false
