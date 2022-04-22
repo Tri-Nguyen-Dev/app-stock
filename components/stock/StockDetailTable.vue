@@ -55,8 +55,8 @@
             :styles="{'width': '5%'}"
           )
           Column(
-            field="box.barCode"
-            header="BARCODE"
+            field="box.id"
+            header="BOX CODE"
             sortable
             className="p-text-right"
             bodyClass="font-semibold"
