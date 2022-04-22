@@ -43,8 +43,8 @@
           @row-unselect="rowUnselect"
         )
           Column(
-            selectionMode='multiple' 
-            :styles="{'width': '1%'}" 
+            selectionMode='multiple'
+            :styles="{'width': '1%'}"
             :headerClass="classHeaderMuti")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
@@ -53,7 +53,7 @@
             template(#body='{ data }')
               .stock__table__image.overflow-hidden.grid-cell-center
                 img.h-2rem.w-2rem.border-round(
-                  :src='`http://dtplo60ij00vm.cloudfront.net/thumbnail/${data.imagePath}`' alt='' width='100%' style="object-fit: cover;")
+                  :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
@@ -87,10 +87,10 @@
                 .icon.icon-btn-delete
                 span Delete {{ selectedStockFilter.length }} items selected
               Paginator(
-                :first.sync="firstPage" 
-                :rows="paginate.pageSize" 
-                :totalRecords="total" 
-                @page="onPage($event)" 
+                :first.sync="firstPage"
+                :rows="paginate.pageSize"
+                :totalRecords="total"
+                @page="onPage($event)"
                 :rowsPerPageOptions="limitOptions")
           template(#empty)
             div.table__empty
@@ -109,9 +109,9 @@
       :loading="loadingSubmit"
     )
       template(slot="message")
-        p 
-        | Are you sure you want to delete 
-        span(style="font-weight: 700") {{ ids.length > 1 ? ids.length : stockNameDelete }} 
+        p
+        | Are you sure you want to delete
+        span(style="font-weight: 700") {{ ids.length > 1 ? ids.length : stockNameDelete }}
         | in this list stock?
     Toast
 </template>
