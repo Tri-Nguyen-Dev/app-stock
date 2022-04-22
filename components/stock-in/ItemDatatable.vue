@@ -23,7 +23,11 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 			filter-match-mode='contains'
 		)
 			template(#body="slotProps")
-				//- img(:src='process.env.BASE_IMAGE_URL + `thumbnail/${slotProps.data.stock.imagePath}`' :alt="slotProps.data.image" style="width:3rem; height: 3rem")
+				img(
+          :src="slotProps.data.stock.imagePath | getThumbnailUrl"
+          :alt="slotProps.data.image"
+          style="width:3rem; height: 3rem"
+        )
 		column.text-overflow-ellipsis(
 			field='stock.barCode'
 			header='BARCODE',

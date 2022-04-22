@@ -16,7 +16,7 @@
               .icon.icon-btn-edit
         .grid(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-4').stock__information--image
-            img(:src='model.data.stock.imagePath' alt="stock").border-round.w-full
+            img(:src="model.data.stock.imagePath | getImageUrl" alt="Stock Image").border-round.w-full
           .col
             Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
               span.font-bold.text-green-400.font-sm AVAILABLE
