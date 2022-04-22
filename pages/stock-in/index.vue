@@ -19,7 +19,7 @@
                 .icon.icon-add-items.surface-900.bg-white
                 span.text-900.text-white.mr-3 Add recepit note
           .col-fixed
-            .btn__filter(class='active')
+            .btn__filter(class='active' @click="handleExportReceipt")
               .btn.btn-toggle.bg-white
                 .icon-download.icon--large.bg-primary
                 span.text-900.text-primary Export file
@@ -154,9 +154,10 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/RequestList'
-import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT } from '~/utils'
+import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf } from '~/utils'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockIn = namespace('stock-in/request-list')
+const nsStoreExportReceipt = namespace('stock-in/export-receipt')
 const dayjs = require('dayjs')
 
 @Component({
@@ -197,6 +198,9 @@ class StockIn extends Vue {
   @nsWarehouseStock.State
   warehouseList!: any
 
+  @nsStoreExportReceipt.State
+  receiptUrl!: any
+
   @nsStoreStockIn.Action
   actGetStockIn!: (params: any) => Promise<void>
 
@@ -205,6 +209,9 @@ class StockIn extends Vue {
 
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
+
+  @nsStoreExportReceipt.Action
+  actGetReceiptLable!: (params: any) => Promise<string>
 
   getParamApi() {
     return {
@@ -338,6 +345,15 @@ class StockIn extends Vue {
 
   createStockIn() {
     this.$router.push('stock-in/create-receipt')
+  }
+
+  handleExportReceipt() {
+    _.forEach(this.selectedStockIn, async({ id }) => {
+      const result = await this.actGetReceiptLable({ id })
+      if(result) {
+        exportFileTypePdf(result, `receipt-${id}`)
+      }
+    })
   }
 
 }
