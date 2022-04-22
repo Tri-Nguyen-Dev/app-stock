@@ -1,5 +1,5 @@
 <template lang="pug">
-  .bg-white.border-round-left.wrapper-filter
+  .bg-white.wrapper-filter(:class="`border-round-${border}`")
     div.pt-2.pb-1.title
       span.text-600.font-sm {{title}}
     Calendar.w-full.pl-2.mb-1(@date-select="handleFilter" :value="value" :showIcon="showIcon" :inputClass="inputClass" :placeholder="placeholder || 'Select'" :dateFormat="dateFormat || 'dd-mm-yy'")
@@ -19,6 +19,8 @@ class FilterTable extends Vue {
   @Prop() readonly dateFormat!: any | undefined
   @Prop() readonly inputClass!: any | undefined
   @Prop() readonly showIcon!: Boolean | false  
+  @Prop() readonly border!: string | undefined  
+
   handleFilter(e :any){
     this.$emit('updateFilter', e, this.name)
   }
