@@ -205,7 +205,7 @@
 								br
 								span.font-semibold.text-primary 3$/day
 					.d-flex.justify-content-center(class='col-6 md:col-2 lg:col-2')
-						Button.p-button-secondary.mr-2(label='Export file' icon="pi pi-download")
+						Button.p-button-secondary.mr-2(label='Export file' icon="pi pi-download" @click="handleExportReceipt")
 						Button.p-button-primary.mr-2(label='Print Preview' @click='isShowLabel = true')
 		PrintLabel(:displayLable='isShowLabel' @setShow='setShowLabel' :requestId='receiptDetail.data.id' v-if='receiptDetail.data && listBox[activeIndex]' :boxId='listBox[activeIndex].id')
 </template>
@@ -217,7 +217,9 @@ import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
 import { Item as ItemModel } from '~/models/Item'
 import { Receipt as ReceiptModel } from '~/models/Receipt'
 import PrintLabel from '~/components/pdf/PrintLabel.vue'
+import { exportFileTypePdf } from '~/utils'
 const nsStoreStockIn = namespace('stock-in/create-receipt')
+const nsStoreExportReceipt = namespace('stock-in/export-receipt')
 
 @Component({
   components: {
@@ -259,12 +261,15 @@ class CreateReceipt extends Vue {
   @nsStoreStockIn.Action
   actGetReceiptDetail
 
+  @nsStoreExportReceipt.Action
+  actGetReceiptLable!: (params: any) => Promise<string>
+
   selectBox(box) {
     this.activeIndex = box.index
   }
 
   export(){
-
+    
   }
 
   setShowLabel(value: any) {
@@ -289,6 +294,13 @@ class CreateReceipt extends Vue {
       this.listBox.push(box)
     })
     this.activeIndex = 0
+  }
+
+  async handleExportReceipt() {
+    const result = await this.actGetReceiptLable({ id: this.id })
+    if(result) {
+      exportFileTypePdf(result, `receipt-${this.id}`)
+    }
   }
 }
 
