@@ -55,7 +55,6 @@
         .col
           FilterCalendar(
             title="From"
-            border="left"
             :value="filter.dateFrom"
             name="dateFrom"
             inputClass="border-0"
@@ -66,7 +65,6 @@
         .col.ml-1
           FilterCalendar(
             title="From"
-            border="right"
             :value="filter.dateTo"
             name="dateTo"
             inputClass="border-0"
@@ -85,7 +83,7 @@
         Column(field="no" header="NO")
           template(#body="slotProps")
             span.font-semibold {{ (pageNumber - 1) * pageSize + slotProps.index +1 }}
-        Column(field="id" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
+        Column(field="barCode" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_barCode")
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}

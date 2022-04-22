@@ -17,13 +17,13 @@
       div
         .col.px-3
           div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
-           span.table__status.table__status--available(
-                v-if="data.status === 'BOX_STATUS_AVAILABLE'"
-              ) {{ data.status | boxStatus }}
-              span.table__status.table__status--disable(
-                v-else-if="data.status === 'BOX_STATUS_DISABLE'"
-              ) {{ data.status | boxStatus }}
-              span.table__status.table__status--draft(v-else) {{ data.status | boxStatus }}
+              span.p-2.table__status.table__status--available(
+                v-if="boxDetail.status === 'BOX_STATUS_AVAILABLE'"
+              ) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--disable(
+                v-else-if="boxDetail.status === 'BOX_STATUS_DISABLE'"
+              ) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--draft(v-else) {{ sboxDetail.tatus | boxStatus }}
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
@@ -40,7 +40,8 @@
               template(v-slot:auto-complete)
                 .mt-1.flex.align-items-center
                   AutoComplete.edit-location(
-                    v-model="isLocation" field='name' 
+                    v-model="isLocation" 
+                    field='name' 
                     :suggestions='locationList' 
                     forceSelection :readOnly='!isEditBox' 
                     :placeholder='boxLocation' 
@@ -67,7 +68,7 @@
                 span.font-bold.text-small.mt-1.uppercase 
                 | {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
               template(v-slot:button-size='')
-                span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round( 
+                span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(
                   :class='boxDetail.boxSize.name ? "p-1" : ""') {{ boxDetail.boxSize.name }}
           div.col-12(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col.border-bottom-1.border-gray-300
@@ -99,7 +100,7 @@
               template(#header)
                 .icon.icon-history.mr-2.surface-600
                 span Item list
-              .grid(v-if="isFilter")
+              .grid.my-2(v-if="isFilter")
                 .col
                   .bg-white.border-round
                     div.pt-2.pl-1.pb-1
@@ -116,7 +117,7 @@
                       InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="filterParams.barCode")
                 .col
                   .bg-white.border-round
-                    div.pt-1.pl-1.pb-1
+                    div.pt-2.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Category
                       MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(
                         v-model="filterParams.category" 
@@ -137,15 +138,17 @@
                   :totalStockRecords='totalStockRecords' )
         .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
           div.mr-3
-            span.p-input-icon-left
-              .icon.icon--left.icon-search.surface-900
-              InputText.w-23rem.font-bold.h-3rem.py-4.text-900(type="text" placeholder="Search" v-model='filterParams.name' )
+            .header__search
+              .icon.icon--left.icon-search
+              InputText(type="text" placeholder="Search" v-model="filterParams.name" )
           div
-            Button.border-0.bg-white.w-7rem.shadow-none.border-primary.h-3rem.py-4(@click="isFilter = !isFilter")
-              .icon-filter.bg-primary.icon
-              span.text-900.ml-3.text-primary Filter
-          div.refresh-filter(@click="handleRefreshFilter")
-            img(:src="require(`~/assets/icons/rotate-left.svg`)")
+          .btn__filter(:class="{'active': isFilter}")
+            .btn-toggle(@click="isFilter = !isFilter")
+              .icon.icon-filter(v-if="!isFilter")
+              .icon.icon-chevron-up.bg-primary(v-else)
+              span Filter
+            .btn-refresh(@click="handleRefreshFilter")
+              .icon.icon-rotate-left.bg-white
 </template>
 
 <script lang="ts">

@@ -38,7 +38,7 @@
           :rows="20"
           :scrollable="false"
           @row-dblclick='redirectToDetail'
-          :class="{ 'table__empty': !itemsList.data.items || itemsList.data.items.length <= 0 }"
+          :class="{ 'table-wrapper-empty': !itemsList.data.items || itemsList.data.items.length <= 0 }"
           @sort="sortData($event)"
         )
           Column(selectionMode="multiple" :styles="{'width': '1%'}" :exportable="false")
@@ -55,7 +55,7 @@
             :styles="{'width': '5%'}"
           )
           Column(
-            field="box.barCode"
+            field="box.id"
             header="BOX CODE"
             sortable
             className="p-text-right"
@@ -171,8 +171,8 @@ class StockDetailTable extends Vue {
   }
 
   sort: any = {
-    sortByColumn: null,
-    sortDescending: null
+    sortBy: null,
+    desc: null
   }
 
   @nsStoreStockTable.State
@@ -228,8 +228,8 @@ class StockDetailTable extends Vue {
   sortData(e: any){
     const { sortField, sortOrder } = e
     if(sortOrder){
-      this.sort.sortDescending = sortOrder !== 1
-      this.sort.sortByColumn = sortField.replace('_', '')
+      this.sort.desc = sortOrder !== 1
+      this.sort.sortBy = sortField.replace('_', '')
     }
     this.getItemsList()
   }
@@ -269,8 +269,8 @@ class StockDetailTable extends Vue {
       itemStatus: this.filter.status?.value,
       pageNumber:this.paginate.pageNumber,
       pageSize: this.paginate.pageSize,
-      sortByColumn: this.sort?.sortByColumn,
-      isDescending: this.sort.sortDescending && this.sort?.sortDescending
+      sortBy: this.sort?.sortBy,
+      desc: this.sort.desc && this.sort?.desc
     }
     const params = {
       filter,
