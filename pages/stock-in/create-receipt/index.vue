@@ -18,11 +18,11 @@
 						.col
 							.filter__item.item--disabled
 								.filter__title Creator name
-								.filter__text.trim-text Nguyen Khanh Hung
+								.filter__text Nguyen Khanh Hung
 						.col
 							.filter__item.item--disabled
 								.filter__title Create time
-								.filter__text.trim-text 19-09-2022 9:24AM
+								.filter__text 19-09-2022 9:24AM
 						.col
 							.filter__item
 								.filter__title Warehouse
