@@ -23,7 +23,7 @@
               .btn.btn-toggle.bg-white
                 .icon-download.icon--large.bg-primary
                 span.text-900.text-primary Export file
-    .grid.header__filter(:class='{ "active": isShowFilter }')
+    .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
       .col-4
         .grid
           .col-3
@@ -57,8 +57,8 @@
           @updateFilter="handleFilter")
       .col-2
         FilterTable(
-          title="Seller"
-          placeholder="Enter seller"
+          title="Seller Email"
+          placeholder="Enter Seller Email"
           name="sellerEmail"
           :value="filter.sellerEmail"
           :searchText="true"
@@ -95,7 +95,7 @@
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
               span.text-white-active.text-900.font-bold {{ data.id }}
-          Column(header='Create Time' field='data.createdA' :sortable="true" sortField="_data.createdA")
+          Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_sellerName")
             template(#body='{ data }') {{ data.sellerName }}
@@ -106,11 +106,11 @@
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
                 .icon.icon-arrow-up-right.bg-primary.bg-white-active
-          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_data.creatorId")
+          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_creatorId")
             template(#body='{ data }') {{ data.creatorId }}
-          Column(header='CREATOR NAME' field='data.creatorName' :sortable="true" sortField="_data.creatorName")
+          Column(header='CREATOR NAME' field='data.creatorName' :sortable="true" sortField="_creatorName")
             template(#body='{ data }') {{ data.creatorName }}
-          Column(header='STATUS' field=' data.status' :sortable="true" sortField="_data.status")
+          Column(header='STATUS' field=' data.status' :sortable="true" sortField="_status")
             template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
                 :class=" data.status === 'REQUEST_STATUS_SAVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")
@@ -308,9 +308,13 @@ class StockIn extends Vue {
   }
 
   get itemsBoxDelete() {
-    const itemsDelete: string[] = []
+    let itemsDelete: string[] = []
     _.forEach(this.selectedStockIn, function (box: any) {
-      if (box.status === 'REQUEST_STATUS_DRAFT') itemsDelete.push(box.id)
+      if (box.status === 'REQUEST_STATUS_DRAFT' ) itemsDelete.push(box.id)
+      else {
+        itemsDelete = []
+        return false
+      }
     })
     return itemsDelete
   }
