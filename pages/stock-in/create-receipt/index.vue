@@ -32,7 +32,6 @@
 								.filter__title Seller email
 								.filter__autocomplete
 									AutoComplete(v-model="seller" :suggestions="sellerList" @complete="handleChangeSeller($event)" field="email" placeholder="Enter seller email")
-									.icon.icon--right.icon-add-items(@click="handleAddSeller")
 								span {{ sellerEmailError }}
 						.col
 							.filter__item.item--disabled
@@ -172,7 +171,6 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
 import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
 import { Item as ItemModel } from '~/models/Item'
-import { validateEmail } from '~/utils'
 import { Receipt as ReceiptModel } from '~/models/Receipt'
 import { Stock as StockModel } from '~/models/Stock'
 import { RECEIPT_ACTION, RECEIPT_STATUS } from '~/utils/constants/rececipt'
@@ -286,15 +284,6 @@ class CreateReceipt extends Vue {
   }
 
   handleChangeSeller(e) {
-    if(!validateEmail(e.query) && this.sellerList.length <= 0 && !this.seller?.email) {
-      this.sellerEmailError = 'Incorrect email format.'
-    }
-    else if(e.query === '') {
-      this.sellerEmailError = null
-    }
-    else {
-      this.sellerEmailError = null
-    }
     const params = { email: e.query }
     this.actSellerList(params)
   }

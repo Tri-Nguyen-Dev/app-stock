@@ -8,6 +8,7 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 	columnResizeMode="fit"
 	editMode="cell"
 	class="editable-cells-table"
+	:class="{ 'table-wrapper-empty': !listItemInBox || listItemInBox.length <= 0 }"
 )
 		template(#empty)
 				div.flex.align-items-center.justify-content-center.flex-column
