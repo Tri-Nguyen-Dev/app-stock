@@ -55,6 +55,7 @@
         .col
           FilterCalendar(
             title="From"
+            border="left"
             :value="filter.dateFrom"
             name="dateFrom"
             inputClass="border-0"
@@ -65,6 +66,7 @@
         .col.ml-1
           FilterCalendar(
             title="From"
+            border="right"
             :value="filter.dateTo"
             name="dateTo"
             inputClass="border-0"
