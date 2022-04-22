@@ -17,8 +17,13 @@
       div
         .col.px-3
           div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
-            Tag(:class="boxDetail.status === 'BOX_STATUS_AVAILABLE' ? 'bg-green-500' : boxDetail.status === 'BOX_STATUS_DRAFT' ? 'bg-blue-100' : 'surface-200'").py-1
-                span.text-base.font-bold.px-3.border-round(:class="boxDetail.status === 'BOX_STATUS_AVAILABLE' ? 'text-white' : boxDetail.status === 'BOX_STATUS_DRAFT' ? 'text-primary' : 'text-400'") {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--available(
+                v-if="boxDetail.status === 'BOX_STATUS_AVAILABLE'"
+              ) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--disable(
+                v-else-if="boxDetail.status === 'BOX_STATUS_DISABLE'"
+              ) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--draft(v-else) {{ sboxDetail.tatus | boxStatus }}
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
@@ -34,7 +39,13 @@
             StockUnit(title="Location" icon="icon-location-2")
               template(v-slot:auto-complete)
                 .mt-1.flex.align-items-center
-                  AutoComplete.edit-location(v-model="isLocation" field='name' :suggestions='locationList' forceSelection :readOnly='!isEditBox' :placeholder='boxLocation' @complete="searchLocation($event)"  )
+                  AutoComplete.edit-location(
+                    v-model="isLocation" 
+                    field='name' 
+                    :suggestions='locationList' 
+                    forceSelection :readOnly='!isEditBox' 
+                    :placeholder='boxLocation' 
+                    @complete="searchLocation($event)"  )
                     template(#item="slotProps")
                       .grid.align-items-center.grid-nogutter
                         span.font-bold.text-small {{ slotProps.item.name }}
@@ -46,11 +57,19 @@
           div.wrap-unit.px-4
             StockUnit(title="Estimated inventory Fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
           div.wrap-unit.px-4(v-if="boxDetail.boxSize" :class='isEditBox ? "opacity-40" : "opacity-100"')
-            StockUnit(title="Box size:" type ="size" :height="boxDetail.boxSize.height" :length="boxDetail.boxSize.length" :width="boxDetail.boxSize.width" icon="icon-size")
+            StockUnit(
+              title="Box size:" 
+              type ="size" 
+              :height="boxDetail.boxSize.height" 
+              :length="boxDetail.boxSize.length" 
+              :width="boxDetail.boxSize.width" 
+              icon="icon-size")
               template(v-slot:size)
-                span.font-bold.text-small.mt-1.uppercase {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
+                span.font-bold.text-small.mt-1.uppercase 
+                | {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
               template(v-slot:button-size='')
-                span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(:class='boxDetail.boxSize.name ? "p-1" : ""') {{ boxDetail.boxSize.name }}
+                span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(
+                  :class='boxDetail.boxSize.name ? "p-1" : ""') {{ boxDetail.boxSize.name }}
           div.col-12(:class='isEditBox? "opacity-40" : "opacity-100"')
             .col.border-bottom-1.border-gray-300
             .col.flex.my-3.mx-1
@@ -100,14 +119,23 @@
                   .bg-white.border-round
                     div.pt-1.pl-1.pb-1
                       span.text-600.text-sm.pl-2 Category
-                      MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(v-model="filterParams.category" :options='categoryList' optionLabel="name" optionValue="id" placeholder="Select" :filter='true')
+                      MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(
+                        v-model="filterParams.category" 
+                        :options='categoryList' 
+                        optionLabel="name" 
+                        optionValue="id" 
+                        placeholder="Select" 
+                        :filter='true')
               BoxDetailTable(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
             TabPanel
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
                 span Location history
               .overflow-auto.box__detail--history
-                //- BoxDetailHistory( v-if="listStockWithAmount.length > 0" :listStockWithAmount='listStockWithAmount' :totalStockRecords='totalStockRecords' )
+                //- BoxDetailHistory( 
+                  v-if="listStockWithAmount.length > 0" 
+                  :listStockWithAmount='listStockWithAmount' 
+                  :totalStockRecords='totalStockRecords' )
         .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
           div.mr-3
             span.p-input-icon-left

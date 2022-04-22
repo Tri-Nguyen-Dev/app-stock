@@ -19,11 +19,11 @@
                 .icon.icon-add-items.surface-900.bg-white
                 span.text-900.text-white.mr-3 Add recepit note
           .col-fixed
-            .btn__filter(class='active')
+            .btn__filter(class='active' @click="handleExportReceipt")
               .btn.btn-toggle.bg-white
                 .icon-download.icon--large.bg-primary
                 span.text-900.text-primary Export file
-    .grid.header__filter(:class='{ "active": isShowFilter }')
+    .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
       .col-4
         .grid
           .col-3
@@ -59,8 +59,8 @@
           @updateFilter="handleFilter")
       .col-2
         FilterTable(
-          title="Seller"
-          placeholder="Enter seller"
+          title="Seller Email"
+          placeholder="Enter Seller Email"
           name="sellerEmail"
           :value="filter.sellerEmail"
           :searchText="true"
@@ -92,27 +92,36 @@
         @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect' )
           Column(selectionMode='multiple')
           Column(field='no' header='NO' )
-            template(#body='{ index }')
-              span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
+            template(#body="slotProps")
+              span.font-semibold {{ (pageNumber - 1) * pageSize + slotProps.index +1 }}
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
               span.text-white-active.text-900.font-bold {{ data.id }}
-          Column(header='Create Time' field='data.createdA' :sortable="true" sortField="_data.createdA")
+          Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
-          Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_sellerName")
+          Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
             template(#body='{ data }') {{ data.sellerName }}
-          Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_sellerEmail")
+          Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_seller.email")
             template(#body='{ data }') {{ data.sellerEmail }}
           Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
                 .icon.icon-arrow-up-right.bg-primary.bg-white-active
-          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_data.creatorId")
-            template(#body='{ data }') {{ data.creatorId }}
-          Column(header='CREATOR NAME' field='data.creatorName' :sortable="true" sortField="_data.creatorName")
-            template(#body='{ data }') {{ data.creatorName }}
-          Column(header='STATUS' field=' data.status' :sortable="true" sortField="_data.status")
+          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" :styles="{'width': '1%'}")
+            template(#body='{ data }')
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                  span.text-white-active {{ data.creatorId }}
+          Column(
+          header='CREATOR NAME' 
+          field='data.creatorName' 
+          :sortable="true" 
+          sortField="_createdBy.displayName" 
+          :styles="{'width': '1%'}")
+            template(#body='{ data }')
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                  span.text-white-active {{ data.creatorName }}
+          Column(header='STATUS' field=' data.status' :sortable="true" sortField="_status")
             template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
                 :class=" data.status === 'REQUEST_STATUS_SAVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")
@@ -129,8 +138,9 @@
             .pagination
               div.pagination__info(v-if="itemsBoxDelete.length <= 0 ")
                 img(:src="require('~/assets/icons/filter-left.svg')")
-                span(v-if="stockIn.length > 0").pagination__total
-                | {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + stockIn.length }} of {{ total }}
+                span.pagination__total(
+                  v-if="stockIn.length > 0")
+                  | Showing {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + stockIn.length }} of {{ total }}
               div.pagination__delete(v-else @click="showModalDelete()")
                 img(:src="require('~/assets/icons/trash-white.svg')")
                 span Delete {{ itemsBoxDelete.length }} items selected
@@ -141,13 +151,17 @@
                 :rowsPerPageOptions="[10,20,30]")
       ConfirmDialogCustom(
         title="Confirm delete"
-        :message="`Are you sure you want to delete in this list stock?`"
         image="confirm-delete"
         :isShow="isModalDelete"
         :onOk="handleDeleteStockIn"
         :onCancel="handleCancel"
         :loading="loadingSubmit"
       )
+        template(slot="message")
+          p 
+          | Are you sure you want to delete 
+          span(style="font-weight: 700") {{ itemsBoxDelete.length > 1 ? itemsBoxDelete.length : boxCodeDelete }} 
+          | in this receipt?  
     Toast
 
 </template>
@@ -156,9 +170,10 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/RequestList'
-import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT } from '~/utils'
+import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf } from '~/utils'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockIn = namespace('stock-in/request-list')
+const nsStoreExportReceipt = namespace('stock-in/export-receipt')
 const dayjs = require('dayjs')
 
 @Component({
@@ -180,6 +195,7 @@ class StockIn extends Vue {
   sortByColumn: string = ''
   isDescending: boolean | null = null
   paginate = PAGINATE_DEFAULT
+  boxCodeDelete: string = ''
   filter: any = {
     id: null,
     dateFrom: null,
@@ -199,6 +215,9 @@ class StockIn extends Vue {
   @nsWarehouseStock.State
   warehouseList!: any
 
+  @nsStoreExportReceipt.State
+  receiptUrl!: any
+
   @nsStoreStockIn.Action
   actGetStockIn!: (params: any) => Promise<void>
 
@@ -207,6 +226,9 @@ class StockIn extends Vue {
 
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
+
+  @nsStoreExportReceipt.Action
+  actGetReceiptLable!: (params: any) => Promise<string>
 
   getParamApi() {
     return {
@@ -249,7 +271,11 @@ class StockIn extends Vue {
   }
 
   onRowClick({ data }) {
-    this.$router.push(`/stock-in/${data.id}`)
+    if(data.status === 'REQUEST_STATUS_SAVED') {
+      this.$router.push(`/stock-in/${data.id}/detail`)
+    } else {
+      this.$router.push(`/stock-in/${data.id}/draft`)
+    }
   }
 
   async handleDeleteStockIn() {
@@ -310,9 +336,13 @@ class StockIn extends Vue {
   }
 
   get itemsBoxDelete() {
-    const itemsDelete: string[] = []
+    let itemsDelete: string[] = []
     _.forEach(this.selectedStockIn, function (box: any) {
-      if (box.status === 'REQUEST_STATUS_DRAFT') itemsDelete.push(box.id)
+      if (box.status === 'REQUEST_STATUS_DRAFT' ) itemsDelete.push(box.id)
+      else {
+        itemsDelete = []
+        return false
+      }
     })
     return itemsDelete
   }
@@ -336,6 +366,15 @@ class StockIn extends Vue {
 
   createStockIn() {
     this.$router.push('stock-in/create-receipt')
+  }
+
+  handleExportReceipt() {
+    _.forEach(this.selectedStockIn, async({ id }) => {
+      const result = await this.actGetReceiptLable({ id })
+      if(result) {
+        exportFileTypePdf(result, `receipt-${id}`)
+      }
+    })
   }
 
 }

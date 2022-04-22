@@ -1,14 +1,14 @@
 <template lang="pug">
-	DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
-		:value='listItemInBox'
-		dataKey='stock.barCode'
-		:paginator='false'
-		:row-hover='true'
-		responsiveLayout="scroll"
-		columnResizeMode="fit"
-		editMode="cell"
-		class="editable-cells-table" 
-	)
+DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
+	:value='listItemInBox'
+	dataKey='stock.barCode'
+	:paginator='false'
+	:row-hover='true'
+	responsiveLayout="scroll"
+	columnResizeMode="fit"
+	editMode="cell"
+	class="editable-cells-table"
+)
 		template(#empty)
 				div.flex.align-items-center.justify-content-center.flex-column
 						img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
@@ -19,11 +19,10 @@
 		column(
 			field='',
 			header='IMAGE',
-			:sortable='true',
 			filter-match-mode='contains'
 		)
 			template(#body="slotProps")
-				img(:src="slotProps.data.imageUrl" :alt="slotProps.data.image" style="width:3rem; height: 3rem")
+				//- img(:src='process.env.BASE_IMAGE_URL + `thumbnail/${slotProps.data.stock.imagePath}`' :alt="slotProps.data.image" style="width:3rem; height: 3rem")
 		column.text-overflow-ellipsis(
 			field='stock.barCode'
 			header='BARCODE',
@@ -35,30 +34,31 @@
 		column(
 			field='sku',
 			header='SKU'
+      className="font-bold"
 		)
-			template(#body='{data}')
-				span.uppercase {{data.sku}}
+			template(#editor="{ data, field }")
+				InputText(v-model='data.sku' autofocus)
 		column(
-			field='stock.name',
-			header='NAME',
+			field='stock.name'
+			header='NAME'
 			)
 				template(#body='{data}')
 					span.font-bold.text-right {{data.stock.name}}
 		column(
-			field='quantity',
-			header='QUANTITY',       
+			field='amount'
+			header='QUANTITY'
 			:show-filter-match-modes='false'
-			className="p-text-right"
+			className="text-right font-bold"
 			style='width:10%'
 		)
-			template(#body='{data,field}')
+			template(#editor="{ data, field }").font-bold
 				InputNumber(v-model='data.amount' autofocus)
 					//- span.font-bold.text-right {{data.amount}}
 		column(
 			field='unit.name',
 			header='UNIT',
 			:show-filter-match-modes='false'
-			className="p-text-right"
+			className="text-right font-bold"
 		)
 			template(#body='{data}')
 				span.font-bold {{data.stock.unit.name}}
@@ -66,7 +66,6 @@
 			field='size',
 			header='SIZE',
 			:show-filter-match-modes='false'
-			className="p-text-right"
 		)
 			template(#body='{data}')
 				span.font-bold {{data.stock.length}}*{{data.stock.width}}*{{data.stock.height}}
@@ -74,7 +73,7 @@
 			field='weight',
 			header='WEIGHT(KG)',
 			:show-filter-match-modes='false'
-			className="p-text-right"
+			className="text-right"
 		)
 			template(#body='{data}')
 				span.font-bold {{data.stock.weight}}
@@ -82,18 +81,18 @@
 			field='value',
 			header='VALUE',
 			:show-filter-match-modes='false'
-			className="p-text-right"
+			className="text-right font-bold"
 		)
-			template(#body='{data}')
-				span.font-bold {{data.value}}
+			template(#editor="{ data, field }")
+				InputNumber(v-model='data.stock.value' autofocus)
 		column(
 			field='category.name',
-			header='CATEGORY',     
+			header='CATEGORY',
 			:show-filter-match-modes='false'
-			className="p-text-right"
+			className="text-right"
 		)
 			template(#body='{data}')
-				span.font-bold {{data.stock.category.name}}
+				span.font-bold.text-right {{data.stock.name}}
 		column( header="ACTION" className="text-right")
 			template(#body="{data}")
 				.grid.table__action
@@ -112,27 +111,72 @@ import { Item as ItemModel } from '~/models/Item'
   components: { ConfirmDialogCustom }
 })
 class ItemDataTable extends Vue {
-
   @Prop() sku!: string
-  selectedItem :ItemModel.Model[] = []
+  selectedItem: ItemModel.Model[] = []
   deleteItemList = []
   isModalDelete: boolean = false
   ids: string[] = []
-
   sort: any = {
     sortByColumn: null,
     sortDescending: null
   }
 
+  // listItemInBox = [
+  //   {
+  //     stock: {
+  //       id: '65rt4u4qldua8lesz4yomaw9o',
+  //       name: 'test 2',
+  //       sku: 'test test',
+  //       height: 89,
+  //       width: 89,
+  //       length: 89,
+  //       value: 69,
+  //       description: null,
+  //       imagePath: null,
+  //       barCode: '3135515655388',
+  //       amount: 12,
+  //       unit: {
+  //         id: 1,
+  //         name: 'piece'
+  //       },
+  //       weight: 89,
+  //       category: {
+  //         id: 1,
+  //         name: 'warehouse1',
+  //         icon: null,
+  //         displayOrder: null,
+  //         deleted: null
+  //       },
+  //       stockStatus: 'STOCK_STATUS_DISABLE',
+  //       attributeValue: [],
+  //       deleted: false
+  //     }
+  //   }
+  // ]
+
   @Prop() listItemInBox!: ItemModel.Model[]
   @Prop() getParam: () => any
-				
+
+  isPositiveInteger(val) {
+    let str = String(val)
+    str = str.trim()
+    if (!str) {
+      return false
+    }
+    str = str.replace(/^0+/, '') || '0'
+    const n = Math.floor(Number(str))
+    return n !== Infinity && String(n) === str && n >= 0
+  }
 }
 export default ItemDataTable
 </script>
 <style lang="sass" scoped>
-.box-page-container
+::v-deep.box-page-container
 	height: calc(100vh - 18rem)
+	.p-inputtext,
+  .p-inputtext.p-inputnumber-input
+		box-shadow: none
+		width: 6rem !important
 	.p-column-header-content
 		.p-column-title
 			color: #464D64

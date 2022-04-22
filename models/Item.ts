@@ -5,7 +5,7 @@ export namespace Item {
       id: string,
       name: string,
       description?: string,
-      imageUrl: string,
+      imagePath?: string,
       barCode: string,
       unit?: {
         id?: string,
