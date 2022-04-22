@@ -17,13 +17,13 @@
       div
         .col.px-3
           div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
-              span.table__status.table__status--available(
-                v-if="data.status === 'BOX_STATUS_AVAILABLE'"
-              ) {{ data.status | boxStatus }}
-              span.table__status.table__status--disable(
-                v-else-if="data.status === 'BOX_STATUS_DISABLE'"
-              ) {{ data.status | boxStatus }}
-              span.table__status.table__status--draft(v-else) {{ data.status | boxStatus }}
+              span.p-2.table__status.table__status--available(
+                v-if="boxDetail.status === 'BOX_STATUS_AVAILABLE'"
+              ) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--disable(
+                v-else-if="boxDetail.status === 'BOX_STATUS_DISABLE'"
+              ) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--draft(v-else) {{ sboxDetail.tatus | boxStatus }}
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
