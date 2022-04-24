@@ -89,3 +89,7 @@ sw.*
 
 # Vim swap files
 *.swp
+
+# Lock file
+package-lock.json
+yarn.lock
