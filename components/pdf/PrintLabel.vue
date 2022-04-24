@@ -36,6 +36,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, namespace, Ref, Watch } from 'nuxt-property-decorator'
 import pdf from 'vue-pdf'
+import { exportFileTypePdf } from '~/utils'
 const nsStoreLabel = namespace('stock-in/request-label')
 
 @Component({
@@ -132,13 +133,9 @@ class PrintLabel extends Vue {
   }
 
   handleDownload() {
-    const link = this.labelUrl
-    const a = document.createElement('a')
-    a.setAttribute('download', `${this.requestId}-label-${this.boxId}`)
-    a.setAttribute('href', link)
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
+    if(this.labelUrl) {
+      exportFileTypePdf(this.labelUrl, `${this.requestId}-label-${this.boxId}`)
+    }
   }
 }
 

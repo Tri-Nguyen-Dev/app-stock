@@ -49,7 +49,7 @@
             .icon.icon--right cm
             InputText(type="number" :min="1" v-model='stockInformation.height').w-full
             .error-message(v-if='stockInformation.height < 0') Height cannot be negative!
-      FileUpload(accept="image/*" :maxFileSize="1000000" :fileLimit="1" :showCancelButton='false' :showUploadButton='false' @select='getGenerateUrl')
+      FileUpload(accept="image/jpeg, image/png" :fileLimit="1" :showCancelButton='false' :showUploadButton='false' @select='getGenerateUrl')
         template(#empty)
           .grid
             .col-3.align-items-center.flex
@@ -69,7 +69,7 @@
 </template>
 <script lang="ts">
 import axios from 'axios'
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
 import { required } from 'vuelidate/lib/validators'
 import { GenerateUploadUrl } from '~/models/common/UploadImage'
 import { Stock as StockModel } from '~/models/Stock'
@@ -111,6 +111,7 @@ class AddNewStock extends Vue {
     imagePath: ''
   }
 
+  @Prop() barcode!:string
   extension!: string
 
   @nsStoreWarehouse.State
@@ -152,53 +153,69 @@ class AddNewStock extends Vue {
     if (this.$v.$invalid) {
       return
     }
-    await this.actCreateNewStock(
-      {
-        barCode: this.stockInformation.barCode,
-        sku: this.stockInformation.sku,
-        name: this.stockInformation.name,
-        category: this.stockInformation.category,
-        quantity: this.stockInformation.quantity,
-        weight: this.stockInformation.weight,
-        unit: this.stockInformation.unit,
-        length: this.stockInformation.length,
-        width: this.stockInformation.width,
-        height: this.stockInformation.height,
-        imageUrl: this.stockInformation.imageUrl
-      }
-    )
-    if(this.newStockDetail){
+    await this.actCreateNewStock({
+      barCode: this.stockInformation.barCode,
+      sku: this.stockInformation.sku,
+      name: this.stockInformation.name,
+      category: this.stockInformation.category,
+      quantity: this.stockInformation.quantity,
+      weight: this.stockInformation.weight,
+      unit: this.stockInformation.unit,
+      length: this.stockInformation.length,
+      width: this.stockInformation.width,
+      height: this.stockInformation.height,
+      imageUrl: this.stockInformation.imageUrl
+    })
+    if (this.newStockDetail) {
       this.stockInformation.id = this.newStockDetail.id
       this.$emit('addItem', this.stockInformation)
     } else {
-      this.$toast.add({ severity:'error', summary: 'Error Message', detail:'Create stock', life: 3000 })
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Create stock failed!',
+        life: 3000
+      })
     }
   }
 
   getGenerateUrl(file: any) {
-    if (file.files[0].type.includes('image/jpeg')) {
-      this.extension = 'jpg'
-    }
-    if (file.files[0].type.includes('image/png')) {
-      this.extension = 'png'
-    }
-    this.actGetGenerateUrl({
-      contentType: file.files[0].type,
-      expiration: 300000,
-      extension: this.extension
-    }).then(() => {
-      axios.create().put(this.generateUploadUrl.url,file.files[0], {
-        headers: {
-          'Content-Type': file.files[0].type
-        }
-      }) .then(() => {
-        this.stockInformation.imagePath = this.generateUploadUrl.key
+    if (file.files[0].size > 20000000) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Your image size is larger than 20MB',
+        life: 3000
       })
-    })
+    } else {
+      if (file.files[0].type.includes('image/jpeg')) {
+        this.extension = 'jpg'
+      }
+      if (file.files[0].type.includes('image/png')) {
+        this.extension = 'png'
+      }
+      this.actGetGenerateUrl({
+        contentType: file.files[0].type,
+        expiration: 300000,
+        extension: this.extension
+      }).then(() => {
+        axios
+          .create()
+          .put(this.generateUploadUrl.url, file.files[0], {
+            headers: {
+              'Content-Type': file.files[0].type
+            }
+          })
+          .then(() => {
+            this.stockInformation.imagePath = this.generateUploadUrl.key
+          })
+      })
+    }
   }
 
   async mounted() {
     await Promise.all([this.actUnitList(), this.actWarehouseList()])
+    this.stockInformation.barCode = this.barcode
   }
 }
 export default AddNewStock
@@ -214,6 +231,8 @@ export default AddNewStock
     border-bottom: 1px solid #E8EAEF
   .addStockContent
     flex: 1
+    .p-message-text
+      overflow-wrap: anywhere
     .error-message
       color: #ff0000
   .addStockFooter

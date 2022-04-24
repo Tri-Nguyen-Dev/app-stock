@@ -248,6 +248,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     border-radius: 4px
     padding: 13px 8px 8px 8px
     border: 1.5px solid $text-color-400
+    height: 100%
 .filter__title
   font-size: 12px
   color: $text-color-700
@@ -257,11 +258,10 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
 .filter__text
   margin-left: 8px
-  height: 40px
-  line-height: 40px
   color: $text-color-900
   font-size: $font-size-base
   font-weight: $font-weight-regular
+  @include text-ellipsis(2)
 
 .header__filter
   visibility: hidden

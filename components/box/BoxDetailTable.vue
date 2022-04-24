@@ -1,5 +1,15 @@
 <template lang="pug">
-    DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container( :resizableColumns='true' :rows='pagination.rows' :value='dataRenderItems' dataKey='id' :paginator='false' :row-hover='true' filterDisplay='menu' responsiveLayout="scroll" columnResizeMode="fit" @row-dblclick="onRowClick($event)" )
+    DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container( 
+      :resizableColumns='true' 
+      :rows='pagination.rows' 
+      :value='dataRenderItems' 
+      dataKey='id' 
+      :paginator='false' 
+      :row-hover='true' 
+      filterDisplay='menu' 
+      responsiveLayout="scroll" 
+      columnResizeMode="fit" 
+      @row-dblclick="onRowClick($event)" )
       template(#empty)
           div.flex.align-items-center.justify-content-center.flex-column
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
@@ -38,8 +48,14 @@
         .pagination
           div.pagination__info
             img(:src="require('~/assets/icons/filter-left.svg')")
-            span.pagination__total Showing {{pagination.page * pagination.rows + 1}} - {{(pagination.page + 1) * pagination.rows}} of {{listStockWithAmount.length}}
-          Paginator(v-if="listStockWithAmount.length > 0" :rows="pagination.rows" :totalRecords="listStockWithAmount.length" @page="onPage($event)" :first="pagination.first").p-0
+            span.pagination__total Showing 
+            | {{pagination.page * pagination.rows + 1}} - {{(pagination.page + 1) * pagination.rows}} of {{listStockWithAmount.length}}
+          Paginator(
+            v-if="listStockWithAmount.length > 0" 
+            :rows="pagination.rows" 
+            :totalRecords="listStockWithAmount.length" 
+            @page="onPage($event)" 
+            :first="pagination.first").p-0
 </template>
 
 <script lang="ts">

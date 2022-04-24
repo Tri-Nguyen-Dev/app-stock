@@ -53,16 +53,19 @@
             template(#body='{ data }')
               .stock__table__image.overflow-hidden.grid-cell-center
                 img.h-2rem.w-2rem.border-round(
-                  :src='`http://dtplo60ij00vm.cloudfront.net/thumbnail/${data.imagePath}`' alt='' width='100%' style="object-fit: cover;")
+                  :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-          Column(header='Code' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
+          Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
             template(#body='{ data }')
               .stock__table-barcode.grid-cell-right {{ data.barCode }}
           Column(header='Category' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.categoryName }}
+          Column(header='Type' :sortable="true" field='type' sortField="_type" headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.type }}
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
