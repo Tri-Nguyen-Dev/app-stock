@@ -77,14 +77,14 @@
                 .col
                   div.text-500 Value
                   InputText(:disabled='!isEditItemDetail' v-model='model.data.value').w-6
-            //- StockUnit(
+            StockUnit(
               title="Value"
               type ="weight"
               :weight="model.data.value"
               :isEdit="isEditItemDetail"
               icon="icon-price"
               @updateUnit='handleUpdateUnit'
-              )
+            )
         .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
           .col
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditItemDetail')
