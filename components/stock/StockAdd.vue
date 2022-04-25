@@ -69,7 +69,7 @@
 </template>
 <script lang="ts">
 import axios from 'axios'
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
 import { required } from 'vuelidate/lib/validators'
 import { GenerateUploadUrl } from '~/models/common/UploadImage'
 import { Stock as StockModel } from '~/models/Stock'
@@ -111,6 +111,7 @@ class AddNewStock extends Vue {
     imagePath: ''
   }
 
+  @Prop() barcode!:string
   extension!: string
 
   @nsStoreWarehouse.State
@@ -214,6 +215,7 @@ class AddNewStock extends Vue {
 
   async mounted() {
     await Promise.all([this.actUnitList(), this.actWarehouseList()])
+    this.stockInformation.barCode = this.barcode
   }
 }
 export default AddNewStock
