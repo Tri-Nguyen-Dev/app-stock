@@ -64,7 +64,8 @@ export default class StoreCreateReceipt extends VuexModule {
       const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.CREATE_RECEIPT)
       const response = await $api.post(url, params)
       return response.data
-    } catch (error) {}
+    } catch (error) {
+    }
   }
 
   @Action({ commit: 'setLocationSuggestion', rawError: true })
