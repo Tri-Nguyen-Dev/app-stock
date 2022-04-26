@@ -7,7 +7,7 @@
             .icon.icon-btn-back.bg-blue-700
           Breadcrumb(:home="homeItem" :model="breadcrumbItem")
       .stock__information--gerenal.border-bottom-1.border-gray-300
-        .grid.mb-3.align-items-center.px-4
+        .grid.mb-3.align-items-center.p-4
           .col-9.pl-0.flex
             .icon.icon-box-info.mr-1.bg-blue-700
             span.uppercase.font-bold.text-sm general information
@@ -52,7 +52,7 @@
               @updateUnit='handleUpdateUnit'
             )
         div
-        .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
+        .grid.mt-1.px-4(:class='isEditStockDetail ? " " : "hidden"')
           .col
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
               span.uppercase.font-semibold cancel

@@ -66,7 +66,7 @@
 							//- 	i.pi.pi-refresh
 							.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-3 Size:
-								span {{`${listBox[activeIndex].boxSize.name}(${listBox[activeIndex].boxSize.length}*${listBox[activeIndex].boxSize.width}*${listBox[activeIndex].boxSize.height})`}}
+								span {{getSize(activeIndex)}}
 								span.font-semibold.text-base.ml-3 (cm)
 							.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-2 Estimate Inventory Fee:
@@ -100,10 +100,10 @@
 									)
 										template(#body="slotProps")
 											img(
-                        :src="slotProps.data.stock.imagePath | getThumbnailUrl"
-                        :alt="slotProps.data.image"
-                        style="width:3rem; height: 3rem"
-                      )
+												:src="slotProps.data.stock.imagePath | getThumbnailUrl"
+												:alt="slotProps.data.image"
+												style="width:3rem; height: 3rem"
+											)
 									column.text-overflow-ellipsis(
 										field='stock.barCode'
 										header='BARCODE',
@@ -211,7 +211,13 @@
 					.d-flex.justify-content-center(class='col-6 md:col-2 lg:col-2')
 						Button.p-button-secondary.mr-2(label='Export file' icon="pi pi-download" @click="handleExportReceipt")
 						Button.p-button-primary.mr-2(label='Print Preview' @click='isShowLabel = true')
-		PrintLabel(:displayLable='isShowLabel' @setShow='setShowLabel' :requestId='receiptDetail.data.id' v-if='receiptDetail.data && listBox[activeIndex]' :boxId='listBox[activeIndex].id')
+		PrintLabel(
+			:displayLable='isShowLabel'
+			@setShow='setShowLabel'
+			:requestId='receiptDetail.data.id'
+			v-if='receiptDetail.data && listBox[activeIndex]'
+			:boxId='listBox[activeIndex].id'
+		)
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
@@ -305,6 +311,13 @@ class CreateReceipt extends Vue {
     if(result) {
       exportFileTypePdf(result, `receipt-${this.id}`)
     }
+  }
+	
+  getSize(activeIndex){
+    return `${this.listBox[activeIndex].boxSize.name}
+			(${this.listBox[activeIndex].boxSize.length}
+			*${this.listBox[activeIndex].boxSize.width}
+			*${this.listBox[activeIndex].boxSize.height})`
   }
 }
 
