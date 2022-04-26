@@ -8,11 +8,14 @@ import { $api, PathBind } from '~/utils'
 export default class StoreBox extends VuexModule {
   private static readonly STATE_URL = {
     GET_BOX_DETAIL: '/box/:id/detail',
-    UPDATE_BOX_DETAIL: '/box/:id/update'
+    UPDATE_BOX_DETAIL: '/box/:id/update',
+    BOX_LOCATION_HISTORY: '/box/:id/location-history'
   }
 
   public boxDetail?: {} = {}
+  public locationHistory?: [] = []
   public totalItems?: number = 0
+  public totalHistory?: number = 0
   public updateSuccess?: boolean = false
 
   @Mutation
@@ -28,6 +31,12 @@ export default class StoreBox extends VuexModule {
     }
   }
 
+  @Mutation
+  boxLocationHistory(data: any) {
+    this.locationHistory = data.items
+    this.totalHistory = data.total
+  }
+
   @Action({ commit: 'setBoxDetail', rawError: true })
   async actGetBoxDetail(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_BOX_DETAIL, params)
@@ -39,6 +48,13 @@ export default class StoreBox extends VuexModule {
   async actUpdateBoxDetail(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.UPDATE_BOX_DETAIL, { id: params.id })
     const response: any = await $api.post(url, { shelfBinId: params.shelfBinId })
+    return response.data
+  }
+
+  @Action({ commit: 'boxLocationHistory', rawError: true })
+  async actLocationHistory(params?: any): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreBox.STATE_URL.BOX_LOCATION_HISTORY, params)
+    const response: any = await $api.get(url)
     return response.data
   }
 }

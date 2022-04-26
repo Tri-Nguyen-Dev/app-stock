@@ -1,16 +1,16 @@
 <template lang="pug">
-  .grid.flex.grid-nogutter.box-page-container
+.box-page-container.flex.flex-column
+  .grid.flex.grid-nogutter
     div.bg-white.border-round-top.sub-tab(class='col-3 md:col-3 lg:col-3 xl:col-3')
       .col.flex.align-items-center.p-3
         Button(@click='backToBox').p-button-link
-          .icon-arrow-left.icon.bg-primary.mr-3.align-items-center
-        span.font-normal( @click='backToBox') Box list /
-        span.font-normal.text-primary &nbsp;  Box Detail
+          .icon-arrow-left.icon.bg-primary.align-items-center
+        Breadcrumb.font-bold(:home="homeItem" :model="breadcrumbItem")
       .border-bottom-1.border-gray-300.grid-nogutter
       .grid.flex.my-4.p-3.grid-nogutter
         .col.flex.align-items-center
           .icon-box-info.icon.bg-primary.mr-2
-          span.font-bold.text-800.uppercase Box Detail
+          span.font-bold.text-700 Box Detail
         .col-fixed
             Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" v-if='!isEditBox' )
               .icon-edit-btn.icon
@@ -23,11 +23,11 @@
               span.p-2.table__status.table__status--disable(
                 v-else-if="boxDetail.status === 'BOX_STATUS_DISABLE'"
               ) {{ boxDetail.status | boxStatus }}
-              span.p-2.table__status.table__status--draft(v-else) {{ sboxDetail.tatus | boxStatus }}
+              span.p-2.table__status.table__status--draft(v-else) {{ boxDetail.status | boxStatus }}
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
-                span.text-primary.uppercase.ml-2 {{ boxDetail.barCode }}
+                span.text-primary.uppercase.ml-2 {{ boxDetail.id }}
       div.sub--scroll
           div.wrap-unit.px-4
             StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
@@ -66,7 +66,7 @@
               icon="icon-size")
               template(v-slot:size)
                 span.font-bold.text-small.mt-1.uppercase 
-                | {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
+                  | {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
               template(v-slot:button-size='')
                 span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(
                   :class='boxDetail.boxSize.name ? "p-1" : ""') {{ boxDetail.boxSize.name }}
@@ -87,16 +87,16 @@
               .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='btnEdit')
                 span.uppercase.font-semibold cancel
             .col
-              .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='handleUpdateData')
+              .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1
                 span.uppercase save
     div.ml-5.flex-1(class=' col-7  md:col-8  lg:col-8 xl:col-8')
       .grid.justify-content-between
         .col-fixed
-          h1.m-0.mb-1 Box Detail
-      .grid.w-full.grid-nogutter.right__information--stock.relative.tabview-relative
-        .col(class=' col-12  md:col-12 lg:col-12 xl:col-12')
-          TabView( @tab-change="onTabClick($event)" )
-            TabPanel
+          h1.text-heading Box Detail
+      .grid.w-full.grid-nogutter.right__information--stock.tabview-relative
+        .col(class=' col-12  md:col-12 lg:col-12 xl:col-12').h-full
+          TabView.h-full( @tab-change="onTabClick($event)" )
+            TabPanel.h-full
               template(#header)
                 .icon.icon-history.mr-2.surface-600
                 span Item list
@@ -131,11 +131,7 @@
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
                 span Location history
-              .overflow-auto.box__detail--history
-                //- BoxDetailHistory( 
-                  v-if="listStockWithAmount.length > 0" 
-                  :listStockWithAmount='listStockWithAmount' 
-                  :totalStockRecords='totalStockRecords' )
+              BoxDetailHistoryTable
         .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
           div.mr-3
             .header__search
@@ -147,13 +143,14 @@
               .icon.icon-filter(v-if="!isFilter")
               .icon.icon-chevron-up.bg-primary(v-else)
               span Filter
-            .btn-refresh(@click="handleRefreshFilter")
+            .btn-refresh(@click="refreshFilter")
               .icon.icon-rotate-left.bg-white
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import { ITEM_SELLER_INFO } from '~/utils/constants/box'
+import { refreshAllFilter } from '~/utils'
 const nsStoreBoxDetail = namespace('box/box-detail')
 const nsStoreCategoryList = namespace('category/category-list')
 const nsStoreLocationList = namespace('location/location-list')
@@ -271,8 +268,8 @@ class BoxDetail extends Vue {
     this.isFilter = false
   }
 
-  handleRefreshFilter() {
-    for (const items in this.filterParams) this.filterParams[items] = null
+  refreshFilter() {
+    refreshAllFilter(this.filterParams)
   }
 
   searchLocation = _.debounce(async (e) => {
@@ -303,6 +300,16 @@ class BoxDetail extends Vue {
   get receiptNoteId() {
     return this.boxDetail.request?.id || null
   }
+
+  get homeItem() {
+    return { label: 'Box List', to: '/box' }
+  }
+
+  get breadcrumbItem() {
+    return [
+      { label: 'Box Detail', to: `/box/${this.$route.params.id}` }
+    ]
+  }
 }
 
 export default BoxDetail
@@ -327,6 +334,7 @@ export default BoxDetail
     position: absolute
     top: -0.5rem
     right: 0
+
 .grid
   ::v-deep.sub-tab
     height: calc(100vh - 32px)
@@ -336,19 +344,18 @@ export default BoxDetail
   height: calc(100vh - 280px)
   max-width: 21.5rem
   overflow: auto
+  
 .right__information--stock
   display: flex
+  height: 100%
   flex-direction: column
-  ::v-deep.item__log--history
-    height: calc(100vh - 228px)
-  .box__detail--history
-    height: calc(100vh - 148px)
   ::v-deep.p-tabview .p-tabview-nav li
     .p-tabview-nav-link
       background: var(--bg-body-bas)
       border: none
       box-shadow: none !important
   ::v-deep.p-tabview .p-tabview-panels
+    height: 100%
     background: var(--bg-body-bas)
     padding: 1.25rem 0 0 0
 
@@ -357,15 +364,6 @@ export default BoxDetail
     border-bottom: 2px solid #486AE2 !important
     .icon
       background-color: var(--primary-color) !important
-
-.refresh-filter
-  background-color: $primary
-  display: flex
-  align-items: center
-  width: 50px
-  justify-content: center
-  border-top-right-radius: 4px
-  border-bottom-right-radius: 4px
 
 .edit-location
   ::v-deep input

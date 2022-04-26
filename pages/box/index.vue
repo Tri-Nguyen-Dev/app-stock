@@ -74,7 +74,7 @@
           )
   .grid.grid-nogutter.flex-1.relative.overflow-hidden
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
-      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" 
+      DataTable.z(v-if="boxList" :value="boxList" responsiveLayout="scroll" 
       :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" 
       :rowClass="rowClass" @sort="sortData($event)" @row-dblclick="onRowClick($event)"
       :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
