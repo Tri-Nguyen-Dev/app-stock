@@ -98,7 +98,7 @@
 				.col-10
 					.grid.border__grid(v-if='boxSizeList && listBox[activeIndex]')
 						.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
-							span.font-semibold.text-base.mr-3.ml-3 Size
+							span.font-semibold.text-base.mr-3.ml-3.required__title Size
 							Dropdown.box-input(
 								style='width: 70%',
 								:options='boxSizeList',
@@ -109,7 +109,7 @@
 							)
 							span.font-semibold.text-base.ml-3 (cm)
 						.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
-							span.font-semibold.text-base.mr-3.ml-2 Estimate Inventory Fee
+							span.font-semibold.text-base.mr-3.ml-2.required__title Estimate Inventory Fee
 							InputNumber.number-input(
 								v-model='listBox[activeIndex].inventoryFee',
 								mode='currency',
@@ -215,6 +215,7 @@
 </template>
 <script lang="ts">
 import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
+import { required } from 'vuelidate/lib/validators'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
 import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
@@ -233,6 +234,19 @@ const nsStoreLocationList = namespace('location/location-list')
     ConfirmDialogCustom,
     ItemDataTable,
     FormAddSeller
+  },
+  validations: {
+    listBox: {
+      $each: {
+        inventoryFee: {
+          required
+        },
+        boxSize: {
+          required
+        }
+      }
+     
+    }
   }
 })
 class CreateReceipt extends Vue {
@@ -423,18 +437,18 @@ class CreateReceipt extends Vue {
         itemDraft.amount = item.amount
         box.listStockWithAmount?.push(itemDraft)
       })
-      box.rackLocation = element.location!
+      box.rackLocation.id = element.location!.id
       receiptDraft.boxList?.push(box)
     })
     if(this.id)
     {
+      await this.actUpdateReceipt(receiptDraft)
+    } else {
       await this.actCreateNewReceipt(receiptDraft)
       this.id= this.newReceipt.id
-    } else {
-      await this.actUpdateReceipt(receiptDraft)
     }
    
-    if (type === 1) {
+    if (type === 1 && this.id) {
       await this.$router.push(`/stock-in/${this.newReceipt.id}/detail`)
     }
   }
@@ -720,4 +734,6 @@ export default CreateReceipt
 	&__btn.btn--agree
 		background-color: $primary
 		color: #fff
+.error-message
+	color: #ff0000
 </style>
