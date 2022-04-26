@@ -13,17 +13,32 @@
       InputText(v-model='stockInformation.name' :class="{'name--error' : $v.stockInformation.name.$error}").w-full
       .error-message(v-if='$v.stockInformation.name.$dirty && !$v.stockInformation.name.required') Name cannot be empty!
       h5.mb-1 Category *
-      Dropdown(v-model='stockInformation.category' :options="warehouseList" optionLabel="name" :filter="true" placeholder="Select a category" :showClear="true" :class="{'category--error' : $v.stockInformation.category.$error}").w-full
+      Dropdown(
+        v-model='stockInformation.category'
+        :options="warehouseList" optionLabel="name"
+        :filter="true" placeholder="Select a category"
+        :showClear="true" :class="{'category--error' : $v.stockInformation.category.$error}"
+        ).w-full
         template(#value='slotProps')
       .error-message(v-if='$v.stockInformation.category.$dirty && !$v.stockInformation.category.required') Please choose category!
       .grid
         .col-6
           h5.mb-1 Quantity *
-          InputText(type="number" :min="1" v-model='stockInformation.quantity' :class="{'quantity--error' : $v.stockInformation.quantity.$error}").w-full
-          .error-message(v-if='($v.stockInformation.quantity.$dirty && !$v.stockInformation.quantity.required) || stockInformation.quantity < 0') Please enter quantity!
+          InputText(
+            type="number"
+            :min="1" v-model='stockInformation.quantity'
+            :class="{'quantity--error' : $v.stockInformation.quantity.$error}"
+          ).w-full
+          .error-message(
+            v-if='($v.stockInformation.quantity.$dirty && !$v.stockInformation.quantity.required) || stockInformation.quantity < 0'
+          ) Please enter quantity!
         .col-6
           h5.mb-1 Unit *
-          Dropdown(v-model='stockInformation.unit' :options="unitList" optionLabel="name" :class="{'unit--error' : $v.stockInformation.unit.$error}").w-full
+          Dropdown(
+            v-model='stockInformation.unit'
+            :options="unitList" optionLabel="name"
+            :class="{'unit--error' : $v.stockInformation.unit.$error}"
+          ).w-full
           .error-message(v-if='$v.stockInformation.unit.$dirty && !$v.stockInformation.unit.required') Please choose unit!
       .grid
         .col-6
