@@ -18,12 +18,12 @@
         template(#body='{data}')
           span.font-bold {{data.creatorId}}
       template(#footer)
-                .pagination
-                  div.pagination__info
-                    img(:src="require('~/assets/icons/filter-left.svg')")
-                    span.pagination__total 
-                    | {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
-                  Paginator(:rows="20" :totalRecords="totalStockRecords" @page="onPageHistory($event)").p-0
+        .pagination
+          div.pagination__info
+            img(:src="require('~/assets/icons/filter-left.svg')")
+            span.pagination__total
+            | {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + stockList.length}} of {{totalStockRecords}}
+          Paginator(:rows="20" :totalRecords="totalStockRecords" @page="onPageHistory($event)").p-0
 
 </template>
 <script lang="ts">
@@ -35,7 +35,6 @@ class BoxDetailHistory extends Vue {
   @Prop() stockList!: () => any
   @Prop() totalStockRecords: () => any
 
-  totalItemsCount = 32
   pageSize: number = 20
   pageNumber: number = 1
 

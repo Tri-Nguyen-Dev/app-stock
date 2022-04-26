@@ -4,7 +4,7 @@
             div.confirm-dialog__content
                 img(:srcset="`${image ? require(`~/assets/images/${image}.png`) : ''} 2x`")
                 h3.confirm-dialog__title  {{ title }}
-                p.confirm-dialog__des 
+                p.confirm-dialog__des
                     slot(name="message")
                 div.confirm-dialog__footer
                     Button.confirm-dialog__btn.btn--discard(@click="onCancel()") No
