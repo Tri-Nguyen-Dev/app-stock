@@ -70,7 +70,7 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Boxcode" :value="model.data.box.barCode" :isEdit="isEditItemDetail" icon="icon-delivery")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 mt-2')
-            .wapprer-unit.opacity-100
+            .wapprer-unit.opacity-100.surface-50
               .grid.align-items-center
                 .col-3.flex.justify-content-end
                   .icon--large.icon-price.bg-blue-700
