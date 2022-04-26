@@ -76,7 +76,7 @@
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
                 span(@click="handleEditStock(data.id)")
                   .icon.icon-edit-btn
-                span(@click="showModalDelete(data)")
+                span(@click="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
                   .icon.icon-btn-delete
           template(#footer)
             Pagination(
@@ -101,8 +101,8 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
-      template(v-slot="message")
-        p {{ deleteMessage() }}
+      template(v-slot:message)
+        p {{ deleteMessage }} 
 
     Toast
 </template>
@@ -114,11 +114,11 @@ import {
   LIMIT_PAGE_OPTIONS,
   PAGINATE_DEFAULT,
   calculateIndex,
-  StockConstants
+  StockConstants,
+  getDeleteMessage
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
-import { MessageConstants } from '~/utils/constants/messages'
 const nsCategoryStock = namespace('category/category-list')
 const nsStoreStock = namespace('stock/stock-list')
 @Component({
@@ -132,13 +132,12 @@ class Stock extends Vue {
   isShowFilter: boolean = false
   loading: boolean = false
   isModalDelete: boolean = false
-  ids: string[] = []
+  onEventDeleteList: StockModel.Model[] = []
   loadingSubmit: boolean = false
   isFilter: boolean = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList = StockConstants.STOCK_STATUS_OPTIONS
   limitOptions = LIMIT_PAGE_OPTIONS
-  stockNameDelete: string = ''
   filter: any = {
     name: null,
     barCode: null,
@@ -169,12 +168,9 @@ class Stock extends Vue {
 
   // -- [ Getters ] -------------------------------------------------------------
   get selectedStockFilter() {
-    const itemsDelete: string[] = []
-    _.forEach(this.selectedStock, function (stock: any) {
-      if (stock.stockStatus !== 'STOCK_STATUS_DISABLE')
-        itemsDelete.push(stock.id)
+    return  _.filter(this.selectedStock, (stock: StockModel.Model) => {
+      return stock.stockStatus !== 'STOCK_STATUS_DISABLE'
     })
-    return itemsDelete
   }
 
   get classHeaderMuti() {
@@ -195,13 +191,12 @@ class Stock extends Vue {
     const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
-
-  // -- [ Functions ] ------------------------------------------------------------
-
-  get deleteMessage(name) {
-    return _.template(MessageConstants.DELETE_MESSAGE_TEMPLATE, name)
+  
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'stock')
   }
-
+  
+  // -- [ Functions ] ------------------------------------------------------------
   getParamApi() {
     const categoryIds = this.filter.categories
       ? this.filter.categories.map((item: any) => item?.id).toString()
@@ -257,22 +252,15 @@ class Stock extends Vue {
     this.getProductList()
   }
 
-  showModalDelete(deletedList: StockModel.Model[]) {
-    if (!deletedList) { return }
-    if (data) {
-      this.stockNameDelete = data.name
-      this.ids = [data.id]
-      this.rowUnSelectAll()
-    } else {
-      this.ids = this.selectedStockFilter
-    }
+  showModalDelete(data: StockModel.Model[]) {
+    this.onEventDeleteList = data || this.selectedStockFilter
     this.isModalDelete = true
   }
 
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      const data = await this.actDeleteStockByIds(this.ids)
+      const data = await this.actDeleteStockByIds(_.map(this.onEventDeleteList, 'id'))
       if (data) {
         this.loadingSubmit = false
         this.isModalDelete = false
@@ -379,6 +367,11 @@ export default Stock
     font-size: $font-size-medium
   &-barcode
     text-transform: uppercase
+  ::v-deep.disable-button
+    pointer-events: none
+    background-color: $text-color-300
+    .icon
+      background-color: $text-color-500
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
