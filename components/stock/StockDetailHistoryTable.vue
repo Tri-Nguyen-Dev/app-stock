@@ -6,6 +6,7 @@
     :rows="20"
     :scrollable="false"
     @sort="sortData($event)"
+    :class="{ 'table-wrapper-empty': !historyLocationList.data.items || historyLocationList.data.items.length <= 0 }"
   )
     Column(field="no" header="NO" :styles="{'width': '1%'}")
       template(#body="{ index }")

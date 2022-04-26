@@ -3,16 +3,16 @@
     .addStockHeader
       h3.px-3 Add item
     .addStockContent.p-3
-      h5.my-1 Barcode *
+      h5.my-1.required__title Barcode
       .p-input-icon-right.w-full
         .icon.icon--right.icon-scan
         InputText(v-model='stockInformation.barCode').w-full
       h5.mb-1 SKU
       InputText(v-model='stockInformation.sku').w-full
-      h5.mb-1 Name *
+      h5.mb-1.required__title Name
       InputText(v-model='stockInformation.name' :class="{'name--error' : $v.stockInformation.name.$error}").w-full
       .error-message(v-if='$v.stockInformation.name.$dirty && !$v.stockInformation.name.required') Name cannot be empty!
-      h5.mb-1 Category *
+      h5.mb-1.required__title Category
       Dropdown(
         v-model='stockInformation.category'
         :options="warehouseList" optionLabel="name"
@@ -23,7 +23,7 @@
       .error-message(v-if='$v.stockInformation.category.$dirty && !$v.stockInformation.category.required') Please choose category!
       .grid
         .col-6
-          h5.mb-1 Quantity *
+          h5.mb-1.required__title Quantity
           InputText(
             type="number"
             :min="1" v-model='stockInformation.quantity'
@@ -33,7 +33,7 @@
             v-if='($v.stockInformation.quantity.$dirty && !$v.stockInformation.quantity.required) || stockInformation.quantity < 0'
           ) Please enter quantity!
         .col-6
-          h5.mb-1 Unit *
+          h5.mb-1.required__title Unit
           Dropdown(
             v-model='stockInformation.unit'
             :options="unitList" optionLabel="name"
