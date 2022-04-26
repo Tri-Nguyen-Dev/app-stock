@@ -160,10 +160,9 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/RequestList'
-import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf } from '~/utils'
+import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-import { MessageConstants } from '~/utils/constants/messages'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockIn = namespace('stock-in/request-list')
 const nsStoreExportReceipt = namespace('stock-in/export-receipt')
@@ -362,10 +361,7 @@ class StockIn extends Vue {
   }
 
   get deleteMessage() {
-    const boxSelectedLength = _.size(this.onEventDeleteList)
-    if(boxSelectedLength === 0) return ''
-    const name = boxSelectedLength > 1 ? boxSelectedLength :  this.onEventDeleteList[0].id
-    return _.template(MessageConstants.DELETE_MESSAGE_TEMPLATE)({ name })
+    return getDeleteMessage(this.onEventDeleteList, 'receipt note')
   }
 }
 

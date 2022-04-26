@@ -15,9 +15,9 @@ export function exportFileTypePdf(labelUrl: string, fileName: string) {
   document.body.removeChild(a)
 }
 
-export function getDeleteMessage(selectedList: any[]) {
+export function getDeleteMessage(selectedList: any[], nameList: string) {
   const len = _.size(selectedList)
   if (!len) return ''
   const name = len > 1 ? len : (selectedList[0].name || selectedList[0].id)
-  return _.template(MessageConstants.DELETE_MESSAGE_TEMPLATE)({ name })
+  return _.template(MessageConstants.DELETE_MESSAGE_TEMPLATE)({ name, nameList })
 }

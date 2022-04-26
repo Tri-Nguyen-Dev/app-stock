@@ -16,6 +16,7 @@ import { LIMIT_PAGE_OPTIONS } from '~/utils'
 
 @Component
 class Pagination extends Vue {
+  pageOption = LIMIT_PAGE_OPTIONS
   // -- [ Props ] -------------------------------------------------------------
   @Prop() paging!: Paging.Model
   @Prop() total!: number
@@ -31,10 +32,6 @@ class Pagination extends Vue {
 
   get showDeleteBtn() {
     return _.size(this.deletedList) > 0
-  }
-
-  get pageOption() {
-    return LIMIT_PAGE_OPTIONS
   }
 }
 

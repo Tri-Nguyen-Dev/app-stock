@@ -114,11 +114,11 @@ import {
   LIMIT_PAGE_OPTIONS,
   PAGINATE_DEFAULT,
   calculateIndex,
-  StockConstants
+  StockConstants,
+  getDeleteMessage
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
-import { MessageConstants } from '~/utils/constants/messages'
 const nsCategoryStock = namespace('category/category-list')
 const nsStoreStock = namespace('stock/stock-list')
 @Component({
@@ -191,14 +191,11 @@ class Stock extends Vue {
     const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
-
+  
   get deleteMessage() {
-    const stockSelectedLength = _.size(this.onEventDeleteList)
-    if(stockSelectedLength === 0) return ''
-    const name = stockSelectedLength > 1 ? stockSelectedLength :  this.onEventDeleteList[0].name
-    return _.template(MessageConstants.DELETE_MESSAGE_TEMPLATE)({ name })
+    return getDeleteMessage(this.onEventDeleteList, 'stock')
   }
-
+  
   // -- [ Functions ] ------------------------------------------------------------
   getParamApi() {
     const categoryIds = this.filter.categories
