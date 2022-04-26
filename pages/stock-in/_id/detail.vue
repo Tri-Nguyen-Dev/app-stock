@@ -315,10 +315,10 @@ class CreateReceipt extends Vue {
   }
 	
   getSize(activeIndex){
-    return `${this.listBox[activeIndex].boxSize.name}
-			(${this.listBox[activeIndex].boxSize.length}
-			*${this.listBox[activeIndex].boxSize.width}
-			*${this.listBox[activeIndex].boxSize.height})`
+    return `${this.listBox[activeIndex].boxSize?.name}
+			(${this.listBox[activeIndex].boxSize?.length}
+			*${this.listBox[activeIndex].boxSize?.width}
+			*${this.listBox[activeIndex].boxSize?.height})`
   }
 
   totalItem() {

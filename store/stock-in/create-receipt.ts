@@ -78,7 +78,7 @@ export default class StoreCreateReceipt extends VuexModule {
     } catch (error) {}
   }
 
-  @Action({ commit: 'updateReceipt', rawError: true })
+  @Action({ commit: 'setNewReceipt', rawError: true })
   async actUpdateReceipt(params: any): Promise<string | undefined> {
     try{
       const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.UPDATE_RECEIPT,{ id: params.id })

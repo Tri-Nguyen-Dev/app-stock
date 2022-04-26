@@ -10,7 +10,7 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title ID receipt note
-						.filter__text 030133333
+						//- .filter__text(v-if='receiptDetail') {{receiptDetail.data.id}}
 				.col
 					.filter__item.item--disabled
 						.filter__title ID Creator
@@ -89,6 +89,7 @@
 											field='name',
 											:suggestions='locationList',
 											@complete='searchLocation($event)',
+											@item-select='changeItem($event)'
 											:dropdown='true'
 										)
 											template(#item='slotProps')
@@ -215,7 +216,6 @@
 </template>
 <script lang="ts">
 import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
-import { required } from 'vuelidate/lib/validators'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
 import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
@@ -234,19 +234,6 @@ const nsStoreLocationList = namespace('location/location-list')
     ConfirmDialogCustom,
     ItemDataTable,
     FormAddSeller
-  },
-  validations: {
-    listBox: {
-      $each: {
-        inventoryFee: {
-          required
-        },
-        boxSize: {
-          required
-        }
-      }
-     
-    }
   }
 })
 class CreateReceipt extends Vue {
@@ -428,7 +415,10 @@ class CreateReceipt extends Vue {
     this.listBox.forEach((element) => {
       const box: ReceiptModel.BoxDraft = new ReceiptModel.BoxDraft()
       box.inventoryFee = element.inventoryFee
-      box.boxSize.id = element.boxSize.id
+      if(element.boxSize!.id>0){
+        box.boxSize.id = element.boxSize!.id
+      }
+			
       element.listItemInBox?.forEach((item) => {
         const itemDraft: ReceiptModel.ItemDraft = new ReceiptModel.ItemDraft()
         itemDraft.stock.id = item.stock.id
@@ -442,6 +432,7 @@ class CreateReceipt extends Vue {
     })
     if(this.id)
     {
+      receiptDraft.id= this.id
       await this.actUpdateReceipt(receiptDraft)
     } else {
       await this.actCreateNewReceipt(receiptDraft)
@@ -576,6 +567,12 @@ class CreateReceipt extends Vue {
     await this.actLocationList({
       location: e.query
     })
+  }
+
+  changeItem(event){
+    if(event){
+      this.checkLocation()
+    }
   }
 
   prepareListBox(){
