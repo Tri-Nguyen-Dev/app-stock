@@ -77,7 +77,7 @@
 								Button.p-button-default.p-button-rounded.p-button-text(
 									type='button',
 									icon='pi pi-ellipsis-h',
-									@click.stop='activeIndex = box.index; isModalDelete = true; deleteBox()'
+									@click.stop='activeIndex = box.index; isModalDelete = true;'
 								)
 							.col-12.flex.align-items-center
 								.grid
@@ -202,14 +202,15 @@
 			:barcode='boxQrCode'
 		)
 		FormAddSeller(:isShowForm='isShowFormAddSeller')
-	//- ConfirmDialogCustom(
-	//- 	title="Confirm delete box"
-	//- 	message="Are you sure you want to delete box in this receipt?"
-	//- 	image="confirm-delete"
-	//- 	:isShow="isModalDelete"
-	//- 	:onOk="deleteBox()"
-	//- 	:onCancel="handleCancel"
-	//- 	)
+	Dialog(:visible.sync="isModalDelete" :modal="true")
+		div.confirm-dialog__content
+			img(:srcset='"~/assets/images/confirm-delete.png"')
+			h3.confirm-dialog__title Confirm delete box
+			p.confirm-dialog__des
+				slot(name="message")
+			div.confirm-dialog__footer
+				Button.confirm-dialog__btn.btn--discard(@click="handleCancel") No
+				Button.confirm-dialog__btn.btn--agree(@click="deleteBox()") Yes
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
@@ -314,15 +315,16 @@ class CreateReceipt extends Vue {
     item.index = this.listBox[this.listBox.length - 1].index + 1
     if (this.listBox.length < 10) {
       this.listBox.push(item)
+      this.activeAction = false
     }
-    this.activeIndex = this.listBox[this.listBox.length - 1].index
-    this.checkActiveAction()
+    this.activeIndex = this.listBox[this.listBox.length - 1].index  
   }
 
   deleteBox() {
     if (this.listBox.length > 1) {
       this.listBox.splice(this.activeIndex, 1)
       this.selectBox(this.listBox[this.listBox.length - 1])
+      this.isModalDelete = false
     }
   }
 
@@ -611,4 +613,63 @@ export default CreateReceipt
 			background-color: $color-white !important
 	.box-card:hover
 		@extend .box-card-active
+.confirm-dialog
+	::v-deep.p-dialog
+		font-family: $font-family-primary !important
+		border-radius: 8px !important
+		overflow: hidden
+		border: none
+		max-width: 300px
+	::v-deep.p-dialog-header
+		display: none !important
+	::v-deep.p-dialog-content
+		padding: 0
+	&__content
+		text-align: center
+		padding: 48px 16px 16px 16px
+		img
+			object-fit: contain
+			max-width: 100%
+	&__title
+		margin-top: 16px
+		margin-bottom: 0
+		color: $text-color-900
+		font-weight: $font-weight-bold
+		font-size: $font-size-medium !important
+		line-height: calc(24 / 16)
+	&__des
+		margin-top: 12px
+		margin-bottom: 0
+		color: $text-color-700
+		font-weight: $font-weight-regular
+		font-size: $font-size-small !important
+		line-height: calc(20 / 12)
+	&__footer
+		margin-top: 32px
+		display: flex
+		gap: 0 8px
+		justify-content: center
+	&__btn
+		padding: 12px 32px
+		color: $text-color-900
+		font-size: 14px
+		font-weight: 400
+		line-height: calc(24 / 14)
+		border-radius: 4px
+		cursor: pointer
+		min-width: 130px
+		outline: none
+		border: none
+		display: flex
+		align-items: center
+		justify-content: center
+	&__btn:focus
+		box-shadow: none !important
+	&__btn:hover
+		background-color: $primary !important
+	&__btn.btn--discard
+		background-color: #E8EAEF
+	&__btn.btn--agree
+		background-color: $primary
+		color: #fff
 </style>
