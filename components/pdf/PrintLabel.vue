@@ -18,7 +18,13 @@
         ref="pdfAllPage"
       )
     template(#header)
-      Dropdown.print-label__page(placeholder="Select page" v-model="pageSelect" :options="pages" optionLabel="name" @change="handelChangePage")
+      Dropdown.print-label__page(
+        placeholder="Select page"
+        v-model="pageSelect"
+        :options="pages"
+        optionLabel="name"
+        @change="handelChangePage"
+      )
       .grid.print-label__buttons
         .col
           Button(@click='handleZoomOut')
