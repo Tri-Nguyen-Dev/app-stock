@@ -76,8 +76,8 @@
           )
   .grid.grid-nogutter.flex-1.overflow-hidden
     .col.h-full.bg-white
-      DataTable.w-full.table__sort-icon.h-full(v-if="boxList" :value="boxList" responsiveLayout="scroll" 
-      :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" 
+      DataTable.w-full.table__sort-icon.h-full(v-if="boxList" :value="boxList" responsiveLayout="scroll"
+      :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"
       :rowClass="rowClass" @sort="sortData($event)" @row-dblclick="onRowClick($event)"
       :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
       @row-unselect-all="rowUnSelectAll" @row-select="rowSelect" @row-unselect="rowUnselect")
@@ -155,8 +155,7 @@ import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-import { PAGINATE_DEFAULT } from '~/utils'
-import { MessageConstants } from '~/utils/constants/messages'
+import { getDeleteMessage, PAGINATE_DEFAULT } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -222,10 +221,7 @@ class BoxList extends Vue {
   }
 
   get deleteMessage() {
-    const boxSelectedLength = _.size(this.onEventDeleteList)
-    if(boxSelectedLength === 0) return ''
-    const name = boxSelectedLength > 1 ? boxSelectedLength :  this.onEventDeleteList[0].id
-    return _.template(MessageConstants.DELETE_MESSAGE_TEMPLATE)({ name })
+    return getDeleteMessage(this.onEventDeleteList)
   }
 
   // -- [ Functions ] ------------------------------------------------------------

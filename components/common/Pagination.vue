@@ -23,7 +23,7 @@ class Pagination extends Vue {
 
   // -- [ Getters ] -----------------------------------------------------------
   get showingText() {
-    if(this.total <= 0) return ''
+    if (this.total <= 0) return ''
     const from = String(this.paging.pageNumber * this.paging.pageSize + 1).padStart(2, '0')
     const to = Math.min(this.total, (this.paging.pageNumber + 1) * this.paging.pageSize)
     return `Showing ${from} - ${to} of ${this.total}`
