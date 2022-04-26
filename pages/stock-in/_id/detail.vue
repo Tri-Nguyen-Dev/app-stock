@@ -66,7 +66,7 @@
 							//- 	i.pi.pi-refresh
 							.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-3 Size:
-								span {{`${listBox[activeIndex].boxSize.name}(${listBox[activeIndex].boxSize.length}*${listBox[activeIndex].boxSize.width}*${listBox[activeIndex].boxSize.height})`}} 
+								span {{`${listBox[activeIndex].boxSize.name}(${listBox[activeIndex].boxSize.length}*${listBox[activeIndex].boxSize.width}*${listBox[activeIndex].boxSize.height})`}}
 								span.font-semibold.text-base.ml-3 (cm)
 							.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-2 Estimate Inventory Fee:
@@ -99,7 +99,11 @@
 										filter-match-mode='contains'
 									)
 										template(#body="slotProps")
-											//- img(:src='process.env.BASE_IMAGE_URL + `thumbnail/${slotProps.data.stock.imagePath}`' :alt="slotProps.data.image" style="width:3rem; height: 3rem")
+											img(
+                        :src="slotProps.data.stock.imagePath | getThumbnailUrl"
+                        :alt="slotProps.data.image"
+                        style="width:3rem; height: 3rem"
+                      )
 									column.text-overflow-ellipsis(
 										field='stock.barCode'
 										header='BARCODE',
@@ -205,7 +209,7 @@
 								br
 								span.font-semibold.text-primary 3$/day
 					.d-flex.justify-content-center(class='col-6 md:col-2 lg:col-2')
-						Button.p-button-secondary.mr-2(label='Export file' icon="pi pi-download")
+						Button.p-button-secondary.mr-2(label='Export file' icon="pi pi-download" @click="handleExportReceipt")
 						Button.p-button-primary.mr-2(label='Print Preview' @click='isShowLabel = true')
 		PrintLabel(:displayLable='isShowLabel' @setShow='setShowLabel' :requestId='receiptDetail.data.id' v-if='receiptDetail.data && listBox[activeIndex]' :boxId='listBox[activeIndex].id')
 </template>
@@ -217,7 +221,9 @@ import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
 import { Item as ItemModel } from '~/models/Item'
 import { Receipt as ReceiptModel } from '~/models/Receipt'
 import PrintLabel from '~/components/pdf/PrintLabel.vue'
+import { exportFileTypePdf } from '~/utils'
 const nsStoreStockIn = namespace('stock-in/create-receipt')
+const nsStoreExportReceipt = namespace('stock-in/export-receipt')
 
 @Component({
   components: {
@@ -259,6 +265,9 @@ class CreateReceipt extends Vue {
   @nsStoreStockIn.Action
   actGetReceiptDetail
 
+  @nsStoreExportReceipt.Action
+  actGetReceiptLable!: (params: any) => Promise<string>
+
   selectBox(box) {
     this.activeIndex = box.index
   }
@@ -289,6 +298,13 @@ class CreateReceipt extends Vue {
       this.listBox.push(box)
     })
     this.activeIndex = 0
+  }
+
+  async handleExportReceipt() {
+    const result = await this.actGetReceiptLable({ id: this.id })
+    if(result) {
+      exportFileTypePdf(result, `receipt-${this.id}`)
+    }
   }
 }
 
