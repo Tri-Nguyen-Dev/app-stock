@@ -65,7 +65,7 @@
           )
         .col.ml-1
           FilterCalendar(
-            title="From"
+            title="To"
             border="right"
             :value="filter.dateTo"
             name="dateTo"
@@ -74,9 +74,9 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-  .grid.grid-nogutter.flex-1.relative.overflow-hidden
-    .col.h-full.absolute.top-0.left-0.right-0.bg-white
-      DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll" 
+  .grid.grid-nogutter.flex-1.overflow-hidden
+    .col.h-full.bg-white
+      DataTable.w-full.table__sort-icon.h-full(v-if="boxList" :value="boxList" responsiveLayout="scroll" 
       :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false" 
       :rowClass="rowClass" @sort="sortData($event)" @row-dblclick="onRowClick($event)"
       :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
@@ -84,7 +84,7 @@
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
         Column(field="no" header="NO")
           template(#body="slotProps")
-            span.font-semibold {{ (pageNumber - 1) * pageSize + slotProps.index +1 }}
+            span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
         Column(field="id" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
@@ -118,25 +118,15 @@
             .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
               span(@click="handleEditBox(data.id)")
                 .icon.icon-edit-btn
-              span(:class="{'disable-button': itemsBoxDelete.length > 0}" @click="showModalDelete(data)")
+              span(:class="{'disable-button': selectedBoxFilter.length > 0}" @click="showModalDelete(data)")
                 .icon.icon-btn-delete
         template(#footer)
-          .pagination
-            div.pagination__info(v-if="itemsBoxDelete.length <= 0")
-              img(:src="require('~/assets/icons/filter-left.svg')")
-              span.pagination__total(
-                v-if="boxList.length > 0"
-              ) {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + boxList.length }} of {{ totalBoxRecords }}
-            div.pagination__delete(v-else @click="showModalDelete()")
-              img(:src="require('~/assets/icons/trash-white.svg')")
-              span Delete {{ itemsBoxDelete.length }} items selected
-            Paginator(
-              :first.sync="firstPage"
-              :rows="pageSize"
-              :totalRecords="totalBoxRecords"
-              @page="onPage($event)"
-              :rowsPerPageOptions="[10,20,30]"
-            )
+          Pagination(
+            :paging="paging"
+            :total="totalBoxRecords"
+            :deleted-list="selectedBoxFilter"
+            @onDelete="showModalDelete"
+            @onPage="onPage")
         template(#empty)
           div.flex.align-items-center.justify-content-center.flex-column
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
@@ -154,11 +144,8 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
-      template(slot="message")
-        p 
-        | Are you sure you want to delete 
-        span(style="font-weight: 700") {{ itemsBoxDelete.length > 1 ? itemsBoxDelete.length : boxCodeDelete }} 
-        | in this list box?
+      template(v-slot:message)
+        p {{ deleteMessage }}
     Toast
 </template>
 
@@ -166,24 +153,27 @@
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import Pagination from '~/components/common/Pagination.vue'
+import { Paging } from '~/models/common/Paging'
+import { PAGINATE_DEFAULT } from '~/utils'
+import { MessageConstants } from '~/utils/constants/messages'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
 
 @Component({
   components: {
-    ConfirmDialogCustom
+    ConfirmDialogCustom,
+    Pagination
   }
 })
 class BoxList extends Vue {
   selectedBoxes: Box.Model[] = []
-  pageNumber: number = 1
-  pageSize: number = 20
   isModalDelete: boolean = false
   loadingSubmit: boolean = false
-  ids: string[] = []
+  onEventDeleteList: any = []
   isShowFilter = false
-  firstPage = 1
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   sortByColumn: string = ''
   isDescending: boolean|null = null
   boxCodeDelete: string = ''
@@ -215,13 +205,33 @@ class BoxList extends Vue {
   actDeleteBoxById!: (params: {ids: string[]}) => Promise<any>
 
   async mounted() {
-    await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
+    await this.actGetBoxList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
     await this.actWarehouseList()
   }
 
+  // -- [ Getters ] -------------------------------------------------------------
+  get isFilter(){
+    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize'])
+    return Object.values(params).some((item) => item)
+  }
+
+  get selectedBoxFilter() {
+    return  _.filter(this.selectedBoxes, (box: any) => {
+      return box.status !== 'BOX_STATUS_DISABLE'
+    })
+  }
+
+  get deleteMessage() {
+    const boxSelectedLength = _.size(this.onEventDeleteList)
+    if(boxSelectedLength === 0) return ''
+    const name = boxSelectedLength > 1 ? boxSelectedLength :  this.onEventDeleteList[0].id
+    return _.template(MessageConstants.DELETE_MESSAGE_TEMPLATE)({ name })
+  }
+
+  // -- [ Functions ] ------------------------------------------------------------
   getParamAPi() {
     return {
-      pageNumber: this.pageNumber - 1, pageSize: this.pageSize,
+      pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
       'sellerEmail': this.filter.sellerEmail || null,
       'barCode': this.filter.barCode || null,
       'warehouseId': this.filter.warehouse?.id,
@@ -239,19 +249,15 @@ class BoxList extends Vue {
     this.selectedBoxes = []
   }
 
-  get isFilter(){
-    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize'])
-    return Object.values(params).some((item) => item)
-  }
-
   async onPage(event: any) {
-    this.pageSize = event.rows
-    this.pageNumber = event.page + 1
+    this.paging.pageSize = event.rows
+    this.paging.pageNumber = event.page
     await this.actGetBoxList(this.getParamAPi())
   }
 
   async handleDeleteStock() {
-    const result = await this.actDeleteBoxById({ ids: this.ids })
+    const ids = _.map(this.onEventDeleteList, 'id')
+    const result = await this.actDeleteBoxById({ ids })
     if(result) {
       this.isModalDelete = false
       this.selectedBoxes = []
@@ -261,9 +267,9 @@ class BoxList extends Vue {
         detail: 'Successfully deleted box',
         life: 3000
       })
-      this.firstPage = 1
-      this.pageNumber = 1
-      await this.actGetBoxList({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
+      this.paging.first = 0
+      this.paging.pageNumber = 0
+      await this.actGetBoxList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
     }
   }
 
@@ -271,22 +277,8 @@ class BoxList extends Vue {
     this.isModalDelete = false
   }
 
-  get itemsBoxDelete() {
-    const itemsDelete: string[] = []
-    _.forEach(this.selectedBoxes, function(box: any) {
-      if(box.status !== 'BOX_STATUS_DISABLE')
-        itemsDelete.push(box.id)
-    })
-    return itemsDelete
-  }
-
   showModalDelete(data?: any) {
-    if(data) {
-      this.boxCodeDelete = data.barCode
-      this.ids = [data.id]
-    } else {
-      this.ids = this.itemsBoxDelete
-    }
+    this.onEventDeleteList = data || this.selectedBoxFilter
     this.isModalDelete = true
   }
 
