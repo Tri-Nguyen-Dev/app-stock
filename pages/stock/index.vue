@@ -65,7 +65,7 @@
                 div.grid-cell-right {{ data.categoryName }}
           Column(header='Type' :sortable="true" field='type' sortField="_type" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.type }}
+                div.grid-cell-right {{ data.typeName }}
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
