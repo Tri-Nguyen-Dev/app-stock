@@ -27,20 +27,26 @@
           img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
           p.text-900.font-bold.mt-3 List is empty!
       template(#footer)
-        .pagination
-          div.pagination__info
-            img(:src="require('~/assets/icons/filter-left.svg')")
-            span.pagination__total 
-              | Showing {{(pageNumber - 1) * pageSize + 1}} - {{(pageNumber - 1) * pageSize + locationHistory.length}} of {{totalItems}}
-          Paginator(:rows="20" :totalRecords="totalItems" @page="onPageHistory($event)").p-0
+        Pagination(
+          :paging="paging"
+          :total="totalHistory"
+          @onPage="onPageHistory")
 
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { PAGINATE_DEFAULT } from '~/utils'
+import Pagination from '~/components/common/Pagination.vue'
+import { Paging } from '~/models/common/Paging'
 const nsStoreBoxDetail = namespace('box/box-detail')
 
-@Component
+@Component({
+  components: {
+    Pagination
+  }
+})
 class BoxDetailHistory extends Vue {
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
 
   pageSize: number = 20
   pageNumber: number = 1
@@ -65,10 +71,11 @@ class BoxDetailHistory extends Vue {
     await this.actLocationHistory({ id: this.$route.params.id })
   }
 
-  // async onPageHistory(event: any) {
-  //   this.pageNumber = event.page + 1
-  //   await this.actLocationHistory(this.getParamApi())
-  // }
+  async onPageHistory(event: any) {
+    this.pageNumber = event.page + 1
+    await this.actLocationHistory({ id: this.$route.params.id })
+
+  }
 }
 
 export default BoxDetailHistory

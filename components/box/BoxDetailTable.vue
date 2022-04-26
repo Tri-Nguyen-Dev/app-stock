@@ -45,26 +45,25 @@
       template(#body='{ data }')
         span.font-bold {{ data.category.name }}
     template(#footer)
-      .pagination
-        div.pagination__info
-          img(:src="require('~/assets/icons/filter-left.svg')")
-          span.pagination__total( 
-            v-if="listStockWithAmount.length > 0"
-            )| Showing {{pagination.page * pagination.rows + 1}} - {{(pagination.page + 1) * pagination.rows}} 
-            | of {{listStockWithAmount.length}}
-        Paginator(
-          v-if="listStockWithAmount.length > 0" 
-          :rows="pagination.rows" 
-          :totalRecords="listStockWithAmount.length" 
-          @page="onPage($event)" 
-          :first="pagination.first").p-0
+      Pagination(
+        :paging="paging"
+        :total="listStockWithAmount.length"
+        @onPage="onPage")
 </template>
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'nuxt-property-decorator'
+import { PAGINATE_DEFAULT } from '~/utils'
+import Pagination from '~/components/common/Pagination.vue'
+import { Paging } from '~/models/common/Paging'
 
-@Component
+@Component({
+  components: {
+    Pagination
+  }
+})
 class BoxDetailHistory extends Vue {
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   @Prop() listStockWithAmount!: any[]
   @Prop() getParam: () => any
 
