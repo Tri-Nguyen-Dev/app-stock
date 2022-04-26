@@ -50,7 +50,7 @@ export namespace Receipt {
 
     id?:string
     status: string
-    location: BoxLocation
+    location?: BoxLocation
     amount?:number
     sku?:string
     value?:number
@@ -104,6 +104,7 @@ export namespace Receipt {
       this.warehouse = { id: 1 }
     }
 
+    note:string;
     action: string;
     status: string;
     boxList: BoxDraft[]

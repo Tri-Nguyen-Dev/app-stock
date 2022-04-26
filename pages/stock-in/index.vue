@@ -274,7 +274,7 @@ class StockIn extends Vue {
     if(data.status === 'REQUEST_STATUS_SAVED') {
       this.$router.push(`/stock-in/${data.id}/detail`)
     } else {
-      this.$router.push(`/stock-in/${data.id}/draft`)
+      this.$router.push(`/stock-in/${data.id}/update`)
     }
   }
 
