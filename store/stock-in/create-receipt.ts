@@ -11,7 +11,8 @@ export default class StoreCreateReceipt extends VuexModule {
   private static readonly STATE_URL = {
     GET_DETAIL_RECEIPT: '/request/:id/detail',
     GET_BOX_LOCATION: '/location/suggest',
-    CREATE_RECEIPT:'/request/create'
+    CREATE_RECEIPT:'/request/create',
+    UPDATE_RECEIPT:'/request/:id/update'
   }
 
   public total?: number = 0
@@ -72,6 +73,15 @@ export default class StoreCreateReceipt extends VuexModule {
   async actLocationSuggestion(params: any): Promise<string | undefined> {
     try{
       const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.GET_BOX_LOCATION)
+      const response = await $api.post(url, params)
+      return response.data
+    } catch (error) {}
+  }
+
+  @Action({ commit: 'setNewReceipt', rawError: true })
+  async actUpdateReceipt(params: any): Promise<string | undefined> {
+    try{
+      const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.UPDATE_RECEIPT,{ id: params.id })
       const response = await $api.post(url, params)
       return response.data
     } catch (error) {}
