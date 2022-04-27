@@ -1,13 +1,13 @@
 <template lang="pug">
-	CreateOrUpdate
+	CreateOrUpdateReceipt
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import CreateOrUpdate from '~/components/stock-in/CreateOrUpdate.vue'
+import CreateOrUpdateReceipt from '~/components/stock-in/CreateOrUpdate.vue'
 
 @Component({
   components: {
-    CreateOrUpdate
+    CreateOrUpdateReceipt
   }
 })
 class CreateReceipt extends Vue {

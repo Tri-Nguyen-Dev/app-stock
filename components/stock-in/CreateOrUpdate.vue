@@ -236,7 +236,7 @@ const nsStoreLocationList = namespace('location/location-list')
     FormAddSeller
   }
 })
-class CreateReceipt extends Vue {
+class CreateOrUpdateReceipt extends Vue {
   boxSize: number = 0
   listBox: ReceiptModel.Box[] = []
   isShowModalAddStock: boolean = false
@@ -592,7 +592,7 @@ class CreateReceipt extends Vue {
   }
 }
 
-export default CreateReceipt
+export default CreateOrUpdateReceipt
 </script>
 <style lang="sass" scoped>
 .receipt-note
@@ -603,28 +603,28 @@ export default CreateReceipt
 	.d-flex
 		@include flex-center-vert
 	.box-input
-		background-color: #F1F3F6 !important
+		background-color: $text-color-300 !important
 	.number-input
 		width: 30%
 		::v-deep.p-inputnumber-input
-			background: #F1F3F6 !important
+			background: $text-color-300 !important
 			width: 30%
 	.box-retangle
-		background: #FFFFFF
+		background: $color-white
 		border-radius: 3px
 		width: 1px
 	.border
 		&__grid
-			border: solid 1px #E8EAEF
+			border: solid 1px $text-color-400
 			border-right: none
 		&__right
-			border-right: solid 1px #E8EAEF
+			border-right: solid 1px $text-color-400
 		&__left
-			border-left: solid 1px #E8EAEF
+			border-left: solid 1px $text-color-400
 		&__top
-			border-top: solid 1px #E8EAEF
+			border-top: solid 1px $text-color-400
 		&__bot
-			border-bottom: solid 1px #E8EAEF
+			border-bottom: solid 1px $text-color-400
 	.card-custom
 		::v-deep.p-datatable
 			height: 55vh
@@ -664,7 +664,7 @@ export default CreateReceipt
 		color: var(--primary-color) !important
 	.box-card-active
 		cursor: pointer
-		background: #486AE2
+		background: $primary
 		color: $color-white !important
 		button
 			color: $color-white !important
@@ -727,7 +727,7 @@ export default CreateReceipt
 	&__btn:hover
 		background-color: $primary !important
 	&__btn.btn--discard
-		background-color: #E8EAEF
+		background-color: $bg-body-base
 	&__btn.btn--agree
 		background-color: $primary
 		color: #fff

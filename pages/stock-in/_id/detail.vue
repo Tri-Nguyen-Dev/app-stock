@@ -239,7 +239,7 @@ const nsStoreExportReceipt = namespace('stock-in/export-receipt')
     PrintLabel
   }
 })
-class CreateReceipt extends Vue {
+class DetailReceipt extends Vue {
 
   listBox: ReceiptModel.Box[] = []
   itemInBox: ItemModel.Model
@@ -340,7 +340,7 @@ class CreateReceipt extends Vue {
   }
 }
 
-export default CreateReceipt
+export default DetailReceipt
 </script>
 <style lang="sass" scoped>
 .pi
