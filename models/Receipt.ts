@@ -40,7 +40,7 @@ export namespace Receipt {
     index: number
     listItemInBox: ItemModel.Model[]
     inventoryFee?: number
-    boxSize: {
+    boxSize?: {
       id: number
       name?:string
       height?:number,
@@ -50,7 +50,7 @@ export namespace Receipt {
 
     id?:string
     status: string
-    location: BoxLocation
+    location?: BoxLocation
     amount?:number
     sku?:string
     value?:number
@@ -79,14 +79,14 @@ export namespace Receipt {
         id: undefined
       }
       this.boxSize = {
-        id: 0
+        id: undefined
       }
     }
 
     inventoryFee?: number
     listStockWithAmount?: ItemDraft[]
     boxSize: {
-      id: number
+      id?: number
     }
 
     status?: string
@@ -104,6 +104,8 @@ export namespace Receipt {
       this.warehouse = { id: 1 }
     }
 
+    id:string
+    note:string;
     action: string;
     status: string;
     boxList: BoxDraft[]

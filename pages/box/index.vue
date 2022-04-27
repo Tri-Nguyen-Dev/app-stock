@@ -77,7 +77,7 @@
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll"
       :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"
-      :rowClass="rowClass" @sort="sortData($event)" @row-dblclick="onRowClick($event)"
+      :rowClass="rowClass" @sort="sortData($event)" @row-click="onRowClick"
       :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
       @row-unselect-all="rowUnSelectAll" @row-select="rowSelect" @row-unselect="rowUnselect")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
@@ -330,7 +330,8 @@ class BoxList extends Vue {
     this.selectedBoxes.push(data)
   }
 
-  rowUnselect({ data }) {
+  rowUnselect({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
     this.selectedBoxes = _.filter(this.selectedBoxes, (box: Box.Model) => box.id !== data.id)
   }
 }
