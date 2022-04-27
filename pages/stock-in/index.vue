@@ -42,7 +42,7 @@
                     @updateFilter="handleFilter")
               .col.ml-1
                   FilterCalendar(
-                  title="From"
+                  title="To"
                   border="right"
                   :value="filter.dateTo"
                   name="dateTo"
@@ -81,19 +81,20 @@
           v-if="stockIn" :value="stockIn"
           responsiveLayout="scroll"
           :selection="selectedStockIn"
-        removableSort dataKey="id"
-        :resizableColumns="true" :rows="20"
-        :scrollable="false"
-        @sort="sortData($event)"
-        @row-select="rowSelect"
-        @row-dblclick="onRowClick($event)"
-        :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }"
-        @row-select-all="rowSelectAll"
-        @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect' )
+          removableSort dataKey="id"
+          :resizableColumns="true" :rows="20"
+          :scrollable="false"
+          @sort="sortData($event)"
+          @row-select="rowSelect"
+          @row-click="onRowClick"
+          :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }"
+          @row-select-all="rowSelectAll"
+          @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect'
+        )
           Column(selectionMode='multiple')
           Column(field='no' header='NO' )
             template(#body="slotProps")
-              span.font-semibold {{ (pageNumber - 1) * pageSize + slotProps.index +1 }}
+              span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
               span.text-white-active.text-900.font-bold {{ data.id }}
@@ -135,20 +136,12 @@
                 span &nbsp;to add item.
               p.notfound__text(v-else) Item not found!
           template(#footer)
-            .pagination
-              div.pagination__info(v-if="itemsBoxDelete.length <= 0 ")
-                img(:src="require('~/assets/icons/filter-left.svg')")
-                span.pagination__total(
-                  v-if="stockIn.length > 0")
-                  | Showing {{ (pageNumber - 1) * pageSize + 1 }} - {{ (pageNumber - 1) * pageSize + stockIn.length }} of {{ total }}
-              div.pagination__delete(v-else @click="showModalDelete()")
-                img(:src="require('~/assets/icons/trash-white.svg')")
-                span Delete {{ itemsBoxDelete.length }} items selected
-              Paginator(
-                :first.sync="firstPage"
-                :rows="pageSize" :totalRecords="total"
-                @page="onPage($event)"
-                :rowsPerPageOptions="[10,20,30]")
+            Pagination(
+              :paging="paging"
+              :total="total"
+              :deleted-list="itemsBoxDelete"
+              @onDelete="showModalDelete"
+              @onPage="onPage")
       ConfirmDialogCustom(
         title="Confirm delete"
         image="confirm-delete"
@@ -157,11 +150,8 @@
         :onCancel="handleCancel"
         :loading="loadingSubmit"
       )
-        template(slot="message")
-          p 
-          | Are you sure you want to delete 
-          span(style="font-weight: 700") {{ itemsBoxDelete.length > 1 ? itemsBoxDelete.length : boxCodeDelete }} 
-          | in this receipt?  
+        template(v-slot:message)
+          p {{ deleteMessage }}  
     Toast
 
 </template>
@@ -170,7 +160,9 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/RequestList'
-import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf } from '~/utils'
+import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage } from '~/utils'
+import Pagination from '~/components/common/Pagination.vue'
+import { Paging } from '~/models/common/Paging'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockIn = namespace('stock-in/request-list')
 const nsStoreExportReceipt = namespace('stock-in/export-receipt')
@@ -178,7 +170,8 @@ const dayjs = require('dayjs')
 
 @Component({
   components: {
-    ConfirmDialogCustom
+    ConfirmDialogCustom,
+    Pagination
   }
 })
 class StockIn extends Vue {
@@ -188,14 +181,11 @@ class StockIn extends Vue {
   statusRequest = REQUEST_STATUS
   isModalDelete: boolean = false
   loadingSubmit: boolean = false
-  pageNumber: number = 1
-  pageSize: number = 20
-  firstPage: number = 1
-  ids: string[] = []
+  onEventDeleteList: any = []
   sortByColumn: string = ''
   isDescending: boolean | null = null
-  paginate = PAGINATE_DEFAULT
   boxCodeDelete: string = ''
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   filter: any = {
     id: null,
     dateFrom: null,
@@ -232,7 +222,7 @@ class StockIn extends Vue {
 
   getParamApi() {
     return {
-      pageNumber: this.pageNumber - 1, pageSize: this.pageSize,
+      pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
       'id': this.filter.id || null,
       'sellerEmail': this.filter.sellerEmail || null,
       'creatorId': this.filter.creatorId || null ,
@@ -254,8 +244,8 @@ class StockIn extends Vue {
   }
 
   async onPage(event: any) {
-    this.pageSize = event.rows
-    this.pageNumber = event.page + 1
+    this.paging.pageSize = event.rows
+    this.paging.pageNumber = event.page
     await this.actGetStockIn(this.getParamApi())
   }
 
@@ -263,7 +253,8 @@ class StockIn extends Vue {
     this.selectedStockIn.push( data )
   }
 
-  rowUnselect({ data }) {
+  rowUnselect({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
     this.selectedStockIn = _.filter(
       this.selectedStockIn,
       (stockIn: Request.Model) => stockIn.id !== data.id
@@ -274,13 +265,13 @@ class StockIn extends Vue {
     if(data.status === 'REQUEST_STATUS_SAVED') {
       this.$router.push(`/stock-in/${data.id}/detail`)
     } else {
-      this.$router.push(`/stock-in/${data.id}/draft`)
+      this.$router.push(`/stock-in/${data.id}/update`)
     }
   }
 
   async handleDeleteStockIn() {
     let result : any = []
-    result  = await this.actDeleteStockInByIds({ ids: this.ids })
+    result  = await this.actDeleteStockInByIds({ ids: _.map(this.onEventDeleteList, 'id') })
     if(result == null) {
       this.isModalDelete = false
       this.selectedStockIn = []
@@ -290,15 +281,15 @@ class StockIn extends Vue {
         detail: 'Successfully deleted box',
         life: 3000
       })
-      this.firstPage = 1
-      this.pageNumber = 1
-      await this.actGetStockIn({ pageNumber: this.pageNumber - 1 , pageSize: this.pageSize })
+      this.paging.first = 1
+      this.paging.pageNumber = 1
+      await this.actGetStockIn({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
     }
   }
 
   async mounted() {
     await this.actGetStockIn({
-      pageNumber: this.pageNumber - 1,pageSize: this.pageSize
+      pageNumber: this.paging.pageNumber,pageSize: this.paging.pageSize
     })
     this.actWarehouseList()
   }
@@ -321,13 +312,13 @@ class StockIn extends Vue {
   getIndexPaginate(index: number) {
     return calculateIndex(
       index,
-      this.paginate.pageNumber,
-      this.paginate.pageSize
+      this.paging.pageNumber,
+      this.paging.pageSize
     )
   }
 
-  showModalDelete(id?: string) {
-    this.ids = id? [id] : this.itemsBoxDelete
+  showModalDelete() {
+    this.onEventDeleteList = this.itemsBoxDelete
     this.isModalDelete = true
   }
 
@@ -336,15 +327,8 @@ class StockIn extends Vue {
   }
 
   get itemsBoxDelete() {
-    let itemsDelete: string[] = []
-    _.forEach(this.selectedStockIn, function (box: any) {
-      if (box.status === 'REQUEST_STATUS_DRAFT' ) itemsDelete.push(box.id)
-      else {
-        itemsDelete = []
-        return false
-      }
-    })
-    return itemsDelete
+    const [draft, notDraft] = _.partition(this.selectedStockIn, ['status', 'REQUEST_STATUS_DRAFT'])
+    return _.size(notDraft) > 0 ? [] : draft
   }
 
   get isFilter(){
@@ -377,6 +361,9 @@ class StockIn extends Vue {
     })
   }
 
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'receipt note')
+  }
 }
 
 export default StockIn

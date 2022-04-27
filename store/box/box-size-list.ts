@@ -15,7 +15,12 @@ export default class StoreBoxSize extends VuexModule {
 
   @Mutation
   setBoxSizeList(response: any) {
-    this.boxSizeList = response?.items
+    this.boxSizeList = response?.items.map(element=>{
+      return {
+        id: element.id,
+        name: `${element.name} (${element.height}*${element.width}*${element.length}) `
+      }
+    })
     this.totalBoxSizeRecords = response?.total
   }
 

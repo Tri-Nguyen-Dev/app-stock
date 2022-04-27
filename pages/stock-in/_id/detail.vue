@@ -66,15 +66,15 @@
 							//- 	i.pi.pi-refresh
 							.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-3 Size:
-								span {{`${listBox[activeIndex].boxSize.name}(${listBox[activeIndex].boxSize.length}*${listBox[activeIndex].boxSize.width}*${listBox[activeIndex].boxSize.height})`}} 
+								span {{getSize(activeIndex)}}
 								span.font-semibold.text-base.ml-3 (cm)
 							.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-3.ml-2 Estimate Inventory Fee:
-								span {{listBox[activeIndex].inventoryFee}}
+								span ${{listBox[activeIndex].inventoryFee}}
 								span.font-semibold.text-base.ml-3 /day
 							.d-flex.col-6(class='md:col-5 lg:col-4')
 								span.font-semibold.text-base.mr-2.ml-2 Barcode:
-								span {{listBox[activeIndex].qrCode}}
+								span {{listBox[activeIndex].id}}
 						.grid.border__left.border__right.mt-0.pb-3(
 							style='margin-right: 0px'
 							v-if='listBox[activeIndex]'
@@ -99,7 +99,11 @@
 										filter-match-mode='contains'
 									)
 										template(#body="slotProps")
-											//- img(:src='process.env.BASE_IMAGE_URL + `thumbnail/${slotProps.data.stock.imagePath}`' :alt="slotProps.data.image" style="width:3rem; height: 3rem")
+											img(
+												:src="slotProps.data.stock.imagePath | getThumbnailUrl"
+												:alt="slotProps.data.image"
+												style="width:3rem; height: 3rem"
+											)
 									column.text-overflow-ellipsis(
 										field='stock.barCode'
 										header='BARCODE',
@@ -179,7 +183,7 @@
 							.col-10
 								span.font-semibold.text-base.mr-1 Note:
 								br
-								span 'Write something...'
+								span {{note}}
 					.d-flex(class='col-6 md:col-2 lg:col-2')
 						.grid.w-full.border__right
 							.col-3.flex.align-items-center.justify-content-end
@@ -195,7 +199,7 @@
 							.col-9
 								span.font-semibold.text-base.mr-1 Total items:
 								br
-								span.font-semibold.text-primary(v-if='listBox[activeIndex]') {{listBox[activeIndex].listItemInBox.length}}
+								span.font-semibold.text-primary {{ totalItem() }}
 					.d-flex(class='col-6 md:col-2 lg:col-2')
 						.grid.w-full.border__right
 							.col-3.flex.align-items-center.justify-content-end
@@ -203,11 +207,17 @@
 							.col-9
 								span.font-semibold.text-base.mr-1 Total fee:
 								br
-								span.font-semibold.text-primary 3$/day
+								span.font-semibold.text-primary {{ totalFee() }} $/day
 					.d-flex.justify-content-center(class='col-6 md:col-2 lg:col-2')
 						Button.p-button-secondary.mr-2(label='Export file' icon="pi pi-download" @click="handleExportReceipt")
 						Button.p-button-primary.mr-2(label='Print Preview' @click='isShowLabel = true')
-		PrintLabel(:displayLable='isShowLabel' @setShow='setShowLabel' :requestId='receiptDetail.data.id' v-if='receiptDetail.data && listBox[activeIndex]' :boxId='listBox[activeIndex].id')
+		PrintLabel(
+			:displayLable='isShowLabel'
+			@setShow='setShowLabel'
+			:requestId='receiptDetail.data.id'
+			v-if='receiptDetail.data && listBox[activeIndex]'
+			:boxId='listBox[activeIndex].id'
+		)
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
@@ -229,7 +239,7 @@ const nsStoreExportReceipt = namespace('stock-in/export-receipt')
     PrintLabel
   }
 })
-class CreateReceipt extends Vue {
+class DetailReceipt extends Vue {
 
   listBox: ReceiptModel.Box[] = []
   itemInBox: ItemModel.Model
@@ -238,7 +248,7 @@ class CreateReceipt extends Vue {
   activeAction = false
   activeSave = false
   receiptNoteId:string
-
+  note : string = ''
   warehouse: any = null
   seller: any = null
   isShowLabel: boolean = false;
@@ -269,7 +279,7 @@ class CreateReceipt extends Vue {
   }
 
   export(){
-    
+
   }
 
   setShowLabel(value: any) {
@@ -287,13 +297,14 @@ class CreateReceipt extends Vue {
       box.index = index
       box.inventoryFee = element.inventoryFee
       box.boxSize = element.boxSize
-      box.location.name = element.rackLocation.name
+      box.location = element.rackLocation
       box.qrCode = element.qrCode
       box.id = element.id
       box.listItemInBox.push(...element.listStockWithAmount)
       this.listBox.push(box)
     })
     this.activeIndex = 0
+    this.note = this.receiptDetail.data.note
   }
 
   async handleExportReceipt() {
@@ -302,9 +313,34 @@ class CreateReceipt extends Vue {
       exportFileTypePdf(result, `receipt-${this.id}`)
     }
   }
+	
+  getSize(activeIndex){
+    return `${this.listBox[activeIndex].boxSize?.name}
+			(${this.listBox[activeIndex].boxSize?.length}
+			*${this.listBox[activeIndex].boxSize?.width}
+			*${this.listBox[activeIndex].boxSize?.height})`
+  }
+
+  totalItem() {
+    let total = 0
+    this.listBox.forEach((element) => {
+      total += element.listItemInBox.length
+    })
+    return total
+  }
+
+  totalFee() {
+    let totalFee = 0
+    this.listBox.forEach((element) => {
+      if (element.inventoryFee! > 0) {
+        totalFee += element.inventoryFee!
+      }
+    })
+    return totalFee
+  }
 }
 
-export default CreateReceipt
+export default DetailReceipt
 </script>
 <style lang="sass" scoped>
 .pi

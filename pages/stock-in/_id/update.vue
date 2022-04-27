@@ -1,5 +1,5 @@
 <template lang="pug">
-	CreateOrUpdateReceipt
+	CreateOrUpdateReceipt(:id='id')
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
@@ -10,10 +10,11 @@ import CreateOrUpdateReceipt from '~/components/stock-in/CreateOrUpdate.vue'
     CreateOrUpdateReceipt
   }
 })
-class CreateReceipt extends Vue {
+class UpdateReceipt extends Vue {
+  id= this.$route.params.id
 }
 
-export default CreateReceipt
+export default UpdateReceipt
 </script>
 <style lang="sass" scoped>
 </style>

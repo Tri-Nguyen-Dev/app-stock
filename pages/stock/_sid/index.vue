@@ -7,7 +7,7 @@
             .icon.icon-btn-back.bg-blue-700
           Breadcrumb(:home="homeItem" :model="breadcrumbItem")
       .stock__information--gerenal.border-bottom-1.border-gray-300
-        .grid.mb-3.align-items-center.px-4
+        .grid.mb-3.align-items-center.p-4
           .col-9.pl-0.flex
             .icon.icon-box-info.mr-1.bg-blue-700
             span.uppercase.font-bold.text-sm general information
@@ -15,7 +15,7 @@
             .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon.icon-btn-edit
         .grid.mb-3.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          img(:src='model.data.imagePath').border-round.w-full
+          img(:src="model.data.imagePath | getImageUrl").border-round.w-full
         .grid.my-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           Tag(severity="success" v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"').uppercase Available
           Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DISABLE"').uppercase.surface-200 Disable
@@ -52,7 +52,7 @@
               @updateUnit='handleUpdateUnit'
             )
         div
-        .grid.mt-1(:class='isEditStockDetail ? " " : "hidden"')
+        .grid.mt-1.px-4(:class='isEditStockDetail ? " " : "hidden"')
           .col
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
               span.uppercase.font-semibold cancel

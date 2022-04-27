@@ -16,7 +16,7 @@
               .icon.icon-btn-edit
         .grid(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
           .col(class='xl:col-4').stock__information--image
-            img(:src='model.data.stock.imagePath' alt="stock").border-round.w-full
+            img(:src="model.data.stock.imagePath | getImageUrl" alt="Stock Image").border-round.w-full
           .col
             Tag(v-show="model.data.itemStatus === 'ITEM_STATUS_AVAILABLE'").px-2.bg-green-100
               span.font-bold.text-green-400.font-sm AVAILABLE
@@ -70,21 +70,21 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Boxcode" :value="model.data.box.barCode" :isEdit="isEditItemDetail" icon="icon-delivery")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 mt-2')
-            .wapprer-unit.opacity-100
+            .wapprer-unit.opacity-100.surface-50
               .grid.align-items-center
                 .col-3.flex.justify-content-end
                   .icon--large.icon-price.bg-blue-700
                 .col
                   div.text-500 Value
                   InputText(:disabled='!isEditItemDetail' v-model='model.data.value').w-6
-            //- StockUnit(
+            StockUnit(
               title="Value"
               type ="weight"
               :weight="model.data.value"
               :isEdit="isEditItemDetail"
               icon="icon-price"
               @updateUnit='handleUpdateUnit'
-              )
+            )
         .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
           .col
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditItemDetail')
