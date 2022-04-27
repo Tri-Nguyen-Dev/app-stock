@@ -32,7 +32,7 @@
           @sort="sortData($event)"
           :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }"
           :rowClass="rowClass" :value='stockList' responsiveLayout="scroll"
-          @row-dblclick='rowdbClick'
+          @row-click='rowdbClick'
           :selection='selectedStock'
           dataKey='id'
           :rows='10'
@@ -335,7 +335,8 @@ class Stock extends Vue {
     this.selectedStock.push(data)
   }
 
-  rowUnselect({ data }) {
+  rowUnselect({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
     this.selectedStock = _.filter(
       this.selectedStock,
       (stock: any) => stock.id !== data.id

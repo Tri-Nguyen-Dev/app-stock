@@ -86,7 +86,7 @@
           :scrollable="false"
           @sort="sortData($event)"
           @row-select="rowSelect"
-          @row-dblclick="onRowClick($event)"
+          @row-click="onRowClick"
           :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }"
           @row-select-all="rowSelectAll"
           @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect'
@@ -253,7 +253,8 @@ class StockIn extends Vue {
     this.selectedStockIn.push( data )
   }
 
-  rowUnselect({ data }) {
+  rowUnselect({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
     this.selectedStockIn = _.filter(
       this.selectedStockIn,
       (stockIn: Request.Model) => stockIn.id !== data.id
