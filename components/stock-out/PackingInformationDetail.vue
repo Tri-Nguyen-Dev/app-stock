@@ -31,7 +31,11 @@ class PackingInformationDetail extends Vue {
     return [
       { to: '/stock-out/order-detail', icon: 'pi pi-info-circle' },
       { to: '/stock-out/picking-list', icon: 'pi pi-list' },
-      { label: 'Packing detail', to: '/stock-out/packing-detail', icon: 'pi pi-info-circle' }
+      {
+        label: 'Packing detail',
+        to: '/stock-out/packing-detail',
+        icon: 'pi pi-info-circle'
+      }
     ]
   }
 }
