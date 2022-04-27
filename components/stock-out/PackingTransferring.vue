@@ -1,5 +1,7 @@
 <template lang="pug">
-h1 Transferring
+TabView
+  TabPanel(header='Header I')
+    | Transferring
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'

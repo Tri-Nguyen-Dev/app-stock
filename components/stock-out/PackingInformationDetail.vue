@@ -1,8 +1,8 @@
 <template lang="pug">
-  .orderPackingDetail
-    .packingDetailHeader.border-bottom-1.border-gray-300
+  .order__packing--detail
+    .packing__detail--header.border-bottom-1.border-gray-300
       Breadcrumb(:home="homeItem" :model="breadcrumbItem")
-    .packingDetailContent.p-3
+    .packing__detail--content.p-3
       .my-3.font-bold
         .icon.icon-info.inline-block
         span.uppercase order detail
@@ -42,8 +42,8 @@ class PackingInformationDetail extends Vue {
 export default PackingInformationDetail
 </script>
 <style lang="sass" scoped>
-::v-deep.orderPackingDetail
-  .packingDetailContent
+::v-deep.order__packing--detail
+  .packing__detail--content
     .p-tabview .p-tabview-nav li
       .p-tabview-nav-link
         background: #fff

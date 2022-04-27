@@ -9,11 +9,11 @@
         span.text-subheading 1111 products found
       .col.flex.justify-content-end
         .btn.btn-primary.w-2 Next
-    .grid
-      StockOutPackingOutGoing
-    .grid
+    .grid.my-3
       StockOutPackingOriginal
-    .grid
+    .grid.my-3
+      StockOutPackingOutGoing
+    .grid.my-3
       StockOutPackingTransferring
 </template>
 <script lang="ts">
