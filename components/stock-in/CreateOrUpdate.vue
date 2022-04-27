@@ -10,7 +10,7 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title ID receipt note
-						//- .filter__text(v-if='receiptDetail') {{receiptDetail.data.id}}
+						 .filter__text(v-if='id') {{id}}
 				.col
 					.filter__item.item--disabled
 						.filter__title ID Creator
@@ -476,15 +476,6 @@ class CreateOrUpdateReceipt extends Vue {
     }
   }
 
-  // @Watch('id')
-  // async changeId(){
-  // 	console.log(this.id)
-  //   if(this.id){
-  //     await	this.actGetReceiptDetail({ id: this.id })
-  //   } else {
-  //     this.listBox=[new ReceiptModel.Box()];
-  //   }
-  // }
   checkLocation() {
     this.listBox.forEach((element) => {
       this.activeSave = !(!element.location?.id || element.location.id === '')
@@ -558,11 +549,6 @@ class CreateOrUpdateReceipt extends Vue {
     }
   }
 
-  // searchLocation = _.debounce(async (e) => {
-  // 	await this.actLocationList({
-  // 		location: e.query
-  // 	})
-  // }, 400)
   async searchLocation(e) {
     await this.actLocationList({
       location: e.query
