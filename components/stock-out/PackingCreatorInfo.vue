@@ -1,6 +1,6 @@
 <template lang="pug">
 .packingWarehouseInfo.grid
-  .icon.icon-warehouse-info.mr-2.bg-blue-700.inline-block
+  .icon.icon-profile-circle.mr-2.bg-blue-700.inline-block
   span.uppercase.font-bold.mb-4 warehouse information
   .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
     StockUnit(title="Id creator" value="BDSM6969" icon="icon-sender-name")

@@ -9,6 +9,12 @@
         span.text-subheading 1111 products found
       .col.flex.justify-content-end
         .btn.btn-primary.w-2 Next
+    .grid
+      StockOutPackingOutGoing
+    .grid
+      StockOutPackingOriginal
+    .grid
+      StockOutPackingTransferring
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
