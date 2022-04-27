@@ -10,7 +10,7 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title ID receipt note
-						 .filter__text(v-if='id') {{id}}
+							.filter__text(v-if='id') {{id}}
 				.col
 					.filter__item.item--disabled
 						.filter__title ID Creator
