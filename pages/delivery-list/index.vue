@@ -1,51 +1,53 @@
 <template lang="pug">
   .stock
-    h1.text-heading Delivery order list
-    .stock__header 
-      TabView(:activeIndex.sync="active")
-        TabPanel
-          template(#header)
-            .icon.icon-truck.mr-2.surface-600
-            span New
-        TabPanel
-          template(#header)
-            .icon.icon-truck.mr-2.surface-600
-            span Delivery setting
-        TabPanel
-          template(#header)
-            .icon.icon-truck.mr-2.surface-600
-            span Delivered
-      div
-      .header__action
-        .header__search
-          .icon.icon--left.icon-search
-          InputText(type='text' placeholder='Search' v-model="filter.name" v-on:input="debounceSearchName")
-        .btn__filter(:class="{'active': isShowFilter}")
-          .btn-toggle(@click="isShowFilter = !isShowFilter")
-            .icon.icon-filter(v-if="!isShowFilter")
-            .icon.icon-chevron-up.bg-primary(v-else)
-            span Filter
-          .btn-refresh(@click="handleRefreshFilter")
-            .icon.icon-rotate-left.bg-white
-        .btn.btn-primary(@click="handleAddStock")
-          .icon.icon-add-items
-          span Add Stock
+    h1.text-heading Delivery order list {{activeTab}} 
+    .stock__header.grid.mt-3
+      div.col-12(class="xl:col-6")
+        TabView(:activeIndex="activeTab" @tab-change="handleTab(0)")
+          TabPanel
+            template(#header)
+              .icon.icon-truck.mr-2.surface-600
+              span New
+          TabPanel
+            template(#header)
+              .icon.icon-truck.mr-2.surface-600
+              span Delivery setting
+          TabPanel
+            template(#header)
+              .icon.icon-truck.mr-2.surface-600
+              span Delivered
+      div.col-12(class="xl:col-6")
+        .header__action
+          .btn__filter(:class="{'active': isShowFilter}")
+            .btn-toggle(@click="isShowFilter = !isShowFilter")
+              .icon.icon-filter(v-if="!isShowFilter")
+              .icon.icon-chevron-up.bg-primary(v-else)
+              span Filter
+            .btn-refresh(@click="handleRefreshFilter")
+              .icon.icon-rotate-left.bg-white
+          .btn.btn-primary(@click="")
+            .icon.icon-add-items
+            span Add new 
+          .btn__filter(class='active' @click="")
+            .btn.btn-toggle.bg-white
+              .icon-download.icon--large.bg-primary
+              span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      .col
-        FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
-          template(v-slot:multi-select)
-            MultiSelect.filter__multiselect(v-model='filter.categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
-      .col
-        FilterTable(title="Barcode" placeholder="Search barcode" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
-      .col
-        FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
+      //- .col
+      //-   FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
+      //-     template(v-slot:multi-select)
+      //-       MultiSelect.filter__multiselect(v-model='filter.categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+      //- .col
+      //-   FilterTable(title="Barcode" placeholder="Search barcode" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
+      //- .col
+      //-   FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .stock__table
         DataTable(
           @sort="sortData($event)"
-          :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }"
-          :rowClass="rowClass" :value='stockList' responsiveLayout="scroll"
+          :class="{ 'table-wrapper-empty': !deliveryList || deliveryList.length <= 0 }"
+          :rowClass="rowClass" :value='deliveryList' responsiveLayout="scroll"
           @row-click='rowdbClick'
-          :selection='selectedStock'
+          :selection='selectedDelivery'
           dataKey='id'
           :rows='10'
           :rowHover='true'
@@ -107,12 +109,15 @@
               p.notfound__text(v-else) Item not found!
 </template>
 <script lang="ts">
-import { Vue } from 'nuxt-property-decorator'
+import { Vue, namespace } from 'nuxt-property-decorator'
+import { Delivery } from '~/models/Delivery'
+const nStoreDelivery = namespace('delivery/stock-list')
 
-class Delivery extends Vue { 
+class DeliveryList extends Vue { 
+  selectedDelivery: Delivery.Model[] = []
   isShowFilter: boolean = false
   loading: boolean = false
-  active: 0
+  activeTab: number = 1
   filter: any = {
     name: null,
     barCode: null,
@@ -121,13 +126,19 @@ class Delivery extends Vue {
     status: null,
     sortBy: null,
     desc: null
-  }
+  } 
+ 
+  @nStoreDelivery.State
+  total!: number
 
-  debounceSearchName = _.debounce((value) => {
-    this.filter.name = value
+  @nStoreDelivery.State
+  deliveryList!: Delivery.Model[]
+
+  handleFilter(e: any, name: string){
+    this.filter[name] = e
     // this.getProductList()
-  }, 500)
-
+  }
+  
   handleRefreshFilter() {
     this.filter.name = null
     this.filter.barCode = null
@@ -135,8 +146,17 @@ class Delivery extends Vue {
     this.filter.status = null
     // this.getProductList()
   }
+
+  handleTab(tab: number) {
+    this.activeTab = tab
+  }
+
+  rowClass(data: any) {
+    return data.status === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
+  }
+
 }
-export default Delivery
+export default DeliveryList
 </script>
 <style lang="sass" scoped>
 .stock
@@ -145,8 +165,30 @@ export default Delivery
   &__header
     @include flex-center-space-between
     margin-bottom: 24px
+    ::v-deep.p-tabview .p-tabview-nav li:not(.p-highlight):not(.p-disabled)
+      &:hover
+          .p-tabview-nav-link
+            background-color: transparent !important
+            color: #000 !important
+          .icon 
+            background-color: var(--primary-color) !important
+    ::v-deep.p-tabview .p-tabview-nav li
+      .p-tabview-nav-link
+        background: var(--bg-body-bas)
+        border: none
+        box-shadow: none !important
+    ::v-deep.p-tabview .p-tabview-panels
+      background: var(--bg-body-bas)
+      padding: 1.25rem 0 0 0
+      display: none
+    ::v-deep.p-highlight .p-tabview-nav-link
+      color: #000 !important
+      border-bottom: 2px solid #486AE2 !important
+      .icon
+        background-color: var(--primary-color) !important
   .header__action
-      @include flex-center
+      @include flex-center-vert
+      justify-content: flex-end
       gap: 0 16px
 .stock__table
   border-radius: 4px
@@ -162,6 +204,7 @@ export default Delivery
     background-color: $text-color-300
     .icon
       background-color: $text-color-500
+      
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
