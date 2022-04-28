@@ -12,15 +12,96 @@
           .btn.btn-primary(@click='createStockIn')
             .icon.icon-add-items.surface-900.bg-white
             span.text-900.text-white.mr-3 Add Items For Delivery
+        DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
+            :resizableColumns='true',
+            :value='[]',
+            dataKey='id',
+            :row-hover='true',
+            responsiveLayout='scroll',
+            columnResizeMode='fit',
+          )
+            template(#empty)
+              .flex.align-items-center.justify-content-center.flex-column
+                img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
+                p.text-900.font-bold.mt-3 List is empty!
+            column(field='no', header='NO')
+              template(#body='slotProps')
+                span.font-bold {{ slotProps.index + 1 }}
+            column(
+              field='stock.imageUrl',
+              header='IMAGE',
+              :sortable='true',
+              filter-match-mode='contains'
+            )
+              template(#body='slotProps')
+                img(
+                  :src='slotProps.data.stock.imageUrl',
+                  :alt='slotProps.data.stock.image',
+                  style='width: 3rem; height: 3rem'
+                )
+            column.text-overflow-ellipsis(
+              field='stock.barCode',
+              header='BARCODE',
+              :sortable='true',
+              :show-filter-match-modes='false'
+            )
+              template(#body='{ data }')
+                span.text-primary.font-bold {{ data.stock.barCode }}
+            column(field='sku', header='SKU', sortable='', data-type='numeric')
+              template(#body='{ data }')
+                span.uppercase {{ data.sku }}
+            column(field='stock.name', header='NAME', :sortable='true')
+              template(#body='{ data }')
+                span.font-bold.text-right {{ data.stock.name }}
+              template(#body='{ data }')
+                span.font-bold.text-primary.text-right {{ data.location.name }}
+            column(field='box.barCode', header='BOXCODE', :sortable='true')
+              template(#body='{ data }')
+                span.font-bold.text-right {{ data.box.barCode }}
+            column(
+              field='amount',
+              header='QUANTITY',
+              :sortable='true',
+              headerClass='grid-header-right'
+            )
+              template(#body='{ data }')
+                .font-bold.grid-cell-right {{ data.amount }}
+            column(field='tag', header='TAG', headerClass='grid-header-center')
+              template(#body='{ data }')
+                .grid-cell-center
+                  Checkbox(v-model='data.tag', :binary='true', :disabled='isDetail')
+            Column(
+              :exportable='false',
+              header='ACTION',
+              className='p-text-right',
+            )
+              template(#body='{ data }')
+                Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(
+                  :disabled='data.itemStatus == "ITEM_STATUS_DISABLE"',
+                  @click='editItemDetail(data.id)'
+                )
+                  .icon--small.icon-btn-edit
+                Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(
+                  @click='showModalDelete(data.id)',
+                  :disabled='data.itemStatus === "ITEM_STATUS_DISABLE"'
+                )
+                  .icon--small.icon-btn-delete
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { INFORMATION } from '~/utils'
+const nsStoreCreateOrder = namespace('stock-out/create-order')
 
 @Component({
 })
 class createOrder extends Vue {
+
+  @nsStoreCreateOrder.State
+  listInfor1:any
+
+  @nsStoreCreateOrder.Action
+  actGetCreateOrder!: (obj: any) => Promise<void>
 
   infomation = INFORMATION
 
@@ -38,7 +119,10 @@ class createOrder extends Vue {
     ]
   }
 
-  createStockIn() {
+  async createStockIn() {
+    await this.actGetCreateOrder(
+      _.cloneDeep(this.infomation)
+    )
     _.forEach(this.infomation, function(obj){
       _.forEach(obj, function(o){
         if(_.has(o, 'disabled')) {

@@ -151,6 +151,7 @@ class ItemList extends Vue {
   checkActionPick() {
     return this.action === 'PICK'
   }
+
 }
 
 export default ItemList
