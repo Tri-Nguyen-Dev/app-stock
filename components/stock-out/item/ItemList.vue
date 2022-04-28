@@ -96,7 +96,6 @@ class ItemList extends Vue {
   @Prop() listItems!: any[]
   @Prop() getParam: () => any
   @Prop({ default: false }) isShow!: boolean
-  @Prop({ default: 'STAFT' }) role: string
   @Prop({ default: 'DETAIL' }) action: string
   selectedItem: any[] = []
 
