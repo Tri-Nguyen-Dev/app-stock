@@ -6,7 +6,7 @@
     div.auth-input.mt-3
       input(placeholder="Enter email")
       .icon.icon-sms.icon--left.icon-status-primary
-      //- email enter right - .icon-status-success / .icon-status-disabled
+      //- email enter right - .icon-status-success / .icon-status-normal
       .icon.icon-check-circle-fill.icon--right.icon-status-success 
     div.auth-action.mt-3
       .btn.btn-cancel Cancel

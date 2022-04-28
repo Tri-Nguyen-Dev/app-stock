@@ -5,7 +5,7 @@
       div.auth-input.auth-input-password
         input(placeholder="Enter password")
         .icon.icon-regularlock-open-alt.icon--left.icon-status-primary
-        .icon.icon-eye.icon--right.icon-status-disabled.cursor-pointer
+        .icon.icon-eye.icon--right.icon-status-normal.cursor-pointer
       div.auth-input.auth-input-password.mt-3
         input(placeholder="Enter confirm password")
         .icon.icon-regularlock-open-alt.icon--left.icon-status-primary
@@ -15,13 +15,13 @@
           .icon.icon-check.icon-status-success
           span 6 or more characters
         li.auth-vali-item
-          .icon.icon-check.icon-status-disabled
+          .icon.icon-check.icon-status-normal
           span Upper & lowercase letters
         li.auth-vali-item
-          .icon.icon-check.icon-status-disabled
+          .icon.icon-check.icon-status-normal
           span At least 1 number
         li.auth-vali-item
-          .icon.icon-check.icon-status-disabled
+          .icon.icon-check.icon-status-normal
           span At least 1 special characters
       div.auth-action.mt-3
         .btn.btn-cancel Cancel
