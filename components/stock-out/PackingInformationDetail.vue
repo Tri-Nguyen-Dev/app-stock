@@ -24,13 +24,13 @@ import { Component, Vue } from 'nuxt-property-decorator'
 @Component
 class PackingInformationDetail extends Vue {
   get homeItem() {
-    return { to: '/stock-out', icon: 'pi pi-list' }
+    return { label: '', to: '/stock-out', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { to: '/stock-out/order-detail', icon: 'pi pi-info-circle' },
-      { to: '/stock-out/picking-list', icon: 'pi pi-list' },
+      { label: '', to: '/stock-out/order-detail', icon: 'pi pi-info-circle' },
+      { label: '', to: '/stock-out/picking-list', icon: 'pi pi-list' },
       {
         label: 'Packing detail',
         to: '/stock-out/packing-detail',
