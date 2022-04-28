@@ -10,11 +10,11 @@
         .col.flex.justify-content-end
           .btn.btn-primary.w-2 Next
       .grid.my-3
-        StockOutPackingOriginal(title='original box' icon='icon-info')
+        StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true')
       .grid.my-3
-        StockOutPackingOriginal(title='outgoing box' icon='icon-arrow-circle-up-right')
+        StockOutPackingOriginal(title='outgoing box' icon='icon-arrow-circle-up-right' :isOutgoing='true')
       .grid.my-3
-        StockOutPackingOriginal(title='tranferring box' icon='icon-repeat')
+        StockOutPackingOriginal(title='tranferring box' icon='icon-repeat' :isTranffering='true')
 </template>
 
 <script lang="ts">

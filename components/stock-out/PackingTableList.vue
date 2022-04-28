@@ -24,18 +24,17 @@ DataTable(
   Column(header='STOCK NAME' field='name' :sortable="true" sortField="_name")
     template(#body='{ data }')
       .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-  Column(header='TAG' field='tag' :sortable="true" sortField="_tag" v-if='isOriginal')
-  Column(header='ORIGINAL BOX' field='originalBox' :sortable="true" sortField="_originalBox" v-if='!isOriginal' :styles="{'width': '5%'}")
+  Column(header='TAG' field='tag' :sortable="true" sortField="_tag")
+  Column(header='ORIGINAL BOX' field='originalBox' :sortable="true" sortField="_originalBox" :styles="{'width': '5%'}")
   Column(header='QUANTITY' field='quantity' :sortable="true" sortField="_quantity" :styles="{'width': '1%'}")
-  Column(header='OUTGOING QUANTITY' field='outGoingQuantity' :sortable="true" sortField="_outGoingQuantity" v-if='isOriginal' :styles="{'width': '1%'}")
+  Column(header='OUTGOING QUANTITY' field='outGoingQuantity' :sortable="true" sortField="_outGoingQuantity" :styles="{'width': '1%'}")
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
 class PackingTableList extends Vue {
   originalList: {} = {}
-  @Prop() readonly isOriginal!: boolean | true
 }
 
 export default PackingTableList
