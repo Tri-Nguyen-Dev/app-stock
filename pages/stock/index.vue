@@ -24,7 +24,7 @@
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(v-model='filter.categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
       .col
-        FilterTable(title="Code" placeholder="Search code" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
+        FilterTable(title="Barcode" placeholder="Search barcode" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
       .col
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .stock__table
@@ -32,7 +32,7 @@
           @sort="sortData($event)"
           :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }"
           :rowClass="rowClass" :value='stockList' responsiveLayout="scroll"
-          @row-dblclick='rowdbClick'
+          @row-click='rowdbClick'
           :selection='selectedStock'
           dataKey='id'
           :rows='10'
@@ -65,7 +65,7 @@
                 div.grid-cell-right {{ data.categoryName }}
           Column(header='Type' :sortable="true" field='type' sortField="_type" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.type }}
+                div.grid-cell-right {{ data.typeName }}
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
@@ -76,29 +76,22 @@
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
                 span(@click="handleEditStock(data.id)")
                   .icon.icon-edit-btn
-                span(@click="showModalDelete(data)")
+                span(@click="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
                   .icon.icon-btn-delete
           template(#footer)
-            .pagination
-              .pagination__info(v-if='!selectedStockFilter.length > 0')
-                .icon.icon-filter-left
-                span.pagination__total {{ getInfoPaginate }}
-              .pagination__delete(v-else @click="showModalDelete()")
-                .icon.icon-btn-delete
-                span Delete {{ selectedStockFilter.length }} items selected
-              Paginator(
-                :first.sync="firstPage"
-                :rows="paginate.pageSize"
-                :totalRecords="total"
-                @page="onPage($event)"
-                :rowsPerPageOptions="limitOptions")
+            Pagination(
+              :paging="paging"
+              :total="total"
+              :deleted-list="selectedStockFilter"
+              @onDelete="showModalDelete"
+              @onPage="onPage")
           template(#empty)
             div.table__empty
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
               p.empty__text(v-if="!checkIsFilter") List is empty!, Click
                 span &nbsp;here
-                span &nbsp;to add item.
+                span(@click="handleAddStock") &nbsp;to add item.
               p.notfound__text(v-else) Item not found!
     ConfirmDialogCustom(
       title="Confirm delete"
@@ -108,11 +101,9 @@
       :onCancel="handleCancel"
       :loading="loadingSubmit"
     )
-      template(slot="message")
-        p
-        | Are you sure you want to delete
-        span(style="font-weight: 700") {{ ids.length > 1 ? ids.length : stockNameDelete }}
-        | in this list stock?
+      template(v-slot:message)
+        p {{ deleteMessage }} 
+
     Toast
 </template>
 <script lang="ts">
@@ -122,30 +113,31 @@ import { Stock as StockModel } from '~/models/Stock'
 import {
   LIMIT_PAGE_OPTIONS,
   PAGINATE_DEFAULT,
-  calculateInfoPaginate,
   calculateIndex,
-  StockConstants
+  StockConstants,
+  getDeleteMessage
 } from '~/utils'
+import { Paging } from '~/models/common/Paging'
+import Pagination from '~/components/common/Pagination.vue'
 const nsCategoryStock = namespace('category/category-list')
 const nsStoreStock = namespace('stock/stock-list')
 @Component({
   components: {
-    ConfirmDialogCustom
+    ConfirmDialogCustom,
+    Pagination
   }
 })
 class Stock extends Vue {
-  firstPage: any = 0
   selectedStock: StockModel.Model[] = []
   isShowFilter: boolean = false
   loading: boolean = false
   isModalDelete: boolean = false
-  ids: string[] = []
+  onEventDeleteList: StockModel.Model[] = []
   loadingSubmit: boolean = false
   isFilter: boolean = false
-  paginate = PAGINATE_DEFAULT
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList = StockConstants.STOCK_STATUS_OPTIONS
   limitOptions = LIMIT_PAGE_OPTIONS
-  stockNameDelete: string = ''
   filter: any = {
     name: null,
     barCode: null,
@@ -174,28 +166,11 @@ class Stock extends Vue {
   @nsCategoryStock.Action
   actCategoryList!: () => Promise<void>
 
-  getParamApi() {
-    const categoryIds = this.filter.categories
-      ? this.filter.categories.map((item: any) => item?.id).toString()
-      : null
-    return {
-      name: this.filter.name || null,
-      barCode: this.filter.barCode || null,
-      warehouseId: this.filter.warehouse?.id,
-      categoryIds: categoryIds || null,
-      stockStatus: this.filter.status?.value,
-      sortBy: this.filter.sortBy || null,
-      desc: this.filter.desc
-    }
-  }
-
+  // -- [ Getters ] -------------------------------------------------------------
   get selectedStockFilter() {
-    const itemsDelete: string[] = []
-    _.forEach(this.selectedStock, function (stock: any) {
-      if (stock.stockStatus !== 'STOCK_STATUS_DISABLE')
-        itemsDelete.push(stock.id)
+    return  _.filter(this.selectedStock, (stock: StockModel.Model) => {
+      return stock.stockStatus !== 'STOCK_STATUS_DISABLE'
     })
-    return itemsDelete
   }
 
   get classHeaderMuti() {
@@ -216,20 +191,32 @@ class Stock extends Vue {
     const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
-
-  get getInfoPaginate() {
-    return calculateInfoPaginate(
-      this.paginate.pageNumber,
-      this.paginate.pageSize,
-      this.total
-    )
+  
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'stock')
+  }
+  
+  // -- [ Functions ] ------------------------------------------------------------
+  getParamApi() {
+    const categoryIds = this.filter.categories
+      ? this.filter.categories.map((item: any) => item?.id).toString()
+      : null
+    return {
+      name: this.filter.name || null,
+      barCode: this.filter.barCode || null,
+      warehouseId: this.filter.warehouse?.id,
+      categoryIds: categoryIds || null,
+      stockStatus: this.filter.status?.value,
+      sortBy: this.filter.sortBy || null,
+      desc: this.filter.desc
+    }
   }
 
   getIndexPaginate(index: number) {
     return calculateIndex(
       index,
-      this.paginate.pageNumber,
-      this.paginate.pageSize
+      this.paging.pageNumber,
+      this.paging.pageSize
     )
   }
 
@@ -248,7 +235,11 @@ class Stock extends Vue {
   }
 
   async getProductList() {
-    await this.actGetStockList({ ...this.getParamApi(), ...this.paginate })
+    await this.actGetStockList({
+      pageSize: this.paging.pageSize,
+      pageNumber: this.paging.pageNumber,
+      ...this.getParamApi()
+    })
   }
 
   handleChangeFilter() {
@@ -256,26 +247,20 @@ class Stock extends Vue {
   }
 
   onPage(event: any) {
-    this.paginate.pageSize = event.rows
-    this.paginate.pageNumber = event.page
+    this.paging.pageSize = event.rows
+    this.paging.pageNumber = event.page
     this.getProductList()
   }
 
-  showModalDelete(data: any) {
-    if (data) {
-      this.stockNameDelete = data.name
-      this.ids = [data.id]
-      this.rowUnSelectAll()
-    } else {
-      this.ids = this.selectedStockFilter
-    }
+  showModalDelete(data: StockModel.Model[]) {
+    this.onEventDeleteList = data || this.selectedStockFilter
     this.isModalDelete = true
   }
 
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      const data = await this.actDeleteStockByIds(this.ids)
+      const data = await this.actDeleteStockByIds(_.map(this.onEventDeleteList, 'id'))
       if (data) {
         this.loadingSubmit = false
         this.isModalDelete = false
@@ -285,7 +270,7 @@ class Stock extends Vue {
           detail: 'Successfully deleted stock',
           life: 3000
         })
-        this.getProductList()
+        await this.getProductList()
       }
     } catch (error) {
       this.loadingSubmit = false
@@ -350,7 +335,8 @@ class Stock extends Vue {
     this.selectedStock.push(data)
   }
 
-  rowUnselect({ data }) {
+  rowUnselect({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
     this.selectedStock = _.filter(
       this.selectedStock,
       (stock: any) => stock.id !== data.id
@@ -382,6 +368,11 @@ export default Stock
     font-size: $font-size-medium
   &-barcode
     text-transform: uppercase
+  ::v-deep.disable-button
+    pointer-events: none
+    background-color: $text-color-300
+    .icon
+      background-color: $text-color-500
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none

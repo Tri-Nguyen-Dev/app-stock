@@ -15,6 +15,11 @@
   font-weight: $font-weight-regular
   line-height: calc(24 / 12)
 
+.required__title
+  &::after
+    content: '*'
+    margin-left: 4px
+    color: red
 .header__search
   position: relative
 

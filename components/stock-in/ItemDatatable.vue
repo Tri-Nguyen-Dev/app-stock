@@ -6,8 +6,6 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 	:row-hover='true'
 	responsiveLayout="scroll"
 	columnResizeMode="fit"
-	editMode="cell"
-	class="editable-cells-table"
 	:class="{ 'table-wrapper-empty': !listItemInBox || listItemInBox.length <= 0 }"
 )
 		template(#empty)
@@ -24,10 +22,9 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		)
 			template(#body="slotProps")
 				img(
-          :src="slotProps.data.stock.imagePath | getThumbnailUrl"
-          :alt="slotProps.data.image"
-          style="width:3rem; height: 3rem"
-        )
+					:src="slotProps.data.stock.imagePath | getThumbnailUrl"
+					:alt="slotProps.data.image"
+				)
 		column.text-overflow-ellipsis(
 			field='stock.barCode'
 			header='BARCODE',
@@ -36,13 +33,15 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		)
 			template(#body='{data}')
 				span.text-primary.font-bold {{data.stock.barCode}}
-		column(
+		Column(
 			field='sku',
 			header='SKU'
-      className="font-bold"
+			className="font-bold text-center"
+			:styles="{'width': '10%'}"
 		)
-			template(#editor="{ data, field }")
-				InputText(v-model='data.sku' autofocus)
+			template(#body="{ data }")
+				span(v-if="isActive !== data.stock.barCode").text-center {{data.sku}}
+				InputText(v-model='data.sku' autofocus v-else)
 		column(
 			field='stock.name'
 			header='NAME'
@@ -53,12 +52,12 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 			field='amount'
 			header='QUANTITY'
 			:show-filter-match-modes='false'
-			className="text-right font-bold"
-			style='width:10%'
+			className="font-bold text-center"
+			:styles="{'width': '10%'}"
 		)
-			template(#editor="{ data, field }").font-bold
-				InputNumber(v-model='data.amount' autofocus)
-					//- span.font-bold.text-right {{data.amount}}
+			template(#body="{ data }").font-bold
+				span(v-if="isActive !== data.stock.barCode").text-center {{data.amount}}
+				InputNumber(v-model='data.amount' autofocus v-else)
 		column(
 			field='unit.name',
 			header='UNIT',
@@ -86,10 +85,12 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 			field='value',
 			header='VALUE',
 			:show-filter-match-modes='false'
-			className="text-right font-bold"
+			className="font-bold text-center"
+			:styles="{'width': '10%'}"
 		)
-			template(#editor="{ data, field }")
-				InputNumber(v-model='data.stock.value' autofocus)
+			template(#body="{ data }")
+				span(v-if="isActive !== data.stock.barCode") {{data.value}}
+				InputNumber(v-model='data.value' autofocus v-else)
 		column(
 			field='category.name',
 			header='CATEGORY',
@@ -97,16 +98,19 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 			className="text-right"
 		)
 			template(#body='{data}')
-				span.font-bold.text-right {{data.stock.name}}
-		column( header="ACTION" className="text-right")
+				span.font-bold.text-right {{data.stock.category.name}}
+		column
 			template(#body="{data}")
-				.grid.table__action
-					//- span(@click="handleEditBox(data.id)")
-					span
+				.table__action(v-if='isActive !== data.stock.barCode')
+					span(@click='editItemValue(data)')
 						.icon.icon-edit-btn
-					//- span(:class="{'disable-button': itemsBoxDelete.length > 0}" @click="showModalDelete(data.id)")
-					span
+					span(@click='deleteItem(data)')
 						.icon.icon-btn-delete
+				.table__action(v-else)
+					span(@click='saveItemValue(data.stock.barCode)')
+						.icon.pi.pi-check
+					span(@click='cancelItemValue(data.stock.barCode)')
+						.icon.pi.pi-times
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
@@ -117,6 +121,8 @@ import { Item as ItemModel } from '~/models/Item'
 })
 class ItemDataTable extends Vue {
   @Prop() sku!: string
+  @Prop() listItemInBox!: ItemModel.Model[]
+  @Prop() getParam: () => any
   selectedItem: ItemModel.Model[] = []
   deleteItemList = []
   isModalDelete: boolean = false
@@ -126,51 +132,39 @@ class ItemDataTable extends Vue {
     sortDescending: null
   }
 
-  // listItemInBox = [
-  //   {
-  //     stock: {
-  //       id: '65rt4u4qldua8lesz4yomaw9o',
-  //       name: 'test 2',
-  //       sku: 'test test',
-  //       height: 89,
-  //       width: 89,
-  //       length: 89,
-  //       value: 69,
-  //       description: null,
-  //       imagePath: null,
-  //       barCode: '3135515655388',
-  //       amount: 12,
-  //       unit: {
-  //         id: 1,
-  //         name: 'piece'
-  //       },
-  //       weight: 89,
-  //       category: {
-  //         id: 1,
-  //         name: 'warehouse1',
-  //         icon: null,
-  //         displayOrder: null,
-  //         deleted: null
-  //       },
-  //       stockStatus: 'STOCK_STATUS_DISABLE',
-  //       attributeValue: [],
-  //       deleted: false
-  //     }
-  //   }
-  // ]
+  onEventEditItem: {
+    stock: any,
+    sku: ''
+    amount: '',
+    value: ''
+  }
 
-  @Prop() listItemInBox!: ItemModel.Model[]
-  @Prop() getParam: () => any
+  isActive: string = ''
 
-  isPositiveInteger(val) {
-    let str = String(val)
-    str = str.trim()
-    if (!str) {
-      return false
-    }
-    str = str.replace(/^0+/, '') || '0'
-    const n = Math.floor(Number(str))
-    return n !== Infinity && String(n) === str && n >= 0
+  editItemValue(data:any) {
+    this.isActive = data.stock.barCode
+    this.onEventEditItem = { ...data }
+  }
+
+  saveItemValue() {
+    this.isActive = ''
+  }
+
+  cancelItemValue() {
+    this.isActive = ''
+    const valueItemCancel = this.onEventEditItem
+    const _array = [...this.listItemInBox]
+    _.forEach(_array, function(item) {
+      if (item.stock.barCode === valueItemCancel.stock.barCode) {
+        item.value = valueItemCancel.value
+        item.amount = valueItemCancel.amount
+        item.sku = valueItemCancel.sku
+      }
+    })
+  }
+
+  deleteItem(data:any) {
+    this.listItemInBox.splice(this.listItemInBox.indexOf(data),1)
   }
 }
 export default ItemDataTable
@@ -179,7 +173,7 @@ export default ItemDataTable
 ::v-deep.box-page-container
 	height: calc(100vh - 18rem)
 	.p-inputtext,
-  .p-inputtext.p-inputnumber-input
+	.p-inputtext.p-inputnumber-input
 		box-shadow: none
 		width: 6rem !important
 	.p-column-header-content
