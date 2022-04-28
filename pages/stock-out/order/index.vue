@@ -16,10 +16,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
+import { INFORMATION } from '~/utils'
 
 @Component({
 })
 class createOrder extends Vue {
+
+  infomation = INFORMATION
 
   get homeItem() {
     return { to: '/stock-out', icon: 'pi pi-list' }
@@ -36,9 +39,15 @@ class createOrder extends Vue {
   }
 
   createStockIn() {
-    this.$router.push('/stock-out/inventory-list')
-  }
-
+    _.forEach(this.infomation, function(obj){
+      _.forEach(obj, function(o){
+        if(_.has(o, 'disabled')) {
+          _.set(o, 'disabled' , !o.disabled)
+        }
+      })
+    })
+  }  
+  
 }
 
 export default createOrder
