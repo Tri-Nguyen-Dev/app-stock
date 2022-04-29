@@ -12,24 +12,26 @@
           span Filter
         .btn-refresh(@click="handleRefreshFilter")
           .icon.icon-rotate-left.bg-white
-      .btn.bg-white Back
+      .btn.bg-white(@click='handleBack') Back
       .btn.btn-primary(@click='handleOrderDelivery') Order delivery
   .inventory__filter.grid(v-if='isShowFilter')
     .col-1
       FilterTable(
         title="ID"
-        :value="filter.id"
+        :value="filter.rnId"
         placeholder="Enter ID"
-        name="id"
+        name="rnId"
         :searchText="true"
+        @updateFilter="handleFilterBox"
       )
     .col
       FilterTable(
         title="Barcode"
         :value="filter.barCode"
         placeholder="Enter barcode"
-        name="barcode"
+        name="barCode"
         :searchText="true"
+        @updateFilter="handleFilterBox"
       )
     .col
       FilterTable(
@@ -38,6 +40,7 @@
         placeholder="Enter SKU"
         name="sku"
         :searchText="true"
+        @updateFilter="handleFilterBox"
       )
     .col
       FilterTable(
@@ -46,6 +49,7 @@
         placeholder="Enter stock name"
         name="stockName"
         :searchText="true"
+        @updateFilter="handleFilterBox"
       )
     .col
       FilterTable(
@@ -54,6 +58,7 @@
         placeholder="Enter box code"
         name="boxCode"
         :searchText="true"
+        @updateFilter="handleFilterBox"
       )
     .col-4
       .grid.grid-nogutter
@@ -66,6 +71,7 @@
             inputClass="border-0"
             dateFormat="dd-mm-yy"
             :showIcon="true"
+            @updateFilter="handleFilterBox"
           )
         .col.ml-1
           FilterCalendar(
@@ -76,6 +82,7 @@
             inputClass="border-0"
             dateFormat="dd-mm-yy"
             :showIcon="true"
+            @updateFilter="handleFilterBox"
           )
   .inventory__content
     DataTable(
@@ -91,7 +98,9 @@
       Column(field='inventory' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_id')
       Column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_id')
         template(#body='{data}')
-          InputNumber(v-model="data.delivery" mode="decimal" :min="0" :max="data.inventory" inputClass="w-full" @input='handleDeliveryChange(data)').w-7rem
+          InputNumber.w-7rem(v-model="data.delivery" mode="decimal" :min="0" 
+            :max="data.inventory" inputClass="w-full" @input='handleDeliveryChange(data)'
+          )
       Column(field='image' header='IMAGE' :sortable='true' sortField='_id')
         template(#body='{data}')
           .stock__table__image.overflow-hidden
@@ -122,6 +131,7 @@ import { Paging } from '~/models/common/Paging'
 import { PAGINATE_DEFAULT } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreInventory = namespace('stock-out/add-items')
+const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -134,13 +144,15 @@ class AddItems extends Vue {
   outGoingList: any = []
   isShowFilter: boolean = false
   filter: any = {
-    id: null,
+    rnId: null,
     barCode: null,
     sku: null,
     stockName: null,
     boxCode: null,
     dateFrom: null,
-    dateTo: null
+    dateTo: null,
+    sortByColumn: '',
+    isDescending: null
   }
 
   // -- [ State ] ------------------------------------------------------------
@@ -158,20 +170,44 @@ class AddItems extends Vue {
   actOutGoingList: (params: any) => Promise<void>
 
   // -- [ Functions ] ------------------------------------------------------------
+  mounted() {
+    this.getDataList()
+  }
+
+  getParamAPi() {
+    return {
+      pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
+      'rnId': this.filter.rnId || null,
+      'barCode': this.filter.barCode || null,
+      'sku': this.filter.sku || null,
+      'stockName': this.filter.stockName || null,
+      'boxCode': this.filter.boxCode || null,
+      'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
+      'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
+      'sortBy': this.filter.sortByColumn || null,
+      'desc': this.filter.isDescending
+    }
+  }
+
+  handleFilterBox(e: any, name: string){
+    this.filter[name] = e
+    this.getDataList() 
+  }
+
   async getDataList() {
-    await this.actGetInventoryList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
+    await this.actGetInventoryList(this.getParamAPi())
     this.inventoryList = this.inventoryStore.map((x: any) => ({ ..._.cloneDeep(x), delivery: 0 }))
     _.map(this.inventoryList, (item: any) => {
       return _.merge(item, _.find(this.outGoingList, { 'id' : item.id }))
     })
   }
 
-  mounted() {
-    this.getDataList()
-  }
-
   async handleOrderDelivery() {
     await this.actOutGoingList(this.outGoingList)
+    this.$router.push({ path: '/stock-out/order' })
+  }
+
+  handleBack() {
     this.$router.push({ path: '/stock-out/order' })
   }
 
@@ -227,6 +263,9 @@ export default AddItems
     position: relative
     overflow: hidden
     .p-datatable-table
+      .text-primary
+        color: $primary-dark !important
+        font-weight: $font-weight-medium
       .p-datatable-tbody 
         & > tr
           background: $text-color-100
