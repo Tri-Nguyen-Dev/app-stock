@@ -5,11 +5,13 @@
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
+        .uppercase &nbsp;(2 boxes, 4 items)
     TabPanel(v-for='tab in tabs' :key='tab.index')
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.title}}
+        .text-white.bg-primary.border-round.ml-1.p-1(v-if='tab.checked') &nbsp;Tag
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4.py-2(v-if='!isOriginal')
         .col-3
           span.mr-1 Size:
@@ -18,14 +20,14 @@
         .col(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
           span.ml-1 Attach Tag
-        .col(v-if='isTranffering')
+        .col-3(v-if='isTranffering')
           .grid.align-items-center
             .col-4
               div Estimated
               div Inventory Fee:
             .col
               InputText.w-4(v-model='tab.estimateFee' type='number')
-              span.ml-1 /day
+              span.ml-1 / day
         .col.flex.justify-content-end
           span.p-input-icon-right
             span.mr-1 Barcode:
@@ -80,9 +82,13 @@ export default PackingOriginal
     .p-tabview-nav-content
       .p-tabview-nav
         .p-disabled
+          opacity: 1
+          font-size: 12px
           border-right: 1px solid $bg-body-base
         li .p-tabview-nav-link
-          color: $primary-dark
+          border-bottom: none
+          span
+            color: $text-color-900
       .p-highlight
         border-bottom: 2px solid $primary
         position: relative
