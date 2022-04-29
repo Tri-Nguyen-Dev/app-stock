@@ -5,7 +5,7 @@ div
     :key='item.key'
   )
     .col-3
-      span.font-bold.text-label {{ item.label }}
+      span.font-bold.text-small.mr-1.text-label {{ item.label }}
     .col.w-full
       InputText.w-full( v-if='!item.options' v-model='item.value' :disabled='item.disabled' )
       Dropdown.w-full( v-else :disabled='item.disabled' )
