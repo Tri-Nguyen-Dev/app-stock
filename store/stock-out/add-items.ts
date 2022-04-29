@@ -12,11 +12,17 @@ export default class StoreInventory extends VuexModule {
 
   public inventoryStore?: any = []
   public total?: number = 0
+  public outGoingList?: any = []
 
   @Mutation
   setInventoryList(response: any) {
     this.inventoryStore = response?.items
     this.total = response?.total
+  }
+
+  @Mutation
+  setOutGoingList(outGoingList: any) {
+    this.outGoingList = outGoingList
   }
 
   @Action({ commit: 'setInventoryList', rawError: true })
@@ -305,5 +311,10 @@ export default class StoreInventory extends VuexModule {
     total: 24
     }
     return { items: inventoryList[`${params.pageNumber}`], total: 24 }
+  }
+
+  @Action({ commit: 'setOutGoingList', rawError: true })
+  async actOutGoingList(params?: any): Promise<string | undefined> {
+    return await params
   }
 }

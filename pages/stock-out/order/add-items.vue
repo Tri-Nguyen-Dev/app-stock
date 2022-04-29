@@ -154,6 +154,9 @@ class AddItems extends Vue {
   @nsStoreInventory.Action
   actGetInventoryList!: (params: any) => Promise<void>
 
+  @nsStoreInventory.Action
+  actOutGoingList: (params: any) => Promise<void>
+
   // -- [ Functions ] ------------------------------------------------------------
   async getDataList() {
     await this.actGetInventoryList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
@@ -167,7 +170,9 @@ class AddItems extends Vue {
     this.getDataList()
   }
 
-  handleOrderDelivery() {
+  async handleOrderDelivery() {
+    await this.actOutGoingList(this.outGoingList)
+    this.$router.push({ path: '/stock-out/order' })
   }
 
   onPage(event: any) {
