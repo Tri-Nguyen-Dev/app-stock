@@ -1,24 +1,26 @@
 <template lang="pug">
-  .grid.flex.grid-nogutter.h-full
+  .grid.grid-nogutter.h-full
     .col-3.bg-white.sub-tab
       Breadcrumb(:home="homeItem" :model="breadcrumbItem")
       StockOutLabelCreate
-    .col.ml-5
-      .grid
-        .col
-          h1.text-heading Item list
-          span.text-subheading product found
-        .col-fixed
-          .btn.btn-primary(@click='createStockIn')
-            .icon.icon-add-items.surface-900.bg-white
-            span.text-900.text-white.mr-3 Add Items For Delivery
-        DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
+    .col-9.ml-5
+      .grid.grid-nogutter.h-full.flex.flex-column
+        .col-12.justify-content-between.flex
+          div
+            h1.text-heading Item list
+            span.text-subheading product found
+          div
+            .btn.btn-primary(@click='createStockIn')
+              .icon.icon-add-items.surface-900.bg-white
+              span.text-900.text-white.mr-3 Add Items For Delivery
+        .col-12.flex-1
+          DataTable.w-full.flex.flex-column.table__sort-icon.bg-white(
             :resizableColumns='true',
             :value='[]',
             dataKey='id',
             :row-hover='true',
             responsiveLayout='scroll',
-            columnResizeMode='fit',
+            :scrollable="false"
           )
             template(#empty)
               .flex.align-items-center.justify-content-center.flex-column
@@ -86,6 +88,8 @@
                   :disabled='data.itemStatus === "ITEM_STATUS_DISABLE"'
                 )
                   .icon--small.icon-btn-delete
+            template(#footer)
+
 </template>
 
 <script lang="ts">
@@ -145,7 +149,6 @@ export default createOrder
     border-radius: var(--border-radius)
     height: 100%
     overflow: auto
-    // padding: 1.5rem
     max-width: 24rem
 ::-webkit-scrollbar
   width: 7px
