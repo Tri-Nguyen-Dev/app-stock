@@ -1,13 +1,13 @@
 <template lang="pug">
   .stock
-    h1.text-heading Delivery order list {{activeTab}} 
+    h1.text-heading Delivery order list
     .stock__header.grid.mt-3
       div.col-12(class="xl:col-6")
-        TabView(:activeIndex="activeTab" @tab-change="handleTab(0)")
-          TabPanel
+        TabView(@tab-click="handleTab($event)")
+          TabPanel 
             template(#header)
               .icon.icon-truck.mr-2.surface-600
-              span New
+              span New 
           TabPanel
             template(#header)
               .icon.icon-truck.mr-2.surface-600
@@ -43,9 +43,11 @@
       //-   FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .stock__table
         DataTable(
+          :value='deliveryList' 
           @sort="sortData($event)"
           :class="{ 'table-wrapper-empty': !deliveryList || deliveryList.length <= 0 }"
-          :rowClass="rowClass" :value='deliveryList' responsiveLayout="scroll"
+          :rowClass="rowClass" 
+          responsiveLayout="scroll"
           @row-click='rowdbClick'
           :selection='selectedDelivery'
           dataKey='id'
@@ -63,23 +65,54 @@
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
-          Column(field='imageUrl' header='Image' headerClass="grid-header-center")
+          Column(field='id' header='ID' sortable headerClass="grid-header-center")
             template(#body='{ data }')
-              .stock__table__image.overflow-hidden.grid-cell-center
-                img.h-2rem.w-2rem.border-round(
-                  :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
-          Column(header='Name' field='name' :sortable="true" sortField="_name")
+             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.id }}
+          Column(header='Creator ID' field='creatorId' sortable sortField="_creatorId")
             template(#body='{ data }')
-              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-          Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
+              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
+          Column(header='Create Name' field='creatorName' sortable sortField="_creatorName" headerClass="grid-header-right")
             template(#body='{ data }')
-              .stock__table-barcode.grid-cell-right {{ data.barCode }}
-          Column(header='Category' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
+              .stock__table-barcode.grid-cell-right {{ data.creatorName }}
+          Column(header='Create time' field='createTime' sortable  sortField="_createTime" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.categoryName }}
-          Column(header='Type' :sortable="true" field='type' sortField="_type" headerClass="grid-header-right")
+                div.grid-cell-right {{ data.createTime }}
+          Column(header='Seller email' sortable field='sellerEmail' sortField="_sellerEmail" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.typeName }}
+                div.grid-cell-right {{ data.sellerEmail }}
+          Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.receiverAddress }}
+          Column( sortable field='dueDeliveryDate' sortField="_dueDeliveryDate" headerClass="grid-header-right")
+              template(#header)
+                div
+                  div.text-end Due 
+                  div Delivery Date
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.dueDeliveryDate }}
+          Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
+              template(#header)
+                div
+                  div.text-end Estimated 
+                  div Delivery Time 
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.estimatedDeliveryTime }}
+          Column( sortable field='lastedUpdateTime' sortField="_lastedUpdateTime" headerClass="grid-header-right")
+              template(#header)
+                div
+                  div.text-end Latest 
+                  div update time
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.lastedUpdateTime }}
+          Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouseName" headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.warehouseName }}
+          Column(header='PIC' sortable field='warehouseId' sortField="_warehouseId" headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.warehouseId }}
+          Column(v-if="activeTab === 1" header='Driver' sortable field='driverId' sortField="_driverId" headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.driverId }}
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
@@ -90,13 +123,13 @@
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
                 span(@click="handleEditStock(data.id)")
                   .icon.icon-edit-btn
-                span(@click="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
+                span(@click="showModalDelete([data])" :class="{'disable-button': selectedDeliveryFilter.length > 0}")
                   .icon.icon-btn-delete
           template(#footer)
             //- Pagination(
               :paging="paging"
               :total="total"
-              :deleted-list="selectedStockFilter"
+              :deleted-list="selectedDeliveryFilter"
               @onDelete="showModalDelete"
               @onPage="onPage")
         //-   template(#empty)
@@ -110,14 +143,14 @@
 </template>
 <script lang="ts">
 import { Vue, namespace } from 'nuxt-property-decorator'
-import { Delivery } from '~/models/Delivery'
-const nStoreDelivery = namespace('delivery/stock-list')
+import { DeliveryList } from '~/models/Delivery'
+const nsStoreDelivery = namespace('delivery/delivery-list')
 
-class DeliveryList extends Vue { 
-  selectedDelivery: Delivery.Model[] = []
+class Delivery extends Vue { 
+  selectedDelivery: DeliveryList.Model[] = []
   isShowFilter: boolean = false
   loading: boolean = false
-  activeTab: number = 1
+  activeTab: number = 0
   filter: any = {
     name: null,
     barCode: null,
@@ -127,12 +160,29 @@ class DeliveryList extends Vue {
     sortBy: null,
     desc: null
   } 
- 
-  @nStoreDelivery.State
+  
+  get classHeaderMuti() {
+    return !this.deliveryList ||
+      this.deliveryList.length <= 0 ||
+      this.checkStockDisable
+      ? 'checkbox-disable'
+      : ''
+  }
+
+  get checkStockDisable() {
+    return this.deliveryList.every(
+      (item) => item.status === 'STOCK_STATUS_DISABLE'
+    )
+  }
+
+  @nsStoreDelivery.State
   total!: number
 
-  @nStoreDelivery.State
-  deliveryList!: Delivery.Model[]
+  @nsStoreDelivery.State
+  deliveryList!: DeliveryList.Model[]
+ 
+  @nsStoreDelivery.Action
+  actGetDeliveryList!: () => Promise<void>
 
   handleFilter(e: any, name: string){
     this.filter[name] = e
@@ -147,18 +197,49 @@ class DeliveryList extends Vue {
     // this.getProductList()
   }
 
-  handleTab(tab: number) {
-    this.activeTab = tab
+  handleTab({ index }: any) {
+    this.activeTab = index
   }
 
   rowClass(data: any) {
     return data.status === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
   }
 
+  rowdbClick({ data }) {
+    this.$router.push(`/stock/${data.id}`)
+  }
+  
+  rowSelectAll({ data }) {
+    this.selectedDelivery = _.union(this.selectedDelivery, data)
+  }
+
+  rowUnSelectAll() {
+    this.selectedDelivery = _.differenceWith(
+      this.selectedDelivery,
+      this.deliveryList,
+      _.isEqual
+    )
+  }
+
+  rowSelect({ data }) {
+    this.selectedDelivery.push(data)
+  }
+
+  rowUnselect({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
+    this.selectedDelivery = _.filter(
+      this.selectedDelivery,
+      (stock: any) => stock.id !== data.id
+    )
+  }
+
 }
-export default DeliveryList
+export default Delivery
 </script>
 <style lang="sass" scoped>
+.text-end 
+  display: flex
+  justify-content: end
 .stock
   @include flex-column
   height: 100%

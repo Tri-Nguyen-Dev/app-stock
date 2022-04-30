@@ -1,5 +1,5 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
-import { Delivery } from '~/models/Delivery'
+import { DeliveryList } from '~/models/Delivery'
 import { $api, PathBind } from '~/utils'
 
 @Module({
@@ -9,11 +9,11 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreDelivery extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK: '/stock/delivery',
-    DELETE_STOCK: '/stock/delete'
+    GET_STOCK: '/delivery',
+    DELETE_STOCK: '/delete'
   }
 
-  public deliveryList?: Delivery.Model[] = []
+  public deliveryList?: DeliveryList.Model[] = []
   public total?: number = 0
 
   @Mutation
