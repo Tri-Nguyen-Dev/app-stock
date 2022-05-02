@@ -19,7 +19,7 @@
       div.col-12(class="xl:col-6")
         .header__action
           .btn__filter(:class="{'active': isShowFilter}")
-            .btn-toggle(@click="isShowFilter = !isShowFilter")
+            .btn-toggle(@click.stop="isShowFilter = !isShowFilter")
               .icon.icon-filter(v-if="!isShowFilter")
               .icon.icon-chevron-up.bg-primary(v-else)
               span Filter
@@ -27,20 +27,93 @@
               .icon.icon-rotate-left.bg-white
           .btn.btn-primary(@click="")
             .icon.icon-add-items
-            span Add new 
-          .btn__filter(class='active' @click="")
+            span Add new
+          .btn__filter(class='active')
             .btn.btn-toggle.bg-white
               .icon-download.icon--large.bg-primary
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      //- .col
-      //-   FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
-      //-     template(v-slot:multi-select)
-      //-       MultiSelect.filter__multiselect(v-model='filter.categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
-      //- .col
-      //-   FilterTable(title="Barcode" placeholder="Search barcode" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
-      //- .col
-      //-   FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
+      .col-1
+        FilterTable(title="ID" placeholder="Search ID" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
+      .col-3
+        .grid.grid-nogutter
+          .col
+            FilterCalendar(
+              title="Create time from"
+              border="left"
+              :value="filter.createTimeFrom"
+              name="createTimeFrom"
+              inputClass="border-0"
+              dateFormat="dd-mm-yy"
+              :showIcon="true"
+              @updateFilter="handleFilter"
+            )
+          .col.ml-1
+            FilterCalendar(
+              title="To"
+              border="createTimeTo"
+              :value="filter.createTimeTo"
+              name="dateTo"
+              inputClass="border-0"
+              dateFormat="dd-mm-yy"
+              :showIcon="true"
+              @updateFilter="handleFilter"
+            )
+      .col-3
+        .grid.grid-nogutter
+          .col
+            FilterCalendar(
+              title="Due Delivery Date from"
+              border="left"
+              :value="filter.dueDeliveryDateFrom"
+              name="dueDeliveryDateFrom"
+              inputClass="border-0"
+              dateFormat="dd-mm-yy"
+              :showIcon="true"
+              @updateFilter="handleFilter"
+            )
+          .col.ml-1
+            FilterCalendar(
+              title="To"
+              border="right"
+              :value="filter.dueDeliveryDateTo"
+              name="dueDeliveryDateTo"
+              inputClass="border-0"
+              dateFormat="dd-mm-yy"
+              :showIcon="true"
+              @updateFilter="handleFilter"
+            )
+      .col
+          FilterTable(
+            title="Warehouse"
+            :value="filter.warehouse"
+            :options="warehouseList"
+            name="warehouse"
+            @updateFilter="handleFilter"
+          )
+      .col
+          FilterTable(
+            title="Seller email"
+            :value="filter.sellerEmail"
+            :searchText="true"
+            name="sellerEmail"
+            @updateFilter="handleFilter"
+          )
+      .col
+          FilterTable(
+            title="Assignee"
+            :value="filter.assignee"
+            :searchText="true"
+            name="assignee"
+            @updateFilter="handleFilter"
+          )
+      .col
+        FilterTable(
+          title="Status" 
+          :value="filter.status" 
+          :options="statusList" 
+          name="status" 
+          @updateFilter="handleFilter")
     .stock__table
         DataTable(
           :value='deliveryList' 
@@ -110,7 +183,7 @@
           Column(header='PIC' sortable field='warehouseId' sortField="_warehouseId" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.warehouseId }}
-          Column(v-if="activeTab === 1" header='Driver' sortable field='driverId' sortField="_driverId" headerClass="grid-header-right")
+          Column(header='Driver' sortable field='driverId' sortField="_driverId" headerClass="grid-header-right" :class="`${activeTab ===1 ? 'show' : 'hidden'}`")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.driverId }}
           Column(field='status' header="Status" headerClass="grid-header-right")
@@ -125,7 +198,7 @@
                   .icon.icon-edit-btn
                 span(@click="showModalDelete([data])" :class="{'disable-button': selectedDeliveryFilter.length > 0}")
                   .icon.icon-btn-delete
-          template(#footer)
+        //-   template(#footer)
             //- Pagination(
               :paging="paging"
               :total="total"
@@ -142,15 +215,41 @@
               p.notfound__text(v-else) Item not found!
 </template>
 <script lang="ts">
-import { Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { DeliveryList } from '~/models/Delivery'
-const nsStoreDelivery = namespace('delivery/delivery-list')
 
-class Delivery extends Vue { 
+import {
+  LIMIT_PAGE_OPTIONS,
+  PAGINATE_DEFAULT,
+  calculateIndex,
+  StockConstants,
+  getDeleteMessage
+} from '~/utils'
+import { Paging } from '~/models/common/Paging'
+import Pagination from '~/components/common/Pagination.vue'
+const nsStoreDelivery = namespace('delivery/delivery-list')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+// const dayjs = require('dayjs')
+
+@Component({
+  components: {
+    ConfirmDialogCustom,
+    Pagination
+  }
+})
+class DeliveryOrder extends Vue {
   selectedDelivery: DeliveryList.Model[] = []
   isShowFilter: boolean = false
-  loading: boolean = false
   activeTab: number = 0
+  loading: boolean = false
+  isModalDelete: boolean = false
+  onEventDeleteList: DeliveryList.Model[] = []
+  loadingSubmit: boolean = false
+  isFilter: boolean = false
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  statusList = StockConstants.STOCK_STATUS_OPTIONS
+  limitOptions = LIMIT_PAGE_OPTIONS
   filter: any = {
     name: null,
     barCode: null,
@@ -159,8 +258,27 @@ class Delivery extends Vue {
     status: null,
     sortBy: null,
     desc: null
-  } 
+  }
+
+  @nsStoreDelivery.State
+  total!: number
+
+  @nsStoreDelivery.State
+  deliveryList!: DeliveryList.Model[]
   
+  @nsStoreWarehouse.State
+  warehouseList!: any
+
+  @nsStoreWarehouse.Action
+  actWarehouseList!: () => Promise<void>
+
+  // -- [ Getters ] -------------------------------------------------------------
+  get selectedDeliveryFilter() {
+    return  _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
+      return delivery.status !== 'STOCK_STATUS_DISABLE'
+    })
+  }
+
   get classHeaderMuti() {
     return !this.deliveryList ||
       this.deliveryList.length <= 0 ||
@@ -175,40 +293,139 @@ class Delivery extends Vue {
     )
   }
 
-  @nsStoreDelivery.State
-  total!: number
-
-  @nsStoreDelivery.State
-  deliveryList!: DeliveryList.Model[]
- 
-  @nsStoreDelivery.Action
-  actGetDeliveryList!: () => Promise<void>
-
-  handleFilter(e: any, name: string){
-    this.filter[name] = e
-    // this.getProductList()
+  get checkIsFilter() {
+    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
+    return Object.values(params).some((item) => item)
   }
   
-  handleRefreshFilter() {
-    this.filter.name = null
-    this.filter.barCode = null
-    this.filter.categories = null
-    this.filter.status = null
-    // this.getProductList()
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'stock')
+  }
+  
+  // -- [ Functions ] ------------------------------------------------------------
+  getParamApi() {
+    const categoryIds = this.filter.categories
+      ? this.filter.categories.map((item: any) => item?.id).toString()
+      : null
+    return {
+      name: this.filter.name || null,
+      barCode: this.filter.barCode || null,
+      warehouseId: this.filter.warehouse?.id,
+      categoryIds: categoryIds || null,
+      stockStatus: this.filter.status?.value,
+      sortBy: this.filter.sortBy || null,
+      desc: this.filter.desc
+    }
   }
 
-  handleTab({ index }: any) {
-    this.activeTab = index
+  getIndexPaginate(index: number) {
+    return calculateIndex(
+      index,
+      this.paging.pageNumber,
+      this.paging.pageSize
+    )
   }
 
   rowClass(data: any) {
-    return data.status === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
+    return data.stockStatus === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
+  }
+
+  mounted() {
+    this.getProductList()
+    // await this.actWarehouseList()
+    // this.actCategoryList()
+  }
+
+  handleFilter(e: any, name: string){
+    this.filter[name] = e
+    this.getProductList()
+  }
+
+  async getProductList() {
+    // await this.actGetdeliveryList({
+    //   pageSize: this.paging.pageSize,
+    //   pageNumber: this.paging.pageNumber,
+    //   ...this.getParamApi()
+    // })
+  }
+
+  handleChangeFilter() {
+    this.getProductList()
+  }
+
+  onPage(event: any) {
+    this.paging.pageSize = event.rows
+    this.paging.pageNumber = event.page
+    this.getProductList()
+  }
+
+  showModalDelete(data: DeliveryList.Model[]) {
+    this.onEventDeleteList = data || this.selectedDeliveryFilter
+    this.isModalDelete = true
+  }
+
+  async handleDeleteStock() {
+    try {
+      this.loadingSubmit = true
+      const data = []
+      if (data) {
+        this.loadingSubmit = false
+        this.isModalDelete = false
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Successfully deleted stock',
+          life: 3000
+        })
+        await this.getProductList()
+      }
+    } catch (error) {
+      this.loadingSubmit = false
+    }
+  }
+
+  handleCancel() {
+    this.isModalDelete = false
+  }
+
+  handleEditStock(id: any) {
+    this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' } })
   }
 
   rowdbClick({ data }) {
     this.$router.push(`/stock/${data.id}`)
   }
-  
+
+  sortData(e: any) {
+    const { sortField, sortOrder } = e
+    if (sortOrder) {
+      this.filter.desc = sortOrder !== 1
+      this.filter.sortBy = sortField.replace('_', '')
+    } else {
+      this.filter.desc = null
+      this.filter.sortBy = null
+    }
+    this.getProductList()
+  }
+
+  debounceSearchName = _.debounce((value) => {
+    this.filter.name = value
+    this.getProductList()
+  }, 500)
+
+  debounceSearchCode = _.debounce((value) => {
+    this.filter.barCode = value
+    this.getProductList()
+  }, 500)
+
+  handleRefreshFilter() {
+    this.filter.name = null
+    this.filter.barCode = null
+    this.filter.categories = null
+    this.filter.status = null
+    this.getProductList()
+  }
+
   rowSelectAll({ data }) {
     this.selectedDelivery = _.union(this.selectedDelivery, data)
   }
@@ -232,9 +449,17 @@ class Delivery extends Vue {
       (stock: any) => stock.id !== data.id
     )
   }
+ 
+  handleTab({ index }:any) {
+    this.activeTab = index
+  }
+
+  handleAddStock() {
+    this.$router.push('/stock-in/create-receipt')
+  }
 
 }
-export default Delivery
+export default DeliveryOrder
 </script>
 <style lang="sass" scoped>
 .text-end 
@@ -243,6 +468,21 @@ export default Delivery
 .stock
   @include flex-column
   height: 100%
+  ::v-deep.pi-calendar:before
+    content: url('~/assets/icons/calendar.svg')
+  ::v-deep.p-calendar-w-btn
+    .p-button
+      background: none
+      border: none
+  ::v-deep.text-right
+    text-align: right !important
+    .p-column-header-content
+      justify-content: end !important
+  ::v-deep.disable-button
+    pointer-events: none
+    background-color: $text-color-300
+    .icon
+      background-color: $text-color-500
   &__header
     @include flex-center-space-between
     margin-bottom: 24px
