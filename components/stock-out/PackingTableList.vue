@@ -5,6 +5,7 @@ DataTable(
   responsiveLayout="scroll"
   dataKey='id'
   :rowHover='true'
+  :value='value'
 )
   Column(field='no' header='NO' :styles="{'width': '1%'}" )
     template(#body='{ index }')
@@ -36,12 +37,14 @@ DataTable(
       .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.outGoing }}
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import { PAGINATE_DEFAULT,calculateIndex } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 @Component
 class PackingTableList extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  @Prop() value!: Array<any>
+  originalList: {} = {}
 
   getIndexPaginate(index: number) {
     return calculateIndex(

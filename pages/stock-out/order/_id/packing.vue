@@ -5,7 +5,7 @@
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div
         .grid.grid-nogutter.mb-3
-          StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true' :rows='originalList')
+          StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true' :listBoxSelected="listBoxSelected")
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(title='outgoing box' icon='icon-arrow-circle-up-right' :isOutgoing='true' :rows='outgoingList')
         .grid.grid-nogutter.my-3
@@ -47,7 +47,68 @@
 import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
-class DeliveryOrderPacking extends Vue {}
+class DeliveryOrderPacking extends Vue {
+  listBoxSelected:any = [
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '2',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    }
+  ]
+}
 
 export default DeliveryOrderPacking
 </script>

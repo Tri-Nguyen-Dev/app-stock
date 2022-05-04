@@ -1,13 +1,13 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full
-  Button.bg-white.text-primary.border-0(v-if='!isOriginal' @click="handleAddTab" class="btn-add-tab") + Add
+  Button.bg-white.text-primary.border-0(v-if='!isOriginal' @click="handleAddTab" className="btn-add-tab") + Add
   TabView(:active-index="active = 1")
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;(2 boxes, 4 items)
-    TabPanel(v-for='tab in tabs' :key='tab.index')
+    TabPanel(v-for='tab in listBoxSelectedFilter' :key='tab.index')
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -34,7 +34,7 @@
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
             InputText
-      StockOutPackingTableList
+      StockOutPackingTableList(:isOriginal='true' :value="tab.content")
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
@@ -59,6 +59,15 @@ class PackingOriginal extends Vue {
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
+  @Prop() readonly listBoxSelected!: Array<any>
+
+  get listBoxSelectedFilter() {
+    if(this.listBoxSelected) {
+      return this.listBoxSelected.map((item: any, index: number) => {
+        return { index, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
+      })
+    }
+  }
 
   handleAddTab = () => {
     this.tabs.push({ index: 4, title: 'box 4', content: 'Content 3', checked: false, boxSizeSelect:'', estimateFee: 0 })
