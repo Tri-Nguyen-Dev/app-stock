@@ -33,7 +33,7 @@
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
             InputText
-      StockOutPackingTableList(:isOriginal='true')
+      StockOutPackingTableList
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
