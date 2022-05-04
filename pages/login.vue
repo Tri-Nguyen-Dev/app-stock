@@ -14,14 +14,13 @@ import { Component, Vue } from 'nuxt-property-decorator'
   layout: 'public',
   fetch({ redirect, $auth }): Promise<void> | void {
     if ($auth.loggedIn) {
-      this.$store.commit('commons/store-token/setToken', $auth.getState(''))
       redirect('/')
     }
   }
 })
 class Login extends Vue {
-  callLogin() {
-    this.$auth.loginWith('keycloak')
+  async callLogin() {
+    await this.$auth.loginWith('keycloak')
   }
 }
 

@@ -3,22 +3,22 @@ export namespace User {
   export interface Model {
     id: number,
     email: string,
-    role: number,
-    status: number,
-    userDetail: User.Detail
-  }
-
-  export interface Detail {
+    username: string,
     firstName: string,
     lastName: string,
     displayName: string,
-    phoneNumber: string
-    pictureUrl: string
+    phoneNumber: string,
+    avatarUrl: string,
+    roleId: number,
+    status: string
   }
 
-  export interface Token {
-    userId: string
-    token: string
-    user?: User.Model
+  export interface KeyCloak {
+    'email_verified': boolean
+    'family_name': string,
+    'given_name': string,
+    'name': string,
+    'preferred_username': string,
+    'sub': string,
   }
 }

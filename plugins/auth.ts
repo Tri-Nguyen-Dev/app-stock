@@ -13,12 +13,13 @@ declare module 'vue/types/vue' {
     }
   }
 }
-const auth: Plugin = ({ $auth, store }) => {
+const auth: Plugin = ({ app, $auth, store }) => {
   const axiosInstance = axios.create()
 
   axiosInstance.interceptors.request.use((config) => {
-    if ($auth.loggedIn) {
-      // config.headers.Authorization = `Bearer ${store.state.commons['store-token'].token.token}`
+    const token = app.$cookies.get('auth._token.keycloak')
+    if ($auth.loggedIn && token) {
+      config.headers.Authorization = token
     }
     if (process.env.NODE_ENV !== 'development') {
       config.baseURL = process.env.BE_API_URL
