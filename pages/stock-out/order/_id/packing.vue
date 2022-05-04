@@ -11,36 +11,36 @@
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(title='tranferring box' icon='icon-repeat' :isTranffering='true')
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
-        .col-5
+        .col-5.p-1
           .grid.align-items-center
             .col-1
               .icon--large.icon-note
             .col
               div Note:
               Textarea.note-area.border-white(v-model="value" rows="1" cols="40" placeholder='Write something...')
-        .col-2
+        .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
               img(src='~/assets/icons/box-border.svg')
             .col
               span.font-semibold.text-base.mr-1 Total boxs:
               .font-semibold.text-primary 1
-        .col-2
+        .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
               img(src='~/assets/icons/total-items-border.svg')
             .col
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary 1
-        .col-2
+        .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
               img(src='~/assets/icons/total-fee.svg')
             .col
               span.font-semibold.text-base.mr-1 Total fee:
               .font-semibold.text-primary 1 $ / day
-        .col-1
-          Button Next
+        .col-1.flex.justify-content-end.p-1
+          Button.w-10.justify-content-center.flex Next
 </template>
 
 <script lang="ts">

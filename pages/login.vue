@@ -15,6 +15,7 @@
         span.p-input-icon-left.mb-6.w-full
           .icon.icon--left.icon-lock-open.bg-primary
           InputText#inputPassword.w-full(type="password", v-model="loginUser.password")
+          .icon.icon-eye.icon--right.icon-status-normal.cursor-pointer
         //- Action block
         Button.bg-primary.w-full.p-3.mb-3(type="button", label="Sign In", @click='callLogin')
         //- Remember block

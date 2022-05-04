@@ -12,15 +12,15 @@
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.title}}
         .text-white.bg-primary.border-round.ml-1.p-1(v-if='tab.checked') &nbsp;Tag
-      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4.py-2(v-if='!isOriginal')
-        .col-3
+      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
+        .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
           Dropdown(v-model='tab.boxSizeSelect' :options="boxSize" optionLabel="name" placeholder="Select a box size").w-9
           span.ml-1 (cm)
-        .col(v-if='isOutgoing')
+        .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
-          span.ml-1 Attach Tag
-        .col-3(v-if='isTranffering')
+          span.ml-2 Attach Tag
+        .col-3.ml-2.py-3.border-right-1.border-gray-300(v-if='isTranffering')
           .grid.align-items-center
             .col-4
               div Estimated
@@ -28,7 +28,7 @@
             .col
               InputText.w-4(v-model='tab.estimateFee' type='number')
               span.ml-1 / day
-        .col.flex.justify-content-end
+        .col.py-3.flex.justify-content-end
           span.p-input-icon-right
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
