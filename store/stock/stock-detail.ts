@@ -18,7 +18,8 @@ export default class StoreStockDetail extends VuexModule {
     GET_STOCK_HISTORY: '/stock/:stockId/box/:boxId/history',
     DELETE_ITEMS: '/stock/:id/box/delete',
     UPDATE_ITEM: '/stock/:stockId/box/:boxId/update',
-    GET_STOCK_BY_BARCODE: '/stock/barcode/:barcode'
+    GET_STOCK_BY_BARCODE: '/stock/barcode/:barcode',
+    GET_HISTORY_LOCATION: '/stock/:stockId/box/:boxId/history/location'
   }
 
   public total?: number = 0
@@ -27,6 +28,7 @@ export default class StoreStockDetail extends VuexModule {
   public itemDetail: any = {}
   public newStockDetail: any = {}
   public historyList: any = {}
+  public historyLocationList: any = {}
 
   @Mutation
   setStockDetail(data:StockModel.ModelDetail) {
@@ -52,6 +54,11 @@ export default class StoreStockDetail extends VuexModule {
   @Mutation
   setHistoryStock(historyList: {}) {
     this.historyList = historyList
+  }
+
+  @Mutation
+  setHistoryLocation(historyLocationList: {}) {
+    this.historyLocationList = historyLocationList
   }
 
   @Action({ commit: 'setStockDetail', rawError: true })
@@ -111,10 +118,16 @@ export default class StoreStockDetail extends VuexModule {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.UPDATE_ITEM, params.path)
     return await $api.post(url, params.body)
   }
-  
+
   @Action({ commit: 'setStockDetail', rawError: true })
   async actGetStockByBarcode(params: { id: number }): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_STOCK_BY_BARCODE,params)
+    return await $api.get(url)
+  }
+
+  @Action({ commit: 'setHistoryLocation', rawError: true })
+  async actGetHistoryLocation(params: {stockId: number, boxId: number}): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_HISTORY_LOCATION, params)
     return await $api.get(url)
   }
 }
