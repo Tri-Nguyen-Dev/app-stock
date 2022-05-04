@@ -21,17 +21,6 @@ export default class StoreCreateReceipt extends VuexModule {
     this.listInfor = data
   }
 
-  @Mutation
-  setInventoryList(response: any) {
-    this.inventoryStore = response?.items
-    this.total = response?.total
-  }
-
-  @Mutation
-  setOutGoingList(outGoingList: any) {
-    this.outGoingListStore = outGoingList
-  }
-
   @Action({ commit: 'setStockIn', rawError: true })
   async actGetCreateOrder( obj: any ): Promise<string | undefined> {
     return await obj

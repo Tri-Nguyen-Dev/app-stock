@@ -75,7 +75,7 @@
               template(#body='{ data }')
                 .table__action(v-if='isActive !== data.id')
                     Button.btn-action(
-                      @click='editItem(data.id)'
+                      @click='editItem(data)'
                     )
                       .icon--small.icon-btn-edit
                     Button.btn-action(
@@ -84,17 +84,28 @@
                       .icon--small.icon-btn-delete
                 .table__action(v-else)
                   Button.btn-action(
-                    @click='saveEditItem(data.id)'
+                    @click='saveEditItem(data)'
                   )
                     .icon--small.pi.pi-check.text-primary
                   Button.btn-action(
-                    @click='saveEditItem(data.id)'
+                    @click='handleCancelEdit( data )'
                   )
                     .icon--small.pi.pi-times.text-primary
-            template(#footer v-if="listItemsAdd.length > 0" )
-              Button( label='Cancel' ).btn.btn__default.flex-initial
-              Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
-
+            template( #footer  )
+              .mr-4.flex.justify-content-end( v-if="listItemsAdd.length > 0" )
+                Button( label='Cancel' @click='handleCancel' ).btn.btn__default.flex-initial
+                Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
+              .grid.grid-nogutter.ml-3( v-else )
+                .flex.align-items-center.justify-content-center.pl-3
+                  img(src='~/assets/icons/note.svg')
+                div.ml-4
+                  span.font-semibold.text-base.mr-1 Note:
+                  br
+                  InputText.pt-0.pl-0(
+                    placeholder='Write something...',
+                    style='border: none'
+                    v-model = 'note'
+                  )
 </template>
 
 <script lang="ts">
@@ -112,6 +123,9 @@ class createOrder extends Vue {
   listItemsAdd: any = []
   isActive: string = ''
   tag: boolean
+  delivery: string = ''
+  infomation = INFORMATION
+  oldItem: any = null
 
   @nsStoreCreateOrder.State
   listInfor:any
@@ -121,8 +135,6 @@ class createOrder extends Vue {
 
   @nsStoreCreateOrder.Action
   actGetCreateOrder!: (obj: any) => Promise<void>
-
-  infomation = INFORMATION
 
   get homeItem() {
     return { to: '/stock-out', icon: 'pi pi-list' }
@@ -156,26 +168,41 @@ class createOrder extends Vue {
     })
   }  
 
-  get outGoingListId() {
-    return this.outGoingListStore.id
+  editItem(data: any ) {
+    this.isActive = data.id
+    this.oldItem = _.cloneDeep(data)
   }
 
-  editItem(id: any ) {
-    this.isActive = id
-  }
-
-  saveEditItem() {
+  saveEditItem( ) {
     this.isActive = ''
+
   }
 
-  showModalDelete(data:any) {
+  showModalDelete( data:any ) {
     this.listItemsAdd.splice(this.listItemsAdd.indexOf(data),1)
   }
 
   handleSubmit(){
-    // console.log(this.listItemsAdd)
-    // console.log(this.tag)
+
   }
+
+  handleCancelEdit(data : any ){
+    data.delivery = this.oldItem.delivery
+    this.isActive = ''
+  }
+
+  handleCancel(){
+    // for (const items in this.outGoingList) {
+    //   delete this.outGoingList[items]
+    //   console.log(this.outGoingList)
+    // }
+    // this.outGoingList.splice(this.outGoingList)
+    // console.log(this.outGoingList)
+    // await this.actGetCreateOrder(
+    //   _.cloneDeep(this.listItemsAdd)
+    // )
+  }
+
 }
 
 export default createOrder
@@ -199,12 +226,11 @@ export default createOrder
   background: var(--surface-200)
 ::v-deep.p-datatable
   .p-datatable-footer
+    box-shadow: 0px 10px 45px rgba(0, 10, 24, 0.1)
     background-color: #ffffff
     border: none
-    padding-bottom: 30px
-    justify-content: flex-end
-    display: flex
-    margin-right: 20px
+    padding: 15px 0px
+    width: 100%
   .btn
     border: none
     padding: 0px 25px 
