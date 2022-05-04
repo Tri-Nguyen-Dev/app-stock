@@ -5,34 +5,34 @@
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div
         .grid.grid-nogutter.mb-3
-          StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true')
+          StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true' :rows='originalList')
         .grid.grid-nogutter.my-3
-          StockOutPackingOriginal(title='outgoing box' icon='icon-arrow-circle-up-right' :isOutgoing='true')
+          StockOutPackingOriginal(title='outgoing box' icon='icon-arrow-circle-up-right' :isOutgoing='true' :rows='outgoingList')
         .grid.grid-nogutter.my-3
-          StockOutPackingOriginal(title='tranferring box' icon='icon-repeat' :isTranffering='true')
+          StockOutPackingOriginal(title='tranferring box' icon='icon-repeat' :isTranffering='true' :rows='tranfferingList')
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
-        .col-5.p-1
+        .col-4.p-1
           .grid.align-items-center
             .col-1
               .icon--large.icon-note
             .col
               div Note:
               Textarea.note-area.border-white(v-model="value" rows="1" cols="40" placeholder='Write something...')
-        .col-2.border-right-1.border-gray-300.p-1
+        .col.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
               img(src='~/assets/icons/box-border.svg')
             .col
               span.font-semibold.text-base.mr-1 Total boxs:
               .font-semibold.text-primary 1
-        .col-2.border-right-1.border-gray-300.p-1
+        .col.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
               img(src='~/assets/icons/total-items-border.svg')
             .col
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary 1
-        .col-2.border-right-1.border-gray-300.p-1
+        .col.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
               img(src='~/assets/icons/total-fee.svg')

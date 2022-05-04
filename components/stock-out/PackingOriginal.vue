@@ -1,6 +1,6 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full
-  Button(v-if='!isOriginal' @click="handleAddTab" class="btn-add-tab") + Add
+  Button.bg-white.text-primary.border-0(v-if='!isOriginal' @click="handleAddTab" class="btn-add-tab") + Add
   TabView(:active-index="active = 1")
     TabPanel(:disabled="true")
       template(#header)

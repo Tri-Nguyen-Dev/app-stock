@@ -5,7 +5,6 @@ DataTable(
   responsiveLayout="scroll"
   dataKey='id'
   :rowHover='true'
-  :value='originalList.data.items'
 )
   Column(field='no' header='NO' :styles="{'width': '1%'}" )
     template(#body='{ index }')
@@ -43,33 +42,6 @@ import { Paging } from '~/models/common/Paging'
 @Component
 class PackingTableList extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
-  originalList:{} = {
-    data: {
-      total: 2,
-      items: [
-        {
-          id: '12124234l2k',
-          imagePath: '',
-          barCode: 'NVN030133',
-          sku: 'NVN030133',
-          name: 'Macbook Pro 2021',
-          tag: true,
-          quantity: 12,
-          outGoing: 12
-        },
-        {
-          id: '696969696969',
-          imagePath: '',
-          barCode: 'NVN030133',
-          sku: 'NVN030133',
-          name: 'Macbook Pro 2021',
-          tag: false,
-          quantity: 12,
-          outGoing: 12
-        }
-      ]
-    }
-  }
 
   getIndexPaginate(index: number) {
     return calculateIndex(
