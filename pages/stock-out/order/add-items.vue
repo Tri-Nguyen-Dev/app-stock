@@ -13,7 +13,7 @@
         .btn-refresh(@click="handleRefreshFilter")
           .icon.icon-rotate-left.bg-white
       .btn.bg-white(@click='handleBack') Back
-      .btn.btn-primary(@click='handleOrderDelivery') Order delivery
+      Button.btn.btn-primary.border-0(@click='handleOrderDelivery' :disabled='isDisabled') Order delivery
   .inventory__filter.grid(v-if='isShowFilter')
     .col-1
       FilterTable(
@@ -143,6 +143,7 @@ class AddItems extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   outGoingList: any = []
   isShowFilter: boolean = false
+  isDisabled: string | null = 'disabled'
   filter: any = {
     rnId: null,
     barCode: null,
@@ -162,6 +163,9 @@ class AddItems extends Vue {
   @nsStoreInventory.State
   total!: any
 
+  @nsStoreInventory.State
+  outGoingListStore!: any
+
   // -- [ Action ] ------------------------------------------------------------
   @nsStoreInventory.Action
   actGetInventoryList!: (params: any) => Promise<void>
@@ -171,6 +175,7 @@ class AddItems extends Vue {
 
   // -- [ Functions ] ------------------------------------------------------------
   mounted() {
+    this.outGoingList = this.outGoingListStore.map((x: any) => ({ ..._.cloneDeep(x) }))
     this.getDataList()
   }
 
@@ -227,11 +232,12 @@ class AddItems extends Vue {
 
   handleDeliveryChange(data) {
     const item = _.find(this.outGoingList, { id: data.id })
-    if(!item)  {
+    if(!item && _.get(data, 'delivery', 0))  {
       this.outGoingList.push(data)
-    } else if(data.delivery < 1) {
+    } else if(!data.delivery) {
       _.remove(this.outGoingList, ({ id }) => id === data.id)
     }
+    this.isDisabled =  _.size(this.outGoingList) < 1 ? 'disabled' : null
   }
 }
 export default AddItems

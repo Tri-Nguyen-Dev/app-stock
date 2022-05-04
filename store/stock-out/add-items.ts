@@ -12,7 +12,7 @@ export default class StoreInventory extends VuexModule {
 
   public inventoryStore?: any = []
   public total?: number = 0
-  public outGoingList?: any = []
+  public outGoingListStore?: any = []
 
   @Mutation
   setInventoryList(response: any) {
@@ -22,7 +22,7 @@ export default class StoreInventory extends VuexModule {
 
   @Mutation
   setOutGoingList(outGoingList: any) {
-    this.outGoingList = outGoingList
+    this.outGoingListStore = outGoingList
   }
 
   @Action({ commit: 'setInventoryList', rawError: true })
