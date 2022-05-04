@@ -12,11 +12,18 @@ div
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop  } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component
 class ItemInput extends Vue {
   @Prop() listInfor: any | undefined
+
+  @nsStoreWarehouse.State
+  warehouseList!: any
+
+  @nsStoreWarehouse.Action
+  actWarehouseList!:() => Promise<void>
 
 }
 

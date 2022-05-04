@@ -4,7 +4,7 @@
       Breadcrumb(:home="homeItem" :model="breadcrumbItem")
       div.sub__tab--scroll
         StockOutLabelCreate
-    .ml-5.flex-1
+    .ml-5.flex-1.overflow-hidden
       .grid.grid-nogutter.h-full.flex.flex-column
         .col-12.justify-content-between.flex
           div
@@ -67,7 +67,7 @@
               template(#body='{ data }')
                 .grid-cell-center
                   Checkbox(v-model='data.tag', :binary='true', )
-            Column(
+            column(
               :exportable='false',
               header='ACTION',
               className='p-text-right',
@@ -92,8 +92,8 @@
                   )
                     .icon--small.pi.pi-times.text-primary
             template(#footer v-if="listItemsAdd.length > 0" )
-              Button( label='Cancel').btn.btn__default.flex-initial
-              Button( label='Submit').btn.btn__priamry.flex-initial
+              Button( label='Cancel' ).btn.btn__default.flex-initial
+              Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
 
 </template>
 
@@ -111,6 +111,7 @@ const nsStoreAddItems = namespace('stock-out/add-items')
 class createOrder extends Vue {
   listItemsAdd: any = []
   isActive: string = ''
+  tag: boolean
 
   @nsStoreCreateOrder.State
   listInfor1:any
@@ -170,7 +171,11 @@ class createOrder extends Vue {
   showModalDelete(data:any) {
     this.listItemsAdd.splice(this.listItemsAdd.indexOf(data),1)
   }
-  
+
+  handleSubmit(){
+    // console.log(this.listItemsAdd)
+    // console.log(this.tag)
+  }
 }
 
 export default createOrder
