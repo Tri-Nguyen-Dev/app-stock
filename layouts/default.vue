@@ -11,8 +11,7 @@ import MenuSidebar from '~/components/sidebar/Sidebar.vue'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component({
-  // TODO: Update authen logic when BE updated
-  // middleware: 'authenticate'
+  middleware: 'authenticate',
   components: { MenuSidebar }
 })
 class Dashboard extends Vue {
