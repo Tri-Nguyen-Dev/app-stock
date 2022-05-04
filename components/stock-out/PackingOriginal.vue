@@ -1,5 +1,6 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full
+  Button(v-if='!isOriginal' @click="handleAddTab" class="btn-add-tab") + Add
   TabView(:active-index="active = 1")
     TabPanel(:disabled="true")
       template(#header)
@@ -58,12 +59,22 @@ class PackingOriginal extends Vue {
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
+
+  handleAddTab = () => {
+    this.tabs.push({ index: 4, title: 'box 4', content: 'Content 3', checked: false, boxSizeSelect:'', estimateFee: 0 })
+  }
 }
 
 export default PackingOriginal
 </script>
 <style lang="sass" scoped>
 ::v-deep.packing__common--table
+  position: relative
+  .btn-add-tab
+    position: absolute
+    right: 4px
+    top: 4px
+    z-index: 1
   .p-tabview
     .icon
       background: $primary-dark
