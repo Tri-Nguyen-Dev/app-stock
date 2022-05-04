@@ -47,11 +47,11 @@ class MenuSidebar extends Vue {
   }
 
   get userImageUrl() {
-    return this.user?.userDetail.pictureUrl || null
+    return this.user?.userDetail?.pictureUrl || null
   }
 
   get userDisplayName() {
-    return this.user?.userDetail.displayName || 'Unknown'
+    return this.user?.userDetail?.displayName || 'Unknown'
   }
   // -- [ Methods ] ------------------------------------------------------------
 

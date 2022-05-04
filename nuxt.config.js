@@ -111,7 +111,7 @@ export default {
         },
         responseType: 'code',
         grantType: 'authorization_code',
-        clientId: 'airtag-service',
+        clientId: 'airtag-web',
         scope: ['openid', 'profile', 'email'],
         codeChallengeMethod: 'S256'
       }
