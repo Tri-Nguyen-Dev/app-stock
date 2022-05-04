@@ -7,7 +7,7 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;(2 boxes, 4 items)
-    TabPanel(v-for='tab in listBoxSelectedFilter' :key='tab.index')
+    TabPanel(v-for='tab in tabs' :key='tab.index')
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -41,12 +41,7 @@ import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class PackingOriginal extends Vue {
-  tabs: any = [
-    { index: 1, title: 'box 1', content: 'Content 1',checked: false, boxSizeSelect:'', estimateFee: 0 },
-    { index: 2, title: 'box 2', content: 'Content 2',checked: false, boxSizeSelect:'', estimateFee: 0 },
-    { index: 3, title: 'box 3', content: 'Content 3',checked: false, boxSizeSelect:'', estimateFee: 0 }
-  ]
-
+  tabs: any = []
   boxSize: any = [
     { name: 'Small size (20*20*20)', code: 'S' },
     { name: 'Medium size (20*20*20)', code: 'M' },
@@ -59,18 +54,18 @@ class PackingOriginal extends Vue {
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
-  @Prop() readonly listBoxSelected!: Array<any>
+  @Prop() listBoxSelected!: Array<any>
 
-  get listBoxSelectedFilter() {
+  mounted() { 
     if(this.listBoxSelected) {
-      return this.listBoxSelected.map((item: any, index: number) => {
+      this.tabs = this.listBoxSelected.map((item: any, index: number) => {
         return { index, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
       })
     }
   }
 
-  handleAddTab = () => {
-    this.tabs.push({ index: 4, title: 'box 4', content: 'Content 3', checked: false, boxSizeSelect:'', estimateFee: 0 })
+  handleAddTab() {
+    this.tabs.push({})
   }
 }
 
