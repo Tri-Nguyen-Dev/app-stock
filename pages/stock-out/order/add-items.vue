@@ -97,7 +97,9 @@
     )
       Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
         template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-      Column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_amount')
+      Column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' 
+        :sortable='true' :styles="{'width': '5%'}" sortField='_amount'
+      )
       Column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_')
         template(#body='{data}')
           InputNumber.w-7rem(v-model="data.delivery" mode="decimal" :min="0" 
@@ -112,7 +114,9 @@
         template(#body='{data}')
           span.text-primary {{data.stock.barCode}}
       Column(field='sku' header='SKU' :sortable='true' sortField='_sku')
-      Column(field='box.request.seller.email' header='SELLER EMAIL' :sortable='true' :styles="{'width': '15%'}" sortField='_box.request.seller.email')
+      Column(field='box.request.seller.email' header='SELLER EMAIL' :sortable='true' 
+        :styles="{'width': '15%'}" sortField='_box.request.seller.email'
+      )
       Column(field='box.id' header='BOX CODE' :sortable='true' className="text-right" bodyClass='font-semibold' sortField='_box.id')
       Column(field='requestId' header='RECEIPT NODE ID' :sortable='true' className="text-right" sortField='_box.request.id')
         template(#body='{data}')
