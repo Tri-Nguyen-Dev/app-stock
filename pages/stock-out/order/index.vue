@@ -102,7 +102,7 @@ import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { INFORMATION } from '~/utils'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreCreateOrder = namespace('stock-out/create-order')
-const nsStoreAddItems = namespace('stock-out/add-items')
+// const nsStoreCreateOrder = namespace('stock-out/add-items')
 
 @Component({
   components: { ConfirmDialogCustom }
@@ -114,10 +114,10 @@ class createOrder extends Vue {
   tag: boolean
 
   @nsStoreCreateOrder.State
-  listInfor1:any
+  listInfor:any
 
-  @nsStoreAddItems.State
-  outGoingList:any
+  @nsStoreCreateOrder.State
+  outGoingListStore:any
 
   @nsStoreCreateOrder.Action
   actGetCreateOrder!: (obj: any) => Promise<void>
@@ -139,7 +139,7 @@ class createOrder extends Vue {
   }
 
   mounted() {
-    this.listItemsAdd = _.cloneDeep(this.outGoingList)
+    this.listItemsAdd = _.cloneDeep(this.outGoingListStore)
   }
 
   async createStockIn() {
@@ -157,7 +157,7 @@ class createOrder extends Vue {
   }  
 
   get outGoingListId() {
-    return this.outGoingList.id
+    return this.outGoingListStore.id
   }
 
   editItem(id: any ) {

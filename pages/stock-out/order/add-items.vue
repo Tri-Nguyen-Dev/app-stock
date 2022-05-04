@@ -17,10 +17,10 @@
   .inventory__filter.grid(v-if='isShowFilter')
     .col-1
       FilterTable(
-        title="ID"
-        :value="filter.rnId"
+        title="RN ID"
+        :value="filter.receiptId"
         placeholder="Enter ID"
-        name="rnId"
+        name="receiptId"
         :searchText="true"
         @updateFilter="handleFilterBox"
       )
@@ -92,37 +92,47 @@
       :rows='10'
       responsiveLayout="scroll"
       :resizableColumns="true"
+      :class="{ 'table-wrapper-empty': !inventoryList || inventoryList.length <= 0 }"
+      @sort="sortData($event)"
     )
       Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
         template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-      Column(field='inventory' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_id')
-      Column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_id')
+      Column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_amount')
+      Column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_')
         template(#body='{data}')
           InputNumber.w-7rem(v-model="data.delivery" mode="decimal" :min="0" 
-            :max="data.inventory" inputClass="w-full" @input='handleDeliveryChange(data)'
+            :max="data.amount" inputClass="w-full" @input='handleDeliveryChange(data)'
           )
-      Column(field='image' header='IMAGE' :sortable='true' sortField='_id')
+      Column(field='image' header='IMAGE')
         template(#body='{data}')
           .stock__table__image.overflow-hidden
             img.h-2rem.w-2rem.border-round(
-              :src='data.image | getThumbnailUrl' alt='' width='100%' style='object-fit: cover;')
-      Column(field='barCode' header='BARCODE' :sortable='true' sortField='_id')
+              :src='data.stock.imagePath | getThumbnailUrl' alt='' width='100%' style='object-fit: cover;')
+      Column(field='barCode' header='BARCODE' :sortable='true' sortField='_stock.barCode')
         template(#body='{data}')
-          span.text-primary {{data.barCode}}
-      Column(field='sku' header='SKU' :sortable='true' sortField='_id')
-      Column(field='sellerEmail' header='SELLER EMAIL' :sortable='true' :styles="{'width': '15%'}" sortField='_id')
-      Column(field='boxCode' header='BOX CODE' :sortable='true' className="text-right" bodyClass='font-semibold' sortField='_id')
-      Column(field='receiptId' header='RECEIPT NODE ID' :sortable='true' className="text-right" sortField='_id')
+          span.text-primary {{data.stock.barCode}}
+      Column(field='sku' header='SKU' :sortable='true' sortField='_sku')
+      Column(field='box.request.seller.email' header='SELLER EMAIL' :sortable='true' :styles="{'width': '15%'}" sortField='_box.request.seller.email')
+      Column(field='box.id' header='BOX CODE' :sortable='true' className="text-right" bodyClass='font-semibold' sortField='_box.id')
+      Column(field='requestId' header='RECEIPT NODE ID' :sortable='true' className="text-right" sortField='_box.request.id')
         template(#body='{data}')
-          span.text-primary {{data.receiptId}}
-      Column(field='stockInTime' header='STOCK-IN-TIME' :sortable='true' className="text-right" sortField='_id')
-        template(#body='{ data }') {{ data.stockInTime | dateTimeHour12 }}
+          span.text-primary {{data.box.request.id}}
+      Column(field='createdAt' header='STOCK-IN-TIME' :sortable='true' className="text-right" sortField='_stock.createdAt')
+        template(#body='{ data }') {{ data.stock.createdAt | dateTimeHour12 }}
       template(#footer)
         Pagination(
           :paging="paging"
           :total="total"
           @onPage="onPage"
         )
+      template(#empty)
+        div.flex.align-items-center.justify-content-center.flex-column
+          img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
+          img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+          p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
+            span.text-primary.underline.cursor-pointer &nbsp;here
+            span &nbsp;to add item.
+          p.text-900.font-bold.mt-3(v-else) Item not found!
 </template>
 
 <script lang='ts'>
@@ -130,7 +140,7 @@ import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { Paging } from '~/models/common/Paging'
 import { PAGINATE_DEFAULT } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
-const nsStoreInventory = namespace('stock-out/add-items')
+const nsStoreOrder = namespace('stock-out/create-order')
 const dayjs = require('dayjs')
 
 @Component({
@@ -144,53 +154,72 @@ class AddItems extends Vue {
   outGoingList: any = []
   isShowFilter: boolean = false
   isDisabled: string | null = 'disabled'
+  sellerEmail: string = ''
+  warehouse: any = null
   filter: any = {
-    rnId: null,
+    receiptId: null,
     barCode: null,
     sku: null,
     stockName: null,
     boxCode: null,
     dateFrom: null,
     dateTo: null,
-    sortByColumn: '',
-    isDescending: null
+    sortBy: '',
+    desc: null
   }
 
   // -- [ State ] ------------------------------------------------------------
-  @nsStoreInventory.State
+  @nsStoreOrder.State
   inventoryStore!: any
 
-  @nsStoreInventory.State
+  @nsStoreOrder.State
   total!: any
 
-  @nsStoreInventory.State
+  @nsStoreOrder.State
   outGoingListStore!: any
 
+  @nsStoreOrder.State
+  listInfor!: any
+
   // -- [ Action ] ------------------------------------------------------------
-  @nsStoreInventory.Action
+  @nsStoreOrder.Action
   actGetInventoryList!: (params: any) => Promise<void>
 
-  @nsStoreInventory.Action
+  @nsStoreOrder.Action
   actOutGoingList: (params: any) => Promise<void>
 
   // -- [ Functions ] ------------------------------------------------------------
   mounted() {
+    this.sellerEmail = _.get(this.listInfor, 'seller[0].value')
+    this.warehouse = _.get(this.listInfor, 'warehouse[0].value')
+    // if(!this.sellerEmail || !this.warehouse) {
+    //   this.$router.push({ path: '/stock-out/order' })
+    //   return
+    // }
     this.outGoingList = this.outGoingListStore.map((x: any) => ({ ..._.cloneDeep(x) }))
+    this.isDisabled =  _.size(this.outGoingList) < 1 ? 'disabled' : null
     this.getDataList()
+  }
+
+  get checkIsFilter() {
+    const params = _.omit(this.getParamAPi(), ['email', 'warehouseId', 'pageNumber', 'pageSize'])
+    return Object.values(params).some((item) => item)
   }
 
   getParamAPi() {
     return {
       pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
-      'rnId': this.filter.rnId || null,
+      email: this.sellerEmail || null,
+      warehouseId: this.warehouse?.id || null,
+      'receiptId': this.filter.receiptId || null,
       'barCode': this.filter.barCode || null,
       'sku': this.filter.sku || null,
       'stockName': this.filter.stockName || null,
       'boxCode': this.filter.boxCode || null,
       'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
       'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
-      'sortBy': this.filter.sortByColumn || null,
-      'desc': this.filter.isDescending
+      'sortBy': this.filter.sortBy || null,
+      'desc': this.filter.desc
     }
   }
 
@@ -227,7 +256,14 @@ class AddItems extends Vue {
   }
 
   handleRefreshFilter() {
-
+    this.filter.receiptId = null
+    this.filter.barCode = null
+    this.filter.sku = null
+    this.filter.stockName = null
+    this.filter.boxCode = null
+    this.filter.dateFrom = null
+    this.filter.dateTo = null
+    this.getDataList()
   }
 
   handleDeliveryChange(data) {
@@ -238,6 +274,18 @@ class AddItems extends Vue {
       _.remove(this.outGoingList, ({ id }) => id === data.id)
     }
     this.isDisabled =  _.size(this.outGoingList) < 1 ? 'disabled' : null
+  }
+
+  sortData(e: any) {
+    const { sortField, sortOrder } = e
+    if (sortOrder) {
+      this.filter.desc = sortOrder !== 1
+      this.filter.sortBy = sortField.replace('_', '')
+    } else {
+      this.filter.desc = null
+      this.filter.sortBy = null
+    }
+    this.getDataList()
   }
 }
 export default AddItems
