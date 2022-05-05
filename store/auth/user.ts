@@ -1,5 +1,6 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
 import { $api, PathBind } from '~/utils'
+import { User } from '~/models/User'
 @Module({
   stateFactory: true,
   namespaced: true
@@ -11,34 +12,30 @@ export default class StoreUser extends VuexModule {
     USER_CREATE: '/user/create'
   }
 
-  public boxDetail?: {} = {}
-  public totalItems?: number = 0
-  public updateSuccess?: boolean = false
+  public user: User.Model | undefined
+  public token: string = ''
 
   @Mutation
-  setBoxDetail(data: any) {
-    this.boxDetail = data
-    this.totalItems = data.listStockWithAmount.length
+  setUser(user: User.Model) {
+    this.user = user
   }
 
   @Mutation
-  updateResponse(data: any) {
-    if (data) {
-      this.updateSuccess = !this.updateSuccess
-    }
+  setToken(token: string) {
+    this.token = token
   }
 
-  @Action({ commit: 'setBoxDetail', rawError: true })
-  async actGetBoxDetail(params?: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreUser.STATE_URL.GET_BOX_DETAIL, params)
+  @Action({ commit: 'setUser', rawError: true })
+  async actGetUserDetail(id: string): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreUser.STATE_URL.USER_GET, { id })
     const response: any = await $api.get(url)
     return response.data
   }
 
-  @Action({ commit: 'updateResponse', rawError: true })
-  async actUpdateBoxDetail(params?: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreUser.STATE_URL.UPDATE_BOX_DETAIL, { id: params.id })
-    const response: any = await $api.post(url, { shelfBinId: params.shelfBinId })
+  @Action({ commit: 'setUser', rawError: true })
+  async actRegisterUser(params?: any): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreUser.STATE_URL.USER_CREATE)
+    const response: any = await $api.post(url, params)
     return response.data
   }
 }
