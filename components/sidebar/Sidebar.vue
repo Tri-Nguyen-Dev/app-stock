@@ -18,6 +18,7 @@ import { Component, namespace, ProvideReactive, Vue, Watch } from 'nuxt-property
 import { User } from '~/models/User'
 import { PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
+const nsUser = namespace('user-auth/user')
 
 @Component
 class MenuSidebar extends Vue {
@@ -32,6 +33,9 @@ class MenuSidebar extends Vue {
   @nsSidebar.Mutation('toggleSidebar')
   toggleSidebar
 
+  @nsUser.Mutation('user')
+  user!: User.Model | undefined
+
   // -- [ Properties ] ----------------------------------------------------------
   @ProvideReactive()
   selectedItem: any = null
@@ -42,16 +46,13 @@ class MenuSidebar extends Vue {
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
   // -- [ Getters ] -------------------------------------------------------------
-  get user() {
-    return this.$auth.user as unknown as User.Model
-  }
 
   get userImageUrl() {
-    return this.user?.userDetail.pictureUrl || null
+    return this.user?.avatarUrl || null
   }
 
   get userDisplayName() {
-    return this.user?.userDetail.displayName || 'Unknown'
+    return this.user?.displayName || 'Unknown'
   }
   // -- [ Methods ] ------------------------------------------------------------
 
