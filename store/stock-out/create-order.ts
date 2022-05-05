@@ -8,17 +8,35 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreCreateReceipt extends VuexModule {
   private static readonly STATE_URL = {
-    GET_INVENTORY: '/seller/item-list'
+    GET_INVENTORY: '/seller/item-list',
+    POST_DO : 'delivery-order/create'
   }
 
   public listInfor: any = {};
   public inventoryStore?: any = []
   public total?: number = 0
   public outGoingListStore?: any = []
+  public createDOList?: any = []
   
   @Mutation
   setStockIn(data) {
     this.listInfor = data
+  }
+
+  @Mutation
+  setInventoryList(response: any) {
+    this.inventoryStore = response?.items
+    this.total = response?.total
+  }
+
+  @Mutation
+  setOutGoingList(outGoingList: any) {
+    this.outGoingListStore = outGoingList
+  }
+
+  @Mutation
+  setDeliveryOrder(createDOList: any) {
+    this.createDOList = createDOList
   }
 
   @Action({ commit: 'setStockIn', rawError: true })
@@ -36,6 +54,15 @@ export default class StoreCreateReceipt extends VuexModule {
   @Action({ commit: 'setOutGoingList', rawError: true })
   async actOutGoingList(params?: any): Promise<string | undefined> {
     return await params
+  }
+
+  @Action({ commit: 'setDeliveryOrder', rawError: true })
+  async actDeliveryOrder(params: any): Promise<string | undefined> {
+    try{
+      const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.POST_DO)
+      const response = await $api.post(url, params)
+      return response.data
+    } catch (error) {}
   }
 
 }

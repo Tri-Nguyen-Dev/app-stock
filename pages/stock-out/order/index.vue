@@ -35,24 +35,19 @@
                 .stock__table__image.overflow-hidden
                   img.h-2rem.w-2rem.border-round(
                     :src='data.image | getThumbnailUrl' alt='' width='100%' style='object-fit: cover;')
-            column.text-overflow-ellipsis(
-              field='barCode',
-              header='BARCODE',
-              :sortable='true',
-              :show-filter-match-modes='false'
-            )
-              template(#body='{ data }')
-                span.text-primary.font-bold {{ data.barCode }}
+            column(field='barCode' header='BARCODE' :sortable='true' sortField='_stock.barCode')
+              template(#body='{data}')
+                span.text-primary {{ data.stock.barCode }}
             column(field='sku', header='SKU', sortable='', data-type='numeric')
               template(#body='{ data }')
                 span.uppercase {{ data.sku }}
-            column(field='name', header='NAME', :sortable='true')
+            column(field='stock.name', header='STOCK NAME', :sortable='true')
               template(#body='{ data }')
-                span.font-bold.text-right {{ data.name }}
-            column(field='barCode', header='BOXCODE', :sortable='true')
+                span.font-bold.text-right {{ data.stock.name }}
+            column(field='box.id', header='BOXCODE', :sortable='true')
               template(#body='{ data }')
-                span.font-bold.text-right {{ data.barCode }}
-            column(field='inventory' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '3%'}" sortField='_id')
+                span.font-bold.text-right {{ data.stock.barCode }}
+            column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '3%'}" sortField='_id')
             column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '3%'}" sortField='_id')
               template(#body='{data}')
                 span(v-if='isActive !== data.id ') {{ data.delivery }}
@@ -84,7 +79,7 @@
                       .icon--small.icon-btn-delete
                 .table__action(v-else)
                   Button.btn-action(
-                    @click='saveEditItem(data)'
+                    @click='saveEditItem()'
                   )
                     .icon--small.pi.pi-check.text-primary
                   Button.btn-action(
@@ -104,7 +99,6 @@
                   InputText.pt-0.pl-0(
                     placeholder='Write something...',
                     style='border: none'
-                    v-model = 'note'
                   )
 </template>
 
@@ -113,7 +107,6 @@ import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { INFORMATION } from '~/utils'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreCreateOrder = namespace('stock-out/create-order')
-// const nsStoreCreateOrder = namespace('stock-out/add-items')
 
 @Component({
   components: { ConfirmDialogCustom }
@@ -136,6 +129,12 @@ class createOrder extends Vue {
   @nsStoreCreateOrder.Action
   actGetCreateOrder!: (obj: any) => Promise<void>
 
+  @nsStoreCreateOrder.Action
+  actOutGoingList!: (obj: any) => Promise<void>
+
+  @nsStoreCreateOrder.Action
+  actDeliveryOrder!: (params: any) => Promise<void>
+
   get homeItem() {
     return { to: '/stock-out', icon: 'pi pi-list' }
   }
@@ -152,6 +151,15 @@ class createOrder extends Vue {
 
   mounted() {
     this.listItemsAdd = _.cloneDeep(this.outGoingListStore)
+    if(this.listItemsAdd.length > 0 ){
+      _.forEach(this.infomation, function(obj){
+        _.forEach(obj, function(o){
+          if(_.has(o, 'disabled')) {
+            _.set(o, 'disabled' , !o.disabled)
+          }
+        })
+      })
+    }
   }
 
   async createStockIn() {
@@ -159,13 +167,7 @@ class createOrder extends Vue {
     await this.actGetCreateOrder(
       _.cloneDeep(this.infomation)
     )
-    _.forEach(this.infomation, function(obj){
-      _.forEach(obj, function(o){
-        if(_.has(o, 'disabled')) {
-          _.set(o, 'disabled' , !o.disabled)
-        }
-      })
-    })
+
   }  
 
   editItem(data: any ) {
@@ -173,17 +175,21 @@ class createOrder extends Vue {
     this.oldItem = _.cloneDeep(data)
   }
 
-  saveEditItem( ) {
+  async saveEditItem( ) {
+    await this.actGetCreateOrder(
+      _.cloneDeep(this.listItemsAdd))
     this.isActive = ''
-
   }
 
-  showModalDelete( data:any ) {
+  async showModalDelete( data:any ) {
     this.listItemsAdd.splice(this.listItemsAdd.indexOf(data),1)
+    await this.actGetCreateOrder(this.listItemsAdd)
   }
 
   handleSubmit(){
-
+    // this.actDeliveryOrder( 
+      
+    // )
   }
 
   handleCancelEdit(data : any ){
@@ -191,16 +197,9 @@ class createOrder extends Vue {
     this.isActive = ''
   }
 
-  handleCancel(){
-    // for (const items in this.outGoingList) {
-    //   delete this.outGoingList[items]
-    //   console.log(this.outGoingList)
-    // }
-    // this.outGoingList.splice(this.outGoingList)
-    // console.log(this.outGoingList)
-    // await this.actGetCreateOrder(
-    //   _.cloneDeep(this.listItemsAdd)
-    // )
+  async handleCancel(){
+    await this.actGetCreateOrder(null)
+    await  this.actOutGoingList(null)
   }
 
 }

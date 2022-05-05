@@ -3,7 +3,7 @@
     .col.p-4.border-tab
       .grid.grid-nogutter.align-items-center.mb-4
         .icon.bg-primary.surface-900.mr-3.icon-sender-info
-        span.uppercase.text-800.font-bold Seller Information
+        span.uppercase.text-800.font-bold seller information
       div
         StockOutItemInput(:listInfor='infomation.seller')
     .border-top-1.border-gray-300.grid-nogutter
@@ -16,26 +16,26 @@
     .border-top-1.border-gray-300.grid-nogutter
     .col.p-4
       .grid.grid-nogutter.align-items-center.mb-4
+        .icon.bg-primary.surface-900.mr-3.icon-buildings
+        span.uppercase.text-800.font-bold warehouse contact
+      div
+        StockOutItemInput(:listInfor='infomation.warehouse' @fieldWarehouse='handleWarehouse' )
+    .border-top-1.border-gray-300.grid-nogutter
+    .col.p-4
+      .grid.grid-nogutter.align-items-center.mb-4
         .icon.bg-primary.surface-900.mr-3.icon-calendar-infor
         span.uppercase.text-800.font-bold time information
       div
         StockUnit(
+          title="Estimated delivery Time"
+          icon="icon-clock"
+          :value="estimatedDate"
+        )
+        StockUnit.mt-2(
           title="Due delivery date"
           icon="icon-calendar"
           :value="deliveryDate"
         )
-        StockUnit.mt-2(
-          title="Estimated delivery date"
-          icon="icon-clock"
-          :value="estimatedDate"
-        )
-    .border-top-1.border-gray-300.grid-nogutter
-    .col.p-4
-      .grid.grid-nogutter.align-items-center.mb-4
-        .icon.bg-primary.surface-900.mr-3.icon-buildings
-        span.uppercase.text-800.font-bold warehouse contact
-      div
-        StockOutItemInput(:listInfor='infomation.warehouse')
     .border-top-1.border-gray-300.grid-nogutter
     .col.p-4
       .grid.grid-nogutter.align-items-center.mb-4
@@ -43,7 +43,7 @@
         span.uppercase.text-800.font-bold creator information
       div
         StockOutItemInput(:listInfor='infomation.creator')
-
+      //- button(@click='abc22')
 </template>
 
 <script lang="ts">
@@ -59,6 +59,11 @@ class LabelCreate extends Vue {
   estimatedDate: string | any  = 'Fill receiver information'
   infomation = INFORMATION
 
+  handleWarehouse( event : any ) {
+    this.infomation.warehouse[1].value = event.email
+    this.infomation.warehouse[2].value = event.phone
+
+  }
 }
 
 export default LabelCreate
