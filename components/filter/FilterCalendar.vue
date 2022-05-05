@@ -2,7 +2,14 @@
   .bg-white.wrapper-filter(:class="`border-round-${border}`")
     div.pt-2.pb-1.title
       span.text-600.font-sm {{title}}
-    Calendar.w-full.pl-2.mb-1(@date-select="handleFilter" :value="value" :showIcon="showIcon" :inputClass="inputClass" :placeholder="placeholder || 'Select'" :dateFormat="dateFormat || 'dd-mm-yy'")
+    Calendar.w-full.pl-2.mb-1(
+      @date-select="handleFilter"
+      :value="value"
+      :showIcon="showIcon"
+      :inputClass="inputClass"
+      :placeholder="placeholder || 'Select'"
+      :dateFormat="dateFormat || 'dd-mm-yy'"
+    )
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
@@ -18,27 +25,27 @@ class FilterTable extends Vue {
   @Prop() readonly name!: any | undefined
   @Prop() readonly dateFormat!: any | undefined
   @Prop() readonly inputClass!: any | undefined
-  @Prop() readonly showIcon!: Boolean | false  
-  @Prop() readonly border!: string | undefined  
+  @Prop() readonly showIcon!: Boolean | false
+  @Prop() readonly border!: string | undefined
 
   handleFilter(e :any){
     this.$emit('updateFilter', e, this.name)
   }
-  
+
 }
 
 export default FilterTable
 </script>
-<style scoped lang="sass"> 
-  ::placeholder 
+<style scoped lang="sass">
+  ::placeholder
     color: $text-color-700
   .wrapper-filter
     @include flex-column
     height: 82px
     justify-content: center
-    .title 
+    .title
         margin-left: 12px
-    ::v-deep.p-inputtext 
+    ::v-deep.p-inputtext
       color: $text-color-900
       border-radius: 4px !important
       font-weight: 500
