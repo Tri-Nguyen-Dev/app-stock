@@ -22,9 +22,23 @@
       .col
         FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
           template(v-slot:multi-select)
-            MultiSelect.filter__multiselect(v-model='filter.categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
+            MultiSelect.filter__multiselect(
+              v-model='filter.categories'
+              @change="handleChangeFilter"
+              :options='categoryList'
+              optionLabel="name"
+              placeholder='Select'
+              :filter='true'
+            )
       .col
-        FilterTable(title="Barcode" placeholder="Search barcode" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
+        FilterTable(
+          title="Barcode"
+          placeholder="Search barcode"
+          name="barCode"
+          :value="filter.barCode"
+          :searchText="true"
+          @updateFilter="handleFilter"
+        )
       .col
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .stock__table
@@ -102,7 +116,7 @@
       :loading="loadingSubmit"
     )
       template(v-slot:message)
-        p {{ deleteMessage }} 
+        p {{ deleteMessage }}
 
     Toast
 </template>
@@ -191,11 +205,11 @@ class Stock extends Vue {
     const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
-  
+
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'stock')
   }
-  
+
   // -- [ Functions ] ------------------------------------------------------------
   getParamApi() {
     const categoryIds = this.filter.categories
