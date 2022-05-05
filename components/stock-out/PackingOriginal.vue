@@ -33,7 +33,7 @@
           span.p-input-icon-right
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-            InputText
+            InputText(@input='addStockByBarcode')
       StockOutPackingTableList(:isOriginal='true' :value="tab.content" :type='type')
 </template>
 <script lang="ts">
@@ -70,6 +70,12 @@ class PackingOriginal extends Vue {
       this.tabs.push({
         index: this.tabs.length, title: 'EX01', content: '',checked: true
       })
+    }
+  }
+
+  addStockByBarcode(e) {
+    if(e.length === 13) {
+      this.$emit('addStockByBarcode',e)
     }
   }
 }

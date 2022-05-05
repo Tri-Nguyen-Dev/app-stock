@@ -19,6 +19,7 @@
             :isOutgoing='true'
             :listOutGoingBox="listOutGoingBox"
             type='outGoingBox'
+            @addStockByBarcode='addStockInOutGoing'
           )
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(
@@ -27,6 +28,7 @@
             :isTranffering='true'
             :listTranfferingBox="listTranfferingBox"
             type='tranferringBox'
+            @addStockByBarcode='addStockInTranferring'
           )
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
         .col-4.p-1
@@ -651,6 +653,14 @@ class DeliveryOrderPacking extends Vue {
 
   listOutGoingBox: [] = []
   listTranfferingBox: [] = []
+
+  addStockInOutGoing(e:any) {
+    return e
+  }
+
+  addStockInTranferring(e:any) {
+    return e
+  }
 }
 
 export default DeliveryOrderPacking
