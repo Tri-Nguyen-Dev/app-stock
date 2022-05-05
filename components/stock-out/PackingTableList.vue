@@ -24,17 +24,31 @@ DataTable.packing__detail--table(
   Column(header='STOCK NAME' field='name' :sortable="true" sortField="_name")
     template(#body='{ data }')
       .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-  Column(header='TAG' field='tag' :sortable="true" sortField="_tag")
+  Column(header='TAG' field='tag' :sortable="true" :styles="{'width': '1%'}" sortField="_tag" v-if='type === "originalBox"')
     template(#body='{ data }')
-      .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-if='data.tag') Yes
-      .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-else) No
-  Column(header='ORIGINAL BOX' field='originalBox' :sortable="true" sortField="_originalBox" :styles="{'width': '5%'}")
+      .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-if='data.tag') Yes
+      .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) No
+  Column(
+    header='ORIGINAL BOX CODE'
+    field='originalBox'
+    :sortable="true"
+    sortField="_originalBox"
+    :styles="{'width': '5%'}"
+    v-if='type !== "originalBox"'
+  )
   Column(header='QUANTITY' field='quantity' :sortable="true" sortField="_quantity" :styles="{'width': '1%'}")
     template(#body='{ data }')
-      .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.quantity }}
-  Column(header='OUTGOING QUANTITY' field='outGoingQuantity' :sortable="true" sortField="_outGoingQuantity" :styles="{'width': '1%'}")
+      .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right {{ data.quantity }}
+  Column(
+    header='OUTGOING QUANTITY'
+    field='outGoingQuantity'
+    :sortable="true"
+    sortField="_outGoingQuantity"
+    :styles="{'width': '1%'}"
+    v-if='type === "originalBox"'
+  )
     template(#body='{ data }')
-      .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.outGoing }}
+      .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right {{ data.outGoingQuantity }}
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
@@ -44,6 +58,7 @@ import { Paging } from '~/models/common/Paging'
 class PackingTableList extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   @Prop() value!: Array<any>
+  @Prop() readonly type!: string | undefined
   originalList: {} = {}
 
   getIndexPaginate(index: number) {

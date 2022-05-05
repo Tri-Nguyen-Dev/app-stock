@@ -6,13 +6,13 @@
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
-
+        .uppercase &nbsp;(2 boxes, 4 items)
     TabPanel(v-for='tab in tabs' :key='tab.index')
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.title}}
-        .text-white.bg-primary.border-round.ml-1.p-1(v-if='tab.checked') &nbsp;Tag
+        .text-white.bg-primary.border-round.ml-1.p-1(v-if='isOutgoing && tab.checked') &nbsp;Tag
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
@@ -34,10 +34,10 @@
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
             InputText
-      StockOutPackingTableList(:isOriginal='true' :value="tab.content")
+      StockOutPackingTableList(:isOriginal='true' :value="tab.content" :type='type')
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 
 @Component
 class PackingOriginal extends Vue {
@@ -55,8 +55,10 @@ class PackingOriginal extends Vue {
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
   @Prop() listOriginalBox!: Array<any>
+  @Prop() readonly type!: string | undefined
 
-  mounted() {
+  @Watch('listOriginalBox')
+  creadfdted () {
     if(this.listOriginalBox) {
       this.tabs = this.listOriginalBox.map((item: any, index: number) => {
         return { index, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
@@ -110,6 +112,7 @@ export default PackingOriginal
     .p-tabview-nav-content
       .p-tabview-nav
         .p-disabled
+          min-width: 265px !important
           opacity: 1
           font-size: 12px
           border-right: 1px solid $bg-body-base

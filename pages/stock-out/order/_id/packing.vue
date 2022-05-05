@@ -3,27 +3,28 @@
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
       StockOutPackingInformationDetail
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
-      div
+      div.flex.flex-column
         .grid.grid-nogutter.mb-3
           StockOutPackingOriginal(
             title='original box'
             icon='icon-info'
             :isOriginal='true'
             :listOriginalBox="originalList"
+            type='originalBox'
           )
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(
             title='outgoing box'
             icon='icon-arrow-circle-up-right'
             :isOutgoing='true'
-            :listOutGoingBox="listOutGoingBox"
+            type='outGoingBox'
           )
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(
             title='tranferring box'
             icon='icon-repeat'
             :isTranffering='true'
-            :listTranfferingBox="listTranfferingBox"
+            type='tranferringBox'
           )
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
         .col-4.p-1
@@ -32,7 +33,7 @@
               .icon--large.icon-note
             .col
               div Note:
-              Textarea.note-area.border-white(v-model="value" rows="1" cols="40" placeholder='Write something...')
+              Textarea.note-area.border-white(rows="1" cols="40" placeholder='Write something...')
         .col.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
@@ -65,17 +66,24 @@ const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
 class DeliveryOrderPacking extends Vue {
-  @nsStorePackingDetail.State
+  @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
 
-  @nsStorePackingDetail.State
+  @nsStorePackingDetail.State('originalList')
   originalList!: PackingDetail.OriginalBox
+
+  @nsStorePackingDetail.State('originalList')
+  deliveryOrderDetail!: any
 
   @nsStorePackingDetail.Action
   actGetListOriginal!: (id: any) => Promise<any>
 
-  async mounted() {
-    await this.actGetListOriginal(1)
+  @nsStorePackingDetail.Action
+  actGetDeliveryOrderDetail!: (id: any) => Promise<any>
+  
+  async created() {    
+    await this.actGetDeliveryOrderDetail('DO000000000007')
+    await this.actGetListOriginal('DO000000000007')
   }
 }
 

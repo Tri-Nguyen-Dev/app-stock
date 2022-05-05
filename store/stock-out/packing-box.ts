@@ -9,26 +9,41 @@ import { $api, PathBind } from '~/utils'
 
 export default class StorePackingBox extends VuexModule {
   private static readonly STATE_URL = {
-    GET_ORIGINAL_BOX: '/delivery-order/:id/list-original-box'
+    GET_ORIGINAL_BOX: '/delivery-order/:id/list-original-box',
+    GET_DELIVERY_ORDER: '/delivery-order/:id/detail'
   }
 
   public totalOriginalList?: number = 0
-  public originalList?: PackingDetail.OriginalBox
+  public originalList: PackingDetail.OriginalBox[] = []
+  public deliveryOrderDetail: any = {}
 
   @Mutation
-  setListOriginal(data) {
+  setListOriginal(data: any) {
     this.totalOriginalList = data?.total
     this.originalList = data?.items
   }
 
+  @Mutation
+  setDeliveryOrderDetail(data: any) {
+    this.deliveryOrderDetail = data
+  }
+
   @Action({ commit: 'setListOriginal', rawError: true })
-  async actGetListOriginal(id: any ): Promise<string | undefined> {
+  async actGetListOriginal(id: any ): Promise<any | undefined> {
     try {
       const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.GET_ORIGINAL_BOX, { id })
       const response = await $api.get(url)
-      if (!response.data) {
-        return
-      }
+      return response.data
+    } catch (error) {
+      
+    }
+  }
+
+  @Action({ commit: 'setDeliveryOrderDetail', rawError: true })
+  async actGetDeliveryOrderDetail(id: any ): Promise<any | undefined> {
+    try {
+      const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.GET_DELIVERY_ORDER, { id })
+      const response = await $api.get(url)
       return response.data
     } catch (error) {
       
