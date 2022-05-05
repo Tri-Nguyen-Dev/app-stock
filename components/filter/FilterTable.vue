@@ -5,8 +5,20 @@
     span.p-input-icon-right.w-full
       i(v-if="value" class="pi pi-times clear" @click.stop="clearValue")
       .icon--small.icon--right.icon-search.surface-900.icon--absolute
-      InputText.border-0.w-full.mb-1(v-if="searchText" type="text" :placeholder="placeholder || 'Select'" :value="value" @input="validateText" )
-      Dropdown.w-full.border-0(v-else-if="options" :options="options" optionLabel="name" :placeholder="placeholder || 'Select'" :value="value" @input="handleFilter")
+      InputText.border-0.w-full.mb-1(
+        v-if="searchText" type="text"
+        :placeholder="placeholder || 'Select'"
+        :value="value"
+        @input="validateText"
+      )
+      Dropdown.w-full.border-0(
+        v-else-if="options"
+        :options="options"
+        optionLabel="name"
+        :placeholder="placeholder || 'Select'"
+        :value="value"
+        @input="handleFilter"
+      )
       slot(name="multi-select")
 </template>
 <script lang='ts'>

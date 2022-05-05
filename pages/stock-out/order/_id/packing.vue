@@ -5,11 +5,26 @@
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div
         .grid.grid-nogutter.mb-3
-          StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true' :listOriginalBox="listOriginalBox")
+          StockOutPackingOriginal(
+            title='original box'
+            icon='icon-info'
+            :isOriginal='true'
+            :listOriginalBox="listOriginalBox"
+          )
         .grid.grid-nogutter.my-3
-          StockOutPackingOriginal(title='outgoing box' icon='icon-arrow-circle-up-right' :isOutgoing='true' :listOutGoingBox="listOutGoingBox")
+          StockOutPackingOriginal(
+            title='outgoing box'
+            icon='icon-arrow-circle-up-right'
+            :isOutgoing='true'
+            :listOutGoingBox="listOutGoingBox"
+          )
         .grid.grid-nogutter.my-3
-          StockOutPackingOriginal(title='tranferring box' icon='icon-repeat' :isTranffering='true' :listTranfferingBox="listTranfferingBox")
+          StockOutPackingOriginal(
+            title='tranferring box'
+            icon='icon-repeat'
+            :isTranffering='true'
+            :listTranfferingBox="listTranfferingBox"
+          )
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
         .col-4.p-1
           .grid.align-items-center

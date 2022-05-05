@@ -3,7 +3,7 @@
   .icon.icon-warehouse-info.mr-2.bg-blue-700.inline-block
   span.uppercase.font-bold.mb-4 warehouse information
   .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-    StockUnit.location-unit(title="Address" value="Shop 7-17, G/F, Landmark, Central, Hong Kong Island - Hong Kong SAR" icon="icon-location-r")
+    StockUnit.location-unit(title="Address" value="Shop 7-17, G/F, Landmark, Central" icon="icon-location-r")
   .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
     StockUnit(title="Email Address" value="linhndm@gmail.com" icon="icon-sender-email")
   .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
