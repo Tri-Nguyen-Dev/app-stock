@@ -140,7 +140,7 @@
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(field='id' header='ID' sortable headerClass="grid-header-center")
             template(#body='{ data }')
-             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.id }}
+             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.font-bold {{ data.id }}
           Column(header='Creator ID' field='creatorId' sortable sortField="_creatorId")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
@@ -149,10 +149,13 @@
               .stock__table-barcode.grid-cell-right {{ data.creatorName }}
           Column(header='Create time' field='createTime' sortable  sortField="_createTime" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.createTime }}
+                div.grid-cell-right {{ data.createTime | dateTimeHour12 }}
           Column(header='Seller email' sortable field='sellerEmail' sortField="_sellerEmail" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.sellerEmail }}
+          Column(v-if="activeTab == 2" header='Receipt Date' sortable field='receiptDate' headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.receiptDate }}
           Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.receiverAddress }}
@@ -162,42 +165,42 @@
                   div.text-end Due 
                   div Delivery Date
               template(#body='{ data }')
-                div.grid-cell-right {{ data.dueDeliveryDate }}
+                div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour12 }}
           Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
               template(#header)
                 div
                   div.text-end Estimated 
                   div Delivery Time 
               template(#body='{ data }')
-                div.grid-cell-right {{ data.estimatedDeliveryTime }}
+                div.grid-cell-right {{ data.estimatedDeliveryTime | dateTimeHour12 }}
           Column( sortable field='lastedUpdateTime' sortField="_lastedUpdateTime" headerClass="grid-header-right")
               template(#header)
                 div
                   div.text-end Latest 
                   div update time
               template(#body='{ data }')
-                div.grid-cell-right {{ data.lastedUpdateTime }}
+                div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour12 }}
           Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouseName" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.warehouseName }}
+               .flex.align-items-center.cursor-pointer.justify-content-end
+                  span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
+                  .icon.icon-arrow-up-right.bg-primary.bg-white-active
           Column(header='PIC' sortable field='warehouseId' sortField="_warehouseId" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.warehouseId }}
-          Column(header='Driver' sortable field='driverId' sortField="_driverId" headerClass="grid-header-right" :class="`${activeTab ===1 ? 'show' : 'hidden'}`")
+          Column(v-if="activeTab === 1" header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.driverId }}
+                div.grid-cell-right {{ data.driverName }}
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
-                span.table__status.table__status--available(v-if="data.stockStatus === 'STOCK_STATUS_AVAILABLE'") Available
-                span.table__status.table__status--disable(v-if="data.stockStatus === 'STOCK_STATUS_DISABLE' ") Disable
-          Column(field='action' header="action" :styles="{'width': '2%'}")
-            template(#body='{ data }')
-              .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
-                span(@click="handleEditStock(data.id)")
-                  .icon.icon-edit-btn
-                span(@click="showModalDelete([data])" :class="{'disable-button': selectedDeliveryFilter.length > 0}")
-                  .icon.icon-btn-delete
+                span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_NEW'") NEW
+                span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS'") In Progress
+                span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_CANCELLED'") Cancelled
+                span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_READY'") Ready
+                span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERING'") Delivering
+                span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERED' ") Delivered
+                span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
           template(#footer)
             Pagination(
               :paging="paging"
@@ -222,7 +225,7 @@ import {
   LIMIT_PAGE_OPTIONS,
   PAGINATE_DEFAULT,
   calculateIndex,
-  StockConstants,
+  DeliveryConstants,
   getDeleteMessage
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
@@ -247,7 +250,7 @@ class DeliveryOrder extends Vue {
   loadingSubmit: boolean = false
   isFilter: boolean = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
-  statusList = StockConstants.STOCK_STATUS_OPTIONS
+  statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS
   limitOptions = LIMIT_PAGE_OPTIONS
   filter: any = {
     id: null,
@@ -322,10 +325,9 @@ class DeliveryOrder extends Vue {
     return data.stockStatus === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
   }
 
-  mounted() {
+  async mounted() {
     this.getProductList()
-    // await this.actWarehouseList()
-    // this.actCategoryList()
+    await this.actWarehouseList()
   }
 
   handleFilter(e: any, name: string){
@@ -335,9 +337,10 @@ class DeliveryOrder extends Vue {
 
   async getProductList() {
     await this.getDeliveryList({
+      ...this.filter,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
-      ...this.filter
+      status: this.filter.status?.value
     })
   }
 
@@ -380,9 +383,9 @@ class DeliveryOrder extends Vue {
     this.isModalDelete = false
   }
 
-  handleEditStock(id: any) {
-    this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' } })
-  }
+  // handleEditStock(id: any) {
+  //   this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' } })
+  // }
 
   rowdbClick({ data }) {
     this.$router.push(`/stock/${data.id}`)
