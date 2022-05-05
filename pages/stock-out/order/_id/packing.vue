@@ -10,6 +10,7 @@
             icon='icon-info'
             :isOriginal='true'
             :listOriginalBox="listOriginalBox"
+            type='originalBox'
           )
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(
@@ -17,6 +18,7 @@
             icon='icon-arrow-circle-up-right'
             :isOutgoing='true'
             :listOutGoingBox="listOutGoingBox"
+            type='outGoingBox'
           )
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(
@@ -24,6 +26,7 @@
             icon='icon-repeat'
             :isTranffering='true'
             :listTranfferingBox="listTranfferingBox"
+            type='tranferringBox'
           )
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
         .col-4.p-1
@@ -65,7 +68,7 @@ import { Component, Vue } from 'nuxt-property-decorator'
 class DeliveryOrderPacking extends Vue {
   listOriginalBox: any = [
     {
-      boxCode: '1',
+      boxCode: '0001341',
       items: [
         {
           barCode: '0001168',
@@ -94,7 +97,7 @@ class DeliveryOrderPacking extends Vue {
       ]
     },
     {
-      boxCode: '2',
+      boxCode: '0001341',
       items: [
         {
           barCode: '0001168',
@@ -123,7 +126,7 @@ class DeliveryOrderPacking extends Vue {
       ]
     },
     {
-      boxCode: '3',
+      boxCode: '0001341',
       items: [
         {
           barCode: '0001168',
@@ -152,7 +155,7 @@ class DeliveryOrderPacking extends Vue {
       ]
     },
     {
-      boxCode: '4',
+      boxCode: '0001341',
       items: [
         {
           barCode: '0001168',
@@ -181,7 +184,7 @@ class DeliveryOrderPacking extends Vue {
       ]
     },
     {
-      boxCode: '5',
+      boxCode: '0001341',
       items: [
         {
           barCode: '0001168',
@@ -210,7 +213,7 @@ class DeliveryOrderPacking extends Vue {
       ]
     },
     {
-      boxCode: '6',
+      boxCode: '0001341',
       items: [
         {
           barCode: '0001168',
@@ -239,7 +242,7 @@ class DeliveryOrderPacking extends Vue {
       ]
     },
     {
-      boxCode: '7',
+      boxCode: '0001341',
       items: [
         {
           barCode: '0001168',
@@ -268,7 +271,7 @@ class DeliveryOrderPacking extends Vue {
       ]
     },
     {
-      boxCode: '1',
+      boxCode: '0001341',
       items: [
         {
           barCode: '0001168',
