@@ -18,7 +18,7 @@ import { Component, namespace, ProvideReactive, Vue, Watch } from 'nuxt-property
 import { User } from '~/models/User'
 import { PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
-const nsUser = namespace('auth/user')
+const nsUser = namespace('user-auth/user')
 
 @Component
 class MenuSidebar extends Vue {
