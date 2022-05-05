@@ -9,7 +9,7 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreDelivery extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK: '/delivery',
+    GET_DELIVERY: '/delivery-order/list',
     DELETE_STOCK: '/delete'
   }
 
@@ -23,12 +23,12 @@ export default class StoreDelivery extends VuexModule {
   }
 
   @Action({ commit: 'setDeliveryList', rawError: true })
-  async actGetDeliveryList(
+  async getDeliveryList(
     params?: any
   ): Promise<string | undefined> {
     const url = PathBind.transform(
       this.context,
-      StoreDelivery.STATE_URL.GET_STOCK,
+      StoreDelivery.STATE_URL.GET_DELIVERY,
       params
     )
     const response = await $api.get(url, { params })

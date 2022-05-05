@@ -10,11 +10,11 @@
               span New 
           TabPanel
             template(#header)
-              .icon.icon-truck.mr-2.surface-600
+              .icon.icon-horiz.mr-2.surface-600
               span Delivery setting
           TabPanel
             template(#header)
-              .icon.icon-truck.mr-2.surface-600
+              .icon.icon-check-circle.mr-2.surface-600
               span Delivered
       div.col-12(class="xl:col-6")
         .header__action
@@ -198,21 +198,20 @@
                   .icon.icon-edit-btn
                 span(@click="showModalDelete([data])" :class="{'disable-button': selectedDeliveryFilter.length > 0}")
                   .icon.icon-btn-delete
-        //-   template(#footer)
-            //- Pagination(
+          template(#footer)
+            Pagination(
               :paging="paging"
               :total="total"
-              :deleted-list="selectedDeliveryFilter"
               @onDelete="showModalDelete"
               @onPage="onPage")
-        //-   template(#empty)
+          template(#empty)
             div.table__empty
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-              p.empty__text(v-if="!checkIsFilter") List is empty!, Click
-                span &nbsp;here
-                span(@click="handleAddStock") &nbsp;to add item.
-              p.notfound__text(v-else) Item not found!
+              //- p.empty__text(v-if="!checkIsFilter") List is empty!, Click
+              //-   span &nbsp;here
+              //-   span(@click="handleAddStock") &nbsp;to add item.
+              //- p.notfound__text(v-else) Item not found!
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
@@ -251,13 +250,17 @@ class DeliveryOrder extends Vue {
   statusList = StockConstants.STOCK_STATUS_OPTIONS
   limitOptions = LIMIT_PAGE_OPTIONS
   filter: any = {
-    name: null,
-    barCode: null,
-    warehouse: null,
-    categories: null,
+    id: null,
+    assigneeId: null,
+    createTimeFrom: null,
+    createTimeTo: null,
+    dueDeliveryDateFrom: null,
+    dueDeliveryDateTo: null,
     status: null,
     sortBy: null,
-    desc: null
+    desc: null,
+    sellerEmail:null,
+    warehouseId: null
   }
 
   @nsStoreDelivery.State
@@ -266,6 +269,9 @@ class DeliveryOrder extends Vue {
   @nsStoreDelivery.State
   deliveryList!: DeliveryList.Model[]
   
+  @nsStoreDelivery.Action
+  getDeliveryList!: (params?: any) => Promise<void>
+
   @nsStoreWarehouse.State
   warehouseList!: any
 
@@ -294,7 +300,7 @@ class DeliveryOrder extends Vue {
   }
 
   get checkIsFilter() {
-    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
+    const params = _.omit(this.filter, ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
   
@@ -303,20 +309,6 @@ class DeliveryOrder extends Vue {
   }
   
   // -- [ Functions ] ------------------------------------------------------------
-  getParamApi() {
-    const categoryIds = this.filter.categories
-      ? this.filter.categories.map((item: any) => item?.id).toString()
-      : null
-    return {
-      name: this.filter.name || null,
-      barCode: this.filter.barCode || null,
-      warehouseId: this.filter.warehouse?.id,
-      categoryIds: categoryIds || null,
-      stockStatus: this.filter.status?.value,
-      sortBy: this.filter.sortBy || null,
-      desc: this.filter.desc
-    }
-  }
 
   getIndexPaginate(index: number) {
     return calculateIndex(
@@ -342,11 +334,11 @@ class DeliveryOrder extends Vue {
   }
 
   async getProductList() {
-    // await this.actGetdeliveryList({
-    //   pageSize: this.paging.pageSize,
-    //   pageNumber: this.paging.pageNumber,
-    //   ...this.getParamApi()
-    // })
+    await this.getDeliveryList({
+      pageSize: this.paging.pageSize,
+      pageNumber: this.paging.pageNumber,
+      ...this.filter
+    })
   }
 
   handleChangeFilter() {
