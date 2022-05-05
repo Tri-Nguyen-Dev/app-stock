@@ -1,12 +1,12 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full
-  Button(v-if='!isOriginal' @click="handleAddTab" class="btn-add-tab") + Add
-  TabView(:active-index="active = 1")
+  Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal' @click="handleAddTab") + Add
+  TabView(:active-index="active = 1" :scrollable="true")
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
-        .uppercase &nbsp;(2 boxes, 4 items)
+
     TabPanel(v-for='tab in tabs' :key='tab.index')
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
@@ -54,18 +54,22 @@ class PackingOriginal extends Vue {
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
-  @Prop() listBoxSelected!: Array<any>
+  @Prop() listOriginalBox!: Array<any>
 
-  mounted() { 
-    if(this.listBoxSelected) {
-      this.tabs = this.listBoxSelected.map((item: any, index: number) => {
+  mounted() {
+    if(this.listOriginalBox) {
+      this.tabs = this.listOriginalBox.map((item: any, index: number) => {
         return { index, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
       })
     }
   }
 
   handleAddTab() {
-    this.tabs.push({})
+    if(this.tabs.length <= 9) {
+      this.tabs.push({
+        index: this.tabs.length, title: 'EX01', content: '',checked: true
+      })
+    }
   }
 }
 
@@ -76,13 +80,22 @@ export default PackingOriginal
   position: relative
   .btn-add-tab
     position: absolute
-    right: 4px
+    right: 32px
     top: 4px
     z-index: 1
+    box-shadow: none
+    &::before
+      position: absolute
+      content: ''
+      height: 100%
+      width: 1px
+      background-color: #dee2e6
+      left: 0
   .p-tabview
     .icon
       background: $primary-dark
     .p-tabview-panels
+      min-height: 166px
       padding: 0
       .p-dropdown,
       .p-inputtext

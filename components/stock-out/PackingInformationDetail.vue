@@ -12,7 +12,8 @@
       TabView
         TabPanel(header='Delivery').p-3
           StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4
-          StockOutPackingReceiverInfo.mt-4
+          StockOutPackingReceiverInfo.border-bottom-1.border-gray-300.pb-4.mt-4
+          StockOutPackingTimeDelivery.mt-4
         TabPanel(header='Warehouse').p-3
           StockOutPackingWarehouseInfo
         TabPanel(header='Creator').p-3

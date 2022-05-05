@@ -1,14 +1,11 @@
 <template lang="pug">
-  h1.text-center WELCOME!
+  h1.text-center AIRTAG MANAGEMENT SYSTEM
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 
-@Component({
-  // middleware: ['authenticate'],
-  // layout: 'dashboard'
-})
+@Component
 class Pages extends Vue {}
 
 export default Pages
