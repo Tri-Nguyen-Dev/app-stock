@@ -5,7 +5,7 @@
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div
         .grid.grid-nogutter.mb-3
-          StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true' :listBoxSelected="listBoxSelected")
+          StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true' :listBoxSelected="originalList")
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(title='outgoing box' icon='icon-arrow-circle-up-right' :isOutgoing='true')
         .grid.grid-nogutter.my-3
@@ -44,70 +44,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { PackingDetail } from '~/models/PackingDetail'
+const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
 class DeliveryOrderPacking extends Vue {
-  listBoxSelected:any = [
-    {
-      boxCode: '1',
-      items: [
-        {
-          barCode: '0001168',
-          sku: 'NVN030133',
-          name: 'Dell Retro 1658',
-          tag: 'No',
-          quantity: 12,
-          outgoingQuantity: 12
-        },
-        {
-          barCode: '0001168',
-          sku: 'NVN030133',
-          name: 'Dell Retro 1658',
-          tag: 'No',
-          quantity: 12,
-          outgoingQuantity: 12
-        },
-        {
-          barCode: '0001168',
-          sku: 'NVN030133',
-          name: 'Dell Retro 1658',
-          tag: 'No',
-          quantity: 12,
-          outgoingQuantity: 12
-        }
-      ]
-    },
-    {
-      boxCode: '2',
-      items: [
-        {
-          barCode: '0001168',
-          sku: 'NVN030133',
-          name: 'Dell Retro 1658',
-          tag: 'No',
-          quantity: 12,
-          outgoingQuantity: 12
-        },
-        {
-          barCode: '0001168',
-          sku: 'NVN030133',
-          name: 'Dell Retro 1658',
-          tag: 'No',
-          quantity: 12,
-          outgoingQuantity: 12
-        },
-        {
-          barCode: '0001168',
-          sku: 'NVN030133',
-          name: 'Dell Retro 1658',
-          tag: 'No',
-          quantity: 12,
-          outgoingQuantity: 12
-        }
-      ]
-    }
-  ]
+  @nsStorePackingDetail.State
+  totalOriginalList!: number
+
+  @nsStorePackingDetail.State
+  originalList!: PackingDetail.OriginalBox
+
+  @nsStorePackingDetail.Action
+  actGetListOriginal!: (id: any) => Promise<any>
+
+  async mounted() {
+    await this.actGetListOriginal(1)
+  }
 }
 
 export default DeliveryOrderPacking
