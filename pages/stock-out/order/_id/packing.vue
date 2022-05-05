@@ -5,11 +5,11 @@
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div
         .grid.grid-nogutter.mb-3
-          StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true' :listBoxSelected="listBoxSelected")
+          StockOutPackingOriginal(title='original box' icon='icon-info' :isOriginal='true' :listOriginalBox="listOriginalBox")
         .grid.grid-nogutter.my-3
-          StockOutPackingOriginal(title='outgoing box' icon='icon-arrow-circle-up-right' :isOutgoing='true' :rows='outgoingList')
+          StockOutPackingOriginal(title='outgoing box' icon='icon-arrow-circle-up-right' :isOutgoing='true' :listOutGoingBox="listOutGoingBox")
         .grid.grid-nogutter.my-3
-          StockOutPackingOriginal(title='tranferring box' icon='icon-repeat' :isTranffering='true' :rows='tranfferingList')
+          StockOutPackingOriginal(title='tranferring box' icon='icon-repeat' :isTranffering='true' :listTranfferingBox="listTranfferingBox")
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
         .col-4.p-1
           .grid.align-items-center
@@ -48,7 +48,7 @@ import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
 class DeliveryOrderPacking extends Vue {
-  listBoxSelected:any = [
+  listOriginalBox: any = [
     {
       boxCode: '1',
       items: [
@@ -106,8 +106,533 @@ class DeliveryOrderPacking extends Vue {
           outgoingQuantity: 12
         }
       ]
+    },
+    {
+      boxCode: '3',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '4',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '5',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '6',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '7',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
+    },
+    {
+      boxCode: '1',
+      items: [
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        },
+        {
+          barCode: '0001168',
+          sku: 'NVN030133',
+          name: 'Dell Retro 1658',
+          tag: 'No',
+          quantity: 12,
+          outgoingQuantity: 12
+        }
+      ]
     }
   ]
+
+  listOutGoingBox: [] = []
+  listTranfferingBox: [] = []
 }
 
 export default DeliveryOrderPacking

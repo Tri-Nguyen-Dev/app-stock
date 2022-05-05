@@ -1,7 +1,7 @@
 <template lang="pug">
-DataTable(
+DataTable.packing__detail--table(
   @sort="sortData($event)"
-  :class="{ 'table-wrapper-empty': !originalList || originalList.length <= 0 }"
+  :class="{ 'table-wrapper-empty': !value || value.length <= 0 }"
   responsiveLayout="scroll"
   dataKey='id'
   :rowHover='true'
@@ -58,5 +58,6 @@ class PackingTableList extends Vue {
 export default PackingTableList
 </script>
 <style lang="sass">
-
+.packing__detail--table
+  height: 166px !important
 </style>
