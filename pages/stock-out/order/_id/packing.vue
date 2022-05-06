@@ -9,15 +9,19 @@
             title='original box'
             icon='icon-info'
             :isOriginal='true'
-            :listOriginalBox="originalList"
+            :listBox="originalList"
             type='originalBox'
+            @selectedTab='selectedOriginalBox'
           )
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(
             title='outgoing box'
             icon='icon-arrow-circle-up-right'
             :isOutgoing='true'
+            :listBox="listOutGoingBox"
             type='outGoingBox'
+            @selectedTab='selectedOutGoingBox'
+            @addBoxNew="addNewBoxOutGoing"
             @addStockByBarcode='addStockInOutGoing'
           )
         .grid.grid-nogutter.my-3
@@ -25,7 +29,10 @@
             title='tranferring box'
             icon='icon-repeat'
             :isTranffering='true'
+            :listBox="listTranfferingBox"
             type='tranferringBox'
+            @selectedTab='selectedTranfferingBox'
+            @addBoxNew="addNewBoxTranferring"
             @addStockByBarcode='addStockInTranferring'
           )
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
@@ -68,11 +75,14 @@ const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
 class DeliveryOrderPacking extends Vue {
+  originalBoxActive: any = {}
+  outGoingBoxActive: any = {}
+  tranfferingBoxActive: any = {}
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
 
   @nsStorePackingDetail.State('originalList')
-  originalList!: PackingDetail.OriginalBox
+  originalList!: PackingDetail.OriginalBox[]
 
   @nsStorePackingDetail.State('originalList')
   deliveryOrderDetail!: any
@@ -88,15 +98,40 @@ class DeliveryOrderPacking extends Vue {
     await this.actGetListOriginal('DO000000000007')
   }
   
-  listOutGoingBox: [] = []
+  listOriginalBox: any = []
+  listOutGoingBox: any = []
   listTranfferingBox: [] = []
 
-  addStockInOutGoing(e:any) {
+  selectedOriginalBox(index: number) {
+    this.originalBoxActive = this.originalList[index]
+  }
+
+  addNewBoxOutGoing() {
+    this.listOutGoingBox.push({
+      boxCode: `EX0${_.size(this.listOutGoingBox) + 1}`, items: []
+    })
+  }
+
+  addStockInOutGoing(barCode: string) {
+    const result = _.find(this.originalBoxActive.items, { barCode })
+    // console.log(result)
+    this.outGoingBoxActive.items.push(result)
+  }
+
+  selectedOutGoingBox(index: number) {
+    this.outGoingBoxActive = this.listOutGoingBox[index - 1]
+  }
+
+  addNewBoxTranferring(e) {
     return e
   }
 
   addStockInTranferring(e:any) {
     return e
+  }
+
+  selectedTranfferingBox(index: number) {
+    this.tranfferingBoxActive = this.listTranfferingBox[index - 1]
   }
 }
 
