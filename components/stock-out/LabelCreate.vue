@@ -5,7 +5,7 @@
         .icon.bg-primary.surface-900.mr-3.icon-sender-info
         span.uppercase.text-800.font-bold seller information
       div
-        StockOutItemInput(:listInfor='infomation.seller')
+        StockOutItemInput(:listInfor='infomation.seller' @sellerInfro='handleSeller' )
     .border-top-1.border-gray-300.grid-nogutter
     .col.p-4
       .grid.grid-nogutter.align-items-center.mb-4
@@ -19,7 +19,7 @@
         .icon.bg-primary.surface-900.mr-3.icon-buildings
         span.uppercase.text-800.font-bold warehouse contact
       div
-        StockOutItemInput(:listInfor='infomation.warehouse' @fieldWarehouse='handleWarehouse' )
+        StockOutItemInput(:listInfor='infomation.warehouse' @fieldWarehouse='handleWarehouse'  )
     .border-top-1.border-gray-300.grid-nogutter
     .col.p-4
       .grid.grid-nogutter.align-items-center.mb-4
@@ -43,12 +43,13 @@
         span.uppercase.text-800.font-bold creator information
       div
         StockOutItemInput(:listInfor='infomation.creator')
-      //- button(@click='abc22')
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
 import { INFORMATION } from '~/utils'
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreSeller = namespace('seller/seller-list')
 
 @Component
 class LabelCreate extends Vue {
@@ -59,11 +60,31 @@ class LabelCreate extends Vue {
   estimatedDate: string | any  = 'Fill receiver information'
   infomation = INFORMATION
 
+  @nsStoreWarehouse.Action
+  actWarehouseList!:() => Promise<void>
+
+  @nsStoreSeller.Action
+  actSellerList!:(params: any) => Promise<void>
+
   handleWarehouse( event : any ) {
+    this.infomation.warehouse[0].value = event.name
+    this.infomation.warehouse[0].warehouseId = event.id
     this.infomation.warehouse[1].value = event.email
     this.infomation.warehouse[2].value = event.phone
-
   }
+
+  handleSeller( event : any ){
+    this.infomation.seller[0].value = event.email
+    this.infomation.seller[1].value = event.id
+    this.infomation.seller[2].value = event.name
+    this.infomation.seller[3].value = event.phone
+  }
+
+  mounted() {
+    this.actWarehouseList()
+    this.actSellerList(null)
+  }
+
 }
 
 export default LabelCreate

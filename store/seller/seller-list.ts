@@ -9,15 +9,15 @@ import { $api } from '~/utils'
 
 export default class Seller extends VuexModule {
   private static readonly STATE_URL = {
-    GET_SELLER: '/seller/list'
+    GET_SELLER: '/admin/user/list'
   }
 
   public sellerList: [] = []
 
   @Mutation
   setSellerList(data: any) {
-    if(data.items) {
-      this.sellerList = data?.items
+    if(data) {
+      this.sellerList = data
     }
   }
 

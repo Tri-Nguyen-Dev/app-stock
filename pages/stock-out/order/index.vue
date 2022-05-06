@@ -99,6 +99,7 @@
                   InputText.pt-0.pl-0(
                     placeholder='Write something...',
                     style='border: none'
+                    v-model='noteBox'
                   )
 </template>
 
@@ -117,6 +118,7 @@ class createOrder extends Vue {
   isActive: string = ''
   tag: boolean
   delivery: string = ''
+  noteBox: any = null 
   infomation = INFORMATION
   oldItem: any = null
 
@@ -163,11 +165,12 @@ class createOrder extends Vue {
   }
 
   async createStockIn() {
+    const note = this.noteBox
+    const listInfoAdd = { ...this.infomation , note }
     this.$router.push('/stock-out/order/add-items')
     await this.actGetCreateOrder(
-      _.cloneDeep(this.infomation)
+      _.cloneDeep(listInfoAdd)
     )
-
   }  
 
   editItem(data: any ) {
@@ -188,7 +191,6 @@ class createOrder extends Vue {
 
   handleSubmit(){
     // this.actDeliveryOrder( 
-      
     // )
   }
 

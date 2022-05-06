@@ -1,7 +1,7 @@
 
 export const INFORMATION = {
   seller: [
-    { id: 1, label: 'Email' , value: '', disabled: false },
+    { id: 1, label: 'Email' , value: '', disabled: false , autoComplete:'autoComplete' },
     { id: 2, label: 'ID' ,value: '' , disabled: false },
     { id: 3, label: 'Name', value:'', disabled: false },
     { id: 4, label: 'Phone', value:'', disabled: false  }
@@ -13,7 +13,7 @@ export const INFORMATION = {
     { id: 8, label: 'Phone' , value:'' }
   ],
   warehouse: [
-    { id: 1, label: 'Name', options:'options', disabled: false },
+    { id: 1, label: 'Name', options:'options', disabled: false,  value:'', warehouseId: '' },
     { id: 2, label: 'Email', value:'', disabled: false },
     { id: 3, label: 'Phone', value:'', disabled: false }
   ],

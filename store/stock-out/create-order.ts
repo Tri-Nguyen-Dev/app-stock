@@ -12,7 +12,7 @@ export default class StoreCreateReceipt extends VuexModule {
     POST_DO : 'delivery-order/create'
   }
 
-  public listInfor: any = {};
+  public listInfor: any = null;
   public inventoryStore?: any = []
   public total?: number = 0
   public outGoingListStore?: any = []
