@@ -6,7 +6,7 @@
       .my-3.font-bold
         .icon.icon-info.inline-block
         span.uppercase order detail
-      h3.uppercase.m-1 id: dO11338838
+      h3.uppercase.m-1 id: {{ deliveryOrderDetail.id }}
       h5.uppercase.inline-block.text-400 Create time:&nbsp;
       span.uppercase.font-bold 13rd April 2022  12:22AM
       TabView
@@ -20,10 +20,12 @@
            StockOutPackingCreatorInfo
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class PackingInformationDetail extends Vue {
+  @Prop() deliveryOrderDetail!: any
+
   get homeItem() {
     return { label: '', to: '/stock-out', icon: 'pi pi-list' }
   }

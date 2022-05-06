@@ -1,7 +1,7 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
-      StockOutPackingInformationDetail
+      StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div.flex.flex-column
         .grid.grid-nogutter.mb-3
@@ -72,7 +72,7 @@ class DeliveryOrderPacking extends Vue {
   @nsStorePackingDetail.State('originalList')
   originalList!: PackingDetail.OriginalBox
 
-  @nsStorePackingDetail.State('originalList')
+  @nsStorePackingDetail.State('deliveryOrderDetail')
   deliveryOrderDetail!: any
 
   @nsStorePackingDetail.Action

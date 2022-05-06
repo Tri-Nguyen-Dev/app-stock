@@ -1,7 +1,7 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full
   Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal' @click="handleAddTab") + Add
-  TabView(:active-index="active = 1" :scrollable="true")
+  TabView(:scrollable="true" @tab-change="tabChange" :activeIndex="active")
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
@@ -41,6 +41,7 @@ import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 
 @Component
 class PackingOriginal extends Vue {
+  active: number = 1
   tabs: any = []
   boxSize: any = [
     { name: 'Small size (20*20*20)', code: 'S' },
@@ -58,10 +59,10 @@ class PackingOriginal extends Vue {
   @Prop() readonly type!: string | undefined
 
   @Watch('listOriginalBox')
-  creadfdted () {
+  filterListOriginalBox () {
     if(this.listOriginalBox) {
       this.tabs = this.listOriginalBox.map((item: any, index: number) => {
-        return { index, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
+        return { index: index + 1, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
       })
     }
   }

@@ -6,6 +6,7 @@ DataTable.packing__detail--table(
   dataKey='id'
   :rowHover='true'
   :value='value'
+  :rowClass="rowClass"
 )
   Column(field='no' header='NO' :styles="{'width': '1%'}" )
     template(#body='{ index }')
@@ -68,6 +69,10 @@ class PackingTableList extends Vue {
       this.paging.pageSize
     )
   }
+
+  rowClass(data: any) {
+    return data.outGoingQuantity <= 0 ? 'row-outgoing' : ''
+  }
 }
 
 export default PackingTableList
@@ -75,4 +80,6 @@ export default PackingTableList
 <style lang="sass">
 .packing__detail--table
   height: 166px !important
+  .row-outgoing
+    background-color: $text-color-100 !important
 </style>
