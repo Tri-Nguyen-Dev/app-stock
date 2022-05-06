@@ -1,13 +1,19 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full
   Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal' @click="handleAddTab") + Add
-  TabView(:active-index="active = 1" :scrollable="true")
+  span.p-input-icon-right(v-if='isOriginal')
+    .icon--small.icon--right.icon-search.surface-300.icon--absolute
+    .icon--small.icon--right.icon-scan.surface-900.icon--absolute
+    InputText.border-0.w-full.mb-1.surface-300(
+      type="text" @change='changeBoxCode($event)'
+    )
+  TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange")
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;(2 boxes, 4 items)
-    TabPanel(v-for='tab in tabs' :key='tab.index')
+    TabPanel(v-for='tab in tabs' :key='tab.index' :disabled="tab.key !== activeIndex && type === 'originalBox'")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -33,7 +39,7 @@
           span.p-input-icon-right
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-            InputText
+            InputText(@input='addStockByBarcode')
       StockOutPackingTableList(:isOriginal='true' :value="tab.content" :type='type')
 </template>
 <script lang="ts">
@@ -48,6 +54,8 @@ class PackingOriginal extends Vue {
     { name: 'Large size (20*20*20)', code: 'L' },
     { name: 'Extra size (20*20*20)', code: 'XL' }
   ]
+
+  activeIndex: number = 0
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -69,8 +77,29 @@ class PackingOriginal extends Vue {
   handleAddTab() {
     if(this.tabs.length <= 9) {
       this.tabs.push({
-        index: this.tabs.length, title: 'EX01', content: '',checked: true
+        index: this.tabs.length, title: 'EX01', content: [], checked: true
       })
+    }
+  }
+
+  addStockByBarcode(e) {
+    if(e.length === 13) {
+      this.$emit('addStockByBarcode',e)
+    }
+  }
+
+  tabChange({ index }) {
+    if(this.type !== 'originalBox') return
+    this.activeIndex = index
+  }
+
+  changeBoxCode(e) {
+    const boxCode = e.target.value
+    if(boxCode.length === 13) {
+      const index = _.findIndex(this.listOriginalBox, { boxCode })
+      if(index >= 0){
+        this.activeIndex = index + 1
+      }
     }
   }
 }
@@ -111,8 +140,9 @@ export default PackingOriginal
         border: none
     .p-tabview-nav-content
       .p-tabview-nav
-        .p-disabled
+        .p-disabled:first-child
           min-width: 265px !important
+        .p-disabled
           opacity: 1
           font-size: 12px
           border-right: 1px solid $bg-body-base
