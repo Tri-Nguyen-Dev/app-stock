@@ -9,7 +9,7 @@
             title='original box'
             icon='icon-info'
             :isOriginal='true'
-            :listBox="originalList"
+            :listBox="listOriginalBox"
             type='originalBox'
             @selectedTab='selectedOriginalBox'
           )
@@ -76,8 +76,8 @@ const nsStorePackingDetail = namespace('stock-out/packing-box')
 @Component
 class DeliveryOrderPacking extends Vue {
   originalBoxActive: any = {}
-  outGoingBoxActive: any = {}
-  tranfferingBoxActive: any = {}
+  outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
+  tranfferingBoxActive: any = { boxCode: 'EX1', items: [] }
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
 
@@ -94,40 +94,82 @@ class DeliveryOrderPacking extends Vue {
   actGetDeliveryOrderDetail!: (id: any) => Promise<any>
   
   async created() {    
-    await this.actGetDeliveryOrderDetail('DO000000000007')
-    await this.actGetListOriginal('DO000000000007')
+    // await this.actGetDeliveryOrderDetail('DO000000000007')
+    const result = await this.actGetListOriginal('DO000000000007')
+    if(result) {
+      this.listOriginalBox = this.originalList.map((x: any) => {
+        const object = _.cloneDeep(x)
+        return { ...object, items: object.items.map(item => ({ ...item, initialQuantity: item.quantity })) }
+      })
+    }
   }
   
   listOriginalBox: any = []
   listOutGoingBox: any = []
-  listTranfferingBox: [] = []
+  listTranfferingBox: any = []
 
   selectedOriginalBox(index: number) {
-    this.originalBoxActive = this.originalList[index]
+    this.originalBoxActive = this.listOriginalBox[index]
   }
 
   addNewBoxOutGoing() {
     this.listOutGoingBox.push({
       boxCode: `EX0${_.size(this.listOutGoingBox) + 1}`, items: []
     })
+    if(_.size(this.listOutGoingBox) === 1) 
+      this.outGoingBoxActive = this.listOutGoingBox[0]
   }
 
   addStockInOutGoing(barCode: string) {
-    const result = _.find(this.originalBoxActive.items, { barCode })
-    // console.log(result)
-    this.outGoingBoxActive.items.push(result)
+    const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
+    const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode })
+    const isFullQuantityStock = stockOriginal.outGoingQuantity > _.get(stockOriginal, 'actualOutGoing', 0)
+    this.addStock(this.outGoingBoxActive, stockOriginal, stockOutGoing, isFullQuantityStock, true)
+  }
+
+  addStock(boxActive, stockOriginal, stockPacking, isFullQuantityStock, isOutGoing = false) {
+    if(stockOriginal) {
+      if(isFullQuantityStock) {
+        stockOriginal.quantity--
+        if(stockPacking) {
+          stockPacking.quantity++
+        } else {
+          boxActive.items.push({ 
+            ...stockOriginal,
+            quantity: 1,
+            originalBox:  this.originalBoxActive.boxCode
+          })
+        }
+        if(isOutGoing) {
+          if(stockOriginal.actualOutGoing) {
+            stockOriginal.actualOutGoing = stockOriginal.actualOutGoing + 1
+          } else {
+            stockOriginal.actualOutGoing = 1
+          }
+        }
+      } else {
+        // console.log('vuot qua so luong chuyen di')
+      }
+    }
   }
 
   selectedOutGoingBox(index: number) {
     this.outGoingBoxActive = this.listOutGoingBox[index - 1]
   }
 
-  addNewBoxTranferring(e) {
-    return e
+  addNewBoxTranferring() {
+    this.listTranfferingBox.push({
+      boxCode: `IN0${_.size(this.listTranfferingBox) + 1}`, items: []
+    })
+    if(_.size(this.listTranfferingBox) === 1) 
+      this.tranfferingBoxActive = this.listTranfferingBox[0]
   }
 
-  addStockInTranferring(e:any) {
-    return e
+  addStockInTranferring(barCode: string) {
+    const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
+    const tranfferingStock = _.find(this.tranfferingBoxActive.items, { barCode })
+    const isFullQuantityStock = stockOriginal.quantity - (stockOriginal.outGoingQuantity - _.get(stockOriginal, 'actualOutGoing', 0)) > 0
+    this.addStock(this.tranfferingBoxActive, stockOriginal, tranfferingStock, isFullQuantityStock)
   }
 
   selectedTranfferingBox(index: number) {

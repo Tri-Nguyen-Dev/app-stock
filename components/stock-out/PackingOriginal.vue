@@ -22,7 +22,7 @@
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
-          Dropdown(v-model='tab.boxSizeSelect' :options="boxSize" optionLabel="name" placeholder="Select a box size").w-9
+          Dropdown(v-model='tab.boxSizeSelect' :options="boxSize" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
@@ -39,7 +39,7 @@
           span.p-input-icon-right
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-            InputText(@input='addStockByBarcode')
+            InputText(@input='addStockByBarcode' v-model="barCodeText" :placeholder="barCodeText")
       StockOutPackingTableList(:isOriginal='true' :value="tab.content" :type='type')
 </template>
 <script lang="ts">
@@ -56,6 +56,7 @@ class PackingOriginal extends Vue {
   ]
 
   originalIndex: number = 0
+  barCodeText: string = ''
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -66,7 +67,7 @@ class PackingOriginal extends Vue {
   @Prop() listBox!: Array<any>
   @Prop() readonly type!: string | undefined
 
-  @Watch('listBox')
+  @Watch('listBox', { immediate: true, deep: true })
   creadfdted () {
     if(this.listBox) {
       this.tabs = this.listBox.map((item: any, index: number) => {
@@ -89,6 +90,7 @@ class PackingOriginal extends Vue {
     if(e.length === 13) {
       this.$emit('addStockByBarcode',e)
     }
+    this.barCodeText = ''
   }
 
   tabChange({ index }) {
