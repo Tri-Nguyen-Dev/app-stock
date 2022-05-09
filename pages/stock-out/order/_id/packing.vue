@@ -9,15 +9,19 @@
             title='original box'
             icon='icon-info'
             :isOriginal='true'
-            :listOriginalBox="originalList"
+            :listBox="listOriginalBox"
             type='originalBox'
+            @selectedTab='selectedOriginalBox'
           )
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(
             title='outgoing box'
             icon='icon-arrow-circle-up-right'
             :isOutgoing='true'
+            :listBox="listOutGoingBox"
             type='outGoingBox'
+            @selectedTab='selectedOutGoingBox'
+            @addBoxNew="addNewBoxOutGoing"
             @addStockByBarcode='addStockInOutGoing'
           )
         .grid.grid-nogutter.my-3
@@ -25,7 +29,10 @@
             title='tranferring box'
             icon='icon-repeat'
             :isTranffering='true'
+            :listBox="listTranfferingBox"
             type='tranferringBox'
+            @selectedTab='selectedTranfferingBox'
+            @addBoxNew="addNewBoxTranferring"
             @addStockByBarcode='addStockInTranferring'
           )
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
@@ -61,11 +68,14 @@ const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
 class DeliveryOrderPacking extends Vue {
+  originalBoxActive: any = {}
+  outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
+  tranfferingBoxActive: any = { boxCode: 'EX1', items: [] }
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
 
   @nsStorePackingDetail.State('originalList')
-  originalList!: PackingDetail.OriginalBox
+  originalList!: PackingDetail.OriginalBox[]
 
   @nsStorePackingDetail.State('deliveryOrderDetail')
   deliveryOrderDetail!: any
@@ -75,21 +85,95 @@ class DeliveryOrderPacking extends Vue {
 
   @nsStorePackingDetail.Action
   actGetDeliveryOrderDetail!: (id: any) => Promise<any>
-
-  async mounted() {
+  
+  async mounted() {    
     await this.actGetDeliveryOrderDetail('DO000000000007')
-    await this.actGetListOriginal('DO000000000007')
+    const result = await this.actGetListOriginal('DO000000000007')
+    if(result) {
+      this.listOriginalBox = this.originalList.map((x: any) => {
+        const obj = _.cloneDeep(x)
+        return { ...obj, items: obj.items.map(item => ({ 
+          ...item,
+          initialQuantity: item.quantity,
+          actualOutGoing: 0,
+          actualTranffering: 0
+        })) }
+      })
+    }
+  }
+  
+  listOriginalBox: any = []
+  listOutGoingBox: any = []
+  listTranfferingBox: any = []
+
+  selectedOriginalBox(index: number) {
+    this.originalBoxActive = this.listOriginalBox[index]
   }
 
-  listOutGoingBox: [] = []
-  listTranfferingBox: [] = []
-
-  addStockInOutGoing(e:any) {
-    return e
+  addNewBoxOutGoing() {
+    this.listOutGoingBox.push({
+      boxCode: `EX0${_.size(this.listOutGoingBox) + 1}`, items: []
+    })
+    if(_.size(this.listOutGoingBox) === 1) 
+      this.outGoingBoxActive = this.listOutGoingBox[0]
   }
 
-  addStockInTranferring(e:any) {
-    return e
+  addStockInOutGoing(barCode: string) {
+    const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
+    if(stockOriginal) {
+      const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode })
+      const { outGoingQuantity, actualOutGoing } = stockOriginal
+      const isFullQuantityStock = outGoingQuantity > actualOutGoing
+      this.addStock(this.outGoingBoxActive, stockOriginal, stockOutGoing, isFullQuantityStock, true)
+    }
+  }
+
+  addStock(boxActive, stockOriginal, stockPacking, isFullQuantityStock, isOutGoing = false) {
+    if(isFullQuantityStock) {
+      stockOriginal.quantity--
+      if(stockPacking) {
+        stockPacking.quantity++
+      } else {
+        boxActive.items.unshift({ 
+          ...stockOriginal,
+          quantity: 1,
+          originalBox:  this.originalBoxActive.boxCode
+        })
+      }
+      if(isOutGoing) {
+        stockOriginal.actualOutGoing++
+      } else {
+        stockOriginal.actualTranffering++
+      }
+    } else {
+      // console.log('vuot qua so luong chuyen di')
+    }
+  }
+
+  selectedOutGoingBox(index: number) {
+    this.outGoingBoxActive = this.listOutGoingBox[index - 1]
+  }
+
+  addNewBoxTranferring() {
+    this.listTranfferingBox.push({
+      boxCode: `IN0${_.size(this.listTranfferingBox) + 1}`, items: []
+    })
+    if(_.size(this.listTranfferingBox) === 1) 
+      this.tranfferingBoxActive = this.listTranfferingBox[0]
+  }
+
+  addStockInTranferring(barCode: string) {
+    const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
+    if(stockOriginal) {
+      const tranfferingStock = _.find(this.tranfferingBoxActive.items, { barCode })
+      const { initialQuantity, outGoingQuantity, actualTranffering } = stockOriginal
+      const isFullQuantityStock = initialQuantity - outGoingQuantity > actualTranffering
+      this.addStock(this.tranfferingBoxActive, stockOriginal, tranfferingStock, isFullQuantityStock)
+    }
+  }
+
+  selectedTranfferingBox(index: number) {
+    this.tranfferingBoxActive = this.listTranfferingBox[index - 1]
   }
 }
 

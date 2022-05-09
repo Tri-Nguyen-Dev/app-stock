@@ -6,6 +6,7 @@
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.border-0.w-full.mb-1.surface-300(
       type="text" @change='changeBoxCode($event)'
+      v-model="boxCodeText"
     )
   TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange")
     TabPanel(:disabled="true")
@@ -13,7 +14,7 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;(2 boxes, 4 items)
-    TabPanel(v-for='tab in tabs' :key='tab.index' :disabled="tab.key !== activeIndex && type === 'originalBox'")
+    TabPanel(v-for='tab in tabs' :key='tab.index' :disabled="tab.key !== originalIndex && type === 'originalBox'")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -22,7 +23,7 @@
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
-          Dropdown(v-model='tab.boxSizeSelect' :options="boxSize" optionLabel="name" placeholder="Select a box size").w-9
+          Dropdown(v-model='tab.boxSizeSelect' :options="boxSize" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
@@ -39,7 +40,7 @@
           span.p-input-icon-right
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-            InputText(@input='addStockByBarcode')
+            InputText(@change='addStockByBarcode($event)' v-model="barCodeText")
       StockOutPackingTableList(:isOriginal='true' :value="tab.content" :type='type')
 </template>
 <script lang="ts">
@@ -56,52 +57,63 @@ class PackingOriginal extends Vue {
     { name: 'Extra size (20*20*20)', code: 'XL' }
   ]
 
-  activeIndex: number = 0
+  originalIndex: number = 0
+  barCodeText: string = ''
+  boxCodeText: string = ''
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
-  @Prop() listOriginalBox!: Array<any>
+  @Prop() listBox!: Array<any>
   @Prop() readonly type!: string | undefined
 
-  @Watch('listOriginalBox')
+  @Watch('listBox', { immediate: true, deep: true })
   filterListOriginalBox () {
-    if(this.listOriginalBox) {
-      this.tabs = this.listOriginalBox.map((item: any, index: number) => {
-        return { index: index + 1, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
+    if(this.listBox) {
+      this.tabs = this.listBox.map((item: any, index: number) => {
+        return { index, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
       })
     }
+  }
+
+  get activeIndex() {
+    return this.type === 'originalBox' ? this.originalIndex : 1
   }
 
   handleAddTab() {
     if(this.tabs.length <= 9) {
-      this.tabs.push({
-        index: this.tabs.length, title: 'EX01', content: [], checked: true
-      })
+      this.$emit('addBoxNew')
     }
   }
 
   addStockByBarcode(e) {
-    if(e.length === 13) {
-      this.$emit('addStockByBarcode',e)
+    const barCode = e.target.value
+    if(barCode.length === 13) {
+      this.$emit('addStockByBarcode', barCode)
     }
+    this.barCodeText = ''
   }
 
   tabChange({ index }) {
-    if(this.type !== 'originalBox') return
-    this.activeIndex = index
+    if(this.type !== 'originalBox') {
+      this.$emit('selectedTab', index)
+    } else {
+      this.originalIndex = index
+    }
   }
 
   changeBoxCode(e) {
     const boxCode = e.target.value
     if(boxCode.length === 13) {
-      const index = _.findIndex(this.listOriginalBox, { boxCode })
+      const index = _.findIndex(this.listBox, { boxCode })
       if(index >= 0){
-        this.activeIndex = index + 1
+        this.originalIndex = index + 1
+        this.$emit('selectedTab', index)
       }
     }
+    this.boxCodeText = ''
   }
 }
 
