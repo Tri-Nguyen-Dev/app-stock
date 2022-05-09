@@ -91,9 +91,8 @@ class LabelCreate extends Vue {
   handleSeller( event : any ){
     const InforSeller = this.infomation.seller
     InforSeller[0].value = event.email
-    InforSeller[1].value = event.id
-    InforSeller[2].value = event.name
-    InforSeller[3].value = event.phone
+    InforSeller[1].value = event.name
+    InforSeller[2].value = event.phone
     this.actWarehouseList()
   }
 
