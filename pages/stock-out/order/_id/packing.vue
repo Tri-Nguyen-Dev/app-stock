@@ -23,6 +23,7 @@
             @selectedTab='selectedOutGoingBox'
             @addBoxNew="addNewBoxOutGoing"
             @addStockByBarcode='addStockInOutGoing'
+            :boxSizeList='boxSizeList'
           )
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(
@@ -34,6 +35,7 @@
             @selectedTab='selectedTranfferingBox'
             @addBoxNew="addNewBoxTranferring"
             @addStockByBarcode='addStockInTranferring'
+            :boxSizeList='boxSizeList'
           )
       .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
         .col.p-1
@@ -65,12 +67,16 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { PackingDetail } from '~/models/PackingDetail'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
-
+const nsStoreBox = namespace('box/box-size-list')
 @Component
 class DeliveryOrderPacking extends Vue {
   originalBoxActive: any = {}
   outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
   tranfferingBoxActive: any = { boxCode: 'EX1', items: [] }
+  listOriginalBox: any = []
+  listOutGoingBox: any = []
+  listTranfferingBox: any = []
+
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
 
@@ -80,19 +86,28 @@ class DeliveryOrderPacking extends Vue {
   @nsStorePackingDetail.State('deliveryOrderDetail')
   deliveryOrderDetail!: any
 
+  @nsStoreBox.State
+  boxSizeList!: any
+
   @nsStorePackingDetail.Action
   actGetListOriginal!: (id: any) => Promise<any>
 
   @nsStorePackingDetail.Action
   actGetDeliveryOrderDetail!: (id: any) => Promise<any>
-  
-  async mounted() {    
-    await this.actGetDeliveryOrderDetail('DO000000000007')
+
+  @nsStoreBox.Action
+  actGetBoxSizeList!:() => Promise<any>
+
+  async mounted() {
+    await Promise.all ([
+      this.actGetDeliveryOrderDetail('DO000000000007'),
+      this.actGetBoxSizeList()
+    ])
     const result = await this.actGetListOriginal('DO000000000007')
     if(result) {
       this.listOriginalBox = this.originalList.map((x: any) => {
         const obj = _.cloneDeep(x)
-        return { ...obj, items: obj.items.map(item => ({ 
+        return { ...obj, items: obj.items.map(item => ({
           ...item,
           initialQuantity: item.quantity,
           actualOutGoing: 0,
@@ -101,10 +116,6 @@ class DeliveryOrderPacking extends Vue {
       })
     }
   }
-  
-  listOriginalBox: any = []
-  listOutGoingBox: any = []
-  listTranfferingBox: any = []
 
   selectedOriginalBox(index: number) {
     this.originalBoxActive = this.listOriginalBox[index]
@@ -114,7 +125,7 @@ class DeliveryOrderPacking extends Vue {
     this.listOutGoingBox.push({
       boxCode: `EX0${_.size(this.listOutGoingBox) + 1}`, items: []
     })
-    if(_.size(this.listOutGoingBox) === 1) 
+    if(_.size(this.listOutGoingBox) === 1)
       this.outGoingBoxActive = this.listOutGoingBox[0]
   }
 
@@ -134,7 +145,7 @@ class DeliveryOrderPacking extends Vue {
       if(stockPacking) {
         stockPacking.quantity++
       } else {
-        boxActive.items.unshift({ 
+        boxActive.items.unshift({
           ...stockOriginal,
           quantity: 1,
           originalBox:  this.originalBoxActive.boxCode
@@ -158,7 +169,7 @@ class DeliveryOrderPacking extends Vue {
     this.listTranfferingBox.push({
       boxCode: `IN0${_.size(this.listTranfferingBox) + 1}`, items: []
     })
-    if(_.size(this.listTranfferingBox) === 1) 
+    if(_.size(this.listTranfferingBox) === 1)
       this.tranfferingBoxActive = this.listTranfferingBox[0]
   }
 

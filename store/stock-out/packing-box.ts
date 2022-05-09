@@ -35,7 +35,7 @@ export default class StorePackingBox extends VuexModule {
       const response = await $api.get(url)
       return response.data
     } catch (error) {
-      
+
     }
   }
 
@@ -46,7 +46,7 @@ export default class StorePackingBox extends VuexModule {
       const response = await $api.get(url)
       return response.data
     } catch (error) {
-      
+
     }
   }
 }

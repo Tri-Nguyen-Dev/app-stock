@@ -14,7 +14,7 @@
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
-        .uppercase &nbsp;(2 boxes, 4 items)
+        .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
     TabPanel(v-for='tab in tabs' :key='tab.index' :disabled="tab.key !== activeIndex && type === 'originalBox'")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
@@ -24,7 +24,7 @@
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
-          Dropdown(v-model='tab.boxSizeSelect' :options="boxSize" optionLabel="name").w-9
+          Dropdown(v-model='tab.boxSizeSelect' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
@@ -54,12 +54,6 @@ import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 class PackingOriginal extends Vue {
   activeIndex: number = 0
   tabs: any = []
-  boxSize: any = [
-    { name: 'Small size (20*20*20)', code: 'S' },
-    { name: 'Medium size (20*20*20)', code: 'M' },
-    { name: 'Large size (20*20*20)', code: 'L' },
-    { name: 'Extra size (20*20*20)', code: 'XL' }
-  ]
 
   // originalIndex: number = 0
   barCodeText: string = ''
@@ -73,6 +67,7 @@ class PackingOriginal extends Vue {
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
   @Prop() listBox!: Array<any>
+  @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
 
   @Watch('listBox', { immediate: true, deep: true })
@@ -125,6 +120,18 @@ class PackingOriginal extends Vue {
     const tagCode = e.target.value
     this.$emit(tagCode)
     this.tagCodeText = ''
+  }
+
+  get getTotalBox() {
+    return _.size(this.listBox)
+  }
+
+  get getTotalItem() {
+    const sum = this.listBox.reduce((accumulator, object) => {
+      const length = this.type === 'originalBox' ? _.size(_.partition(object.items, ['outGoingQuantity', 0])[1]) : _.size(object.items)
+      return accumulator +  length
+    }, 0)
+    return sum
   }
 }
 
