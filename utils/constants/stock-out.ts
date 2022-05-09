@@ -20,7 +20,7 @@ export const INFORMATION = {
   creator: [
     { id: 1, label: 'ID', value:'', disabled: false },
     { id: 3, label: 'Email', value:'', disabled: false },
-    { id: 2, label: 'Address', value:'', disabled: false },
+    { id: 2, label: 'Name', value:'', disabled: false },
     { id: 4, label: 'Phone', value:'', disabled: false }
   ]
 }

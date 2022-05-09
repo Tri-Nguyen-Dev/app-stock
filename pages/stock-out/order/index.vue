@@ -1,106 +1,106 @@
 <template lang="pug">
-  .h-full.flex
-    .bg-white.sub__tab
-      Breadcrumb(:home="homeItem" :model="breadcrumbItem")
-      div.sub__tab--scroll
-        StockOutLabelCreate
-    .ml-5.flex-1.overflow-hidden
-      .grid.grid-nogutter.h-full.flex.flex-column
-        .col-12.justify-content-between.flex
-          div
-            h1.text-heading Item list
-            span.text-subheading {{ listItemsAdd.length }} product found
-          div
-            .btn.btn-primary(@click='createStockIn')
-              .icon.icon-add-items.surface-900.bg-white
-              span.text-900.text-white.mr-3 Add Items For Delivery
-        .col-12.flex-1
-          DataTable.w-full.flex.flex-column.table__sort-icon.bg-white(
-            :resizableColumns='true',
-            :value='listItemsAdd',
-            dataKey='id',
-            :row-hover='true',
-            responsiveLayout='scroll',
-            :scrollable="false"
+.h-full.flex
+  .bg-white.sub__tab
+    Breadcrumb(:home="homeItem" :model="breadcrumbItem")
+    div.sub__tab--scroll
+      StockOutLabelCreate
+  .ml-5.flex-1.overflow-hidden
+    .grid.grid-nogutter.h-full.flex.flex-column
+      .col-12.justify-content-between.flex
+        div
+          h1.text-heading Item list
+          span.text-subheading {{ listItemsAdd.length }} product found
+        div
+          .btn.btn-primary(@click='handleSubmit')
+            .icon.icon-add-items.surface-900.bg-white
+            span.text-900.text-white.mr-3 Add Items For Delivery
+      .col-12.flex-1
+        DataTable.w-full.flex.flex-column.table__sort-icon.bg-white(
+          :resizableColumns='true',
+          :value='listItemsAdd',
+          dataKey='id',
+          :row-hover='true',
+          responsiveLayout='scroll',
+          :scrollable="false"
+        )
+          template(#empty)
+            .flex.align-items-center.justify-content-center.flex-column
+              img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
+              p.text-900.font-bold.mt-3 List is empty!
+          column(field='no', header='NO')
+            template(#body='slotProps')
+              span.font-bold {{ slotProps.index + 1 }}
+          column(field='image' header='IMAGE' :sortable='true' sortField='_id')
+            template(#body='{data}')
+              .stock__table__image.overflow-hidden
+                img.h-2rem.w-2rem.border-round(
+                  :src='data.image | getThumbnailUrl' alt='' width='100%' style='object-fit: cover;')
+          column(field='barCode' header='BARCODE' :sortable='true' sortField='_stock.barCode')
+            template(#body='{data}')
+              span.text-primary {{ data.stock.barCode }}
+          column(field='sku', header='SKU', sortable='', data-type='numeric')
+            template(#body='{ data }')
+              span.uppercase {{ data.sku }}
+          column(field='stock.name', header='STOCK NAME', :sortable='true')
+            template(#body='{ data }')
+              span.font-bold.text-right {{ data.stock.name }}
+          column(field='box.id', header='BOXCODE', :sortable='true')
+            template(#body='{ data }')
+              span.font-bold.text-right {{ data.stock.barCode }}
+          column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '3%'}" sortField='_id')
+          column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '3%'}" sortField='_id')
+            template(#body='{data}')
+              span(v-if='isActive !== data.id ') {{ data.delivery }}
+              InputNumber(
+              v-model="data.delivery" 
+              mode="decimal" 
+              :min="0" 
+              :max="data.inventory" 
+              inputClass="w-full" 
+              v-else ).w-7rem
+          column(field='tag', header='TAG', headerClass='grid-header-center')
+            template(#body='{ data }')
+              .grid-cell-center
+                Checkbox(v-model='data.tag', :binary='true', )
+          column(
+            :exportable='false',
+            header='ACTION',
+            className='p-text-right',
           )
-            template(#empty)
-              .flex.align-items-center.justify-content-center.flex-column
-                img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
-                p.text-900.font-bold.mt-3 List is empty!
-            column(field='no', header='NO')
-              template(#body='slotProps')
-                span.font-bold {{ slotProps.index + 1 }}
-            column(field='image' header='IMAGE' :sortable='true' sortField='_id')
-              template(#body='{data}')
-                .stock__table__image.overflow-hidden
-                  img.h-2rem.w-2rem.border-round(
-                    :src='data.image | getThumbnailUrl' alt='' width='100%' style='object-fit: cover;')
-            column(field='barCode' header='BARCODE' :sortable='true' sortField='_stock.barCode')
-              template(#body='{data}')
-                span.text-primary {{ data.stock.barCode }}
-            column(field='sku', header='SKU', sortable='', data-type='numeric')
-              template(#body='{ data }')
-                span.uppercase {{ data.sku }}
-            column(field='stock.name', header='STOCK NAME', :sortable='true')
-              template(#body='{ data }')
-                span.font-bold.text-right {{ data.stock.name }}
-            column(field='box.id', header='BOXCODE', :sortable='true')
-              template(#body='{ data }')
-                span.font-bold.text-right {{ data.stock.barCode }}
-            column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '3%'}" sortField='_id')
-            column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '3%'}" sortField='_id')
-              template(#body='{data}')
-                span(v-if='isActive !== data.id ') {{ data.delivery }}
-                InputNumber(
-                v-model="data.delivery" 
-                mode="decimal" 
-                :min="0" 
-                :max="data.inventory" 
-                inputClass="w-full" 
-                v-else ).w-7rem
-            column(field='tag', header='TAG', headerClass='grid-header-center')
-              template(#body='{ data }')
-                .grid-cell-center
-                  Checkbox(v-model='data.tag', :binary='true', )
-            column(
-              :exportable='false',
-              header='ACTION',
-              className='p-text-right',
-            )
-              template(#body='{ data }')
-                .table__action(v-if='isActive !== data.id')
-                    Button.btn-action(
-                      @click='editItem(data)'
-                    )
-                      .icon--small.icon-btn-edit
-                    Button.btn-action(
-                      @click='showModalDelete(data.id)',
-                    )
-                      .icon--small.icon-btn-delete
-                .table__action(v-else)
+            template(#body='{ data }')
+              .table__action(v-if='isActive !== data.id')
                   Button.btn-action(
-                    @click='saveEditItem()'
+                    @click='editItem(data)'
                   )
-                    .icon--small.pi.pi-check.text-primary
+                    .icon--small.icon-btn-edit
                   Button.btn-action(
-                    @click='handleCancelEdit( data )'
+                    @click='showModalDelete(data.id)',
                   )
-                    .icon--small.pi.pi-times.text-primary
-            template( #footer  )
-              .mr-4.flex.justify-content-end( v-if="listItemsAdd.length > 0" )
-                Button( label='Cancel' @click='handleCancel' ).btn.btn__default.flex-initial
-                Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
-              .grid.grid-nogutter.ml-3( v-else )
-                .flex.align-items-center.justify-content-center.pl-3
-                  img(src='~/assets/icons/note.svg')
-                div.ml-4
-                  span.font-semibold.text-base.mr-1 Note:
-                  br
-                  InputText.pt-0.pl-0(
-                    placeholder='Write something...',
-                    style='border: none'
-                    v-model='noteBox'
-                  )
+                    .icon--small.icon-btn-delete
+              .table__action(v-else)
+                Button.btn-action(
+                  @click='saveEditItem()'
+                )
+                  .icon--small.pi.pi-check.text-primary
+                Button.btn-action(
+                  @click='handleCancelEdit( data )'
+                )
+                  .icon--small.pi.pi-times.text-primary
+          template( #footer  )
+            .mr-4.flex.justify-content-end( v-if="listItemsAdd.length > 0" )
+              Button( label='Cancel' @click='handleCancel' ).btn.btn__default.flex-initial
+              Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
+            .grid.grid-nogutter.ml-3( v-else )
+              .flex.align-items-center.justify-content-center.pl-3
+                img(src='~/assets/icons/note.svg')
+              div.ml-4
+                span.font-semibold.text-base.mr-1 Note:
+                br
+                InputText.pt-0.pl-0(
+                  placeholder='Write something...',
+                  style='border: none'
+                  v-model='noteBox'
+                )
 </template>
 
 <script lang="ts">
@@ -189,9 +189,27 @@ class createOrder extends Vue {
     await this.actGetCreateOrder(this.listItemsAdd)
   }
 
-  handleSubmit(){
-    // this.actDeliveryOrder( 
-    // )
+  async handleSubmit(){
+    await this.createStockIn()
+    const listReceiver = this.listInfor.receiver
+    await this.actDeliveryOrder({
+      seller: {
+        id: this.listInfor.seller[1].value
+      },
+      receiverAddress: listReceiver[0].value,
+      receiverEmail: listReceiver[1].value,
+      receiverName: listReceiver[2].value,
+      receiverPhone: listReceiver[3].value,
+      dueDeliveryDate: null,
+      estimatedDeliveryTime: null,
+      warehouse: {
+        id: this.listInfor.warehouse[0].warehouseId
+      },
+      driver: {
+        id: null
+      },
+      deliveryItemList: []
+    })
   }
 
   handleCancelEdit(data : any ){
