@@ -20,7 +20,7 @@
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.title}}
-        .text-white.bg-primary.border-round.ml-1.p-1(v-if='isOutgoing && tab.checked') &nbsp;Tag
+        .ml-1.px-1(v-if='isOutgoing && tab.checked') {{tagCodeOnTab}}
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
@@ -29,14 +29,17 @@
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
           span.ml-2 Attach Tag
-        .col-3.ml-2.py-3.border-right-1.border-gray-300(v-if='isTranffering')
-          .grid.align-items-center
+        .col-3.ml-2.py-3.border-right-1.border-gray-300
+          .grid.align-items-center(v-if='isTranffering')
             .col-4
               div Estimated
               div Inventory Fee:
             .col
               InputText.w-4(v-model='tab.estimateFee' type='number')
               span.ml-1 / day
+          .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
+            span.mr-1 Tag code:
+            InputText(type='number' @change='addTagByBarCode' v-model='tagCodeText')
         .col.py-3.flex.justify-content-end
           span.p-input-icon-right
             span.mr-1 Barcode:
@@ -61,6 +64,8 @@ class PackingOriginal extends Vue {
   // originalIndex: number = 0
   barCodeText: string = ''
   boxCodeText: string = ''
+  tagCodeText: string = ''
+  tagCodeOnTab: string = ''
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -114,6 +119,13 @@ class PackingOriginal extends Vue {
     }
     this.boxCodeText = ''
   }
+
+  addTagByBarCode(e:any) {
+    this.tagCodeOnTab = e.target.value
+    const tagCode = e.target.value
+    this.$emit(tagCode)
+    this.tagCodeText = ''
+  }
 }
 
 export default PackingOriginal
@@ -123,7 +135,7 @@ export default PackingOriginal
   position: relative
   .originalTable
     .p-tabview-nav-container
-      width: calc(100% - 233px)
+      width: calc(100% - 235px)
   .outGoingTable
     .p-tabview-nav-container
       width: calc(100% - 59px)
