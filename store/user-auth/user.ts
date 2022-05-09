@@ -26,7 +26,7 @@ export default class StoreUser extends VuexModule {
   }
 
   @Action({ commit: 'setUser', rawError: true })
-  async actGetUserDetail({ id }): Promise<string | undefined> {
+  async actGetUserDetail( id: string ): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreUser.STATE_URL.USER_GET, { id })
     const response: any = await $api.get(url)
     return response.data

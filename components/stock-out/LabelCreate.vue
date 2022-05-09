@@ -74,7 +74,7 @@ class LabelCreate extends Vue {
   actGetUserDetail!:(params: any) => Promise<void>
 
   async mounted() {
-    await this.actGetUserDetail({ id : this.$auth.$state.user.sub })
+    await this.actGetUserDetail(this.$auth.$state.user.sub)
     this.handleUser()
     this.actSellerList(null)
    
