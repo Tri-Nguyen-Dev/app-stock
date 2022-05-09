@@ -58,7 +58,7 @@
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary 1
         .col-1.flex.justify-content-end.p-1
-          Button.w-10.justify-content-center.flex Next
+          Button.w-10.justify-content-center.flex(@click="handleClick") Next
 </template>
 
 <script lang="ts">
@@ -112,7 +112,11 @@ class DeliveryOrderPacking extends Vue {
 
   addNewBoxOutGoing() {
     this.listOutGoingBox.push({
-      boxCode: `EX0${_.size(this.listOutGoingBox) + 1}`, items: []
+      boxCode: `EX0${_.size(this.listOutGoingBox) + 1}`,
+      items: [],
+      tagCode: '',
+      checked: false,
+      boxSizeSelect: ''
     })
     if(_.size(this.listOutGoingBox) === 1) 
       this.outGoingBoxActive = this.listOutGoingBox[0]
@@ -158,7 +162,12 @@ class DeliveryOrderPacking extends Vue {
 
   addNewBoxTranferring() {
     this.listTranfferingBox.push({
-      boxCode: `IN0${_.size(this.listTranfferingBox) + 1}`, items: []
+      boxCode: `IN0${_.size(this.listTranfferingBox) + 1}`,
+      items: [],
+      tagCode: '',
+      checked: true,
+      boxSizeSelect: '',
+      estimateFee: 0
     })
     if(_.size(this.listTranfferingBox) === 1) 
       this.tranfferingBoxActive = this.listTranfferingBox[0]
@@ -178,6 +187,11 @@ class DeliveryOrderPacking extends Vue {
 
   selectedTranfferingBox(index: number) {
     this.tranfferingBoxActive = this.listTranfferingBox[index - 1]
+  }
+
+  handleClick() {
+    // console.log('this.listOutGoingBox', this.listOutGoingBox)
+    // console.log('this.listTranfferingBox', this.listTranfferingBox)
   }
 }
 
