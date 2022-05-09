@@ -28,7 +28,7 @@
           .btn.btn-primary(@click="")
             .icon.icon-add-items
             span Add new
-          .btn__filter(class='active')
+          .btn__filter(class='active' @click="handleExportReceipt")
             .btn.btn-toggle.bg-white
               .icon-download.icon--large.bg-primary
               span.text-900.text-primary Export file
@@ -153,9 +153,6 @@
           Column(header='Seller email' sortable field='sellerEmail' sortField="_sellerEmail" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.sellerEmail }}
-          Column(v-if="activeTab == 2" header='Receipt Date' sortable field='receiptDate' headerClass="grid-header-right")
-              template(#body='{ data }')
-                div.grid-cell-right {{ data.receiptDate }}
           Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.receiverAddress }}
@@ -188,7 +185,8 @@
           Column(header='PIC' sortable field='warehouseId' sortField="_warehouseId" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.warehouseId }}
-          Column(v-if="activeTab === 1" header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
+          Column(v-if="activeTab == 1" 
+            header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.driverName }}
           Column(field='status' header="Status" headerClass="grid-header-right")
@@ -206,6 +204,8 @@
               :paging="paging"
               :total="total"
               @onDelete="showModalDelete"
+              :deleted-list="selectedDelivery"
+
               @onPage="onPage")
           template(#empty)
             div.table__empty
@@ -215,6 +215,18 @@
               //-   span &nbsp;here
               //-   span(@click="handleAddStock") &nbsp;to add item.
               //- p.notfound__text(v-else) Item not found!
+    ConfirmDialogCustom(
+      title="Confirm delete"
+      image="confirm-delete"
+      :isShow="isModalDelete"
+      :onOk="handleDeleteDelivery"
+      :onCancel="handleCancel"
+      :loading="loadingSubmit"
+    )
+      template(v-slot:message)
+        p {{ deleteMessage }}
+
+    Toast
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
@@ -226,13 +238,14 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   DeliveryConstants,
-  getDeleteMessage
+  getDeleteMessage,
+  exportFileTypePdf
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreDelivery = namespace('delivery/delivery-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
-// const dayjs = require('dayjs')
+const nsStoreExportReceipt = namespace('stock-in/export-receipt')
 
 @Component({
   components: {
@@ -275,11 +288,20 @@ class DeliveryOrder extends Vue {
   @nsStoreDelivery.Action
   getDeliveryList!: (params?: any) => Promise<void>
 
+  @nsStoreDelivery.Action
+  actDeleteDeliveryByIds!: (ids: string[]) => Promise<any>
+
   @nsStoreWarehouse.State
   warehouseList!: any
 
   @nsStoreWarehouse.Action
   actWarehouseList!: () => Promise<void>
+  
+  @nsStoreExportReceipt.Action
+  actGetReceiptLable!: (params: any) => Promise<string>
+  
+  @nsStoreExportReceipt.State
+  receiptUrl!: any
 
   // -- [ Getters ] -------------------------------------------------------------
   get selectedDeliveryFilter() {
@@ -312,6 +334,15 @@ class DeliveryOrder extends Vue {
   }
   
   // -- [ Functions ] ------------------------------------------------------------
+
+  handleExportReceipt() {
+    _.forEach(this.selectedDelivery, async({ id }) => {
+      const result = await this.actGetReceiptLable({ id })
+      if(result) {
+        exportFileTypePdf(result, `receipt-${id}`)
+      }
+    })
+  }
 
   getIndexPaginate(index: number) {
     return calculateIndex(
@@ -359,22 +390,28 @@ class DeliveryOrder extends Vue {
     this.isModalDelete = true
   }
 
-  async handleDeleteStock() {
+  async handleDeleteDelivery() {
     try {
       this.loadingSubmit = true
-      const data = []
+      const data = await this.actDeleteDeliveryByIds(_.map(this.onEventDeleteList, 'id'))
       if (data) {
-        this.loadingSubmit = false
         this.isModalDelete = false
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',
-          detail: 'Successfully deleted stock',
+          detail: 'Successfully deleted delivery order',
           life: 3000
         })
         await this.getProductList()
       }
     } catch (error) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: error,
+        life: 3000
+      })
+    }finally {
       this.loadingSubmit = false
     }
   }

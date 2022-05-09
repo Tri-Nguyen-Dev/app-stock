@@ -10,7 +10,7 @@ import { $api, PathBind } from '~/utils'
 export default class StoreDelivery extends VuexModule {
   private static readonly STATE_URL = {
     GET_DELIVERY: '/delivery-order/list',
-    DELETE_STOCK: '/delete'
+    DELETE_DELIVERY: '/delivery-order/list/delete'
   }
 
   public deliveryList?: DeliveryList.Model[] = []
@@ -33,5 +33,23 @@ export default class StoreDelivery extends VuexModule {
     )
     const response = await $api.get(url, { params })
     return response.data
+  }
+
+  @Action({ rawError: true })
+  async actDeleteDeliveryByIds(
+    ids?: string[]
+  ): Promise<string | undefined> {
+    try {
+      const url = PathBind.transform(
+        this.context,
+        StoreDelivery.STATE_URL.DELETE_DELIVERY
+      )
+      const response = await $api.post(url, ids)
+      if (!response.data) {
+        return
+      }
+      return response.data
+    } catch (error) {
+    }
   }
 }
