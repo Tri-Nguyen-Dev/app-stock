@@ -1,7 +1,7 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
-      StockOutPackingInformationDetail
+      StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div.flex.flex-column
         .grid.grid-nogutter.mb-3
@@ -84,7 +84,7 @@ class DeliveryOrderPacking extends Vue {
   @nsStorePackingDetail.State('originalList')
   originalList!: PackingDetail.OriginalBox[]
 
-  @nsStorePackingDetail.State('originalList')
+  @nsStorePackingDetail.State('deliveryOrderDetail')
   deliveryOrderDetail!: any
 
   @nsStorePackingDetail.Action
@@ -93,8 +93,8 @@ class DeliveryOrderPacking extends Vue {
   @nsStorePackingDetail.Action
   actGetDeliveryOrderDetail!: (id: any) => Promise<any>
   
-  async created() {    
-    // await this.actGetDeliveryOrderDetail('DO000000000007')
+  async mounted() {    
+    await this.actGetDeliveryOrderDetail('DO000000000007')
     const result = await this.actGetListOriginal('DO000000000007')
     if(result) {
       this.listOriginalBox = this.originalList.map((x: any) => {
@@ -102,7 +102,8 @@ class DeliveryOrderPacking extends Vue {
         return { ...obj, items: obj.items.map(item => ({ 
           ...item,
           initialQuantity: item.quantity,
-          actualOutGoing: 0
+          actualOutGoing: 0,
+          actualTranffering: 0
         })) }
       })
     }
@@ -148,6 +149,8 @@ class DeliveryOrderPacking extends Vue {
       }
       if(isOutGoing) {
         stockOriginal.actualOutGoing++
+      } else {
+        stockOriginal.actualTranffering++
       }
     } else {
       // console.log('vuot qua so luong chuyen di')
@@ -170,8 +173,8 @@ class DeliveryOrderPacking extends Vue {
     const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
     if(stockOriginal) {
       const tranfferingStock = _.find(this.tranfferingBoxActive.items, { barCode })
-      const { quantity, outGoingQuantity, actualOutGoing } = stockOriginal
-      const isFullQuantityStock = quantity - (outGoingQuantity - actualOutGoing) > 0
+      const { initialQuantity, outGoingQuantity, actualTranffering } = stockOriginal
+      const isFullQuantityStock = initialQuantity - outGoingQuantity > actualTranffering
       this.addStock(this.tranfferingBoxActive, stockOriginal, tranfferingStock, isFullQuantityStock)
     }
   }

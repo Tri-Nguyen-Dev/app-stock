@@ -48,6 +48,7 @@ import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 
 @Component
 class PackingOriginal extends Vue {
+  active: number = 1
   tabs: any = []
   boxSize: any = [
     { name: 'Small size (20*20*20)', code: 'S' },
@@ -65,12 +66,11 @@ class PackingOriginal extends Vue {
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
-  // @Prop() listOriginalBox!: Array<any>
   @Prop() listBox!: Array<any>
   @Prop() readonly type!: string | undefined
 
   @Watch('listBox', { immediate: true, deep: true })
-  creadfdted () {
+  filterListOriginalBox () {
     if(this.listBox) {
       this.tabs = this.listBox.map((item: any, index: number) => {
         return { index, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
