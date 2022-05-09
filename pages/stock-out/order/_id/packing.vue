@@ -98,8 +98,12 @@ class DeliveryOrderPacking extends Vue {
     const result = await this.actGetListOriginal('DO000000000007')
     if(result) {
       this.listOriginalBox = this.originalList.map((x: any) => {
-        const object = _.cloneDeep(x)
-        return { ...object, items: object.items.map(item => ({ ...item, initialQuantity: item.quantity })) }
+        const obj = _.cloneDeep(x)
+        return { ...obj, items: obj.items.map(item => ({ 
+          ...item,
+          initialQuantity: item.quantity,
+          actualOutGoing: 0
+        })) }
       })
     }
   }
@@ -122,34 +126,31 @@ class DeliveryOrderPacking extends Vue {
 
   addStockInOutGoing(barCode: string) {
     const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
-    const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode })
-    const isFullQuantityStock = stockOriginal.outGoingQuantity > _.get(stockOriginal, 'actualOutGoing', 0)
-    this.addStock(this.outGoingBoxActive, stockOriginal, stockOutGoing, isFullQuantityStock, true)
+    if(stockOriginal) {
+      const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode })
+      const { outGoingQuantity, actualOutGoing } = stockOriginal
+      const isFullQuantityStock = outGoingQuantity > actualOutGoing
+      this.addStock(this.outGoingBoxActive, stockOriginal, stockOutGoing, isFullQuantityStock, true)
+    }
   }
 
   addStock(boxActive, stockOriginal, stockPacking, isFullQuantityStock, isOutGoing = false) {
-    if(stockOriginal) {
-      if(isFullQuantityStock) {
-        stockOriginal.quantity--
-        if(stockPacking) {
-          stockPacking.quantity++
-        } else {
-          boxActive.items.push({ 
-            ...stockOriginal,
-            quantity: 1,
-            originalBox:  this.originalBoxActive.boxCode
-          })
-        }
-        if(isOutGoing) {
-          if(stockOriginal.actualOutGoing) {
-            stockOriginal.actualOutGoing = stockOriginal.actualOutGoing + 1
-          } else {
-            stockOriginal.actualOutGoing = 1
-          }
-        }
+    if(isFullQuantityStock) {
+      stockOriginal.quantity--
+      if(stockPacking) {
+        stockPacking.quantity++
       } else {
-        // console.log('vuot qua so luong chuyen di')
+        boxActive.items.unshift({ 
+          ...stockOriginal,
+          quantity: 1,
+          originalBox:  this.originalBoxActive.boxCode
+        })
       }
+      if(isOutGoing) {
+        stockOriginal.actualOutGoing++
+      }
+    } else {
+      // console.log('vuot qua so luong chuyen di')
     }
   }
 
@@ -167,9 +168,12 @@ class DeliveryOrderPacking extends Vue {
 
   addStockInTranferring(barCode: string) {
     const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
-    const tranfferingStock = _.find(this.tranfferingBoxActive.items, { barCode })
-    const isFullQuantityStock = stockOriginal.quantity - (stockOriginal.outGoingQuantity - _.get(stockOriginal, 'actualOutGoing', 0)) > 0
-    this.addStock(this.tranfferingBoxActive, stockOriginal, tranfferingStock, isFullQuantityStock)
+    if(stockOriginal) {
+      const tranfferingStock = _.find(this.tranfferingBoxActive.items, { barCode })
+      const { quantity, outGoingQuantity, actualOutGoing } = stockOriginal
+      const isFullQuantityStock = quantity - (outGoingQuantity - actualOutGoing) > 0
+      this.addStock(this.tranfferingBoxActive, stockOriginal, tranfferingStock, isFullQuantityStock)
+    }
   }
 
   selectedTranfferingBox(index: number) {

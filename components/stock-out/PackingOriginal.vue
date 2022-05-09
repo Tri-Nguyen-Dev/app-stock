@@ -6,6 +6,7 @@
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.border-0.w-full.mb-1.surface-300(
       type="text" @change='changeBoxCode($event)'
+      v-model="boxCodeText"
     )
   TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange")
     TabPanel(:disabled="true")
@@ -39,7 +40,7 @@
           span.p-input-icon-right
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-            InputText(@input='addStockByBarcode' v-model="barCodeText" :placeholder="barCodeText")
+            InputText(@change='addStockByBarcode($event)' v-model="barCodeText")
       StockOutPackingTableList(:isOriginal='true' :value="tab.content" :type='type')
 </template>
 <script lang="ts">
@@ -57,6 +58,7 @@ class PackingOriginal extends Vue {
 
   originalIndex: number = 0
   barCodeText: string = ''
+  boxCodeText: string = ''
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -87,8 +89,9 @@ class PackingOriginal extends Vue {
   }
 
   addStockByBarcode(e) {
-    if(e.length === 13) {
-      this.$emit('addStockByBarcode',e)
+    const barCode = e.target.value
+    if(barCode.length === 13) {
+      this.$emit('addStockByBarcode', barCode)
     }
     this.barCodeText = ''
   }
@@ -110,6 +113,7 @@ class PackingOriginal extends Vue {
         this.$emit('selectedTab', index)
       }
     }
+    this.boxCodeText = ''
   }
 }
 
