@@ -1,6 +1,5 @@
 <template lang="pug">
 DataTable.packing__detail--table(
-  @sort="sortData($event)"
   :class="{ 'table-wrapper-empty': !value || value.length <= 0 }"
   responsiveLayout="scroll"
   dataKey='id'
@@ -16,16 +15,34 @@ DataTable.packing__detail--table(
       .overflow-hidden.grid-cell-center
         img.h-2rem.w-2rem.border-round(
           :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
-  Column(header='BARCODE' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right" :styles="{'width': '10%'}")
+  Column(
+    header='BARCODE'
+     field='barCode'
+     :sortable="true"
+     headerClass="grid-header-right"
+     :styles="{'width': '10%'}"
+    )
     template(#body='{ data }')
       .grid-cell-right {{ data.barCode }}
-  Column(header='SKU' field='sku' :sortable="true" sortField="_sku" headerClass="grid-header-right" :styles="{'width': '5%'}")
+  Column(
+    header='SKU'
+    field='sku'
+    :sortable="true"
+    headerClass="grid-header-right"
+    :styles="{'width': '5%'}"
+  )
     template(#body='{ data }')
       .grid-cell-right {{ data.sku }}
-  Column(header='STOCK NAME' field='name' :sortable="true" sortField="_name")
+  Column(header='STOCK NAME' field='name' :sortable="true")
     template(#body='{ data }')
       .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
-  Column(header='TAG' field='tag' :sortable="true" :styles="{'width': '1%'}" sortField="_tag" v-if='type === "originalBox"')
+  Column(
+    header='TAG'
+    field='tag'
+    :sortable="true"
+    :styles="{'width': '1%'}"
+    v-if='type === "originalBox"'
+  )
     template(#body='{ data }')
       .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-if='data.tag') Yes
       .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) No
@@ -33,18 +50,21 @@ DataTable.packing__detail--table(
     header='ORIGINAL BOX CODE'
     field='originalBox'
     :sortable="true"
-    sortField="_originalBox"
     :styles="{'width': '5%'}"
     v-if='type !== "originalBox"'
   )
-  Column(header='QUANTITY' field='quantity' :sortable="true" sortField="_quantity" :styles="{'width': '1%'}")
+  Column(
+    header='QUANTITY'
+    field='quantity'
+    :sortable="true"
+    :styles="{'width': '1%'}"
+  )
     template(#body='{ data }')
       .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right {{ data.quantity }}
   Column(
     header='OUTGOING QUANTITY'
     field='outGoingQuantity'
     :sortable="true"
-    sortField="_outGoingQuantity"
     :styles="{'width': '1%'}"
     v-if='type === "originalBox"'
   )
