@@ -19,7 +19,7 @@ DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(
       span.font-bold {{ pagination.rows * pagination.page + slotProps.index + 1 }}
   column( field='imageUrl', header='IMAGE', :sortable='true', filter-match-mode='contains' )
     template(#body="slotProps")
-      img(:src="slotProps.data.imageUrl" :alt="slotProps.data.image" style="width:3rem; height: 3rem")
+      img(:src="slotProps.data.imagePath | getThumbnailUrl" :alt="slotProps.data.image" style="width:3rem; height: 3rem")
   column.text-overflow-ellipsis( field='barCode' header='BARCODE', :sortable='true', :show-filter-match-modes='false' )
     template(#body='{ data }')
       span.text-primary.font-bold {{data.barCode}}
