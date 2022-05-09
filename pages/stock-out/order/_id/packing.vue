@@ -82,12 +82,12 @@ class DeliveryOrderPacking extends Vue {
 
   @nsStorePackingDetail.Action
   actGetDeliveryOrderDetail!: (id: any) => Promise<any>
-  
-  async created() {    
+
+  async mounted() {
     await this.actGetDeliveryOrderDetail('DO000000000007')
     await this.actGetListOriginal('DO000000000007')
   }
-  
+
   listOutGoingBox: [] = []
   listTranfferingBox: [] = []
 
