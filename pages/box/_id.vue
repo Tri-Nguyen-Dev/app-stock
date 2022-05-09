@@ -89,14 +89,14 @@
             .col
               .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1
                 span.uppercase save
-    div.ml-5.flex-1( class=' col-7  md:col-8  lg:col-8 xl:col-8' )
+    div.ml-5.flex-1.flex.flex-column( class=' col-7  md:col-8  lg:col-8 xl:col-8' )
       .grid.justify-content-between
         .col-fixed
           h1.text-heading Box Detail
       .grid.w-full.grid-nogutter.right__information--stock.tabview-relative
         .col( class=' col-12  md:col-12 lg:col-12 xl:col-12' ).h-full
-          TabView.h-full( @tab-change="onTabClick($event)" )
-            TabPanel.h-full
+          TabView.flex.flex-column.h-full( @tab-change="onTabClick($event)" )
+            TabPanel.h-full.flex.flex-column
               template(#header)
                 .icon.icon-history.mr-2.surface-600
                 span Item list
@@ -126,13 +126,18 @@
                         optionValue="id" 
                         placeholder="Select" 
                         :filter='true')
-              BoxDetailTable(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
-            TabPanel
+              BoxDetailTable.flex-1(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
+            TabPanel.flex.flex-column
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
                 span Location history
               BoxDetailHistoryTable
-        .grid.tabview-left(:class='isItemHistory? "hidden" : "" ')
+            TabPanel.flex.flex-column
+              template(#header)
+                .icon.icon-box-1.mr-2.surface-600
+                span Box history
+              BoxHistory
+        .grid.tabview-left( v-if='activeTab ==  0 ' )
           div.mr-3
             .header__search
               .icon.icon--left.icon-search
@@ -159,6 +164,7 @@ const nsStoreLocationList = namespace('location/location-list')
 class BoxDetail extends Vue {
   isFilter: boolean = false
   isEditBox: boolean = false
+  activeTab: number = 0
   isItemHistory: boolean = false
   isLocation: any = null
   filterParams: any = {
@@ -263,9 +269,8 @@ class BoxDetail extends Vue {
     this.isEditBox = !this.isEditBox
   }
 
-  onTabClick() {
-    this.isItemHistory = !this.isItemHistory
-    this.isFilter = false
+  onTabClick( event : any  ) {
+    this.activeTab = event.index
   }
 
   refreshFilter() {
