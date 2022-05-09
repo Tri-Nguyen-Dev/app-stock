@@ -132,6 +132,8 @@ class DeliveryOrderPacking extends Vue {
       const { outGoingQuantity, actualOutGoing } = stockOriginal
       const isFullQuantityStock = outGoingQuantity > actualOutGoing
       this.addStock(this.outGoingBoxActive, stockOriginal, stockOutGoing, isFullQuantityStock, true)
+    } else {
+      // console.log('stock khong co trong Original List')
     }
   }
 
@@ -153,7 +155,7 @@ class DeliveryOrderPacking extends Vue {
         stockOriginal.actualTranffering++
       }
     } else {
-      // console.log('vuot qua so luong chuyen di')
+      // console.log('vuot qua so luong thỏa mãn điều kiện của box')
     }
   }
 
@@ -176,6 +178,8 @@ class DeliveryOrderPacking extends Vue {
       const { initialQuantity, outGoingQuantity, actualTranffering } = stockOriginal
       const isFullQuantityStock = initialQuantity - outGoingQuantity > actualTranffering
       this.addStock(this.tranfferingBoxActive, stockOriginal, tranfferingStock, isFullQuantityStock)
+    } else {
+      // console.log('stock khong co trong Original List')
     }
   }
 

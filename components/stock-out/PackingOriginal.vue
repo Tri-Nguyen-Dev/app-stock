@@ -107,8 +107,15 @@ class PackingOriginal extends Vue {
     if(boxCode.length === 13) {
       const index = _.findIndex(this.listBox, { boxCode })
       if(index >= 0){
-        this.activeIndex = index + 1
-        this.$emit('selectedTab', index)
+        const itemsBox = _.get(this.listBox[this.activeIndex - 1], 'items')
+        if(!_.size(_.partition(itemsBox, ['quantity', 0])[1]) || !itemsBox) {
+          this.activeIndex = index + 1
+          this.$emit('selectedTab', index)
+        } else {
+          // console.log('Vui long xu ly het item original (quantity = 0)')
+        }
+      } else {
+        // console.log('box code khong co trong original list ')
       }
     }
     this.boxCodeText = ''
