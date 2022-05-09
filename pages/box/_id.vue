@@ -87,7 +87,7 @@
               .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='btnEdit')
                 span.uppercase.font-semibold cancel
             .col
-              .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1
+              .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1( @click='handleUpdateData' )
                 span.uppercase save
     div.ml-5.flex-1.flex.flex-column( class=' col-7  md:col-8  lg:col-8 xl:col-8' )
       .grid.justify-content-between
@@ -286,8 +286,9 @@ class BoxDetail extends Vue {
   async handleUpdateData() {
     await this.actUpdateBoxDetail({
       id: this.boxDetail.id,
-      shelfBinId: this.boxLocation.id?this.boxLocation.id:this.boxDetail.rackLocation?.id
+      rackLocationId: this.boxLocation.id?this.boxLocation.id:this.boxDetail.rackLocation?.id
     })
+    this.isEditBox = false
   }
 
   get boxWarehouse() {
