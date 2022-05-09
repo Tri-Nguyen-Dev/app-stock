@@ -96,7 +96,7 @@
       .grid.w-full.grid-nogutter.right__information--stock.tabview-relative
         .col( class=' col-12  md:col-12 lg:col-12 xl:col-12' ).h-full
           TabView.flex.flex-column.h-full( @tab-change="onTabClick($event)" )
-            TabPanel.h-full.flex.flex-column
+            TabPanel.h-full
               template(#header)
                 .icon.icon-history.mr-2.surface-600
                 span Item list
@@ -127,12 +127,12 @@
                         placeholder="Select" 
                         :filter='true')
               BoxDetailTable.flex-1(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
-            TabPanel.flex.flex-column
+            TabPanel.h-full
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
                 span Location history
               BoxDetailHistoryTable
-            TabPanel.flex.flex-column
+            TabPanel.h-full
               template(#header)
                 .icon.icon-box-1.mr-2.surface-600
                 span Box history
@@ -354,6 +354,9 @@ export default BoxDetail
   display: flex
   height: 100%
   flex-direction: column
+  ::v-deep.p-tabview-panel
+    display: flex
+    flex-direction: column
   ::v-deep.p-tabview .p-tabview-nav li
     .p-tabview-nav-link
       background: var(--bg-body-bas)
