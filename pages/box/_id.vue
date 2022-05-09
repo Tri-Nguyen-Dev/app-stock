@@ -32,7 +32,7 @@
           div.wrap-unit.px-4
             StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
           div.wrap-unit.px-4
-            StockUnit(title="Create ID" :value="boxDetail.createBy" :isEdit="isEditBox" icon="icon-tag-user")
+            StockUnit(title="Create ID" :value="boxDetail.createdBy.id" :isEdit="isEditBox" icon="icon-tag-user")
           div.wrap-unit.px-4
             StockUnit(title="Warehouse" link="https://rikkei.vn" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
           div.wrap-unit.px-4
@@ -77,11 +77,11 @@
                 .icon-sender-info.icon.bg-primary.mr-2
                 span.font-bold.text-800.uppercase Seller Information
           .wrap-unit.px-4
-            StockUnit(title="Sender" :value="boxSellerInfor.name" :isEdit="isEditBox" icon="icon-sender-name")
+            StockUnit(title="Sender" :value="boxSellerInfor.displayName" :isEdit="isEditBox" icon="icon-sender-name")
           .wrap-unit.px-4
             StockUnit(title="Email Address" :value="boxSellerInfor.email" :isEdit="isEditBox" icon="icon-sender-email")
           .wrap-unit.px-4
-            StockUnit(title="Phone number" :value="boxSellerInfor.phone" :isEdit="isEditBox" icon="icon-sender-phone")
+            StockUnit(title="Phone number" :value="boxSellerInfor.phoneNumber" :isEdit="isEditBox" icon="icon-sender-phone")
           .grid.m-1(v-if='isEditBox')
             .col
               .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='btnEdit')
@@ -89,12 +89,12 @@
             .col
               .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1
                 span.uppercase save
-    div.ml-5.flex-1(class=' col-7  md:col-8  lg:col-8 xl:col-8')
+    div.ml-5.flex-1( class=' col-7  md:col-8  lg:col-8 xl:col-8' )
       .grid.justify-content-between
         .col-fixed
           h1.text-heading Box Detail
       .grid.w-full.grid-nogutter.right__information--stock.tabview-relative
-        .col(class=' col-12  md:col-12 lg:col-12 xl:col-12').h-full
+        .col( class=' col-12  md:col-12 lg:col-12 xl:col-12' ).h-full
           TabView.h-full( @tab-change="onTabClick($event)" )
             TabPanel.h-full
               template(#header)

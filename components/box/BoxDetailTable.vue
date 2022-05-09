@@ -1,54 +1,54 @@
 <template lang="pug">
-  DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(
-    :resizableColumns='true' 
-    :rows='pagination.rows' 
-    :value='dataRenderItems' 
-    dataKey='id' 
-    :paginator='false' 
-    :row-hover='true' 
-    filterDisplay='menu' 
-    responsiveLayout="scroll" 
-    columnResizeMode="fit" 
-    @row-dblclick="onRowClick($event)" )
-    template(#empty)
-        div.flex.align-items-center.justify-content-center.flex-column
-            img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
-            p.text-900.font-bold.mt-3 List is empty!
-    column(field='no', header='NO')
-      template(#body="slotProps")
-        span.font-bold {{ pagination.rows * pagination.page + slotProps.index + 1 }}
-    column( field='imageUrl', header='IMAGE', :sortable='true', filter-match-mode='contains' )
-      template(#body="slotProps")
-        img(:src="slotProps.data.imageUrl" :alt="slotProps.data.image" style="width:3rem; height: 3rem")
-    column.text-overflow-ellipsis( field='barCode' header='BARCODE', :sortable='true', :show-filter-match-modes='false' )
+DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(
+  :resizableColumns='true' 
+  :rows='pagination.rows' 
+  :value='dataRenderItems' 
+  dataKey='id' 
+  :paginator='false' 
+  :row-hover='true' 
+  filterDisplay='menu' 
+  responsiveLayout="scroll" 
+  columnResizeMode="fit" 
+  @row-dblclick="onRowClick($event)" )
+  template(#empty)
+      div.flex.align-items-center.justify-content-center.flex-column
+          img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
+          p.text-900.font-bold.mt-3 List is empty!
+  column(field='no', header='NO')
+    template(#body="slotProps")
+      span.font-bold {{ pagination.rows * pagination.page + slotProps.index + 1 }}
+  column( field='imageUrl', header='IMAGE', :sortable='true', filter-match-mode='contains' )
+    template(#body="slotProps")
+      img(:src="slotProps.data.imageUrl" :alt="slotProps.data.image" style="width:3rem; height: 3rem")
+  column.text-overflow-ellipsis( field='barCode' header='BARCODE', :sortable='true', :show-filter-match-modes='false' )
+    template(#body='{ data }')
+      span.text-primary.font-bold {{data.barCode}}
+  column( field='sku', header='SKU', sortable='', data-type='numeric' )
+    template(#body='{ data }')
+      span.uppercase {{ data.sku }}
+  column( field='name', header='NAME', :sortable='true', )
       template(#body='{ data }')
-        span.text-primary.font-bold {{data.barCode}}
-    column( field='sku', header='SKU', sortable='', data-type='numeric' )
-      template(#body='{ data }')
-        span.uppercase {{ data.sku }}
-    column( field='name', header='NAME', :sortable='true', )
-        template(#body='{ data }')
-          span.font-bold.text-right {{data.name}}
-    column( field='amount', header='QUANTITY', :sortable='true', className="p-text-right" )
-      template(#body='{ data }')
-          span.font-bold.text-right {{data.amount}}
-    column( field='unit', header='UNIT', :show-filter-match-modes='false' className="p-text-right" )
-      template(#body='{ data }')
-        span.font-bold {{ data.unit.name }}
-    column( field='size', header='SIZE', :show-filter-match-modes='false' className="p-text-right" )
-      template(#body='{ data }')
-        span.font-bold {{ data.length }}*{{ data.width }}*{{ data.height }}
-    column( field='weight', header='WEIGHT(KG)', :show-filter-match-modes='false' className="p-text-right" )
-      template(#body='{ data }')
-        span.font-bold {{data.weight}}
-    column( field='category.name', header='CATEGORY', sortable='', :show-filter-match-modes='false' className="p-text-right" )
-      template(#body='{ data }')
-        span.font-bold {{ data.category.name }}
-    template(#footer)
-      Pagination(
-        :paging="paging"
-        :total="listStockWithAmount.length"
-        @onPage="onPage")
+        span.font-bold.text-right {{data.name}}
+  column( field='amount', header='QUANTITY', :sortable='true', className="p-text-right" )
+    template(#body='{ data }')
+        span.font-bold.text-right {{data.amount}}
+  column( field='unit', header='UNIT', :show-filter-match-modes='false' className="p-text-right" )
+    template(#body='{ data }')
+      span.font-bold {{ data.unit.name }}
+  column( field='size', header='SIZE', :show-filter-match-modes='false' className="p-text-right" )
+    template(#body='{ data }')
+      span.font-bold {{ data.length }}*{{ data.width }}*{{ data.height }}
+  column( field='weight', header='WEIGHT(KG)', :show-filter-match-modes='false' className="p-text-right" )
+    template(#body='{ data }')
+      span.font-bold {{data.weight}}
+  column( field='category.name', header='CATEGORY', sortable='', :show-filter-match-modes='false' className="p-text-right" )
+    template(#body='{ data }')
+      span.font-bold {{ data.category.name }}
+  template(#footer)
+    Pagination(
+      :paging="paging"
+      :total="listStockWithAmount.length"
+      @onPage="onPage")
 </template>
 
 <script lang="ts">
