@@ -1,16 +1,15 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full
   Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal' @click="handleAddTab") + Add
-  div.flex.justify-content-end.px-4.py-1
-    span.p-input-icon-right(v-if='isOriginal')
-      .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-      InputText.border-0.w-full.mb-1(
-        type="text"
-        @change='changeBoxCode($event)'
-        v-model="boxCodeText"
-        placeholder='Please enter box code!'
-      )
-  TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange")
+  span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal')
+    .icon--small.icon--right.icon-scan.surface-900.icon--absolute
+    InputText.border-0.w-full.mb-1(
+      type="text"
+      @change='changeBoxCode($event)'
+      v-model="boxCodeText"
+      placeholder='Please enter box code!'
+    )
+  TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
@@ -122,11 +121,20 @@ export default PackingOriginal
 <style lang="sass" scoped>
 ::v-deep.packing__common--table
   position: relative
+  .originalTable
+    .p-tabview-nav-container
+      width: calc(100% - 233px)
+  .outGoingTable
+    .p-tabview-nav-container
+      width: calc(100% - 59px)
   .p-inputtext
     background: $text-color-300
+  .scan__boxcode
+    top: 2px
+    right: 0
   .btn-add-tab
     position: absolute
-    right: 32px
+    right: 0
     top: 4px
     z-index: 1
     box-shadow: none
