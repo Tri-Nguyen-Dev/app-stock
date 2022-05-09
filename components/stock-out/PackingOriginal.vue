@@ -16,7 +16,7 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;(2 boxes, 4 items)
-    TabPanel(v-for='tab in tabs' :key='tab.index' :disabled="tab.key !== originalIndex && type === 'originalBox'")
+    TabPanel(v-for='tab in tabs' :key='tab.index' :disabled="tab.key !== activeIndex && type === 'originalBox'")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -42,7 +42,7 @@
           span.p-input-icon-right
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-            InputText(@change='addStockByBarcode($event)' v-model="barCodeText")
+            InputText(@change='addStockByBarcode($event)' v-model="barCodeText" autofocus)
       StockOutPackingTableList(:isOriginal='true' :value="tab.content" :type='type')
 </template>
 <script lang="ts">
@@ -50,7 +50,7 @@ import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 
 @Component
 class PackingOriginal extends Vue {
-  active: number = 1
+  activeIndex: number = 0
   tabs: any = []
   boxSize: any = [
     { name: 'Small size (20*20*20)', code: 'S' },
@@ -59,7 +59,7 @@ class PackingOriginal extends Vue {
     { name: 'Extra size (20*20*20)', code: 'XL' }
   ]
 
-  originalIndex: number = 0
+  // originalIndex: number = 0
   barCodeText: string = ''
   boxCodeText: string = ''
 
@@ -80,13 +80,11 @@ class PackingOriginal extends Vue {
     }
   }
 
-  get activeIndex() {
-    return this.type === 'originalBox' ? this.originalIndex : 1
-  }
-
   handleAddTab() {
     if(this.tabs.length <= 9) {
       this.$emit('addBoxNew')
+      this.activeIndex++
+      this.$emit('selectedTab', this.activeIndex)
     }
   }
 
@@ -102,7 +100,7 @@ class PackingOriginal extends Vue {
     if(this.type !== 'originalBox') {
       this.$emit('selectedTab', index)
     } else {
-      this.originalIndex = index
+      this.activeIndex = index
     }
   }
 
@@ -111,7 +109,7 @@ class PackingOriginal extends Vue {
     if(boxCode.length === 13) {
       const index = _.findIndex(this.listBox, { boxCode })
       if(index >= 0){
-        this.originalIndex = index + 1
+        this.activeIndex = index + 1
         this.$emit('selectedTab', index)
       }
     }
