@@ -1,4 +1,4 @@
-export namespace Driver {
+export namespace Assignee {
   export interface Model {
     id?: string,
     email?: string,
@@ -7,7 +7,7 @@ export namespace Driver {
     username?: string,
     password?: string,
     roleId?: string,
-    status?: number,
+    status?: 0,
     displayName?: string,
     avatarUrl?: string,
     phoneNumber?: string
