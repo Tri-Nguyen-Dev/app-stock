@@ -6,24 +6,26 @@
       .my-3.font-bold
         .icon.icon-info.inline-block
         span.uppercase order detail
-      h3.uppercase.m-1 id: dO11338838
+      h3.uppercase.m-1 id: {{ deliveryOrderDetail.id }}
       h5.uppercase.inline-block.text-400 Create time:&nbsp;
       span.uppercase.font-bold 13rd April 2022  12:22AM
       TabView
         TabPanel(header='Delivery').p-3
-          StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4
-          StockOutPackingReceiverInfo.border-bottom-1.border-gray-300.pb-4.mt-4
-          StockOutPackingTimeDelivery.mt-4
+          StockOutPackingSellerInfo(:sellerInfo='deliveryOrderDetail').border-bottom-1.border-gray-300.pb-4
+          StockOutPackingReceiverInfo(:receiverInfro='deliveryOrderDetail').border-bottom-1.border-gray-300.pb-4.mt-4
+          StockOutPackingTimeDelivery(:timeDelivery='deliveryOrderDetail').mt-4
         TabPanel(header='Warehouse').p-3
-          StockOutPackingWarehouseInfo
+          StockOutPackingWarehouseInfo(:warehouseInfo='deliveryOrderDetail')
         TabPanel(header='Creator').p-3
-           StockOutPackingCreatorInfo
+           StockOutPackingCreatorInfo(:creatorInfo='deliveryOrderDetail')
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class PackingInformationDetail extends Vue {
+  @Prop() deliveryOrderDetail!: any
+
   get homeItem() {
     return { label: '', to: '/stock-out', icon: 'pi pi-list' }
   }

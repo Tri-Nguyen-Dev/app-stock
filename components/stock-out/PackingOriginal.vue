@@ -1,82 +1,128 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full
   Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal' @click="handleAddTab") + Add
-  TabView(:active-index="active = 1" :scrollable="true")
+  span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal')
+    .icon--small.icon--right.icon-scan.surface-900.icon--absolute
+    InputText.border-0.w-full.mb-1(
+      type="text"
+      @change='changeBoxCode($event)'
+      v-model="boxCodeText"
+      placeholder='Please enter box code!'
+    )
+  TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
-        .uppercase &nbsp;(2 boxes, 4 items)
-    TabPanel(v-for='tab in tabs' :key='tab.index')
+        .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
+    TabPanel(v-for='tab in listBox' :key='tab.boxCode' :disabled="tab.key !== activeIndex && type === 'originalBox'")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
-        span.uppercase.text-700 {{tab.title}}
-        .text-white.bg-primary.border-round.ml-1.p-1(v-if='isOutgoing && tab.checked') &nbsp;Tag
+        span.uppercase.text-700 {{tab.boxCode}}
+        .ml-1.px-1(v-if='isOutgoing && tab.checked') {{ tab.tagCode }}
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
-          Dropdown(v-model='tab.boxSizeSelect' :options="boxSize" optionLabel="name" placeholder="Select a box size").w-9
+          Dropdown(v-model='tab.boxSizeSelect' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
           span.ml-2 Attach Tag
-        .col-3.ml-2.py-3.border-right-1.border-gray-300(v-if='isTranffering')
-          .grid.align-items-center
+        .col-3.ml-2.py-3.border-right-1.border-gray-300
+          .grid.align-items-center(v-if='isTranffering')
             .col-4
               div Estimated
               div Inventory Fee:
             .col
               InputText.w-4(v-model='tab.estimateFee' type='number')
               span.ml-1 / day
+          .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
+            span.mr-1 Tag code:
+            InputText(type='number' @change='addTagByBarCode')
         .col.py-3.flex.justify-content-end
           span.p-input-icon-right
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-            InputText(@input='addStockByBarcode')
-      StockOutPackingTableList(:isOriginal='true' :value="tab.content" :type='type')
+            InputText(@change='addStockByBarcode($event)' v-model="barCodeText")
+      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type')
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class PackingOriginal extends Vue {
+  activeIndex: number = 0
   tabs: any = []
-  boxSize: any = [
-    { name: 'Small size (20*20*20)', code: 'S' },
-    { name: 'Medium size (20*20*20)', code: 'M' },
-    { name: 'Large size (20*20*20)', code: 'L' },
-    { name: 'Extra size (20*20*20)', code: 'XL' }
-  ]
+
+  barCodeText: string = ''
+  boxCodeText: string = ''
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
-  @Prop() listOriginalBox!: Array<any>
+  @Prop() listBox!: Array<any>
+  @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
 
-  mounted() {
-    if(this.listOriginalBox) {
-      this.tabs = this.listOriginalBox.map((item: any, index: number) => {
-        return { index, title: item.boxCode, content: item.items, checked: false, boxSizeSelect: '', estimateFee: 0 }
-      })
-    }
-  }
-
   handleAddTab() {
-    if(this.tabs.length <= 9) {
-      this.tabs.push({
-        index: this.tabs.length, title: 'EX01', content: '',checked: true
-      })
+    if(this.listBox.length <= 9) {
+      this.$emit('addBoxNew')
+      this.activeIndex = this.listBox.length
+      this.$emit('selectedTab', this.activeIndex)
     }
   }
 
   addStockByBarcode(e) {
-    if(e.length === 13) {
-      this.$emit('addStockByBarcode',e)
+    const barCode = e.target.value
+    if(barCode.length === 13) {
+      this.$emit('addStockByBarcode', barCode)
     }
+    this.barCodeText = ''
+  }
+
+  tabChange({ index }) {
+    if(this.type !== 'originalBox') {
+      this.$emit('selectedTab', index)
+    }
+    this.activeIndex = index
+  }
+
+  changeBoxCode(e) {
+    const boxCode = e.target.value
+    if(boxCode.length === 13) {
+      const index = _.findIndex(this.listBox, { boxCode })
+      if(index >= 0){
+        const itemsBox = _.get(this.listBox[this.activeIndex - 1], 'items')
+        if(!_.size(_.partition(itemsBox, ['quantity', 0])[1]) || !itemsBox) {
+          this.activeIndex = index + 1
+          this.$emit('selectedTab', index)
+        } else {
+          // console.log('Vui long xu ly het item original (quantity = 0)')
+        }
+      } else {
+        // console.log('box code khong co trong original list ')
+      }
+    }
+    this.boxCodeText = ''
+  }
+
+  addTagByBarCode(e:any) {
+    this.listBox[this.activeIndex - 1].tagCode = e.target.value
+  }
+
+  get getTotalBox() {
+    return _.size(this.listBox)
+  }
+
+  get getTotalItem() {
+    const sum = this.listBox.reduce((accumulator, object) => {
+      const length = this.type === 'originalBox' ? _.size(_.partition(object.items, ['outGoingQuantity', 0])[1]) : _.size(object.items)
+      return accumulator +  length
+    }, 0)
+    return sum
   }
 }
 
@@ -85,9 +131,20 @@ export default PackingOriginal
 <style lang="sass" scoped>
 ::v-deep.packing__common--table
   position: relative
+  .originalTable
+    .p-tabview-nav-container
+      width: calc(100% - 235px)
+  .outGoingTable
+    .p-tabview-nav-container
+      width: calc(100% - 59px)
+  .p-inputtext
+    background: $text-color-300
+  .scan__boxcode
+    top: 2px
+    right: 0
   .btn-add-tab
     position: absolute
-    right: 32px
+    right: 0
     top: 4px
     z-index: 1
     box-shadow: none
@@ -116,8 +173,9 @@ export default PackingOriginal
         border: none
     .p-tabview-nav-content
       .p-tabview-nav
-        .p-disabled
+        .p-disabled:first-child
           min-width: 265px !important
+        .p-disabled
           opacity: 1
           font-size: 12px
           border-right: 1px solid $bg-body-base
