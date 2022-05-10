@@ -25,9 +25,6 @@
               span Filter
             .btn-refresh(@click="handleRefreshFilter")
               .icon.icon-rotate-left.bg-white
-          .btn.btn-primary(@click="")
-            .icon.icon-add-items
-            span Add new
           .btn__filter(class='active' @click="handleExportReceipt")
             .btn.btn-toggle.bg-white
               .icon-download.icon--large.bg-primary
