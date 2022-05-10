@@ -326,7 +326,7 @@ class CreateOrUpdateReceipt extends Vue {
       this.listBox.push(item)
       this.activeAction = false
     }
-    this.activeIndex = this.listBox[this.listBox.length - 1].index  
+    this.activeIndex = this.listBox[this.listBox.length - 1].index
   }
 
   deleteBox() {
@@ -411,14 +411,14 @@ class CreateOrUpdateReceipt extends Vue {
     receiptDraft.status = type === 0 ? RECEIPT_STATUS.REQUEST_STATUS_DRAFT
       : RECEIPT_STATUS.REQUEST_STATUS_SAVED
     receiptDraft.note= this.note
-			
+
     this.listBox.forEach((element) => {
       const box: ReceiptModel.BoxDraft = new ReceiptModel.BoxDraft()
       box.inventoryFee = element.inventoryFee
       if(element.boxSize!.id>0){
         box.boxSize.id = element.boxSize!.id
       }
-			
+
       element.listItemInBox?.forEach((item) => {
         const itemDraft: ReceiptModel.ItemDraft = new ReceiptModel.ItemDraft()
         itemDraft.stock.id = item.stock.id
@@ -438,7 +438,7 @@ class CreateOrUpdateReceipt extends Vue {
       await this.actCreateNewReceipt(receiptDraft)
       this.id= this.newReceipt.id
     }
-   
+
     if (type === 1 && this.id) {
       await this.$router.push(`/stock-in/${this.newReceipt.id}/detail`)
     }
