@@ -19,7 +19,7 @@ export default class StoreStockDetail extends VuexModule {
     DELETE_ITEMS: '/stock/:id/box/delete',
     UPDATE_ITEM: '/stock/:stockId/box/:boxId/update',
     GET_STOCK_BY_BARCODE: '/stock/barcode/:barcode',
-    GET_HISTORY_LOCATION: '/stock/:stockId/box/:boxId/history/location'
+    GET_HISTORY_LOCATION: '/stock/:stockId/box/:boxId/location-history'
   }
 
   public total?: number = 0
