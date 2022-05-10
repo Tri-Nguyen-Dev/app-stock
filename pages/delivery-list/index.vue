@@ -189,6 +189,10 @@
             header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.driverName }}
+          Column(v-if="activeTab == 2"  
+          header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.receiptDate }}
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
@@ -213,7 +217,7 @@
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
               //- p.empty__text(v-if="!checkIsFilter") List is empty!, Click
               //-   span &nbsp;here
-              //-   span(@click="handleAddStock") &nbsp;to add item.
+              //-   span(@click="handleAddDelivery") &nbsp;to add item.
               //- p.notfound__text(v-else) Item not found!
     ConfirmDialogCustom(
       title="Confirm delete"
@@ -245,7 +249,7 @@ import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreDelivery = namespace('delivery/delivery-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
-const nsStoreExportReceipt = namespace('stock-in/export-receipt')
+const nsStoreExportReceipt = namespace('delivery/export-receipt')
 
 @Component({
   components: {
@@ -425,7 +429,7 @@ class DeliveryOrder extends Vue {
   // }
 
   rowdbClick({ data }) {
-    this.$router.push(`/stock/${data.id}`)
+    this.$router.push(`/order/${data.id}`)
   }
 
   sortData(e: any) {
