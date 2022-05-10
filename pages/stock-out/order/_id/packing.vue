@@ -171,7 +171,7 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
-        detail: 'pass through so luong satisfies the condition of box',
+        detail: 'Pass through so luong satisfies the condition of box',
         life: 3000
       })
     }
@@ -247,6 +247,7 @@ class DeliveryOrderPacking extends Vue {
         life: 3000
       })
     }
+    
     // console.log(this.checkQuantityOriginal(this.listOriginalBox))
     // console.log('this.listOutGoingBox', this.listOutGoingBox)
     // console.log('this.listTranfferingBox', this.listTranfferingBox)
