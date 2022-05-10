@@ -21,7 +21,7 @@
                 v-if="boxDetail.status === 'BOX_STATUS_AVAILABLE'"
               ) {{ boxDetail.status | boxStatus }}
               span.p-2.table__status.table__status--disable(
-                v-else-if="boxDetail.status === 'BOX_STATUS_DISABLE'"
+                v-else-if="boxDetail.status === 'BOX_TRANFERING'"
               ) {{ boxDetail.status | boxStatus }}
               span.p-2.table__status.table__status--draft(v-else) {{ boxDetail.status | boxStatus }}
           .font-bold.my-3
@@ -31,7 +31,7 @@
       div.sub--scroll
           div.wrap-unit.px-4
             StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
-          div.wrap-unit.px-4
+          div.wrap-unit.px-4(v-if='boxDetail.createdBy')
             StockUnit(title="Create ID" :value="boxDetail.createdBy.id" :isEdit="isEditBox" icon="icon-tag-user")
           div.wrap-unit.px-4
             StockUnit(title="Warehouse" link="https://rikkei.vn" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
@@ -91,7 +91,7 @@
                 span.uppercase save
     div.ml-5.flex-1.flex.flex-column( class=' col-7  md:col-8  lg:col-8 xl:col-8' )
       .grid.justify-content-between
-        .col-fixed
+        .col-fixed.mb-2
           h1.text-heading Box Detail
       .grid.w-full.grid-nogutter.right__information--stock.tabview-relative
         .col( class=' col-12  md:col-12 lg:col-12 xl:col-12' ).h-full
@@ -136,7 +136,7 @@
               template(#header)
                 .icon.icon-box-1.mr-2.surface-600
                 span Box history
-              BoxHistory
+              //- BoxHistory
         .grid.tabview-left( v-if='activeTab ==  0 ' )
           div.mr-3
             .header__search
@@ -252,8 +252,8 @@ class BoxDetail extends Vue {
     if (this.$route.query.plan === 'edit') {
       this.isEditBox = true
     }
-    await this.actGetBoxDetail({ id: this.$route.params.id })
-    await this.actCategoryList()
+    await this.actGetBoxDetail({ id: this.$route?.params?.id })
+    this.actCategoryList()
   }
 
   backToBox() {

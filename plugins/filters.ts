@@ -15,6 +15,10 @@ Vue.filter('requestStatus', (value) => {
   return FilterConstants.STATUS_REQUEST_MAP.get(value) || ''
 })
 
+Vue.filter('statusBoxHistory', (value) => {
+  return FilterConstants.STATUS_HISTORY_MAP.get(value) || ''
+})
+
 // -- [ Format date time 12hour type] ------------------------------------------------
 Vue.filter('dateTimeHour12', (value) => {
   return dayjs(new Date(value)).format('DD-MM-YYYY hh:mm A')

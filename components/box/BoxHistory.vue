@@ -1,7 +1,7 @@
 <template lang="pug">
 DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
   responsiveLayout="scroll"
-  :value='locationHistory'  
+  :value='boxHistory'  
   dataKey="id"
   :resizableColumns="true"
   :paginator="false" 
@@ -13,20 +13,21 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
   Column(field="createdAt" header="TIME" sortable bodyClass="font-semibold"  :styles="{width: '900px'}"  )
     template(#body='{data}')
       span.font-bold {{ data.createdAt | dateTimeHour12 }}
-  Column(field="originalLocation" header="Box Code" className="text-right" sortable)
+  Column(field="boxCode" header="Box Code" className="text-right" sortable)
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-600.font-bold.font-sm {{ data.originalLocation }}
+        span.text-600.font-bold.font-sm {{ data.boxCode }}
   Column(field="newLocation" header="LOCATION" className="text-right" :sortable="true" bodyClass="font-semibold")
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
         span.text-primary.font-bold.font-sm {{ data.newLocation }}
         .icon.icon-arrow-up-right.bg-primary
-  Column(field="originalLocation" header="Status" className="text-right" sortable)
+  Column(field="description" header="Status" className="text-right" sortable)
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
         span.text-600.font-bold.font-sm {{ data.originalLocation }}
-  Column(field="createdBy.id" header="PIC" sortable )
+        .icon.bg-primary(:class="`icon-${IconStatus}`")
+  Column(field="pic" header="PIC" sortable )
   template(#empty)
     div.flex.align-items-center.justify-content-center.flex-column
       img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
@@ -34,7 +35,7 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
   template(#footer)
     Pagination(
       :paging="paging"
-      :total="totalHistory"
+      :total="totalBoxHistory"
       @onPage="onPageHistory")
 
 </template>
@@ -43,7 +44,7 @@ import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { PAGINATE_DEFAULT } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-const nsStoreBoxDetail = namespace('box/box-detail')
+const nsStoreBoxHistory = namespace('box/box-detail')
 
 @Component({
   components: {
@@ -56,23 +57,30 @@ class BoxDetailHistory extends Vue {
   pageSize: number = 20
   pageNumber: number = 1
 
-  @nsStoreBoxDetail.State
-  locationHistory: []
+  @nsStoreBoxHistory.State
+  boxHistory: []
 
-  @nsStoreBoxDetail.State
-  totalHistory!: number
+  @nsStoreBoxHistory.State
+  totalBoxHistory!: number
 
-  @nsStoreBoxDetail.Action
-  actLocationHistory!: (params: any) => Promise<void>
+  @nsStoreBoxHistory.Action
+  actBoxHistory!: (params: any) => Promise<void>
 
   async mounted() {
-    await this.actLocationHistory({ id: this.$route.params.id })
+    await this.actBoxHistory({ id: this.$route.params.id })
   }
 
   async onPageHistory(event: any) {
     this.pageNumber = event.page + 1
-    await this.actLocationHistory({ id: this.$route.params.id })
+    await this.actBoxHistory({ id: this.$route.params.id })
+  }
 
+  get IconStatus( ) {
+    if(this.boxHistory.description === '') {
+      return ''
+    } else {
+      return ''
+    }
   }
 }
 

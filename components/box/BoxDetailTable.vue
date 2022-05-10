@@ -29,19 +29,19 @@ DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(
   column( field='name', header='NAME', :sortable='true', )
       template(#body='{ data }')
         span.font-bold.text-right {{data.name}}
-  column( field='amount', header='QUANTITY', :sortable='true', className="p-text-right" )
+  column( field='amount', header='QUANTITY', :sortable='true', className="text-right" )
     template(#body='{ data }')
         span.font-bold.text-right {{data.amount}}
-  column( field='unit', header='UNIT', :show-filter-match-modes='false' className="p-text-right" )
+  column( field='unit', header='UNIT', :show-filter-match-modes='false' className="text-right" )
     template(#body='{ data }')
       span.font-bold {{ data.unit.name }}
-  column( field='size', header='SIZE', :show-filter-match-modes='false' className="p-text-right" )
+  column( field='size', header='SIZE', :show-filter-match-modes='false' className="text-right" )
     template(#body='{ data }')
       span.font-bold {{ data.length }}*{{ data.width }}*{{ data.height }}
-  column( field='weight', header='WEIGHT(KG)', :show-filter-match-modes='false' className="p-text-right" )
+  column( field='weight', header='WEIGHT(KG)', :show-filter-match-modes='false' className="text-right" )
     template(#body='{ data }')
       span.font-bold {{data.weight}}
-  column( field='category.name', header='CATEGORY', sortable='', :show-filter-match-modes='false' className="p-text-right" )
+  column( field='category.name', header='CATEGORY', sortable='', :show-filter-match-modes='false' className="text-right" )
     template(#body='{ data }')
       span.font-bold {{ data.category.name }}
   template(#footer)
