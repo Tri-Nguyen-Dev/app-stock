@@ -43,7 +43,7 @@ export default class StorePackingBox extends VuexModule {
       const response = await $api.get(url)
       return response.data
     } catch (error) {
-      
+
     }
   }
 
@@ -54,15 +54,15 @@ export default class StorePackingBox extends VuexModule {
       const response = await $api.get(url)
       return response.data
     } catch (error) {
-      
+
     }
   }
 
   @Action({ commit: 'setLocationSuggestion', rawError: true })
-  async actLocationSuggestion(params: any): Promise<string | undefined> {
+  async actLocationSuggestion(data: any): Promise<string | undefined> {
     try{
       const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.GET_BOX_LOCATION)
-      const response = await $api.post(url, params)
+      const response = await $api.post(url, data)
       return response.data
     } catch (error) {}
   }

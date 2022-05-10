@@ -14,8 +14,8 @@
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
-        .uppercase &nbsp;(2 boxes, 4 items)
-    TabPanel(v-for='tab in listBox' :key='tab.boxCode' :disabled="tab.key !== activeIndex && type === 'originalBox'")
+        .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
+    TabPanel(v-for='(tab,index) in listBox' :key='tab.boxCode' :disabled="tab.key !== activeIndex && type === 'originalBox'")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -24,7 +24,7 @@
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
-          Dropdown(v-model='tab.boxSizeSelect' :options="boxSize" optionLabel="name").w-9
+          Dropdown.ml-1(v-model='tab.boxSizeSelect' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
@@ -45,24 +45,33 @@
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
             InputText(@change='addStockByBarcode($event)' v-model="barCodeText")
+        div(v-if="location && location[index]")
+          AutoComplete.edit-location(
+            v-model='location[index]',
+            field='name',
+            :suggestions='locationList',
+            @complete='searchLocation($event)'
+            :dropdown='true'
+          )
+            template(#item='slotProps')
+              .grid.align-items-center.grid-nogutter
+                span.font-bold.text-small {{ slotProps.item.name }}
+                .icon-arrow-up-right.icon
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type')
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+const nsStoreLocationList = namespace('location/location-list')
 
 @Component
 class PackingOriginal extends Vue {
   activeIndex: number = 0
   tabs: any = []
-  boxSize: any = [
-    { name: 'Small size (20*20*20)', code: 'S' },
-    { name: 'Medium size (20*20*20)', code: 'M' },
-    { name: 'Large size (20*20*20)', code: 'L' },
-    { name: 'Extra size (20*20*20)', code: 'XL' }
-  ]
+  selectedsd: any = null
 
   barCodeText: string = ''
   boxCodeText: string = ''
+  locationBox: any = []
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -70,7 +79,15 @@ class PackingOriginal extends Vue {
   @Prop() readonly isOutgoing!: boolean | false
   @Prop() readonly isTranffering!: boolean | false
   @Prop() listBox!: Array<any>
+  @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
+  @Prop() location !: Array<any>
+
+  @nsStoreLocationList.State
+  locationList: {}
+
+  @nsStoreLocationList.Action
+  actLocationList!: (params: any) => Promise<void>
 
   handleAddTab() {
     if(this.listBox.length <= 9) {
@@ -116,6 +133,24 @@ class PackingOriginal extends Vue {
 
   addTagByBarCode(e:any) {
     this.listBox[this.activeIndex - 1].tagCode = e.target.value
+  }
+
+  get getTotalBox() {
+    return _.size(this.listBox)
+  }
+
+  get getTotalItem() {
+    const sum = this.listBox.reduce((accumulator, object) => {
+      const length = this.type === 'originalBox' ? _.size(_.partition(object.items, ['outGoingQuantity', 0])[1]) : _.size(object.items)
+      return accumulator +  length
+    }, 0)
+    return sum
+  }
+
+  async searchLocation (e) {
+    await this.actLocationList({
+      location: e.query
+    })
   }
 }
 
