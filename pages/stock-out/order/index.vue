@@ -30,12 +30,12 @@
           column(field='no', header='NO')
             template(#body='slotProps')
               span.font-bold {{ slotProps.index + 1 }}
-          column(field='image' header='IMAGE' :sortable='true' sortField='_id')
+          column(field='image' header='IMAGE' :sortable='true' )
             template(#body='{data}')
               .stock__table__image.overflow-hidden
                 img.h-2rem.w-2rem.border-round(
                   :src="data.stock.imagePath | getThumbnailUrl" alt='' width='100%' style='object-fit: cover;')
-          column(field='barCode' header='BARCODE' :sortable='true' sortField='_stock.barCode')
+          column(field='barCode' header='BARCODE' :sortable='true' )
             template(#body='{data}')
               span.text-primary {{ data.stock.barCode }}
           column(field='sku', header='SKU', sortable='', data-type='numeric')
@@ -47,15 +47,15 @@
           column(field='box.id', header='BOXCODE', :sortable='true')
             template(#body='{ data }')
               span.font-bold.text-right {{ data.stock.barCode }}
-          column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '3%'}" sortField='_id')
-          column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '3%'}" sortField='_id')
+          column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' className="text-right" )
+          column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' className="text-right" )
             template(#body='{data}')
               span(v-if='isActive !== data.id ') {{ data.delivery }}
               InputNumber(
               v-model="data.delivery" 
               mode="decimal" 
               :min="0" 
-              :max="data.inventory" 
+              :max="data.amount" 
               inputClass="w-full" 
               v-else ).w-7rem
           column(field='tag', header='TAG', headerClass='grid-header-center')
@@ -65,7 +65,6 @@
           column(
             :exportable='false',
             header='ACTION',
-            className='p-text-right',
           )
             template(#body='{ data }')
               .table__action(v-if='isActive !== data.id')
@@ -185,8 +184,9 @@ class createOrder extends Vue {
   }
 
   async showModalDelete( data:any ) {
-    this.listItemsAdd.splice(this.listItemsAdd.indexOf(data),1)
-    await this.actGetCreateOrder(this.listItemsAdd)
+    await this.actOutGoingList(
+      _.cloneDeep(this.listItemsAdd.splice(
+        this.listItemsAdd.indexOf(data),1)))
   }
 
   async handleSubmit(){
@@ -218,9 +218,9 @@ class createOrder extends Vue {
   }
 
   async handleCancel(){
+    const emptyList =  this.listItemsAdd = []
     await this.actGetCreateOrder(null)
-    await  this.actOutGoingList(null)
-    this.listItemsAdd = []
+    await  this.actOutGoingList(_.cloneDeep(emptyList))
   }
 
   get listItemsAddSize() {
