@@ -1,5 +1,6 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
+    Toast
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
       StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
@@ -85,23 +86,26 @@ class DeliveryOrderPacking extends Vue {
 
   @nsStorePackingDetail.Action
   actGetDeliveryOrderDetail!: (id: any) => Promise<any>
-  
-  async mounted() {    
+
+  async mounted() {
     await this.actGetDeliveryOrderDetail('DO000000000007')
     const result = await this.actGetListOriginal('DO000000000007')
-    if(result) {
+    if (result) {
       this.listOriginalBox = this.originalList.map((x: any) => {
         const obj = _.cloneDeep(x)
-        return { ...obj, items: obj.items.map(item => ({ 
-          ...item,
-          initialQuantity: item.quantity,
-          actualOutGoing: 0,
-          actualTranffering: 0
-        })) }
+        return {
+          ...obj,
+          items: obj.items.map((item) => ({
+            ...item,
+            initialQuantity: item.quantity,
+            actualOutGoing: 0,
+            actualTranffering: 0
+          }))
+        }
       })
     }
   }
-  
+
   listOriginalBox: any = []
   listOutGoingBox: any = []
   listTranfferingBox: any = []
@@ -118,41 +122,58 @@ class DeliveryOrderPacking extends Vue {
       checked: false,
       boxSizeSelect: ''
     })
-    if(_.size(this.listOutGoingBox) === 1) 
+    if (_.size(this.listOutGoingBox) === 1)
       this.outGoingBoxActive = this.listOutGoingBox[0]
   }
 
   addStockInOutGoing(barCode: string) {
-    const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
-    if(stockOriginal) {
+    const stockOriginal = _.find(this.originalBoxActive.items, { barCode })
+    if (stockOriginal) {
       const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode })
       const { outGoingQuantity, actualOutGoing } = stockOriginal
       const isFullQuantityStock = outGoingQuantity > actualOutGoing
-      this.addStock(this.outGoingBoxActive, stockOriginal, stockOutGoing, isFullQuantityStock, true)
+      this.addStock(
+        this.outGoingBoxActive,
+        stockOriginal,
+        stockOutGoing,
+        isFullQuantityStock,
+        true
+      )
     } else {
       // console.log('stock khong co trong Original List')
     }
   }
 
-  addStock(boxActive, stockOriginal, stockPacking, isFullQuantityStock, isOutGoing = false) {
-    if(isFullQuantityStock) {
+  addStock(
+    boxActive,
+    stockOriginal,
+    stockPacking,
+    isFullQuantityStock,
+    isOutGoing = false
+  ) {
+    if (isFullQuantityStock) {
       stockOriginal.quantity--
-      if(stockPacking) {
+      if (stockPacking) {
         stockPacking.quantity++
       } else {
-        boxActive.items.unshift({ 
+        boxActive.items.unshift({
           ...stockOriginal,
           quantity: 1,
-          originalBox:  this.originalBoxActive.boxCode
+          originalBox: this.originalBoxActive.boxCode
         })
       }
-      if(isOutGoing) {
+      if (isOutGoing) {
         stockOriginal.actualOutGoing++
       } else {
         stockOriginal.actualTranffering++
       }
     } else {
-      // console.log('vuot qua so luong thỏa mãn điều kiện của box')
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'pass through so luong satisfies the condition of box',
+        life: 3000
+      })
     }
   }
 
@@ -169,19 +190,33 @@ class DeliveryOrderPacking extends Vue {
       boxSizeSelect: '',
       estimateFee: 0
     })
-    if(_.size(this.listTranfferingBox) === 1) 
+    if (_.size(this.listTranfferingBox) === 1)
       this.tranfferingBoxActive = this.listTranfferingBox[0]
   }
 
   addStockInTranferring(barCode: string) {
-    const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
-    if(stockOriginal) {
-      const tranfferingStock = _.find(this.tranfferingBoxActive.items, { barCode })
-      const { initialQuantity, outGoingQuantity, actualTranffering } = stockOriginal
-      const isFullQuantityStock = initialQuantity - outGoingQuantity > actualTranffering
-      this.addStock(this.tranfferingBoxActive, stockOriginal, tranfferingStock, isFullQuantityStock)
+    const stockOriginal = _.find(this.originalBoxActive.items, { barCode })
+    if (stockOriginal) {
+      const tranfferingStock = _.find(this.tranfferingBoxActive.items, {
+        barCode
+      })
+      const { initialQuantity, outGoingQuantity, actualTranffering } =
+        stockOriginal
+      const isFullQuantityStock =
+        initialQuantity - outGoingQuantity > actualTranffering
+      this.addStock(
+        this.tranfferingBoxActive,
+        stockOriginal,
+        tranfferingStock,
+        isFullQuantityStock
+      )
     } else {
-      // console.log('stock khong co trong Original List')
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Stock is not in the Original List',
+        life: 3000
+      })
     }
   }
 
@@ -189,7 +224,30 @@ class DeliveryOrderPacking extends Vue {
     this.tranfferingBoxActive = this.listTranfferingBox[index - 1]
   }
 
+  checkQuantityOriginal(list) {
+    if (list && list.length > 0) {
+      let isCheck = true
+      list.forEach((boxItem) => {
+        boxItem?.items.forEach((itemStock) => {
+          if (itemStock.quantity > 0) {
+            isCheck = false
+          } else isCheck = true
+        })
+      })
+      return isCheck
+    }
+  }
+
   handleClick() {
+    if (!this.checkQuantityOriginal(this.listOriginalBox)) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'The number of products in the box has not been processed yet',
+        life: 3000
+      })
+    }
+    // console.log(this.checkQuantityOriginal(this.listOriginalBox))
     // console.log('this.listOutGoingBox', this.listOutGoingBox)
     // console.log('this.listTranfferingBox', this.listTranfferingBox)
   }
