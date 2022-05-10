@@ -51,14 +51,14 @@
               img(src='~/assets/icons/box-border.svg')
             .col
               span.font-semibold.text-base.mr-1 Total boxs:
-              .font-semibold.text-primary 1
+              .font-semibold.text-primary {{listTranfferingBox.length + listOutGoingBox.length}}
         .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
               img(src='~/assets/icons/total-items-border.svg')
             .col
               span.font-semibold.text-base.mr-1 Total items:
-              .font-semibold.text-primary 1
+              .font-semibold.text-primary {{tranferringOutGoing}}
         .col-1.flex.justify-content-end.p-1
           Button.w-10.justify-content-center.flex(@click="handleClick") Next
 </template>
@@ -203,6 +203,13 @@ class DeliveryOrderPacking extends Vue {
   handleClick() {
     // console.log('this.listOutGoingBox', this.listOutGoingBox)
     // console.log('this.listTranfferingBox', this.listTranfferingBox)
+  }
+
+  get tranferringOutGoing() {
+    const tranferringOutGoing = [...this.listOutGoingBox,...this.listTranfferingBox]
+    return tranferringOutGoing.reduce((accumulator:any, object:any) => {
+      return accumulator + object.items.length
+    },0)
   }
 }
 
