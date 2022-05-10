@@ -20,7 +20,7 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
   Column(field="newLocation" header="NEW LOCATION" className="text-right" :sortable="true" bodyClass="font-semibold")
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-primary.font-bold.font-sm {{ data.newLocation.name }}
+        span.text-primary.font-bold.font-sm {{ data.newLocation }}
         .icon.icon-arrow-up-right.bg-primary
   Column(field="createdBy.id" header="CREATOR ID" sortable )
   template(#empty)

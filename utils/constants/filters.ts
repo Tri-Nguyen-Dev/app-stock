@@ -7,15 +7,15 @@ export namespace FilterConstants {
   ])
   export const STATUS_MAP = new Map<string, string>([
     ['BOX_STATUS_AVAILABLE', 'AVAILABLE'],
-    ['BOX_TRANFERING', 'TRANFERING'],
-    ['BOX_OUTGOING', 'OUTGOING']
+    ['BOX_OUTGOING', 'OUTGOING'],
+    ['BOX_STATUS_DISABLE', 'DISABLE']
   ])
   export const STATUS_REQUEST_MAP = new Map<string, string>([
     ['REQUEST_STATUS_SAVED', 'SAVED'],
     ['REQUEST_STATUS_DRAFT', 'DRAFT']
   ])
   export const STATUS_HISTORY_MAP = new Map<string, string>([
-    ['REQUEST_STATUS_SAVED', 'SAVED'],
-    ['REQUEST_STATUS_DRAFT', 'DRAFT']
+    ['REQUEST_ACTION_TO_TRANSFERRING_BOX', 'TRANSFERRING'],
+    ['REQUEST_ACTION_TO_OUTGOING_BOX', 'OUTGOING']
   ])
 }

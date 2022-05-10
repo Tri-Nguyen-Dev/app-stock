@@ -43,7 +43,7 @@ export default class StoreBox extends VuexModule {
 
   @Mutation
   getBoxHistory(data: any) {
-    this.locationHistory = data.items
+    this.boxHistory = data.items
     this.totalBoxHistory = data.total
   }
 
@@ -71,7 +71,7 @@ export default class StoreBox extends VuexModule {
   @Action({ commit: 'getBoxHistory', rawError: true })
   async actBoxHistory(id?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.BOX_HISTORY,  id )
-    const response: any = await $api.post(url, id )
+    const response: any = await $api.get(url, id )
     return response.data
   }
 

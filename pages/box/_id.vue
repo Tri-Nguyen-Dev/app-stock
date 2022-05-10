@@ -21,7 +21,7 @@
                 v-if="boxDetail.status === 'BOX_STATUS_AVAILABLE'"
               ) {{ boxDetail.status | boxStatus }}
               span.p-2.table__status.table__status--disable(
-                v-else-if="boxDetail.status === 'BOX_TRANFERING'"
+                v-else-if="boxDetail.status === 'BOX_OUTGOING'"
               ) {{ boxDetail.status | boxStatus }}
               span.p-2.table__status.table__status--draft(v-else) {{ boxDetail.status | boxStatus }}
           .font-bold.my-3
@@ -136,7 +136,7 @@
               template(#header)
                 .icon.icon-box-1.mr-2.surface-600
                 span Box history
-              //- BoxHistory
+              BoxHistory
         .grid.tabview-left( v-if='activeTab ==  0 ' )
           div.mr-3
             .header__search

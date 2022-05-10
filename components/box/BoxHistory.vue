@@ -13,21 +13,25 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
   Column(field="createdAt" header="TIME" sortable bodyClass="font-semibold"  :styles="{width: '900px'}"  )
     template(#body='{data}')
       span.font-bold {{ data.createdAt | dateTimeHour12 }}
-  Column(field="boxCode" header="Box Code" className="text-right" sortable)
+  Column(field="endBoxId" header="Box Code" className="text-right" sortable)
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-600.font-bold.font-sm {{ data.boxCode }}
-  Column(field="newLocation" header="LOCATION" className="text-right" :sortable="true" bodyClass="font-semibold")
+        span.font-bold.font-sm {{ data.endBoxId }}
+        .icon.icon-arrow-up-right
+  Column(field="location" header="LOCATION" className="text-right" :sortable="true" bodyClass="font-semibold")
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-primary.font-bold.font-sm {{ data.newLocation }}
+        span.text-primary.font-bold.font-sm {{ data.location }}
         .icon.icon-arrow-up-right.bg-primary
   Column(field="description" header="Status" className="text-right" sortable)
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-600.font-bold.font-sm {{ data.originalLocation }}
-        .icon.bg-primary(:class="`icon-${IconStatus}`")
+        span.font-bold.font-sm {{ data.description | statusBoxHistory }}
+        .icon.ml-1( :class="data.description === 'REQUEST_ACTION_TO_OUTGOING_BOX' ? 'icon-arrow-up-right' : 'icon-rotate-left' "  )
   Column(field="pic" header="PIC" sortable )
+    template(#body="{data}")
+      .flex.align-items-center.cursor-pointer.justify-content-end
+        span.font-bold.font-sm {{ data.pic }}
   template(#empty)
     div.flex.align-items-center.justify-content-center.flex-column
       img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
@@ -58,7 +62,7 @@ class BoxDetailHistory extends Vue {
   pageNumber: number = 1
 
   @nsStoreBoxHistory.State
-  boxHistory: []
+  boxHistory!: []
 
   @nsStoreBoxHistory.State
   totalBoxHistory!: number
@@ -67,21 +71,14 @@ class BoxDetailHistory extends Vue {
   actBoxHistory!: (params: any) => Promise<void>
 
   async mounted() {
-    await this.actBoxHistory({ id: this.$route.params.id })
+    await this.actBoxHistory({ id:  'B000000000161' })
   }
 
   async onPageHistory(event: any) {
     this.pageNumber = event.page + 1
-    await this.actBoxHistory({ id: this.$route.params.id })
+    await this.actBoxHistory({ id:  'B000000000161' })
   }
 
-  get IconStatus( ) {
-    if(this.boxHistory.description === '') {
-      return ''
-    } else {
-      return ''
-    }
-  }
 }
 
 export default BoxDetailHistory
