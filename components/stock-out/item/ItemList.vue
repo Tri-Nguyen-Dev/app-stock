@@ -71,7 +71,7 @@ DataTable#custom-table.w-full.flex.flex-column.table__sort-icon.bg-white.box-pag
 	column(field='airtag', header='TAG', headerClass='grid-header-center')
 		template(#body='{ data }')
 			.grid-cell-center
-				Checkbox(v-model='data.airtag', :binary='true', :disabled='isDetail')
+				Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='isDetail')
 </template>
 
 <script lang="ts">

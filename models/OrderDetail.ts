@@ -30,6 +30,8 @@ export namespace OrderDetail {
         itemStatus?: string
       }
       airtag?: Airtag.Model
+      hasAirtag?: boolean
+      amount?: number
     }
 
     ],
