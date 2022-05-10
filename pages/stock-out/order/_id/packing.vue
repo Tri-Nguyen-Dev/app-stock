@@ -1,7 +1,8 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
+    Toast
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
-      StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
+      //- StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div.flex.flex-column
         .grid.grid-nogutter.mb-3
@@ -31,6 +32,7 @@
             icon='icon-repeat'
             :isTranffering='true'
             :listBox="listTranfferingBox"
+            :location="boxLocation"
             type='tranferringBox'
             @selectedTab='selectedTranfferingBox'
             @addBoxNew="addNewBoxTranferring"
@@ -68,6 +70,8 @@ import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import { PackingDetail } from '~/models/PackingDetail'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 const nsStoreBox = namespace('box/box-size-list')
+const nsStoreLocationList = namespace('location/location-list')
+
 @Component
 class DeliveryOrderPacking extends Vue {
   originalBoxActive: any = {}
@@ -76,6 +80,7 @@ class DeliveryOrderPacking extends Vue {
   listOriginalBox: any = []
   listOutGoingBox: any = []
   listTranfferingBox: any = []
+  nextSuggestLocation: boolean = false
 
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
@@ -85,6 +90,9 @@ class DeliveryOrderPacking extends Vue {
 
   @nsStorePackingDetail.State('deliveryOrderDetail')
   deliveryOrderDetail!: any
+
+  @nsStorePackingDetail.State('boxLocation')
+  boxLocation!: any[]
 
   @nsStoreBox.State
   boxSizeList!: any
@@ -98,21 +106,30 @@ class DeliveryOrderPacking extends Vue {
   @nsStoreBox.Action
   actGetBoxSizeList!:() => Promise<any>
 
+  @nsStorePackingDetail.Action
+  actLocationSuggestion!:(data: any) => Promise<any>
+
+  @nsStoreLocationList.Action
+  actLocationList!: (params: any) => Promise<void>
+
   async mounted() {
     await Promise.all ([
       this.actGetDeliveryOrderDetail('DO000000000041'),
       this.actGetBoxSizeList()
     ])
     const result = await this.actGetListOriginal('DO000000000041')
-    if(result) {
+    if (result) {
       this.listOriginalBox = this.originalList.map((x: any) => {
         const obj = _.cloneDeep(x)
-        return { ...obj, items: obj.items.map(item => ({
-          ...item,
-          initialQuantity: item.quantity,
-          actualOutGoing: 0,
-          actualTranffering: 0
-        })) }
+        return {
+          ...obj,
+          items: obj.items.map((item) => ({
+            ...item,
+            initialQuantity: item.quantity,
+            actualOutGoing: 0,
+            actualTranffering: 0
+          }))
+        }
       })
     }
   }
@@ -129,41 +146,63 @@ class DeliveryOrderPacking extends Vue {
       checked: false,
       boxSizeSelect: ''
     })
-    if(_.size(this.listOutGoingBox) === 1)
+    if (_.size(this.listOutGoingBox) === 1)
       this.outGoingBoxActive = this.listOutGoingBox[0]
   }
 
   addStockInOutGoing(barCode: string) {
-    const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
-    if(stockOriginal) {
+    const stockOriginal = _.find(this.originalBoxActive.items, { barCode })
+    if (stockOriginal) {
       const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode })
       const { outGoingQuantity, actualOutGoing } = stockOriginal
       const isFullQuantityStock = outGoingQuantity > actualOutGoing
-      this.addStock(this.outGoingBoxActive, stockOriginal, stockOutGoing, isFullQuantityStock, true)
+      this.addStock(
+        this.outGoingBoxActive,
+        stockOriginal,
+        stockOutGoing,
+        isFullQuantityStock,
+        true
+      )
     } else {
-      // console.log('stock khong co trong Original List')
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Pass through so luong satisfies the condition of box',
+        life: 3000
+      })
     }
   }
 
-  addStock(boxActive, stockOriginal, stockPacking, isFullQuantityStock, isOutGoing = false) {
-    if(isFullQuantityStock) {
+  addStock(
+    boxActive,
+    stockOriginal,
+    stockPacking,
+    isFullQuantityStock,
+    isOutGoing = false
+  ) {
+    if (isFullQuantityStock) {
       stockOriginal.quantity--
-      if(stockPacking) {
+      if (stockPacking) {
         stockPacking.quantity++
       } else {
         boxActive.items.unshift({
           ...stockOriginal,
           quantity: 1,
-          originalBox:  this.originalBoxActive.boxCode
+          originalBox: this.originalBoxActive.boxCode
         })
       }
-      if(isOutGoing) {
+      if (isOutGoing) {
         stockOriginal.actualOutGoing++
       } else {
         stockOriginal.actualTranffering++
       }
     } else {
-      // console.log('vuot qua so luong thỏa mãn điều kiện của box')
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Pass through so luong satisfies the condition of box',
+        life: 3000
+      })
     }
   }
 
@@ -185,14 +224,28 @@ class DeliveryOrderPacking extends Vue {
   }
 
   addStockInTranferring(barCode: string) {
-    const stockOriginal= _.find(this.originalBoxActive.items, { barCode })
-    if(stockOriginal) {
-      const tranfferingStock = _.find(this.tranfferingBoxActive.items, { barCode })
-      const { initialQuantity, outGoingQuantity, actualTranffering } = stockOriginal
-      const isFullQuantityStock = initialQuantity - outGoingQuantity > actualTranffering
-      this.addStock(this.tranfferingBoxActive, stockOriginal, tranfferingStock, isFullQuantityStock)
+    const stockOriginal = _.find(this.originalBoxActive.items, { barCode })
+    if (stockOriginal) {
+      const tranfferingStock = _.find(this.tranfferingBoxActive.items, {
+        barCode
+      })
+      const { initialQuantity, outGoingQuantity, actualTranffering } =
+        stockOriginal
+      const isFullQuantityStock =
+        initialQuantity - outGoingQuantity > actualTranffering
+      this.addStock(
+        this.tranfferingBoxActive,
+        stockOriginal,
+        tranfferingStock,
+        isFullQuantityStock
+      )
     } else {
-      // console.log('stock khong co trong Original List')
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Stock is not in the Original List',
+        life: 3000
+      })
     }
   }
 
@@ -200,9 +253,36 @@ class DeliveryOrderPacking extends Vue {
     this.tranfferingBoxActive = this.listTranfferingBox[index - 1]
   }
 
-  handleClick() {
-    // console.log('this.listOutGoingBox', this.listOutGoingBox)
-    // console.log('this.listTranfferingBox', this.listTranfferingBox)
+  checkQuantityOriginal(list) {
+    if (list && list.length > 0) {
+      let isCheck = true
+      list.forEach((boxItem) => {
+        boxItem?.items.forEach((itemStock) => {
+          if (itemStock.quantity > 0) {
+            isCheck = false
+          } else isCheck = true
+        })
+      })
+      return isCheck
+    }
+  }
+
+  async handleClick() {
+    if (!this.checkQuantityOriginal(this.listOriginalBox)) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'The number of products in the box has not been processed yet',
+        life: 3000
+      })
+    } else if(this.listTranfferingBox) {
+      this.nextSuggestLocation = true
+      let listBoxLocation = [ ...this.listTranfferingBox ]
+      listBoxLocation = listBoxLocation.map((item) => {
+        return item.boxSizeSelect?.id.toString()
+      })
+      await this.actLocationSuggestion(listBoxLocation)
+    }
   }
 
   get tranferringOutGoing() {
