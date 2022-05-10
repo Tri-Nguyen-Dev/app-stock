@@ -1,7 +1,7 @@
 <template lang="pug">
 .grid.grid-nogutter.packing__detail--container
 	.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
-		PackingInformationDetail
+		PackingInformationDetail(:deliveryOrderDetail ='orderDetail')
 	.col-9.pl-4.pr-1.h-full.overflow-y-auto.overflow-x-hidden.flex-1
 		.grid.justify-content-between
 			.col-8
