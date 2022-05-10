@@ -1,25 +1,31 @@
 <template lang="pug">
-DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
+DataTable#custom-table.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 	:resizableColumns='true',
 	:value='dataRenderItems',
 	dataKey='id',
 	:row-hover='true',
 	responsiveLayout='scroll',
 	columnResizeMode='fit',
-	:selection.sync='selectedItem'
-	@row-select='selectRow()'
+	v-if='dataRenderItems',
+	:selection.sync='selectedItem',
+	@row-select='selectRow()',
+	@row-unselect='unSelectRow'
 )
 	template(#empty)
 		.flex.align-items-center.justify-content-center.flex-column
 			img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
 			p.text-900.font-bold.mt-3 List is empty!
-	column(
-		selectionMode='multiple',
-		styles='width: 3rem',
-	)
 	column(field='no', header='NO')
 		template(#body='slotProps')
 			span.font-bold {{ slotProps.index + 1 }}
+	column(
+		field='picked',
+		header='PICKED',
+		selectionMode='multiple',
+		styles='width: 3rem',
+		:hidden='!isPack',
+		headerClass='grid-header-center'
+	)
 	column(
 		field='stock.imagePath',
 		header='IMAGE',
@@ -27,11 +33,7 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		filter-match-mode='contains'
 	)
 		template(#body='slotProps')
-			img(
-				:src='slotProps.data.stock.imagePath',
-				:alt='slotProps.data.stock.image',
-				style='width: 3rem; height: 3rem'
-			)
+			img(:src='slotProps.data.stockBox.stock.imagePath | getThumbnailUrl')
 	column.text-overflow-ellipsis(
 		field='stock.barCode',
 		header='BARCODE',
@@ -39,25 +41,25 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		:show-filter-match-modes='false'
 	)
 		template(#body='{ data }')
-			span.text-primary.font-bold {{ data.stock.barCode }}
+			span.text-primary.font-bold {{ data.stockBox.stock.barCode }}
 	column(field='sku', header='SKU', sortable='', data-type='numeric')
 		template(#body='{ data }')
-			span.uppercase {{ data.sku }}
+			span.uppercase {{ data.stockBox.sku }}
 	column(field='stock.name', header='NAME', :sortable='true')
 		template(#body='{ data }')
-			span.font-bold.text-right {{ data.stock.name }}
+			span.font-bold.text-right {{ data.stockBox.stock.name }}
 	column(
 		field='location.name',
-		:header='isPack?"LOCATION":""',
+		:header='isPack ? "LOCATION" : ""',
 		:sortable='isPack',
-		:rendered='false'
-		:styleClass='{"hidden" : !isPack}'
+		:rendered='false',
+		:hidden='!isPack'
 	)
 		template(#body='{ data }')
-			span.font-bold.text-primary.text-right(:class='{"hidden" : !isPack}') {{ data.location.name }}
-	column(field='box.barCode', header='BOXCODE', :sortable='true')
+			span.font-bold.text-primary.text-right {{ data.stockBox.box.rackLocation.name }}
+	column(field='box.qrCode', header='BOXCODE', :sortable='true')
 		template(#body='{ data }')
-			span.font-bold.text-right {{ data.box.barCode }}
+			span.font-bold.text-right {{ data.stockBox.box.qrCode }}
 	column(
 		field='amount',
 		header='QUANTITY',
@@ -65,28 +67,11 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		headerClass='grid-header-right'
 	)
 		template(#body='{ data }')
-			.font-bold.grid-cell-right {{ data.amount }}
-	column(field='tag', header='TAG', headerClass='grid-header-center')
+			.font-bold.grid-cell-right {{ data.stockBox.amount }}
+	column(field='airtag', header='TAG', headerClass='grid-header-center')
 		template(#body='{ data }')
 			.grid-cell-center
-				Checkbox(v-model='data.tag', :binary='true', :disabled='isDetail')
-	Column(
-		:exportable='false',
-		header='ACTION',
-		className='p-text-right',
-		v-if='action === "CREATE"'
-	)
-		template(#body='{ data }')
-			Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(
-				:disabled='data.itemStatus == "ITEM_STATUS_DISABLE"',
-				@click='editItemDetail(data.id)'
-			)
-				.icon--small.icon-btn-edit
-			Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(
-				@click='showModalDelete(data.id)',
-				:disabled='data.itemStatus === "ITEM_STATUS_DISABLE"'
-			)
-				.icon--small.icon-btn-delete
+				Checkbox(v-model='data.airtag', :binary='true', :disabled='isDetail')
 </template>
 
 <script lang="ts">
@@ -100,63 +85,30 @@ class ItemList extends Vue {
   @Prop({ default: STOCK_OUT_ACTION.ORDER_DETAIL }) action: string
   isPack = false
   selectedItem: any[] = []
+  enablePack = false
 
   get dataRenderItems() {
-    if (!this.listItems) {
-      return [
-        {
-          id: '1231234312',
-          amount: 100,
-          tag: true,
-          picked: true,
-          sku: 'SKU',
-          location: {
-            name: 'ABC-123'
-          },
-          box: {
-            barCode: '123521312'
-          },
-          stock: {
-            imagePath: '/assets/images/sample.png',
-            barCode: '12311',
-            name: 'IP12 pro'
-          }
-        },
-        {
-          id: '1234312',
-          amount: 100,
-          tag: false,
-          picked: true,
-          sku: 'SKU',
-          location: {
-            name: 'ABC-123'
-          },
-          box: {
-            barCode: '123521312'
-          },
-          stock: {
-            imagePath: '/assets/images/sample.png',
-            barCode: '12311',
-            name: 'IP12 pro'
-          }
-        }
-      ]
-    } else {
-      return this.listItems
-    }
+    return this.listItems
   }
 
   @Watch('action')
-  changePack(){
+  changePack() {
     this.isPack = true
   }
 
   editItemDetail() {}
-	
+
   showModalDelete() {}
 
-  selectRow(){
-    this.$emit('selectRow',this.selectedItem)
+  selectRow() {
+    this.$emit('selectRow', this.selectedItem)
+    if (this.selectedItem.length === this.dataRenderItems.length) {
+      this.$emit('enablePack', true)
+    }
+  }
+
+  unSelectRow() {
+    this.$emit('enablePack', false)
   }
 }
 
@@ -165,17 +117,10 @@ export default ItemList
 
 <style lang="sass" scoped>
 .box-page-container
-  height: calc(100vh - 18rem)
-.p-column-header-content
-  .p-column-title
-    color: #464D64
-    font-weight: 700
-    text-transform: uppercase
-    letter-spacing: 1px
-.p-datatable
-  .p-datatable-thead
-    tr
-      th
-        background: var(--surface-300)
-
+	height: calc(100vh - 18rem)
+::v-deep.p-datatable .p-column-header-content .p-checkbox-box.p-component
+	display: none !important
+::v-deep.p-datatable .p-datatable-tbody > tr.p-highlight
+	background-color: $color-white !important
+	color: var(--surface-900) !important
 </style>

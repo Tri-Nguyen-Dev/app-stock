@@ -1,16 +1,16 @@
 export namespace User {
 
   export interface Model {
-    id: number,
-    email: string,
-    username: string,
-    firstName: string,
-    lastName: string,
-    displayName: string,
-    phoneNumber: string,
-    avatarUrl: string,
-    roleId: number,
-    status: string
+    id?: number,
+    email?: string,
+    username?: string,
+    firstName?: string,
+    lastName?: string,
+    displayName?: string,
+    phoneNumber?: string,
+    avatarUrl?: string,
+    roleId?: number,
+    status?: string
   }
 
   export interface KeyCloak {
