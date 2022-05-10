@@ -23,7 +23,7 @@
               span.p-2.table__status.table__status--disable(
                 v-else-if="boxDetail.status === 'BOX_STATUS_DISABLE'"
               ) {{ boxDetail.status | boxStatus }}
-              span.p-2.table__status.table__status--draft(v-else) {{ sboxDetail.tatus | boxStatus }}
+              span.p-2.table__status.table__status--draft(v-else) {{ boxDetail.status | boxStatus }}
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
