@@ -71,12 +71,12 @@ class BoxDetailHistory extends Vue {
   actBoxHistory!: (params: any) => Promise<void>
 
   async mounted() {
-    await this.actBoxHistory({ id:  'B000000000161' })
+    await this.actBoxHistory({ id:  this.$route.params.id })
   }
 
   async onPageHistory(event: any) {
     this.pageNumber = event.page + 1
-    await this.actBoxHistory({ id:  'B000000000161' })
+    await this.actBoxHistory({ id:  this.$route.params.id })
   }
 
 }
