@@ -9,7 +9,7 @@
       .col-12.justify-content-between.flex
         div
           h1.text-heading Item list
-          span.text-subheading {{ listItemsAdd.length }} product found
+          span.text-subheading {{ listItemsAddSize }} product found
         div
           .btn.btn-primary(@click='handleSubmit')
             .icon.icon-add-items.surface-900.bg-white
@@ -34,7 +34,7 @@
             template(#body='{data}')
               .stock__table__image.overflow-hidden
                 img.h-2rem.w-2rem.border-round(
-                  :src='data.image | getThumbnailUrl' alt='' width='100%' style='object-fit: cover;')
+                  :src="data.stock.imagePath | getThumbnailUrl" alt='' width='100%' style='object-fit: cover;')
           column(field='barCode' header='BARCODE' :sortable='true' sortField='_stock.barCode')
             template(#body='{data}')
               span.text-primary {{ data.stock.barCode }}
@@ -87,7 +87,7 @@
                 )
                   .icon--small.pi.pi-times.text-primary
           template( #footer  )
-            .mr-4.flex.justify-content-end( v-if="listItemsAdd.length > 0" )
+            .mr-4.flex.justify-content-end( v-if="listItemsAddSize > 0" )
               Button( label='Cancel' @click='handleCancel' ).btn.btn__default.flex-initial
               Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
             .grid.grid-nogutter.ml-3( v-else )
@@ -179,7 +179,7 @@ class createOrder extends Vue {
   }
 
   async saveEditItem( ) {
-    await this.actGetCreateOrder(
+    await this.actOutGoingList(
       _.cloneDeep(this.listItemsAdd))
     this.isActive = ''
   }
@@ -220,6 +220,11 @@ class createOrder extends Vue {
   async handleCancel(){
     await this.actGetCreateOrder(null)
     await  this.actOutGoingList(null)
+    this.listItemsAdd = []
+  }
+
+  get listItemsAddSize() {
+    return this.listItemsAdd.length || 0
   }
 
 }

@@ -8,7 +8,7 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreCreateReceipt extends VuexModule {
   private static readonly STATE_URL = {
-    GET_INVENTORY: '/seller/item-list',
+    GET_INVENTORY: '/stock/list-by-seller',
     POST_DO : 'delivery-order/create'
   }
 

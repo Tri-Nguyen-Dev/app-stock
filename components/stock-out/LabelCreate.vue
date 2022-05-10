@@ -65,7 +65,7 @@ class LabelCreate extends Vue {
   user!: any
 
   @nsStoreWarehouse.Action
-  actWarehouseList!:() => Promise<void>
+  actWarehouseBySeller!:(params : any) => Promise<void>
 
   @nsStoreSeller.Action
   actSellerList!:(params: any) => Promise<void>
@@ -93,7 +93,7 @@ class LabelCreate extends Vue {
     InforSeller[0].value = event.email
     InforSeller[1].value = event.name
     InforSeller[2].value = event.phone
-    this.actWarehouseList()
+    this.actWarehouseBySeller( event.email )
   }
 
   handleUser() {
