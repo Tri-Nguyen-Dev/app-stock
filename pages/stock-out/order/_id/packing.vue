@@ -114,10 +114,10 @@ class DeliveryOrderPacking extends Vue {
 
   async mounted() {
     await Promise.all ([
-      this.actGetDeliveryOrderDetail('DO000000000003'),
+      this.actGetDeliveryOrderDetail('DO000000000041'),
       this.actGetBoxSizeList()
     ])
-    const result = await this.actGetListOriginal('DO000000000003')
+    const result = await this.actGetListOriginal('DO000000000041')
     if (result) {
       this.listOriginalBox = this.originalList.map((x: any) => {
         const obj = _.cloneDeep(x)
