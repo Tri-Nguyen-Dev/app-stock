@@ -31,7 +31,8 @@
       "@nuxt/types",
       "@nuxtjs/axios",
       "@nuxtjs/auth-next",
-      "@types/node"
+      "@types/node",
+      "cookie-universal-nuxt"
     ]
   },
   "exclude": [
