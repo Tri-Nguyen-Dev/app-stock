@@ -10,7 +10,7 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title ID receipt note
-							.filter__text(v-if='id') {{id}}
+							.filter__text(v-if='id') {{ id }}
 				.col
 					.filter__item.item--disabled
 						.filter__title ID Creator
@@ -76,20 +76,20 @@
 							.col-6.flex.align-items-center.justify-content-end
 								Button.p-button-default.p-button-rounded.p-button-text(
 									type='button',
-									icon='pi pi-ellipsis-h',
-									@click.stop='activeIndex = box.index; isModalDelete = true;'
+									icon='pi pi-times',
+									@click.stop='activeIndex = box.index; checkDeleteBox()'
 								)
 							.col-12.flex.align-items-center
 								.grid
 									.col-12.pb-0
 										span.uppercase.font-semibold.mr-1 box {{ box.index + 1 }}
-									.col-12.pb-0(v-if='box.location')
+									.col-12.pb-0(v-if='checkEnableLocation(box.index) && box.location')
 										AutoComplete.edit-location(
 											v-model='listBox[box.index].location',
 											field='name',
 											:suggestions='locationList',
 											@complete='searchLocation($event)',
-											@item-select='changeItem($event)'
+											@item-select='changeItem($event)',
 											:dropdown='true'
 										)
 											template(#item='slotProps')
@@ -106,9 +106,26 @@
 								optionLabel='name',
 								optionValue='id',
 								placeholder='Select size',
-								v-model='listBox[activeIndex].boxSize.id'
+								v-model='listBox[activeIndex].boxSize.id',
+								:filter='true',
+								:showClear='true'
 							)
 							span.font-semibold.text-base.ml-3 (cm)
+							//- .grid
+							//- 	.col-12
+							//- 		span.font-semibold.text-base.mr-3.ml-3.required__title Size
+							//- 		Dropdown.box-input(
+							//- 			style='width: 70%',
+							//- 			:options='boxSizeList',
+							//- 			optionLabel='name',
+							//- 			optionValue='id',
+							//- 			placeholder='Select size',
+							//- 			v-model='listBox[activeIndex].boxSize.id'
+							//- 		)
+							//- 		span.font-semibold.text-base.ml-3 (cm)
+							//- 	.col-2
+							//- 	.col-10
+							//- 		small(style='color:red') You must select box size
 						.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
 							span.font-semibold.text-base.mr-3.ml-2.required__title Estimate Inventory Fee
 							InputNumber.number-input(
@@ -143,15 +160,15 @@
 							br
 							InputText.pt-0.pl-0(
 								placeholder='Write something...',
-								style='border: none'
-								v-model = 'note'
+								style='border: none',
+								v-model='note'
 							)
 				.d-flex.col-6(class='md:col-2 lg:col-2')
 					.grid.w-full.border__right
 						.col-3.flex.align-items-center.justify-content-end
 							img(src='~/assets/icons/box-border.svg')
 						.col-9
-							span.font-semibold.text-base.mr-1 Total boxs:
+							span.font-semibold.text-base.mr-1 Total boxes:
 							br
 							span.font-semibold.text-primary {{ listBox.length }}
 				.d-flex.col-6(class='md:col-2 lg:col-2')
@@ -169,12 +186,14 @@
 						.col-9
 							span.font-semibold.text-base.mr-1 Total fee:
 							br
-							span.font-semibold.text-primary {{ totalFee() }} $/day
+							span.font-semibold.text-primary $ {{ totalFee() }} /day
 				.d-flex.justify-content-center.col-6(class='md:col-2 lg:col-2')
 					Button.p-button-secondary.mr-2(
 						label='Save draft',
 						icon='pi pi-file-o',
-						@click='saveReceipt(0)'
+						@click='saveReceipt(0)',
+						:disabled='!activeAction',
+						:class='{ "button-disabled": !activeAction }'
 					)
 					Button.p-button-secondary.mr-2(
 						label='Back',
@@ -185,7 +204,8 @@
 						label='Next',
 						@click='getLocationSuggest()',
 						v-if='!activeSave',
-						:disabled='!activeAction'
+						:disabled='!activeAction',
+						:class='{ "button-disabled": !activeAction }'
 					)
 					Button(
 						label='Save',
@@ -204,15 +224,16 @@
 			:barcode='boxQrCode'
 		)
 		FormAddSeller(:isShowForm='isShowFormAddSeller')
-	Dialog(:visible.sync="isModalDelete" :modal="true")
-		div.confirm-dialog__content
+	Dialog(:visible.sync='isModalDelete', :modal='true')
+		.confirm-dialog__content
 			img(:srcset='"~/assets/images/confirm-delete.png"')
 			h3.confirm-dialog__title Confirm delete box
 			p.confirm-dialog__des
-				slot(name="message")
-			div.confirm-dialog__footer
-				Button.confirm-dialog__btn.btn--discard(@click="handleCancel") No
-				Button.confirm-dialog__btn.btn--agree(@click="deleteBox()") Yes
+				slot(name='message')
+			.confirm-dialog__footer
+				Button.confirm-dialog__btn.btn--discard(@click='handleCancel') No
+				Button.confirm-dialog__btn.btn--agree(@click='deleteBox()') Yes
+	Toast
 </template>
 <script lang="ts">
 import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
@@ -247,6 +268,7 @@ class CreateOrUpdateReceipt extends Vue {
   isModalDelete = false
   selectedLocation: any = {}
   note: string = ''
+  receiptId = 0
   @Prop() id?: string
   @nsStoreWarehouse.Action
   actWarehouseList!: (params?: any) => Promise<void>
@@ -326,7 +348,7 @@ class CreateOrUpdateReceipt extends Vue {
       this.listBox.push(item)
       this.activeAction = false
     }
-    this.activeIndex = this.listBox[this.listBox.length - 1].index  
+    this.activeIndex = this.listBox[this.listBox.length - 1].index
   }
 
   deleteBox() {
@@ -405,20 +427,28 @@ class CreateOrUpdateReceipt extends Vue {
 
   async saveReceipt(type) {
     if (!this.checkActiveAction()) return
+    if (type === 1) {
+      if (!this.checkValidateInput()) {
+        return
+      }
+    }
     const receiptDraft: ReceiptModel.CreateReceiptDraft =
       new ReceiptModel.CreateReceiptDraft()
     receiptDraft.action = RECEIPT_ACTION.REQUEST_ACTION_TO_IMPORT_BOX
-    receiptDraft.status = type === 0 ? RECEIPT_STATUS.REQUEST_STATUS_DRAFT
-      : RECEIPT_STATUS.REQUEST_STATUS_SAVED
-    receiptDraft.note= this.note
-			
+    receiptDraft.status =
+      type === 0
+        ? RECEIPT_STATUS.REQUEST_STATUS_DRAFT
+        : RECEIPT_STATUS.REQUEST_STATUS_SAVED
+    receiptDraft.note = this.note
+
     this.listBox.forEach((element) => {
       const box: ReceiptModel.BoxDraft = new ReceiptModel.BoxDraft()
       box.inventoryFee = element.inventoryFee
-      if(element.boxSize!.id>0){
-        box.boxSize.id = element.boxSize!.id
+      if (element.boxSize!.id) {
+        box.boxSize = {
+          id: element.boxSize!.id
+        }
       }
-			
       element.listItemInBox?.forEach((item) => {
         const itemDraft: ReceiptModel.ItemDraft = new ReceiptModel.ItemDraft()
         itemDraft.stock.id = item.stock.id
@@ -430,17 +460,28 @@ class CreateOrUpdateReceipt extends Vue {
       box.rackLocation.id = element.location!.id
       receiptDraft.boxList?.push(box)
     })
-    if(this.id)
-    {
-      receiptDraft.id= this.id
+    if (this.id) {
+      receiptDraft.id = this.id
       await this.actUpdateReceipt(receiptDraft)
     } else {
       await this.actCreateNewReceipt(receiptDraft)
-      this.id= this.newReceipt.id
+      if (this.newReceipt) {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail:
+            type === 0
+              ? 'Successfully save draft receipt'
+              : 'Successfully save receipt',
+          life: 3000
+        })
+      }
     }
-   
-    if (type === 1 && this.id) {
-      await this.$router.push(`/stock-in/${this.newReceipt.id}/detail`)
+    if (type === 1 && this.newReceipt.id) {
+      setTimeout(
+        () => this.$router.push(`/stock-in/${this.newReceipt.id}/detail`),
+        2000
+      )
     }
   }
 
@@ -466,13 +507,13 @@ class CreateOrUpdateReceipt extends Vue {
   async mounted() {
     this.actWarehouseList()
     this.actGetBoxSizeList()
-    if(this.id){
-      await	this.actGetReceiptDetail({ id: this.id })
+    if (this.id) {
+      await this.actGetReceiptDetail({ id: this.id })
       this.prepareListBox()
       this.checkActiveAction()
       this.checkLocation()
     } else {
-      this.listBox=[new ReceiptModel.Box()]
+      this.listBox = [new ReceiptModel.Box()]
     }
   }
 
@@ -555,15 +596,15 @@ class CreateOrUpdateReceipt extends Vue {
     })
   }
 
-  changeItem(event){
-    if(event){
+  changeItem(event) {
+    if (event) {
       this.checkLocation()
     }
   }
 
-  prepareListBox(){
-    this.receiptDetail.data.boxList.forEach((element,index) => {
-      const box =	new ReceiptModel.Box()
+  prepareListBox() {
+    this.receiptDetail.data.boxList.forEach((element, index) => {
+      const box = new ReceiptModel.Box()
       box.index = index
       box.inventoryFee = element.inventoryFee
       box.boxSize = element.boxSize
@@ -573,8 +614,45 @@ class CreateOrUpdateReceipt extends Vue {
       box.listItemInBox.push(...element.listStockWithAmount)
       this.listBox.push(box)
     })
-    this.note= this.receiptDetail.note
+    this.note = this.receiptDetail.note
     this.activeIndex = 0
+  }
+
+  checkEnableLocation(index) {
+    if (this.listBox[index].location?.id) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  checkDeleteBox() {
+    if (this.listBox.length < 2) {
+      this.isModalDelete = false
+    } else if (this.listBox[this.activeIndex].listItemInBox.length === 0) {
+      this.deleteBox()
+    } else {
+      this.isModalDelete = true
+    }
+  }
+
+  checkValidateInput() {
+    let isValid = true
+    this.listBox.forEach((element, index) => {
+      if (!element.boxSize!.id) {
+        isValid = false
+        this.activeIndex = index
+      }
+    })
+    if (!isValid) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'You must select box size',
+        life: 3000
+      })
+    }
+    return isValid
   }
 }
 
@@ -654,8 +732,10 @@ export default CreateOrUpdateReceipt
 		color: $color-white !important
 		button
 			color: $color-white !important
-		.icon--large
-			background-color: $color-white !important
+	.box-card-active .icon
+		background-color: $color-white !important
+	.box-card-active .icon--large
+		background-color: $color-white !important
 	.box-card:hover
 		@extend .box-card-active
 .confirm-dialog
@@ -719,4 +799,7 @@ export default CreateOrUpdateReceipt
 		color: #fff
 .error-message
 	color: #ff0000
+.button-disabled
+	background-color: #979AA4 !important
+	border-color: #979AA4 !important
 </style>

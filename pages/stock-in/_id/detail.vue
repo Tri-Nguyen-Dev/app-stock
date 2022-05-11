@@ -1,223 +1,222 @@
 <template lang="pug">
 .receipt-note(v-if='receiptDetail')
-		card.mb-5
-				template(#title='')
-					div.d-flex
-						i.pi.pi-info-circle.mr-3
-						span.font-semibold.text-base GENERAL INFORMATION
-				template(#content='')
-					div.grid(v-if='receiptDetail.data')
-						.col
-							.filter__item.item--disabled
-								.filter__title ID receipt note
-								.filter__text {{receiptDetail.data.id}}
-						.col
-							.filter__item.item--disabled
-								.filter__title ID Creator
-								.filter__text {{receiptDetail.data.id}}
-						.col
-							.filter__item.item--disabled
-								.filter__title Creator name
-								.filter__text {{receiptDetail.data.id}}
-						.col
-							.filter__item.item--disabled
-								.filter__title Create time
-								.filter__text 19-09-2022 9:24AM
-						.col
-							.filter__item
-								.filter__title Warehouse
-								.filter__text {{ receiptDetail.data.warehouse.name}}
-						.col
-							.filter__item
-								.filter__title Seller email
-								.filter__autocomplete
-								.filter__text {{ receiptDetail.data.seller.email}}
-						.col
-							.filter__item.item--disabled
-								.filter__title Seller phone
-								.filter__text {{ receiptDetail.data.seller.phone }}
-						.col
-							.filter__item.item--disabled
-								.filter__title Seller name
-								.filter__text {{  receiptDetail.data.seller.name }}
-		card.card-custom
-			template(#content='')
-				.grid
-					.col-2.border-top.pl-3
-						.overflow-y-auto(style='height: 55vh', v-if='listBox')
-							.grid.box-card.m-2(
-								v-for='box in listBox',
-								@click='selectBox(box)',
-								:class='{ "box-card-active": box.index == activeIndex }'
-							)
-								.col-6.flex.align-items-center
-									.icon--large.icon-box-view.bg-blue-700
-								.col-6.flex.align-items-center.justify-content-end
-								.col-12.flex.align-items-center
-									.grid
-										.col-12.pb-0
-											span.uppercase.font-semibold.mr-1 box {{ box.index + 1 }}
-										.col-12.pb-0(v-if='box.location.name!=""')
-											span.uppercase.mr-1  {{ box.location.name }}
-					.col-10(v-if='listBox[activeIndex]')
-						.grid.border__grid
-							//- div(class='d-flex col-4 md:col-2 lg:col-1 d-flex border-right')
-							//- 	span.uppercase.mr-1 item in box 1
-							//- 	i.pi.pi-refresh
-							.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
-								span.font-semibold.text-base.mr-3.ml-3 Size:
-								span {{getSize(activeIndex)}}
-								span.font-semibold.text-base.ml-3 (cm)
-							.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
-								span.font-semibold.text-base.mr-3.ml-2 Estimate Inventory Fee:
-								span ${{listBox[activeIndex].inventoryFee}}
-								span.font-semibold.text-base.ml-3 /day
-							.d-flex.col-6(class='md:col-5 lg:col-4')
-								span.font-semibold.text-base.mr-2.ml-2 Barcode:
-								span {{listBox[activeIndex].id}}
-						.grid.border__left.border__right.mt-0.pb-3(
-							style='margin-right: 0px'
-							v-if='listBox[activeIndex]'
+	card.mb-5
+		template(#title='')
+			.d-flex
+				i.pi.pi-info-circle.mr-3
+				span.font-semibold.text-base GENERAL INFORMATION
+		template(#content='')
+			.grid(v-if='receiptDetail.data')
+				.col
+					.filter__item.item--disabled
+						.filter__title ID receipt note
+						.filter__text {{ receiptDetail.data.id }}
+				.col
+					.filter__item.item--disabled
+						.filter__title ID Creator
+						.filter__text {{ receiptDetail.data.id }}
+				.col
+					.filter__item.item--disabled
+						.filter__title Creator name
+						.filter__text {{ receiptDetail.data.id }}
+				.col
+					.filter__item.item--disabled
+						.filter__title Create time
+						.filter__text 19-09-2022 9:24AM
+				.col
+					.filter__item
+						.filter__title Warehouse
+						.filter__text {{ receiptDetail.data.warehouse.name }}
+				.col
+					.filter__item
+						.filter__title Seller email
+						.filter__autocomplete
+						.filter__text {{ receiptDetail.data.seller.email }}
+				.col
+					.filter__item.item--disabled
+						.filter__title Seller phone
+						.filter__text {{ receiptDetail.data.seller.phone }}
+				.col
+					.filter__item.item--disabled
+						.filter__title Seller name
+						.filter__text {{ receiptDetail.data.seller.name }}
+	card.card-custom
+		template(#content='')
+			.grid
+				.col-2.border-top.pl-3
+					.overflow-y-auto(style='height: 55vh', v-if='listBox')
+						.grid.box-card.m-2(
+							v-for='box in listBox',
+							@click='selectBox(box)',
+							:class='{ "box-card-active": box.index == activeIndex }'
 						)
-							DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
-								:value='listBox[activeIndex].listItemInBox'
-								:paginator='false'
-								:row-hover='true'
-								responsiveLayout="scroll"
-								columnResizeMode="fit"
-							)
-									template(#empty)
-										div.flex.align-items-center.justify-content-center.flex-column
-											img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
-											p.text-900.font-bold.mt-3 List is empty!
-									column(field='no', header='NO')
-										template(#body="slotProps")
-											span.font-bold {{slotProps.index + 1 }}
-									column(
-										field='',
-										header='IMAGE',
-										filter-match-mode='contains'
-									)
-										template(#body="slotProps")
-											img(
-												:src="slotProps.data.stock.imagePath | getThumbnailUrl"
-												:alt="slotProps.data.image"
-												style="width:3rem; height: 3rem"
-											)
-									column.text-overflow-ellipsis(
-										field='stock.barCode'
-										header='BARCODE',
-										:sortable='true',
-										sort-field='representative.name',
-									)
-										template(#body='{data}')
-											span.text-primary.font-bold {{data.stock.barCode}}
-									column(
-										field='sku',
-										header='SKU'
-									)
-										template(#body='{data}')
-											span.text-primary.font-bold {{data.sku}}
-									column(
-										field='stock.name'
-										header='NAME'
+							.col-6.flex.align-items-center
+								.icon--large.icon-box-view(
+									:class='{ "bg-blue-700": box.index !== activeIndex }'
+								)
+							.col-6.flex.align-items-center.justify-content-end
+							.col-12.flex.align-items-center
+								.grid
+									.col-12.pb-0
+										span.uppercase.font-semibold.mr-1 box {{ box.index + 1 }}
+									.col-12.pb-0(v-if='box.location.name != ""')
+										.icon.icon-map-pin(
+											:class='{ "bg-blue-700": box.index !== activeIndex }'
 										)
-										template(#body='{data}')
-											span.font-bold.text-right {{data.stock.name}}
-									column(
-										field='amount'
-										header='QUANTITY'
-										:show-filter-match-modes='false'
-										className="p-text-right"
-										style='width:10%'
+										span.uppercase.mr-1 {{ box.location.name }}
+				.col-10(v-if='listBox[activeIndex]')
+					.grid.border__grid
+						.d-flex.col-12.border__right(class='md:col-5 lg:col-4')
+							span.font-semibold.text-base.mr-3.ml-3 Size:
+							span {{ getSize(activeIndex) }}
+							span.font-semibold.text-base.ml-3 (cm)
+						.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
+							span.font-semibold.text-base.mr-3.ml-2 Estimate Inventory Fee:
+							span ${{ listBox[activeIndex].inventoryFee }}
+							span.font-semibold.text-base.ml-3 /day
+						.d-flex.col-6(class='md:col-5 lg:col-4')
+							span.font-semibold.text-base.mr-2.ml-2 Barcode:
+							span {{ listBox[activeIndex].id }}
+					.grid.border__left.border__right.mt-0.pb-3(
+						style='margin-right: 0px',
+						v-if='listBox[activeIndex]'
+					)
+						DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
+							:value='listBox[activeIndex].listItemInBox',
+							:paginator='false',
+							:row-hover='true',
+							responsiveLayout='scroll',
+							columnResizeMode='fit'
+						)
+							template(#empty)
+								.flex.align-items-center.justify-content-center.flex-column
+									img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
+									p.text-900.font-bold.mt-3 List is empty!
+							column(field='no', header='NO')
+								template(#body='slotProps')
+									span.font-bold {{ slotProps.index + 1 }}
+							column(field='', header='IMAGE', filter-match-mode='contains')
+								template(#body='slotProps')
+									img(
+										:src='slotProps.data.stock.imagePath | getThumbnailUrl',
+										:alt='slotProps.data.image',
+										style='width: 3rem; height: 3rem'
 									)
-										template(#body='{data}')
-												span.text-primary.font-bold.text-right {{data.amount}}
-									column(
-										field='unit.name',
-										header='UNIT',
-										:show-filter-match-modes='false'
-										className="p-text-right"
-									)
-										template(#body='{data}')
-											span.font-bold {{data.stock.unit.name}}
-									column(
-										field='size',
-										header='SIZE',
-										:show-filter-match-modes='false'
-										className="p-text-right"
-									)
-										template(#body='{data}')
-											span.font-bold {{data.stock.length}}*{{data.stock.width}}*{{data.stock.height}}
-									column(
-										field='weight',
-										header='WEIGHT(KG)',
-										:show-filter-match-modes='false'
-										className="p-text-right"
-									)
-										template(#body='{data}')
-											span.font-bold {{data.stock.weight}}
-									column(
-										field='value',
-										header='VALUE',
-										:show-filter-match-modes='false'
-										className="p-text-right"
-									)
-										template(#body='{data}')
-											span.font-bold {{data.value}}
-									column(
-										field='category.name',
-										header='CATEGORY',
-										:show-filter-match-modes='false'
-										className="p-text-right"
-									)
-										template(#body='{data}')
-											span.font-bold.text-right {{data.stock.name}}
-			template(#footer='')
-				.grid(v-if='listBox')
-					.d-flex.pt-2(class='col-12 md:col-4 lg:col-4')
-						.grid.w-full
-							//- .col.align-items-center.ml-4
-							.col-2.flex.align-items-center.justify-content-center.pl-4
-								img(src='~/assets/icons/note.svg')
-							.col-10
-								span.font-semibold.text-base.mr-1 Note:
-								br
-								span {{note}}
-					.d-flex(class='col-6 md:col-2 lg:col-2')
-						.grid.w-full.border__right
-							.col-3.flex.align-items-center.justify-content-end
-								img(src='~/assets/icons/box-border.svg')
-							.col-9
-								span.font-semibold.text-base.mr-1 Total boxs:
-								br
-								span.font-semibold.text-primary  {{listBox.length}}
-					.d-flex(class='col-6 md:col-2 lg:col-2')
-						.grid.w-full.border__right
-							.col-3.flex.align-items-center.justify-content-end
-								img(src='~/assets/icons/total-items-border.svg')
-							.col-9
-								span.font-semibold.text-base.mr-1 Total items:
-								br
-								span.font-semibold.text-primary {{ totalItem() }}
-					.d-flex(class='col-6 md:col-2 lg:col-2')
-						.grid.w-full.border__right
-							.col-3.flex.align-items-center.justify-content-end
-								img(src='~/assets/icons/total-fee.svg')
-							.col-9
-								span.font-semibold.text-base.mr-1 Total fee:
-								br
-								span.font-semibold.text-primary {{ totalFee() }} $/day
-					.d-flex.justify-content-center(class='col-6 md:col-2 lg:col-2')
-						Button.p-button-secondary.mr-2(label='Export file' icon="pi pi-download" @click="handleExportReceipt")
-						Button.p-button-primary.mr-2(label='Print Preview' @click='isShowLabel = true')
-		PrintLabel(
-			:displayLable='isShowLabel'
-			@setShow='setShowLabel'
-			:requestId='receiptDetail.data.id'
-			v-if='receiptDetail.data && listBox[activeIndex]'
-			:boxId='listBox[activeIndex].id'
-		)
+							column.text-overflow-ellipsis(
+								field='stock.barCode',
+								header='BARCODE',
+								:sortable='true',
+								sort-field='representative.name'
+							)
+								template(#body='{ data }')
+									span.text-primary.font-bold {{ data.stock.barCode }}
+							column(field='sku', header='SKU')
+								template(#body='{ data }')
+									span.text-primary.font-bold {{ data.sku }}
+							column(field='stock.name', header='NAME')
+								template(#body='{ data }')
+									span.font-bold.text-right {{ data.stock.name }}
+							column(
+								field='amount',
+								header='QUANTITY',
+								:show-filter-match-modes='false',
+								className='p-text-right',
+								style='width: 10%'
+							)
+								template(#body='{ data }')
+									span.text-primary.font-bold.text-right {{ data.amount }}
+							column(
+								field='unit.name',
+								header='UNIT',
+								:show-filter-match-modes='false',
+								className='p-text-right'
+							)
+								template(#body='{ data }')
+									span.font-bold {{ data.stock.unit.name }}
+							column(
+								field='size',
+								header='SIZE',
+								:show-filter-match-modes='false',
+								className='p-text-right'
+							)
+								template(#body='{ data }')
+									span.font-bold {{ data.stock.length }}*{{ data.stock.width }}*{{ data.stock.height }}
+							column(
+								field='weight',
+								header='WEIGHT(KG)',
+								:show-filter-match-modes='false',
+								className='p-text-right'
+							)
+								template(#body='{ data }')
+									span.font-bold {{ data.stock.weight }}
+							column(
+								field='value',
+								header='VALUE',
+								:show-filter-match-modes='false',
+								className='p-text-right'
+							)
+								template(#body='{ data }')
+									span.font-bold {{ data.value }}
+							column(
+								field='category.name',
+								header='CATEGORY',
+								:show-filter-match-modes='false',
+								className='p-text-right'
+							)
+								template(#body='{ data }')
+									span.font-bold.text-right {{ data.stock.name }}
+		template(#footer='')
+			.grid(v-if='listBox')
+				.d-flex.pt-2.col-12(class='md:col-4 lg:col-4')
+					.grid.w-full
+						//- .col.align-items-center.ml-4
+						.col-2.flex.align-items-center.justify-content-center.pl-4
+							img(src='~/assets/icons/note.svg')
+						.col-10
+							span.font-semibold.text-base.mr-1 Note:
+							br
+							span {{ note }}
+				.d-flex.col-6(class='md:col-2 lg:col-2')
+					.grid.w-full.border__right
+						.col-3.flex.align-items-center.justify-content-end
+							img(src='~/assets/icons/box-border.svg')
+						.col-9
+							span.font-semibold.text-base.mr-1 Total boxs:
+							br
+							span.font-semibold.text-primary {{ listBox.length }}
+				.d-flex.col-6(class='md:col-2 lg:col-2')
+					.grid.w-full.border__right
+						.col-3.flex.align-items-center.justify-content-end
+							img(src='~/assets/icons/total-items-border.svg')
+						.col-9
+							span.font-semibold.text-base.mr-1 Total items:
+							br
+							span.font-semibold.text-primary {{ totalItem() }}
+				.d-flex.col-6(class='md:col-2 lg:col-2')
+					.grid.w-full.border__right
+						.col-3.flex.align-items-center.justify-content-end
+							img(src='~/assets/icons/total-fee.svg')
+						.col-9
+							span.font-semibold.text-base.mr-1 Total fee:
+							br
+							span.font-semibold.text-primary {{ totalFee() }} $/day
+				.d-flex.justify-content-center.col-6(class='md:col-2 lg:col-2')
+					Button.p-button-secondary.mr-2(
+						label='Export file',
+						icon='pi pi-download',
+						@click='handleExportReceipt'
+					)
+					Button.p-button-primary.mr-2(
+						label='Print Preview',
+						@click='isShowLabel = true'
+					)
+	PrintLabel(
+		:displayLable='isShowLabel',
+		@setShow='setShowLabel',
+		:requestId='receiptDetail.data.id',
+		v-if='receiptDetail.data && listBox[activeIndex]',
+		:boxId='listBox[activeIndex].id'
+	)
 </template>
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
@@ -240,25 +239,24 @@ const nsStoreExportReceipt = namespace('stock-in/export-receipt')
   }
 })
 class DetailReceipt extends Vue {
-
   listBox: ReceiptModel.Box[] = []
   itemInBox: ItemModel.Model
   isShowModalAddStock: boolean = false
   activeIndex = 0
   activeAction = false
   activeSave = false
-  receiptNoteId:string
-  note : string = ''
+  receiptNoteId: string
+  note: string = ''
   warehouse: any = null
   seller: any = null
-  isShowLabel: boolean = false;
+  isShowLabel: boolean = false
 
   get sellerName() {
-    return (this.seller && this.seller.name) ? this.seller.name : 'name'
+    return this.seller && this.seller.name ? this.seller.name : 'name'
   }
 
   get sellerPhone() {
-    return (this.seller && this.seller.phone) ? this.seller.phone : 'phone'
+    return this.seller && this.seller.phone ? this.seller.phone : 'phone'
   }
 
   get id() {
@@ -278,22 +276,20 @@ class DetailReceipt extends Vue {
     this.activeIndex = box.index
   }
 
-  export(){
-
-  }
+  export() {}
 
   setShowLabel(value: any) {
     this.isShowLabel = value
   }
 
   async mounted() {
-    await	this.actGetReceiptDetail({ id: this.$route.params.id })
+    await this.actGetReceiptDetail({ id: this.$route.params.id })
     this.prepareListBox()
   }
 
-  prepareListBox(){
-    this.receiptDetail.data.boxList.forEach((element,index) => {
-      const box =	new ReceiptModel.Box()
+  prepareListBox() {
+    this.receiptDetail.data.boxList.forEach((element, index) => {
+      const box = new ReceiptModel.Box()
       box.index = index
       box.inventoryFee = element.inventoryFee
       box.boxSize = element.boxSize
@@ -309,12 +305,12 @@ class DetailReceipt extends Vue {
 
   async handleExportReceipt() {
     const result = await this.actGetReceiptLable({ id: this.id })
-    if(result) {
+    if (result) {
       exportFileTypePdf(result, `receipt-${this.id}`)
     }
   }
-	
-  getSize(activeIndex){
+
+  getSize(activeIndex) {
     return `${this.listBox[activeIndex].boxSize?.name}
 			(${this.listBox[activeIndex].boxSize?.length}
 			*${this.listBox[activeIndex].boxSize?.width}
@@ -413,8 +409,10 @@ i:hover
 	color: $color-white !important
 	button
 		color: $color-white !important
-	.icon--large
-		background-color: $color-white !important
+.box-card-active .icon
+	background-color: $color-white !important
+.box-card-active .icon--large
+	background-color: $color-white !important
 .box-card:hover
 	@extend .box-card-active
 </style>
