@@ -88,8 +88,9 @@
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
-        Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold" ')
-          template(#body="{data}") {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
+        Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold" )
+          template(#body="{data}") 
+            div(v-if='data.boxSize') {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
         Column(field="weight" header="WEIGHT(KG)" className="text-right" bodyClass="font-semibold")
           template(#body="{data}") {{ data.weight }}
         Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right" sortField="_request.warehouse.name")
