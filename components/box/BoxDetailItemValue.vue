@@ -1,6 +1,6 @@
 <template lang="pug">
-  div.px-3
-    BoxDetailItemValue( :item='item' :boxSellerInfor='boxSellerInfor')
+div.px-3
+  BoxDetailItemValue( :item='item' :boxSellerInfor='boxSellerInfor')
 </template>
 
 <script lang="ts">

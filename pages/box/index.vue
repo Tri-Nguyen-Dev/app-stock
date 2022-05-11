@@ -55,7 +55,6 @@
         .col
           FilterCalendar(
             title="From"
-            border="left"
             :value="filter.dateFrom"
             name="dateFrom"
             inputClass="border-0"
