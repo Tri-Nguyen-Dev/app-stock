@@ -21,6 +21,19 @@
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.boxCode}}
         .ml-1.px-1(v-if='isOutgoing && tab.checked') {{ tab.tagCode }}
+        AutoComplete.edit-location.ml-1(
+          v-if="isShowLocation(tab)"
+          v-model='tab.location',
+          field='name',
+          :suggestions='locationList',
+          @complete='searchLocation($event)'
+          :dropdown='true'
+          forceSelection
+        )
+          template(#item='slotProps')
+            .grid.align-items-center.grid-nogutter
+              span.font-bold.text-small {{ slotProps.item.name }}
+              .icon-arrow-up-right.icon
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
@@ -45,19 +58,6 @@
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
             InputText(@change='addStockByBarcode($event)' v-model="barCodeText")
-        AutoComplete.edit-location(
-          v-if="isShowLocation(tab)"
-          v-model='tab.location',
-          field='name',
-          :suggestions='locationList',
-          @complete='searchLocation($event)'
-          :dropdown='true'
-          forceSelection
-        )
-          template(#item='slotProps')
-            .grid.align-items-center.grid-nogutter
-              span.font-bold.text-small {{ slotProps.item.name }}
-              .icon-arrow-up-right.icon
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type')
 </template>
 <script lang="ts">
@@ -199,23 +199,31 @@ export default PackingOriginal
         background: $text-color-300
       .p-datatable .p-datatable-thead > tr > th
         background: #fff !important
+    .p-tabview-nav-container
+      overflow: unset !important
     .p-tabview-nav li .p-tabview-nav-link
       &:focus
         box-shadow: none
       &:hover
         border: none
     .p-tabview-nav-content
+      overflow: unset !important
       .p-tabview-nav
+        overflow: unset !important
         .p-disabled:first-child
           min-width: 265px !important
         .p-disabled
           opacity: 1
           font-size: 12px
           border-right: 1px solid $bg-body-base
+        li
+          overflow: unset !important
         li .p-tabview-nav-link
           border-bottom: none
           span
             color: $text-color-900
+        .p-tabview-nav-link
+          overflow: unset !important
       .p-highlight
         border-bottom: 2px solid $primary
         position: relative
