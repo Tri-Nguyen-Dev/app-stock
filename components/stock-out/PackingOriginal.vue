@@ -52,7 +52,7 @@
               span.ml-1 / day
           .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
             span.mr-1 Tag code:
-            InputText(type='number' @change='addTagByBarCode')
+            InputText(@change='addTagByBarCode') 
         .col.py-3.flex.justify-content-end
           span.p-input-icon-right
             span.mr-1 Barcode:
@@ -63,6 +63,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
 const nsStoreLocationList = namespace('location/location-list')
+const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
 class PackingOriginal extends Vue {
@@ -89,6 +90,9 @@ class PackingOriginal extends Vue {
 
   @nsStoreLocationList.Action
   actLocationList!: (params: any) => Promise<void>
+
+  @nsStorePackingDetail.Action
+  actScanAirtag!: (params: any) => Promise<void>
 
   handleAddTab() {
     if(this.listBox.length <= 9) {
@@ -132,7 +136,9 @@ class PackingOriginal extends Vue {
     this.boxCodeText = ''
   }
 
-  addTagByBarCode(e:any) {
+  async addTagByBarCode(e:any) {
+    const barCode = e.target.value
+    await this.actScanAirtag(barCode)
     this.listBox[this.activeIndex - 1].tagCode = e.target.value
   }
 
