@@ -148,7 +148,7 @@ class DeliveryOrderPacking extends Vue {
       items: [],
       tagCode: '',
       checked: false,
-      boxSizeSelect: ''
+      boxSize: ''
     })
     if (_.size(this.listOutGoingBox) === 1)
       this.outGoingBoxActive = this.listOutGoingBox[0]
@@ -193,7 +193,9 @@ class DeliveryOrderPacking extends Vue {
           ...stockOriginal,
           quantity: 1,
           originalBox: this.originalBoxActive.boxCode,
-          originalLocation: this.originalBoxActive.locationId
+          originalLocation: {
+            id: this.originalBoxActive.locationId
+          }
         })
       }
       if (isOutGoing) {
@@ -221,9 +223,11 @@ class DeliveryOrderPacking extends Vue {
       items: [],
       tagCode: '',
       checked: true,
-      boxSizeSelect: '',
-      estimateFee: 0,
-      request: this.originalBoxActive.requestId
+      boxSize: '',
+      inventoryFee: 0,
+      request:{
+        id: this.originalBoxActive.requestId
+      }
     })
     if(_.size(this.listTranfferingBox) === 1)
       this.tranfferingBoxActive = this.listTranfferingBox[0]
@@ -274,36 +278,56 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
-    if (!this.checkQuantityOriginal(this.listOriginalBox)) {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'The number of products in the box has not been processed yet',
-        life: 3000
+    // if (!this.checkQuantityOriginal(this.listOriginalBox)) {
+    //   this.$toast.add({
+    //     severity: 'error',
+    //     summary: 'Error Message',
+    //     detail: 'The number of products in the box has not been processed yet',
+    //     life: 3000
+    //   })
+    // } else if(this.listTranfferingBox) {
+    this.nextSuggestLocation = true
+    let listBoxLocation = [ ...this.listTranfferingBox ]
+    listBoxLocation = listBoxLocation.map((item) => {
+      return item.boxSize?.id.toString()
+    })
+    const locationList = await this.actLocationSuggestion(listBoxLocation)
+    if(locationList) {
+      this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
+        return { ..._.cloneDeep(x), location: locationList[index] }
       })
-    } else if(this.listTranfferingBox) {
-      this.nextSuggestLocation = true
-      let listBoxLocation = [ ...this.listTranfferingBox ]
-      listBoxLocation = listBoxLocation.map((item) => {
-        return item.boxSizeSelect?.id.toString()
-      })
-      const locationList = await this.actLocationSuggestion(listBoxLocation)
-      if(locationList) {
-        this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
-          return { ..._.cloneDeep(x), location: locationList[index] }
-        })
-      }
     }
+    // }
   }
 
-  async handleSubmit() {
+  getStocks(stocks) {
+    const result =  _.map(stocks, ({ stockId, originalBox, originalLocation, initialQuantity, quantity }) => ({
+      stock: { id: stockId },
+      originalBox,
+      originalLocation,
+      initialQuantity,
+      amount: quantity
+    }))
+    return result
+  }
+
+  handleSubmit() {
     const data: any = {}
-    data.originalBox = this.listOriginalBox.map(item => {
-      return item.boxCode
-    })
-    data.tranfferingBox = this.listTranfferingBox
-    data.outGoingQuantity = this.listOutGoingBox
-    await this.actSavePackingDetail({ data, id: 'DO000000000041' })
+    data.originalBox = _.map(this.listOriginalBox, 'boxCode')
+    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items }) => ({
+      boxSize,
+      listStockWithAmount: this.getStocks(items)
+    }))
+    data.transferringBox = _.map(this.listTranfferingBox, ({ boxSize, items, inventoryFee, location, request }) => ({
+      boxSize,
+      inventoryFee,
+      rackLocation: location,
+      request,
+      listStockWithAmount: this.getStocks(items)
+    }))
+    // console.log(data)
+    
+    // await this.actSavePackingDetail({ data, id: 'DO000000000041' })
   }
 }
 
