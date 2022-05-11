@@ -2,7 +2,7 @@
   .grid.grid-nogutter.packing__detail--container
     Toast
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
-      //- StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
+      StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div.flex.flex-column
         .grid.grid-nogutter.mb-3
@@ -109,6 +109,9 @@ class DeliveryOrderPacking extends Vue {
   @nsStorePackingDetail.Action
   actLocationSuggestion!:(data: any) => Promise<any>
 
+  @nsStorePackingDetail.Action
+  actSavePackingDetail!:(data: any) => Promise<any>
+
   @nsStoreLocationList.Action
   actLocationList!: (params: any) => Promise<void>
 
@@ -188,7 +191,8 @@ class DeliveryOrderPacking extends Vue {
         boxActive.items.unshift({
           ...stockOriginal,
           quantity: 1,
-          originalBox: this.originalBoxActive.boxCode
+          originalBox: this.originalBoxActive.boxCode,
+          originalLocation: this.originalBoxActive.locationId
         })
       }
       if (isOutGoing) {
@@ -217,7 +221,8 @@ class DeliveryOrderPacking extends Vue {
       tagCode: '',
       checked: true,
       boxSizeSelect: '',
-      estimateFee: 0
+      estimateFee: 0,
+      request: this.originalBoxActive.requestId
     })
     if(_.size(this.listTranfferingBox) === 1)
       this.tranfferingBoxActive = this.listTranfferingBox[0]
@@ -268,6 +273,15 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
+    const data: any = {}
+    data.originalBox = this.listOriginalBox.map(item => {
+      return item.boxCode
+    })
+    data.tranfferingBox = this.listTranfferingBox
+    data.outGoingQuantity = this.listOutGoingBox
+
+    await this.actSavePackingDetail({ data, id: 'DO000000000041' })
+    
     if (!this.checkQuantityOriginal(this.listOriginalBox)) {
       this.$toast.add({
         severity: 'error',
@@ -282,6 +296,7 @@ class DeliveryOrderPacking extends Vue {
         return item.boxSizeSelect?.id.toString()
       })
       await this.actLocationSuggestion(listBoxLocation)
+      
     }
   }
 }

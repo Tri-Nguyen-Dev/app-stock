@@ -11,7 +11,8 @@ export default class StorePackingBox extends VuexModule {
   private static readonly STATE_URL = {
     GET_ORIGINAL_BOX: '/delivery-order/:id/list-original-box',
     GET_DELIVERY_ORDER: '/delivery-order/:id/detail',
-    GET_BOX_LOCATION: '/location/suggest'
+    GET_BOX_LOCATION: '/location/suggest',
+    SAVE_PACKING_ORDER: '/delivery-order/:id/set-delivery'
   }
 
   public totalOriginalList?: number = 0
@@ -19,6 +20,7 @@ export default class StorePackingBox extends VuexModule {
   public deliveryOrderDetail: any = {}
 
   public boxLocation: any[] = []
+  public idPackingDetail: any = null
 
   @Mutation
   setListOriginal(data: any) {
@@ -34,6 +36,11 @@ export default class StorePackingBox extends VuexModule {
   @Mutation
   setLocationSuggestion(data: any) {
     this.boxLocation = data
+  }
+
+  @Mutation
+  setIdPackingDetail(data: any) {
+    this.idPackingDetail = data.id
   }
 
   @Action({ commit: 'setListOriginal', rawError: true })
@@ -63,6 +70,15 @@ export default class StorePackingBox extends VuexModule {
     try{
       const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.GET_BOX_LOCATION)
       const response = await $api.post(url, data)
+      return response.data
+    } catch (error) {}
+  }
+
+  @Action({ commit: 'setIdPackingDetail', rawError: true })
+  async actSavePackingDetail(data: any): Promise<string | undefined> {
+    try{
+      const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.SAVE_PACKING_ORDER, { id: data.id })
+      const response = await $api.post(url, { data: data.data })
       return response.data
     } catch (error) {}
   }
