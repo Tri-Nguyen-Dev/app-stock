@@ -37,7 +37,7 @@
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
-          Dropdown.ml-1(v-model='tab.boxSizeSelect' :options="boxSizeList" optionLabel="name").w-9
+          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
@@ -48,7 +48,7 @@
               div Estimated
               div Inventory Fee:
             .col
-              InputText.w-4(v-model='tab.estimateFee' type='number')
+              InputText.w-4(v-model='tab.inventoryFee' type='number')
               span.ml-1 / day
           .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
             span.mr-1 Tag code:
