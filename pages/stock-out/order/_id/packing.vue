@@ -278,26 +278,26 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
-    // if (!this.checkQuantityOriginal(this.listOriginalBox)) {
-    //   this.$toast.add({
-    //     severity: 'error',
-    //     summary: 'Error Message',
-    //     detail: 'The number of products in the box has not been processed yet',
-    //     life: 3000
-    //   })
-    // } else if(this.listTranfferingBox) {
-    this.nextSuggestLocation = true
-    let listBoxLocation = [ ...this.listTranfferingBox ]
-    listBoxLocation = listBoxLocation.map((item) => {
-      return item.boxSize?.id.toString()
-    })
-    const locationList = await this.actLocationSuggestion(listBoxLocation)
-    if(locationList) {
-      this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
-        return { ..._.cloneDeep(x), location: locationList[index] }
+    if (!this.checkQuantityOriginal(this.listOriginalBox)) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'The number of products in the box has not been processed yet',
+        life: 3000
       })
+    } else if(this.listTranfferingBox) {
+      this.nextSuggestLocation = true
+      let listBoxLocation = [ ...this.listTranfferingBox ]
+      listBoxLocation = listBoxLocation.map((item) => {
+        return item.boxSize?.id.toString()
+      })
+      const locationList = await this.actLocationSuggestion(listBoxLocation)
+      if(locationList) {
+        this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
+          return { ..._.cloneDeep(x), location: locationList[index] }
+        })
+      }
     }
-    // }
   }
 
   getStocks(stocks) {
@@ -311,7 +311,7 @@ class DeliveryOrderPacking extends Vue {
     return result
   }
 
-  handleSubmit() {
+  async handleSubmit() {
     const data: any = {}
     data.originalBox = _.map(this.listOriginalBox, 'boxCode')
     data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items }) => ({
@@ -325,9 +325,8 @@ class DeliveryOrderPacking extends Vue {
       request,
       listStockWithAmount: this.getStocks(items)
     }))
-    // console.log(data)
     
-    // await this.actSavePackingDetail({ data, id: 'DO000000000041' })
+    await this.actSavePackingDetail({ data, id: 'DO000000000041' })
   }
 }
 

@@ -85,7 +85,7 @@ export default class StorePackingBox extends VuexModule {
   async actSavePackingDetail(data: any): Promise<string | undefined> {
     try{
       const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.SAVE_PACKING_ORDER, { id: data.id })
-      const response = await $api.post(url, { data: data.data })
+      const response = await $api.post(url, { ...data.data })
       return response.data
     } catch (error) {}
   }
