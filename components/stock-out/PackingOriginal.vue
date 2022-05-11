@@ -45,18 +45,19 @@
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
             InputText(@change='addStockByBarcode($event)' v-model="barCodeText")
-        div(v-if="location && location[index]")
-          AutoComplete.edit-location(
-            v-model='location[index]',
-            field='name',
-            :suggestions='locationList',
-            @complete='searchLocation($event)'
-            :dropdown='true'
-          )
-            template(#item='slotProps')
-              .grid.align-items-center.grid-nogutter
-                span.font-bold.text-small {{ slotProps.item.name }}
-                .icon-arrow-up-right.icon
+        AutoComplete.edit-location(
+          v-if="isShowLocation(tab)"
+          v-model='tab.location',
+          field='name',
+          :suggestions='locationList',
+          @complete='searchLocation($event)'
+          :dropdown='true'
+          forceSelection
+        )
+          template(#item='slotProps')
+            .grid.align-items-center.grid-nogutter
+              span.font-bold.text-small {{ slotProps.item.name }}
+              .icon-arrow-up-right.icon
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type')
 </template>
 <script lang="ts">
@@ -81,7 +82,7 @@ class PackingOriginal extends Vue {
   @Prop() listBox!: Array<any>
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
-  @Prop() location !: Array<any>
+  // @Prop() location !: Array<any>
 
   @nsStoreLocationList.State
   locationList: {}
@@ -151,6 +152,10 @@ class PackingOriginal extends Vue {
     await this.actLocationList({
       location: e.query
     })
+  }
+
+  isShowLocation(obj) {
+    return _.has(obj, 'location') && this.type === 'tranferringBox'
   }
 }
 

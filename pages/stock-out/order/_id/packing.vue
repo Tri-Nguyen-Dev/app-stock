@@ -63,6 +63,7 @@
               .font-semibold.text-primary 1
         .col-1.flex.justify-content-end.p-1
           Button.w-10.justify-content-center.flex(@click="handleClick") Next
+          Button.w-10.justify-content-center.flex(@click="handleSubmit") Submit
 </template>
 
 <script lang="ts">
@@ -273,15 +274,6 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
-    const data: any = {}
-    data.originalBox = this.listOriginalBox.map(item => {
-      return item.boxCode
-    })
-    data.tranfferingBox = this.listTranfferingBox
-    data.outGoingQuantity = this.listOutGoingBox
-
-    await this.actSavePackingDetail({ data, id: 'DO000000000041' })
-    
     if (!this.checkQuantityOriginal(this.listOriginalBox)) {
       this.$toast.add({
         severity: 'error',
@@ -295,9 +287,23 @@ class DeliveryOrderPacking extends Vue {
       listBoxLocation = listBoxLocation.map((item) => {
         return item.boxSizeSelect?.id.toString()
       })
-      await this.actLocationSuggestion(listBoxLocation)
-      
+      const locationList = await this.actLocationSuggestion(listBoxLocation)
+      if(locationList) {
+        this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
+          return { ..._.cloneDeep(x), location: locationList[index] }
+        })
+      }
     }
+  }
+
+  async handleSubmit() {
+    const data: any = {}
+    data.originalBox = this.listOriginalBox.map(item => {
+      return item.boxCode
+    })
+    data.tranfferingBox = this.listTranfferingBox
+    data.outGoingQuantity = this.listOutGoingBox
+    await this.actSavePackingDetail({ data, id: 'DO000000000041' })
   }
 }
 
