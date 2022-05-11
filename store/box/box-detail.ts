@@ -57,7 +57,7 @@ export default class StoreBox extends VuexModule {
   @Action({ commit: 'updateResponse', rawError: true })
   async actUpdateBoxDetail(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.UPDATE_BOX_DETAIL, { id: params.id })
-    const response: any = await $api.post(url, { shelfBinId: params.shelfBinId })
+    const response: any = await $api.post(url, { rackLocationId: params.rackLocationId })
     return response.data
   }
 

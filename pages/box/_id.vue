@@ -21,9 +21,12 @@
                 v-if="boxDetail.status === 'BOX_STATUS_AVAILABLE'"
               ) {{ boxDetail.status | boxStatus }}
               span.p-2.table__status.table__status--disable(
-                v-else-if="boxDetail.status === 'BOX_OUTGOING'"
+                v-else-if="boxDetail.status === 'BOX_STATUS_DISABLE'"
               ) {{ boxDetail.status | boxStatus }}
-              span.p-2.table__status.table__status--draft(v-else) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--draft(
+                v-else-if="boxDetail.status === 'BOX_STATUS_DRAFT'"
+                ) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--outgoing(v-else) {{ boxDetail.status | boxStatus }}
           .font-bold.my-3
             div(:class='isEditBox? "opacity-40" : "opacity-100"')
               span Box Code:
@@ -286,7 +289,7 @@ class BoxDetail extends Vue {
   async handleUpdateData() {
     await this.actUpdateBoxDetail({
       id: this.boxDetail.id,
-      rackLocationId: this.boxLocation.id?this.boxLocation.id:this.boxDetail.rackLocation?.id
+      rackLocationId: this.isLocation.id ? this.boxLocationId : this.boxLocationId
     })
     this.isEditBox = false
   }
@@ -301,6 +304,10 @@ class BoxDetail extends Vue {
 
   get boxLocation() {
     return this.boxDetail.rackLocation?.name || null
+  }
+
+  get boxLocationId() {
+    return this.boxDetail.rackLocation?.id || null
   }
 
   get receiptNoteId() {
