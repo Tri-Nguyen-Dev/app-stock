@@ -86,7 +86,7 @@ export default MenuSidebar
   @include flex-column
   float: left
   position: fixed
-  z-index: 1
+  z-index: 11
   top: 0
   left: 0
   bottom: 0
@@ -114,7 +114,8 @@ export default MenuSidebar
 
   &-menu
     padding-top: $space-size-16
-    overflow-x: auto
+    //overflow-y: auto
+    //overflow-x: hidden
 
   &-foot
     padding-top: $space-size-4

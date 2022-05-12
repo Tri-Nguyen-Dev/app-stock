@@ -86,7 +86,6 @@
           :scrollable="false"
           @sort="sortData($event)"
           @row-select="rowSelect"
-          @row-click="onRowClick"
           :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }"
           @row-select-all="rowSelectAll"
           @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect'
@@ -97,7 +96,10 @@
               span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
-              span.text-white-active.text-900.font-bold {{ data.id }}
+              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'" 
+              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }} 
+              NuxtLink.text-white-active.text-900.font-bold(v-else 
+              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }} 
           Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
@@ -259,14 +261,6 @@ class StockIn extends Vue {
       this.selectedStockIn,
       (stockIn: Request.Model) => stockIn.id !== data.id
     )
-  }
-
-  onRowClick({ data }) {
-    if(data.status === 'REQUEST_STATUS_SAVED') {
-      this.$router.push(`/stock-in/${data.id}/detail`)
-    } else {
-      this.$router.push(`/stock-in/${data.id}/update`)
-    }
   }
 
   async handleDeleteStockIn() {
