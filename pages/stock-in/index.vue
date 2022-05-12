@@ -86,7 +86,6 @@
           :scrollable="false"
           @sort="sortData($event)"
           @row-select="rowSelect"
-          @row-click="onRowClick"
           :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }"
           @row-select-all="rowSelectAll"
           @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect'
@@ -97,19 +96,22 @@
               span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
-              span.text-white-active.text-900.font-bold {{ data.id }}
+              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'" 
+              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }} 
+              NuxtLink.text-white-active.text-900.font-bold(v-else 
+              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }} 
           Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
             template(#body='{ data }') {{ data.sellerName }}
           Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_seller.email")
             template(#body='{ data }') {{ data.sellerEmail }}
-          Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
+          Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" className="text-right")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
                 .icon.icon-arrow-up-right.bg-primary.bg-white-active
-          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" :styles="{'width': '1%'}")
+          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" className="text-right")
             template(#body='{ data }')
               .flex.align-items-center.cursor-pointer.justify-content-end
                   span.text-white-active {{ data.creatorId }}
@@ -118,7 +120,7 @@
           field='data.creatorName' 
           :sortable="true" 
           sortField="_createdBy.displayName" 
-          :styles="{'width': '1%'}")
+          className="text-right")
             template(#body='{ data }')
               .flex.align-items-center.cursor-pointer.justify-content-end
                   span.text-white-active {{ data.creatorName }}
@@ -261,14 +263,6 @@ class StockIn extends Vue {
     )
   }
 
-  onRowClick({ data }) {
-    if(data.status === 'REQUEST_STATUS_SAVED') {
-      this.$router.push(`/stock-in/${data.id}/detail`)
-    } else {
-      this.$router.push(`/stock-in/${data.id}/update`)
-    }
-  }
-
   async handleDeleteStockIn() {
     let result : any = []
     result  = await this.actDeleteStockInByIds({ ids: _.map(this.onEventDeleteList, 'id') })
@@ -281,8 +275,8 @@ class StockIn extends Vue {
         detail: 'Successfully deleted box',
         life: 3000
       })
-      this.paging.first = 1
-      this.paging.pageNumber = 1
+      this.paging.first = 0
+      this.paging.pageNumber = 0
       await this.actGetStockIn({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
     }
   }

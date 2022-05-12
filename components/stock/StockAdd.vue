@@ -188,7 +188,8 @@ class AddNewStock extends Vue {
       length: this.stockInformation.length,
       width: this.stockInformation.width,
       height: this.stockInformation.height,
-      imageUrl: this.stockInformation.imageUrl
+      imageUrl: this.stockInformation.imageUrl,
+      attributeValue: []
     })
     if (this.newStockDetail) {
       this.stockInformation.id = this.newStockDetail.id

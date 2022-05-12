@@ -10,7 +10,7 @@
       .icon.icon-arrow-up-right.inline-block
     span.font-bold.text-small.mr-1.uppercase(v-else) {{ value }}
     template(v-if="model")
-      InputNumber(:disabled='!model' :value='model' @input="handleUpdateUnit")
+      InputNumber(:disabled='!isEdit' :value='model' @input="handleUpdateUnit")
     slot(name='size')
     slot(name='auto-complete')
 </template>

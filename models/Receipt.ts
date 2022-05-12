@@ -32,28 +32,28 @@ export namespace Receipt {
         index: 0
       }
       this.boxSize = {
-        id: 0
+        id: undefined
       }
     }
 
-    qrCode?:string
+    qrCode?: string
     index: number
     listItemInBox: ItemModel.Model[]
     inventoryFee?: number
     boxSize?: {
-      id: number
-      name?:string
-      height?:number,
+      id?: number
+      name?: string
+      height?: number,
       width?: number,
       length?: number
     }
 
-    id?:string
+    id?: string
     status: string
     location?: BoxLocation
-    amount?:number
-    sku?:string
-    value?:number
+    amount?: number
+    sku?: string
+    value?: number
   }
 
   export class ItemDraft {
@@ -78,14 +78,11 @@ export namespace Receipt {
       this.rackLocation = {
         id: undefined
       }
-      this.boxSize = {
-        id: undefined
-      }
     }
 
     inventoryFee?: number
     listStockWithAmount?: ItemDraft[]
-    boxSize: {
+    boxSize?: {
       id?: number
     }
 
@@ -104,8 +101,8 @@ export namespace Receipt {
       this.warehouse = { id: 1 }
     }
 
-    id:string
-    note:string;
+    id: string
+    note: string;
     action: string;
     status: string;
     boxList: BoxDraft[]
