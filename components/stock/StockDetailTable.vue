@@ -96,6 +96,11 @@
             bodyClass="font-semibold"
             :styles="{'width': '5%'}"
           )
+            template(#body="{data}")
+              .flex.align-items-center.cursor-pointer.justify-content-end(v-if="data.itemStatus === 'ITEM_STATUS_DRAFT'")
+                span N/A
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                span {{data.box.id}}
           Column(
             field="box.request.warehouse.name"
             sortable header="WAREHOUSE"
@@ -108,7 +113,9 @@
                 .icon--small.icon-arrow-up-right.bg-primary
           Column(field="box.rackLocation.name" header="LOCATION" sortable className="p-text-right")
             template(#body="{data}")
-              .flex.align-items-center.cursor-pointer.justify-content-end
+              .flex.align-items-center.cursor-pointer.justify-content-end(v-if="data.itemStatus === 'ITEM_STATUS_DRAFT'")
+                span N/A
+              .flex.align-items-center.cursor-pointer.justify-content-end(v-else)
                 span.text-primary.font-bold.font-sm
                 | {{ data.box.rackLocation ? (data.box.rackLocation.name ? data.box.rackLocation.name : '' ) : ''}}
                 .icon--small.icon-arrow-up-right.bg-primary

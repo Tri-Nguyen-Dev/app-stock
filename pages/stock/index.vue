@@ -46,7 +46,6 @@
           @sort="sortData($event)"
           :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }"
           :rowClass="rowClass" :value='stockList' responsiveLayout="scroll"
-          @row-click='rowdbClick'
           :selection='selectedStock'
           dataKey='id'
           :rows='10'
@@ -66,11 +65,12 @@
           Column(field='imageUrl' header='Image' headerClass="grid-header-center")
             template(#body='{ data }')
               .stock__table__image.overflow-hidden.grid-cell-center
-                img.h-2rem.w-2rem.border-round(
-                  :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
+                NuxtLink(:to="`/stock/${data.id}`") 
+                  img.h-2rem.w-2rem.border-round(
+                    :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
-              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
+              NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/stock/${data.id}`" class="no-underline hover:underline") {{ data.name }}
           Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
             template(#body='{ data }')
               .stock__table-barcode.grid-cell-right {{ data.barCode }}
@@ -85,9 +85,9 @@
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
-                span(@click="handleEditStock(data.id)")
+                span(@click.stop="handleEditStock(data.id)")
                   .icon.icon-edit-btn
-                span(@click="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
+                span(@click.stop="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
                   .icon.icon-btn-delete
           template(#footer)
             Pagination(
@@ -294,10 +294,6 @@ class Stock extends Vue {
 
   handleEditStock(id: any) {
     this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' } })
-  }
-
-  rowdbClick({ data }) {
-    this.$router.push(`/stock/${data.id}`)
   }
 
   sortData(e: any) {
