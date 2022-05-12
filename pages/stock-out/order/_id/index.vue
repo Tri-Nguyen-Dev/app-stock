@@ -1,9 +1,9 @@
 <template lang="pug">
 .grid.grid-nogutter.packing__detail--container
-	.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
-		PackingInformationDetail
-	.col-9.pl-4.pr-1.h-full.overflow-y-auto.overflow-x-hidden.flex-1
-		.grid.justify-content-between
+	.packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
+		PackingInformationDetail(:deliveryOrderDetail ='orderDetail')
+	.col-9.packing__detail--left.pl-4.pr-1.flex-1
+		.grid
 			.col-8
 				h1.text-heading Item list
 				span.text-subheading {{ total }} items found
@@ -112,7 +112,7 @@ class DeliveryOrder extends Vue {
   }
 
   packItem() {
-    this.$router.push(`/stock-out/${this.id}/packing`)
+    this.$router.push(`/stock-out/order/${this.id}/packing`)
   }
 
   async handleExportReceipt() {
@@ -133,4 +133,8 @@ export default DeliveryOrder
 .btn-center
   height: 70%
   align-self: center
+.packing__detail--container
+  height: calc(100vh - 32px)
+.packing__detail--left
+  height: calc( 100% - 32px) !important
 </style>
