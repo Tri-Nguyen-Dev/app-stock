@@ -63,7 +63,7 @@
               .font-semibold.text-primary 1
         .col-1.flex.justify-content-end.p-1
           Button.w-10.justify-content-center.flex(@click="handleClick") Next
-          Button.w-10.justify-content-center.flex(@click="handleSubmit") Submit
+          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit") Save
 </template>
 
 <script lang="ts">
@@ -279,17 +279,6 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
-    this.nextSuggestLocation = true
-    let listBoxLocation = [ ...this.listTranfferingBox ]
-    listBoxLocation = listBoxLocation.map((item) => {
-      return item.boxSize?.id.toString()
-    })
-    const locationList = await this.actLocationSuggestion(listBoxLocation)
-    if(locationList) {
-      this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
-        return { ..._.cloneDeep(x), location: locationList[index] }
-      })
-    }
     if (!this.checkQuantityOriginal(this.listOriginalBox)) {
       this.$toast.add({
         severity: 'error',
@@ -337,8 +326,8 @@ class DeliveryOrderPacking extends Vue {
       request,
       listStockWithAmount: this.getStocks(items)
     }))
-    
-    await this.actSavePackingDetail({ data, id: 'DO000000000041' })
+    const { id } = this.$route.params
+    await this.actSavePackingDetail({ data, id })
   }
 }
 
