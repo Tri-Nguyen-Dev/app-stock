@@ -62,8 +62,8 @@
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary {{tranferringOutGoing}}
         .col-1.flex.justify-content-end.p-1
-          Button.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled" ) Next
-          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if='ishowSave') Save
+          Button.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled") Next
+          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if="ishowSave" ) Save
 </template>
 
 <script lang="ts">
@@ -227,7 +227,8 @@ class DeliveryOrderPacking extends Vue {
       inventoryFee: 0,
       request:{
         id: this.originalBoxActive.requestId
-      }
+      },
+      location: null
     })
     if(_.size(this.listTranfferingBox) === 1)
       this.tranfferingBoxActive = this.listTranfferingBox[0]
@@ -270,8 +271,8 @@ class DeliveryOrderPacking extends Vue {
     })
     const locationList = await this.actLocationSuggestion(listBoxLocation)
     if(locationList) {
-      this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
-        return { ..._.cloneDeep(x), location: locationList[index] }
+      _.forEach(this.listTranfferingBox, function (obj, index) {
+        _.set(obj, 'location', locationList[index])
       })
     }
   }
@@ -315,19 +316,23 @@ class DeliveryOrderPacking extends Vue {
   }
 
   get isDisabled() {
-    const unprocessedStocks = _.partition(_.flatten(_.map(this.listOriginalBox, 'items')), { 
-      quantity: 0 
-    })[1]
-    const unsetBoxSizeOutGoing = _.partition(this.listOutGoingBox, { 'boxSize': null })[0]
-    const unsetBoxSizeTranffering = _.partition(this.listTranfferingBox, { 'boxSize': null })[0]
-    if(_.size(unsetBoxSizeOutGoing) === 0 && _.size(unsetBoxSizeTranffering) === 0 && _.size(unprocessedStocks) === 0) {
-      return null
+    if(_.size(this.listOriginalBox)) {
+      const unprocessedStocks = _.partition(_.flatten(_.map(this.listOriginalBox, 'items')), { 
+        quantity: 0 
+      })[1]
+      const unsetBoxSizeOutGoing = _.partition(this.listOutGoingBox, { 'boxSize': null })[0]
+      const unsetBoxSizeTranffering = _.partition(this.listTranfferingBox, { 'boxSize': null })[0]
+      if(_.size(unsetBoxSizeOutGoing) === 0 && _.size(unsetBoxSizeTranffering) === 0 && _.size(unprocessedStocks) === 0) {
+        return null
+      }
     }
     return 'disabled'
   }
 
   get ishowSave() {
-    return _.has(_.last(this.listTranfferingBox), 'location')
+    return _.size(_.partition(this.listTranfferingBox, {
+      'location': null
+    })[0]) === 0 && !this.isDisabled
   }
 }
 
