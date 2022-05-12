@@ -278,6 +278,17 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
+    this.nextSuggestLocation = true
+    let listBoxLocation = [ ...this.listTranfferingBox ]
+    listBoxLocation = listBoxLocation.map((item) => {
+      return item.boxSize?.id.toString()
+    })
+    const locationList = await this.actLocationSuggestion(listBoxLocation)
+    if(locationList) {
+      this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
+        return { ..._.cloneDeep(x), location: locationList[index] }
+      })
+    }
     if (!this.checkQuantityOriginal(this.listOriginalBox)) {
       this.$toast.add({
         severity: 'error',
