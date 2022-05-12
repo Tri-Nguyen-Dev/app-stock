@@ -1,5 +1,5 @@
 <template lang="pug">
-  .grid.grid-nogutter.packing__detail--container
+  .grid.grid-nogutter.packing__detail--container(v-if='packingDetail')
     Toast
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
       StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
@@ -34,7 +34,7 @@
           .grid.align-items-center
             .col-1
               .icon--large.icon-note
-            .col
+            .col(v-if='packingDetail.note')
               div Note:
               span {{packingDetail.note || 'Note is empty'}}
         .col-2.border-right-1.border-gray-300.p-1
@@ -80,8 +80,8 @@ class DeliveryOrderPackingDetail extends Vue {
 
   async mounted() {
     await Promise.all([
-      this.actGetDeliveryOrderDetail('DO000000000047'),
-      this.actGetPackingDetailById('DO000000000047')
+      this.actGetDeliveryOrderDetail('DO000000000013'),
+      this.actGetPackingDetailById('DO000000000013')
     ])
 
     this.listOriginalBox = [...this.packingDetail.originalBox]

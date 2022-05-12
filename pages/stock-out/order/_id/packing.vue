@@ -114,10 +114,10 @@ class DeliveryOrderPacking extends Vue {
 
   async mounted() {
     await Promise.all ([
-      this.actGetDeliveryOrderDetail('DO000000000041'),
+      this.actGetDeliveryOrderDetail('DO000000000013'),
       this.actGetBoxSizeList()
     ])
-    const result = await this.actGetListOriginal('DO000000000041')
+    const result = await this.actGetListOriginal('DO000000000013')
     if (result) {
       this.listOriginalBox = this.originalList.map((x: any) => {
         const obj = _.cloneDeep(x)
@@ -268,21 +268,21 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
-    if (!this.checkQuantityOriginal(this.listOriginalBox)) {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'The number of products in the box has not been processed yet',
-        life: 3000
-      })
-    } else if(this.listTranfferingBox) {
-      this.nextSuggestLocation = true
-      let listBoxLocation = [ ...this.listTranfferingBox ]
-      listBoxLocation = listBoxLocation.map((item) => {
-        return item.boxSizeSelect?.id.toString()
-      })
-      await this.actLocationSuggestion(listBoxLocation)
-    }
+    // if (!this.checkQuantityOriginal(this.listOriginalBox)) {
+    //   this.$toast.add({
+    //     severity: 'error',
+    //     summary: 'Error Message',
+    //     detail: 'The number of products in the box has not been processed yet',
+    //     life: 3000
+    //   })
+    // } else if(this.listTranfferingBox) {
+    this.nextSuggestLocation = true
+    let listBoxLocation = [ ...this.listTranfferingBox ]
+    listBoxLocation = listBoxLocation.map((item) => {
+      return item.boxSizeSelect?.id.toString()
+    })
+    await this.actLocationSuggestion(listBoxLocation)
+    // }
   }
 
   get tranferringOutGoing() {

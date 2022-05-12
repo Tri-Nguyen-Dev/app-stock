@@ -31,9 +31,6 @@
           span.mr-1 Size:
           Dropdown.ml-1(v-model='tab.boxSizeSelect' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
-          .error-message(
-            v-if='($v.tab.boxSizeSelect && !$v.tab.boxSizeSelect.required)'
-          ) Please select box size!
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
           span.ml-2 Attach Tag
@@ -78,18 +75,9 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
-import { required } from 'vuelidate/lib/validators'
 const nsStoreLocationList = namespace('location/location-list')
 
-@Component({
-  validations: {
-    tab: {
-      boxSizeSelect: {
-        required
-      }
-    }
-  }
-})
+@Component
 class PackingOriginal extends Vue {
   activeIndex: number = 0
   tabs: any = []
