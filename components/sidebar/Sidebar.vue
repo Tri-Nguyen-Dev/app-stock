@@ -71,6 +71,8 @@ class MenuSidebar extends Vue {
   handleSelect (){
     if( _.isEmpty(this.$route.params)){
       this.selectedItem = this.pageMenu.filter((item)=> this.$route.path === item.to )[0]
+    }else {
+      this.selectedItem = this.pageMenu.filter((item)=> this.$route.path.slice(0, item.to?.length) === item.to )[0]
     }
   }
 
@@ -84,7 +86,7 @@ export default MenuSidebar
   @include flex-column
   float: left
   position: fixed
-  z-index: 1
+  z-index: 1111 
   top: 0
   left: 0
   bottom: 0

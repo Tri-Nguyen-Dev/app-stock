@@ -144,9 +144,6 @@
         Column(header='Creator ID' field='creatorId' sortable sortField="_assignee.id")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
-        Column(header='Create Name' field='creatorName' sortable sortField="_creatorName" headerClass="grid-header-right")
-          template(#body='{ data }')
-            .stock__table-barcode.grid-cell-right {{ data.creatorName }}
         Column(header='Create time' field='createTime' sortable  sortField="_createdAt" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.createTime | dateTimeHour12 }}
@@ -174,7 +171,7 @@
               div Delivery Time
           template(#body='{ data }')
             div.grid-cell-right {{ data.estimatedDeliveryTime | dateTimeHour12 }}
-        Column( sortable field='lastedUpdateTime' sortField="_lastedUpdateTime" headerClass="grid-header-right")
+        Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
           template(#header)
             div
               div.text-end Latest
@@ -186,7 +183,7 @@
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(header='PIC' sortable field='assigneeId' sortField="_assigneeId" headerClass="grid-header-right")
+        Column(header='PIC' sortable field='assigneeId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.assigneeId }}
         Column(v-if="activeTab == 1"

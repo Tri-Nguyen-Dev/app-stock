@@ -133,7 +133,7 @@ export default SidebarItemValue
      border: 1px solid $bg-body-base
      box-shadow: 0px 10px 30px rgba(0, 10, 24, 0.1)
      border-radius: 8px
-     z-index: 111
+     z-index: 11111
      li
       list-style: none
      .item-collapsed__children
