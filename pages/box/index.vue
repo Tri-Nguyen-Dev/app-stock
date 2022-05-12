@@ -86,7 +86,7 @@
             span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
         Column(field="id" header="BOX CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
           template(#body="{data}")
-            NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/stock/${data.id}`" 
+            NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/box/${data.id}`" 
             class="no-underline hover:underline") {{ data.id }}
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
