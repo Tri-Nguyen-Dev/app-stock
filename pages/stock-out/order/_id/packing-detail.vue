@@ -80,8 +80,8 @@ class DeliveryOrderPackingDetail extends Vue {
 
   async mounted() {
     await Promise.all([
-      this.actGetDeliveryOrderDetail('DO000000000023'),
-      this.actGetPackingDetailById('DO000000000023')
+      this.actGetDeliveryOrderDetail(this.$route.params.id),
+      this.actGetPackingDetailById(this.$route.params.id)
     ])
 
     this.listOriginalBox = _.map(this.packingDetail?.originalBox, ({ id, inventoryFee, listStockWithAmount }) => ({
