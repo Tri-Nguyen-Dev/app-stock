@@ -281,8 +281,8 @@ class StockIn extends Vue {
         detail: 'Successfully deleted box',
         life: 3000
       })
-      this.paging.first = 1
-      this.paging.pageNumber = 1
+      this.paging.first = 0
+      this.paging.pageNumber = 0
       await this.actGetStockIn({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
     }
   }
