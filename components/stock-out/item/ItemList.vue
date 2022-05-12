@@ -123,4 +123,6 @@ export default ItemList
 ::v-deep.p-datatable .p-datatable-tbody > tr.p-highlight
 	background-color: $color-white !important
 	color: var(--surface-900) !important
+::v-deep.p-datatable
+	height: 92% !important
 </style>
