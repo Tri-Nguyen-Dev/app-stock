@@ -328,6 +328,12 @@ class DeliveryOrderPacking extends Vue {
     }))
     const { id } = this.$route.params
     await this.actSavePackingDetail({ data, id })
+    this.$toast.add({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Pack successfully!',
+      life: 3000
+    })
   }
 }
 
