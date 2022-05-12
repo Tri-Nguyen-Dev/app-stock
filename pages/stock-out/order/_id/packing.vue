@@ -81,7 +81,6 @@ class DeliveryOrderPacking extends Vue {
   listOriginalBox: any = []
   listOutGoingBox: any = []
   listTranfferingBox: any = []
-  nextSuggestLocation: boolean = false
 
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
@@ -264,40 +263,16 @@ class DeliveryOrderPacking extends Vue {
     this.tranfferingBoxActive = this.listTranfferingBox[index - 1]
   }
 
-  checkQuantityOriginal(list) {
-    if (list && list.length > 0) {
-      let isCheck = true
-      list.forEach((boxItem) => {
-        boxItem?.items.forEach((itemStock) => {
-          if (itemStock.quantity > 0) {
-            isCheck = false
-          } else isCheck = true
-        })
-      })
-      return isCheck
-    }
-  }
-
   async handleClick() {
-    if (!this.checkQuantityOriginal(this.listOriginalBox)) {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'The number of products in the box has not been processed yet',
-        life: 3000
+    let listBoxLocation = [ ...this.listTranfferingBox ]
+    listBoxLocation = listBoxLocation.map((item) => {
+      return item.boxSize?.id.toString()
+    })
+    const locationList = await this.actLocationSuggestion(listBoxLocation)
+    if(locationList) {
+      this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
+        return { ..._.cloneDeep(x), location: locationList[index] }
       })
-    } else if(this.listTranfferingBox) {
-      this.nextSuggestLocation = true
-      let listBoxLocation = [ ...this.listTranfferingBox ]
-      listBoxLocation = listBoxLocation.map((item) => {
-        return item.boxSize?.id.toString()
-      })
-      const locationList = await this.actLocationSuggestion(listBoxLocation)
-      if(locationList) {
-        this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
-          return { ..._.cloneDeep(x), location: locationList[index] }
-        })
-      }
     }
   }
 
@@ -329,12 +304,6 @@ class DeliveryOrderPacking extends Vue {
     }))
     const { id } = this.$route.params
     await this.actSavePackingDetail({ data, id })
-    this.$toast.add({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: 'Pack successfully!',
-      life: 3000
-    })
     this.$router.push(`/stock-out/order/${id}/packing-detail`)
   }
 
