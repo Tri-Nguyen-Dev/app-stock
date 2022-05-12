@@ -1,7 +1,7 @@
 <template lang="pug">
-.packing__common--table.bg-white.border-round.w-full
-  Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal' @click="handleAddTab") + Add
-  span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal')
+.packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
+  Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab") + Add
+  span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.border-0.w-full.mb-1(
       type="text"
@@ -15,16 +15,30 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    TabPanel(v-for='tab in listBox' :key='tab.boxCode' :disabled="tab.key !== activeIndex && type === 'originalBox'")
+        span(v-if='type === "tranferringBox"') RN
+    TabPanel(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.boxCode}}
         .ml-1.px-1(v-if='isOutgoing && tab.checked') {{ tab.tagCode }}
-      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
+        AutoComplete.edit-location.ml-1(
+          v-if="isShowLocation(tab)"
+          v-model='tab.location',
+          field='name',
+          :suggestions='locationList',
+          @complete='searchLocation($event)'
+          :dropdown='true'
+          forceSelection
+        )
+          template(#item='slotProps')
+            .grid.align-items-center.grid-nogutter
+              span.font-bold.text-small {{ slotProps.item.name }}
+              .icon-arrow-up-right.icon
+      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
-          Dropdown(v-model='tab.boxSizeSelect' :options="boxSizeList" optionLabel="name").w-9
+          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
@@ -35,11 +49,11 @@
               div Estimated
               div Inventory Fee:
             .col
-              InputText.w-4(v-model='tab.estimateFee' type='number')
+              InputText.w-4(v-model='tab.inventoryFee' type='number')
               span.ml-1 / day
           .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
             span.mr-1 Tag code:
-            InputText(type='number' @change='addTagByBarCode')
+            InputText(@change='addTagByBarCode')
         .col.py-3.flex.justify-content-end
           span.p-input-icon-right
             span.mr-1 Barcode:
@@ -48,15 +62,19 @@
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type')
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+const nsStoreLocationList = namespace('location/location-list')
+const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
 class PackingOriginal extends Vue {
   activeIndex: number = 0
   tabs: any = []
-
+  selectedsd: any = null
   barCodeText: string = ''
   boxCodeText: string = ''
+  locationBox: any = []
+  isPackingDetail: boolean = false
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -66,6 +84,20 @@ class PackingOriginal extends Vue {
   @Prop() listBox!: Array<any>
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
+  // @Prop() location !: Array<any>
+
+  @nsStoreLocationList.State
+  locationList: {}
+
+  @nsStoreLocationList.Action
+  actLocationList!: (params: any) => Promise<void>
+
+  @nsStorePackingDetail.Action
+  actScanAirtag!: (params: any) => Promise<void>
+
+  getTabKey(tab) {
+    return 'tab.boxCode' + (tab.location?.id || '')
+  }
 
   handleAddTab() {
     if(this.listBox.length <= 9) {
@@ -109,7 +141,9 @@ class PackingOriginal extends Vue {
     this.boxCodeText = ''
   }
 
-  addTagByBarCode(e:any) {
+  async addTagByBarCode(e:any) {
+    const barCode = e.target.value
+    await this.actScanAirtag(barCode)
     this.listBox[this.activeIndex - 1].tagCode = e.target.value
   }
 
@@ -123,6 +157,29 @@ class PackingOriginal extends Vue {
       return accumulator +  length
     }, 0)
     return sum
+  }
+
+  async searchLocation (e) {
+    await this.actLocationList({
+      location: e.query
+    })
+  }
+
+  isShowLocation(obj) {
+    return _.has(obj, 'location') && this.type === 'tranferringBox'
+  }
+
+  mounted() {
+    if(this.$route.name?.includes('packing-detail')) {
+      this.isPackingDetail = true
+    }
+  }
+
+  isDisable(tab) {
+    if(this.$route.name?.includes('packing-detail')) {
+      this.activeIndex = 1
+    }
+    return tab.key !== this.activeIndex && this.type === 'originalBox'
   }
 }
 
@@ -166,23 +223,36 @@ export default PackingOriginal
         background: $text-color-300
       .p-datatable .p-datatable-thead > tr > th
         background: #fff !important
+    .p-tabview-nav-container
+      overflow: unset !important
     .p-tabview-nav li .p-tabview-nav-link
+      .pi-chevron-down
+        color: #fff !important
       &:focus
         box-shadow: none
       &:hover
         border: none
     .p-tabview-nav-content
+      overflow: unset !important
+      .edit-location
+        width: 160px !important
       .p-tabview-nav
+        overflow: unset !important
         .p-disabled:first-child
           min-width: 265px !important
         .p-disabled
           opacity: 1
           font-size: 12px
           border-right: 1px solid $bg-body-base
+        li
+          overflow: unset !important
         li .p-tabview-nav-link
           border-bottom: none
+          height: 100% !important
           span
             color: $text-color-900
+        .p-tabview-nav-link
+          overflow: unset !important
       .p-highlight
         border-bottom: 2px solid $primary
         position: relative
@@ -195,4 +265,11 @@ export default PackingOriginal
         .icon.icon-box-packing
           display: inline-block !important
           background: $primary
+::v-deep.packing__common--table.packing-detail
+  .originalTable
+    .p-tabview-nav-container
+      width: 100% !important
+  .outGoingTable
+    .p-tabview-nav-container
+      width: 100% !important
 </style>

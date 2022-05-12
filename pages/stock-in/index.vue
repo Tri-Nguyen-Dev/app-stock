@@ -104,12 +104,12 @@
             template(#body='{ data }') {{ data.sellerName }}
           Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_seller.email")
             template(#body='{ data }') {{ data.sellerEmail }}
-          Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
+          Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" className="text-right")
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
                 .icon.icon-arrow-up-right.bg-primary.bg-white-active
-          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" :styles="{'width': '1%'}")
+          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" className="text-right")
             template(#body='{ data }')
               .flex.align-items-center.cursor-pointer.justify-content-end
                   span.text-white-active {{ data.creatorId }}
@@ -118,7 +118,7 @@
           field='data.creatorName' 
           :sortable="true" 
           sortField="_createdBy.displayName" 
-          :styles="{'width': '1%'}")
+          className="text-right")
             template(#body='{ data }')
               .flex.align-items-center.cursor-pointer.justify-content-end
                   span.text-white-active {{ data.creatorName }}
@@ -281,8 +281,8 @@ class StockIn extends Vue {
         detail: 'Successfully deleted box',
         life: 3000
       })
-      this.paging.first = 1
-      this.paging.pageNumber = 1
+      this.paging.first = 0
+      this.paging.pageNumber = 0
       await this.actGetStockIn({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
     }
   }
