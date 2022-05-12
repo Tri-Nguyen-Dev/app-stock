@@ -15,13 +15,8 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    TabPanel(v-for='(tab,index) in listBox' :key='getTabKey(tab)' :disabled="isDisable(tab)")
-      template(#header v-if='isPackingDetail')
-        .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
-        .icon.icon-box-packing.hidden.mr-2
-        span.uppercase.text-700 {{tab.id}}
-        .ml-1.px-1(v-if='isOutgoing') {{ tab.tagCode }}
-      template(#header v-else)
+    TabPanel(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
+      template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.boxCode}}
@@ -44,9 +39,6 @@
           span.mr-1 Size:
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
-          .error-message(
-            v-if='($v.tab.boxSizeSelect && !$v.tab.boxSizeSelect.required)'
-          ) Please select box size!
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
           span.ml-2 Attach Tag
@@ -70,18 +62,10 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
-import { required } from 'vuelidate/lib/validators'
 const nsStoreLocationList = namespace('location/location-list')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component({
-  validations: {
-    tab: {
-      boxSizeSelect: {
-        required
-      }
-    }
-  }
 })
 class PackingOriginal extends Vue {
   activeIndex: number = 0
@@ -184,7 +168,7 @@ class PackingOriginal extends Vue {
   isShowLocation(obj) {
     return _.has(obj, 'location') && this.type === 'tranferringBox'
   }
-  
+
   mounted() {
     if(this.$route.name?.includes('packing-detail')) {
       this.isPackingDetail = true
@@ -193,7 +177,7 @@ class PackingOriginal extends Vue {
 
   isDisable(tab) {
     if(this.$route.name?.includes('packing-detail')) {
-      return false
+      this.activeIndex = 1
     }
     return tab.key !== this.activeIndex && this.type === 'originalBox'
   }

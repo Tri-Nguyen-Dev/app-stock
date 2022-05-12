@@ -2,7 +2,7 @@
   .grid.grid-nogutter.packing__detail--container
     Toast
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
-      StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
+      //- StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
       div.flex.flex-column
         .grid.grid-nogutter.mb-3
@@ -80,11 +80,23 @@ class DeliveryOrderPackingDetail extends Vue {
 
   async mounted() {
     await Promise.all([
-      this.actGetDeliveryOrderDetail('DO000000000047'),
-      this.actGetPackingDetailById('DO000000000047')
+      this.actGetDeliveryOrderDetail('DO000000000013'),
+      this.actGetPackingDetailById('DO000000000013')
     ])
 
-    this.listOriginalBox = [...this.packingDetail.originalBox]
+    this.listOriginalBox = _.map(this.packingDetail?.originalBox, ({ id, inventoryFee, listStockWithAmount }) => ({
+      boxCode: id,
+      locationId: listStockWithAmount.id,
+      inventoryFee,
+      items: _.map(listStockWithAmount, ({ stock, amount, initialQuantity, sku }) => ({
+        barCode: stock.barCode,
+        sku,
+        name: stock.name,
+        quantity: initialQuantity,
+        outGoingQuantity: amount
+      }))
+    }))
+    
     this.listOutGoingBox = [...this.packingDetail.outGoingBox]
     this.listTranfferingBox = [...this.packingDetail.transferringBox]
   }
