@@ -59,7 +59,7 @@
           .col
             .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditStockDetail')
               span.uppercase save
-    .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
+    .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1
       StockDetailTable
 </template>
 <script lang="ts">
