@@ -9,7 +9,7 @@ import { $api } from '~/utils'
 
 export default class Seller extends VuexModule {
   private static readonly STATE_URL = {
-    GET_SELLER: '/admin/user/list'
+    GET_SELLER: '/staff/list-seller'
   }
 
   public sellerList: [] = []

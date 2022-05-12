@@ -13,15 +13,15 @@ div
         forceSelection
         v-model='selectedSeller'
         :disabled='item.disabled' 
-        :suggestions='list'
+        :suggestions='listSeller'
         @item-select='changeItem($event)' 
         @complete="searchCountry($event)"
       )
-      InputText.w-full( v-else-if='!item.options' v-model='item.value' :disabled='item.disabled' )
+      InputText.w-full( v-else-if='!item.options' v-model='item.value' :disabled='item.disabled' @change='receiverChange', )
       Dropdown.w-full( 
         v-else 
         :disabled='item.disabled' 
-        :options="warehouseList" 
+        :options="warehouseBySeller" 
         optionLabel="name" 
         v-model='selectedWarehouse'
         :placeholder='filedWarehouse'
@@ -41,16 +41,20 @@ class ItemInput extends Vue {
   filedWarehouse: any = null
   selectedSeller: any = null
   name: any | string 
-  list: any = []
+  listSeller: any = []
 
   @nsStoreWarehouse.State
-  warehouseList!: any
+  warehouseBySeller!: any
 
   @nsStoreSeller.State
   sellerList!: any
 
   selectedItems( event : any  ) {
     this.$emit('fieldWarehouse', event.value)
+  }
+
+  receiverChange( event : any  ) {
+    this.$emit('fieldReceiver', event.target.value)
   }
   
   mounted() {
@@ -61,15 +65,15 @@ class ItemInput extends Vue {
     else if ( this.listInfor[0].label === 'Name'){
       this.filedWarehouse = inforObj.value
     }
-
   }
  
   changeItem( event : any ) {
-    this.$emit('sellerInfro' , event.value)
+    this.$emit('sellerInfor' , event.value)
   }
 
   searchCountry() {
-    this.list = this.sellerList
+    this.listSeller = this.sellerList
+    this.$emit('paramSeller' , this.selectedSeller)
   }
 
 }

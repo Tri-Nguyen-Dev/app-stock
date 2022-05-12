@@ -194,12 +194,12 @@ class AddItems extends Vue {
 
   // -- [ Functions ] ------------------------------------------------------------
   mounted() {
-    // this.sellerEmail = _.get(this.listInfor, 'seller[0].value')
-    // this.warehouse = _.get(this.listInfor, 'warehouse[0].warehouseId')
-    // if(!this.sellerEmail || !this.warehouse) {
-    //   this.$router.push({ path: '/stock-out/order' })
-    //   return
-    // }
+    this.sellerEmail = _.get(this.listInfor, 'seller[0].value')
+    this.warehouse = _.get(this.listInfor, 'warehouse[0].warehouseId')
+    if(!this.sellerEmail || !this.warehouse) {
+      this.$router.push({ path: '/stock-out/order' })
+      return
+    }
     this.outGoingList = this.outGoingListStore.map((x: any) => ({ ..._.cloneDeep(x) }))
     this.isDisabled =  _.size(this.outGoingList) < 1 ? 'disabled' : null
     this.getDataList()
@@ -213,8 +213,8 @@ class AddItems extends Vue {
   getParamAPi() {
     return {
       pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
-      email: 'minhdtb.83@gmail.com' || null,
-      warehouseId: '1' || null,
+      email: this.sellerEmail || null,
+      warehouseId: this.warehouse || null,
       'receiptId': this.filter.receiptId || null,
       'barCode': this.filter.barCode || null,
       'sku': this.filter.sku || null,

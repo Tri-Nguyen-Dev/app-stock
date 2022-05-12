@@ -5,7 +5,7 @@
       .icon.bg-primary.surface-900.mr-3.icon-sender-info
       span.uppercase.text-800.font-bold seller information
     div
-      StockOutItemInput( :listInfor='infomation.seller' @sellerInfro='handleSeller' )
+      StockOutItemInput( :listInfor='infomation.seller' @sellerInfor='handleSeller' @paramSeller='paramSeller' )
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
@@ -19,7 +19,7 @@
       .icon.bg-primary.surface-900.mr-3.icon-receive-square
       span.uppercase.text-800.font-bold receiver information
     div
-      StockOutItemInput( :listInfor='infomation.receiver' )
+      StockOutItemInput( :listInfor='infomation.receiver' @fieldReceiver='handleReveiver'   )
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
@@ -51,6 +51,7 @@ import { INFORMATION } from '~/utils'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreSeller = namespace('seller/seller-list')
 const nsStoreUserDetail = namespace('user-auth/user')
+const dayjs = require('dayjs')
 
 @Component
 class LabelCreate extends Vue {
@@ -60,7 +61,7 @@ class LabelCreate extends Vue {
   deliveryDate: string | any = 'Fill receiver information'
   estimatedDate: string | any  = 'Fill receiver information'
   infomation = INFORMATION
-
+  paramEmail: string | any 
   @nsStoreUserDetail.State
   user!: any
 
@@ -76,8 +77,6 @@ class LabelCreate extends Vue {
   async mounted() {
     await this.actGetUserDetail(this.$auth.$state.user.sub)
     this.handleUser()
-    this.actSellerList(null)
-   
   }
 
   handleWarehouse( event : any ) {
@@ -88,21 +87,36 @@ class LabelCreate extends Vue {
     InforWarehouse[2].value = event.phone
   }
 
-  handleSeller( event : any ){
+  async handleSeller( event : any ){
     const InforSeller = this.infomation.seller
     InforSeller[0].value = event.email
-    InforSeller[1].value = event.name
-    InforSeller[2].value = event.phone
-    this.actWarehouseBySeller( event.email )
+    InforSeller[0].id = event.id
+    InforSeller[1].value = event.displayName
+    InforSeller[2].value = event.phoneNumber
+    await this.actWarehouseBySeller({ email: event.email })
   }
 
   handleUser() {
     const InforCreator = this.infomation.creator
-    const fullName = `${ this.user.lastName } ${ this.user.firstName }`
     InforCreator[0].value = this.user.id
     InforCreator[1].value = this.user.email
-    InforCreator[2].value = fullName
+    InforCreator[2].value = this.user.displayName
     InforCreator[3].value = this.user.phoneNumber
+  }
+
+  paramSeller(event : any ) {
+    this.actSellerList({ email : event })
+  }
+
+  handleReveiver( event : any  ) {
+    const d = new Date()
+    const dayFrom = dayjs(d).add(5, 'day').format('DD/MM/YYYY')
+    const dayTo = dayjs(d).add(8, 'day').format('DD/MM/YYYY')
+    const estimat = dayFrom + ' - ' + dayTo
+    if(event) {
+      this.deliveryDate = estimat
+      this.estimatedDate = '1 day'
+    }
   }
 
 }

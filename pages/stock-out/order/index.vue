@@ -11,7 +11,7 @@
           h1.text-heading Item list
           span.text-subheading {{ listItemsAddSize }} product found
         div
-          .btn.btn-primary(@click='handleSubmit')
+          .btn.btn-primary(@click='createStockOut')
             .icon.icon-add-items.surface-900.bg-white
             span.text-900.text-white.mr-3 Add Items For Delivery
       .col-12.flex-1
@@ -61,7 +61,7 @@
           column(field='tag', header='TAG', headerClass='grid-header-center')
             template(#body='{ data }')
               .grid-cell-center
-                Checkbox(v-model='data.tag', :binary='true', )
+                Checkbox(v-model='data.hasAirtag', :binary='true' )
           column(
             :exportable='false',
             header='ACTION',
@@ -100,11 +100,22 @@
                   style='border: none'
                   v-model='noteBox'
                 )
+      ConfirmDialogCustom(
+        title="Confirm delete"
+        image="confirm-delete"
+        :isShow="isModalDelete"
+        :onOk="handleDelete"
+        :onCancel="handleCancelDelete"
+        :loading="loadingSubmit"
+      )
+        template(v-slot:message)
+          p {{ deleteMessage }}  
+    Toast
 </template>
 
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { INFORMATION } from '~/utils'
+import { INFORMATION , getDeleteMessage } from '~/utils'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreCreateOrder = namespace('stock-out/create-order')
 
@@ -115,11 +126,15 @@ const nsStoreCreateOrder = namespace('stock-out/create-order')
 class createOrder extends Vue {
   listItemsAdd: any = []
   isActive: string = ''
-  tag: boolean
   delivery: string = ''
+  listInforId: any
   noteBox: any = null 
   infomation = INFORMATION
   oldItem: any = null
+  isModalDelete: boolean = false
+  isModalCancel : boolean = false
+  loadingSubmit: boolean = false
+  onEventDeleteList: any = []
 
   @nsStoreCreateOrder.State
   listInfor:any
@@ -136,34 +151,14 @@ class createOrder extends Vue {
   @nsStoreCreateOrder.Action
   actDeliveryOrder!: (params: any) => Promise<void>
 
-  get homeItem() {
-    return { to: '/stock-out', icon: 'pi pi-list' }
-  }
-
-  get breadcrumbItem() {
-    return [
-      {
-        label: 'Add new order',
-        to: '/stock-out/create-order',
-        icon: 'pi pi-info-circle'
-      }
-    ]
-  }
-
   mounted() {
-    this.listItemsAdd = _.cloneDeep(this.outGoingListStore)
+    this.listItemsAdd = this.outGoingListStore.map((x: any) => ({ ..._.cloneDeep(x), hasAirtag: false }))
     if(this.listItemsAdd.length > 0 ){
-      _.forEach(this.infomation, function(obj){
-        _.forEach(obj, function(o){
-          if(_.has(o, 'disabled')) {
-            _.set(o, 'disabled' , !o.disabled)
-          }
-        })
-      })
+      this.disableInput()
     }
   }
 
-  async createStockIn() {
+  async createStockOut() {
     const note = this.noteBox
     const listInfoAdd = { ...this.infomation , note }
     this.$router.push('/stock-out/order/add-items')
@@ -177,24 +172,55 @@ class createOrder extends Vue {
     this.oldItem = _.cloneDeep(data)
   }
 
+  handleCancelDelete() {
+    this.isModalDelete = false
+  }
+
+  handleCancelAdd() {
+    this.isModalCancel = false
+  }
+
+  showModalDelete(data?: any) {
+    this.onEventDeleteList = data
+    this.isModalDelete = true
+  }
+
   async saveEditItem( ) {
     await this.actOutGoingList(
       _.cloneDeep(this.listItemsAdd))
     this.isActive = ''
   }
 
-  async showModalDelete( data:any ) {
-    await this.actOutGoingList(
-      _.cloneDeep(this.listItemsAdd.splice(
-        this.listItemsAdd.indexOf(data),1)))
+  async handleDelete( data : any ) {
+    this.listItemsAdd.splice(this.listItemsAdd.indexOf(data),1)
+    const result : any =  await this.actOutGoingList(
+      _.cloneDeep(this.listItemsAdd))
+    if( result ) {
+      this.isModalDelete = false
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted stock',
+        life: 3000
+      })
+    }
   }
-
+  
   async handleSubmit(){
-    await this.createStockIn()
     const listReceiver = this.listInfor.receiver
+    const deliveryItemList: any = []
+    _.forEach(this.listItemsAdd, ({ id, delivery, hasAirtag }) =>{
+      deliveryItemList.push({
+        stockBox:{
+          id
+        },
+        amount: delivery,
+        hasAirtag
+      })
+    })
     await this.actDeliveryOrder({
       seller: {
-        id: this.listInfor.seller[1].value
+        id: this.infomation.seller[0].id
       },
       receiverAddress: listReceiver[0].value,
       receiverEmail: listReceiver[1].value,
@@ -205,28 +231,67 @@ class createOrder extends Vue {
       warehouse: {
         id: this.listInfor.warehouse[0].warehouseId
       },
-      driver: {
-        id: null
-      },
-      deliveryItemList: []
+      deliveryItemList
     })
+    this.$toast.add({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Successfully new order ',
+      life: 3000
+    })
+    this.handleCancel()
+    this.disableInput()
+    this.$router.push({ path: '/stock-out/order-list' })
   }
 
-  handleCancelEdit(data : any ){
+  handleCancelEdit (data : any ) {
     data.delivery = this.oldItem.delivery
     this.isActive = ''
   }
 
-  async handleCancel(){
+  async handleCancel() {
     const emptyList =  this.listItemsAdd = []
-    await this.actGetCreateOrder(null)
+    await this.actGetCreateOrder(_.cloneDeep(emptyList))
     await  this.actOutGoingList(_.cloneDeep(emptyList))
+    _.forEach(this.infomation, function(item){
+      _.forEach(item, function(i) {
+        i.value = null
+      } )
+    })
+    this.$router.push({ path: '/stock-out/order-list' })
+  }
+
+  disableInput() {
+    _.forEach(this.infomation, function(obj){
+      _.forEach(obj, function(o){
+        if(_.has(o, 'disabled')) {
+          _.set(o, 'disabled' , !o.disabled)
+        }
+      })
+    })
   }
 
   get listItemsAddSize() {
     return this.listItemsAdd.length || 0
   }
 
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'New Order')
+  }
+
+  get homeItem() {
+    return { to: '/stock-out', icon: 'pi pi-list' }
+  }
+
+  get breadcrumbItem() {
+    return [
+      {
+        label: 'Add new order',
+        to: '/stock-out/create-order',
+        icon: 'pi pi-info-circle'
+      }
+    ]
+  }
 }
 
 export default createOrder
