@@ -11,7 +11,7 @@
         div.item__rect(v-if="item.parentId")
         span {{ item.label }}
         span.icon.toggle.icon-chevron-down.surface-500(:class="iconSelectCssClasses")
-        Badge.mr-2.badge-notify(v-if="item.label ==='Notifications'" :value="3")
+        Badge.mr-2.badge-notify(v-if="item.label === 'Notifications'" :value="3")
 </template>
 
 <script lang='ts'>
@@ -21,7 +21,7 @@ const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItemValue extends Vue {
-  isShowChildren: Boolean = false
+  isShowChildren: boolean = false
   // -- [ Statement Properties ] ----------------------------------------------------------
   @nsSidebar.State('collapsed')
   collapsed!: boolean
@@ -29,7 +29,7 @@ class SidebarItemValue extends Vue {
   @Prop() readonly item!: any | undefined
   @InjectReactive() readonly selectedItem!: any
   @InjectReactive() readonly parentItems!: any
-  
+
   @Watch('active')
   resetActive() {
     this.isShowChildren = this.active
@@ -42,7 +42,7 @@ class SidebarItemValue extends Vue {
     }
   }
   // -- [ Getters ] -----------------------------------------------------------------------
- 
+
   get active() {
     return this.item.id === this.selectedItem?.id || this.item.id === this.selectedItem?.parentId
   }
@@ -58,9 +58,12 @@ class SidebarItemValue extends Vue {
     } else if (this.active) {
       clazz += ' surface-900'
     }
+    if (this.item.hideToggled) {
+      clazz += ' toggle-none'
+    }
     return clazz
   }
-  
+
   handleSelect() {
     this.isShowChildren = false
   }
@@ -70,15 +73,16 @@ export default SidebarItemValue
 </script>
 
 <style lang="sass" scoped>
+.toggle-none
+  display: none
+
 .sidebar-foot
-  .toggle 
-    display: none
   .badge-notify
     border-radius: 3px
     background-color: $bg-orange
-.menu-item 
-  .nuxt-link-active 
-    .item-value 
+.menu-item
+  .nuxt-link-active
+    .item-value
       border-radius: 4px
       background-color: $text-color-300
 .child-item
@@ -116,11 +120,11 @@ export default SidebarItemValue
   color: $text-color-base
   font-size: $font-size-medium
   font-weight: $font-weight-bold
-  .item-collapsed 
+  .item-collapsed
     display: none
-  &.active 
+  &.active
    .item-collapsed
-     &.active-child 
+     &.active-child
        display: block
      position: absolute
      top: 40px
@@ -130,22 +134,22 @@ export default SidebarItemValue
      box-shadow: 0px 10px 30px rgba(0, 10, 24, 0.1)
      border-radius: 8px
      z-index: 111
-     li 
+     li
       list-style: none
-     .item-collapsed__children 
+     .item-collapsed__children
        display: block
        text-decoration: none
        color: $text-color-900
-       &:hover 
+       &:hover
         border-radius: 4px
         background-color: $text-color-300
-       &.nuxt-link-active 
+       &.nuxt-link-active
         background: $primary
         color: $color-white
         border-radius: 4px
-       
-   &::before 
-    content:""
+
+   &::before
+    content: ""
     position: absolute
     border-radius: 0 5px 5px 0
     left: -16px
