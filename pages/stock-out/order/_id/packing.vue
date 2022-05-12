@@ -329,6 +329,13 @@ class DeliveryOrderPacking extends Vue {
     const { id } = this.$route.params
     await this.actSavePackingDetail({ data, id })
   }
+
+  get tranferringOutGoing() {
+    const tranferringOutGoing = [...this.listOutGoingBox,...this.listTranfferingBox]
+    return tranferringOutGoing.reduce((accumulator:any, object:any) => {
+      return accumulator + object.items.length
+    },0)
+  }
 }
 
 export default DeliveryOrderPacking
