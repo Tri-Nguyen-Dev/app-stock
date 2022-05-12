@@ -177,7 +177,7 @@ class PackingOriginal extends Vue {
   }
 
   isShowLocation(obj) {
-    return _.has(obj, 'location') && this.type === 'tranferringBox'
+    return obj?.location && this.type === 'tranferringBox'
   }
 
   mounted() {

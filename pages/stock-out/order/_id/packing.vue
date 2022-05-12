@@ -62,8 +62,8 @@
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary {{tranferringOutGoing}}
         .col-1.flex.justify-content-end.p-1
-          Button.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled" ) Next
-          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if='ishowSave') Save
+          Button.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled") Next
+          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if="ishowSave" ) Save
 </template>
 
 <script lang="ts">
@@ -81,7 +81,6 @@ class DeliveryOrderPacking extends Vue {
   listOriginalBox: any = []
   listOutGoingBox: any = []
   listTranfferingBox: any = []
-  nextSuggestLocation: boolean = false
 
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
@@ -228,7 +227,8 @@ class DeliveryOrderPacking extends Vue {
       inventoryFee: 0,
       request:{
         id: this.originalBoxActive.requestId
-      }
+      },
+      location: null
     })
     if(_.size(this.listTranfferingBox) === 1)
       this.tranfferingBoxActive = this.listTranfferingBox[0]
@@ -264,40 +264,16 @@ class DeliveryOrderPacking extends Vue {
     this.tranfferingBoxActive = this.listTranfferingBox[index - 1]
   }
 
-  checkQuantityOriginal(list) {
-    if (list && list.length > 0) {
-      let isCheck = true
-      list.forEach((boxItem) => {
-        boxItem?.items.forEach((itemStock) => {
-          if (itemStock.quantity > 0) {
-            isCheck = false
-          } else isCheck = true
-        })
-      })
-      return isCheck
-    }
-  }
-
   async handleClick() {
-    if (!this.checkQuantityOriginal(this.listOriginalBox)) {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'The number of products in the box has not been processed yet',
-        life: 3000
+    let listBoxLocation = [ ...this.listTranfferingBox ]
+    listBoxLocation = listBoxLocation.map((item) => {
+      return item.boxSize?.id.toString()
+    })
+    const locationList = await this.actLocationSuggestion(listBoxLocation)
+    if(locationList) {
+      _.forEach(this.listTranfferingBox, function (obj, index) {
+        _.set(obj, 'location', locationList[index])
       })
-    } else if(this.listTranfferingBox) {
-      this.nextSuggestLocation = true
-      let listBoxLocation = [ ...this.listTranfferingBox ]
-      listBoxLocation = listBoxLocation.map((item) => {
-        return item.boxSize?.id.toString()
-      })
-      const locationList = await this.actLocationSuggestion(listBoxLocation)
-      if(locationList) {
-        this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
-          return { ..._.cloneDeep(x), location: locationList[index] }
-        })
-      }
     }
   }
 
@@ -329,12 +305,6 @@ class DeliveryOrderPacking extends Vue {
     }))
     const { id } = this.$route.params
     await this.actSavePackingDetail({ data, id })
-    this.$toast.add({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: 'Pack successfully!',
-      life: 3000
-    })
     this.$router.push(`/stock-out/order/${id}/packing-detail`)
   }
 
@@ -346,19 +316,23 @@ class DeliveryOrderPacking extends Vue {
   }
 
   get isDisabled() {
-    const unprocessedStocks = _.partition(_.flatten(_.map(this.listOriginalBox, 'items')), { 
-      quantity: 0 
-    })[1]
-    const unsetBoxSizeOutGoing = _.partition(this.listOutGoingBox, { 'boxSize': null })[0]
-    const unsetBoxSizeTranffering = _.partition(this.listTranfferingBox, { 'boxSize': null })[0]
-    if(_.size(unsetBoxSizeOutGoing) === 0 && _.size(unsetBoxSizeTranffering) === 0 && _.size(unprocessedStocks) === 0) {
-      return null
+    if(_.size(this.listOriginalBox)) {
+      const unprocessedStocks = _.partition(_.flatten(_.map(this.listOriginalBox, 'items')), { 
+        quantity: 0 
+      })[1]
+      const unsetBoxSizeOutGoing = _.partition(this.listOutGoingBox, { 'boxSize': null })[0]
+      const unsetBoxSizeTranffering = _.partition(this.listTranfferingBox, { 'boxSize': null })[0]
+      if(_.size(unsetBoxSizeOutGoing) === 0 && _.size(unsetBoxSizeTranffering) === 0 && _.size(unprocessedStocks) === 0) {
+        return null
+      }
     }
     return 'disabled'
   }
 
   get ishowSave() {
-    return _.has(_.last(this.listTranfferingBox), 'location')
+    return _.size(_.partition(this.listTranfferingBox, {
+      'location': null
+    })[0]) === 0 && !this.isDisabled
   }
 }
 
