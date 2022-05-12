@@ -110,7 +110,6 @@ class ItemList extends Vue {
   unSelectRow() {
     this.$emit('enablePack', false)
   }
-
 }
 
 export default ItemList
