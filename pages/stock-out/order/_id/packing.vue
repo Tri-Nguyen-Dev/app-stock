@@ -117,11 +117,12 @@ class DeliveryOrderPacking extends Vue {
   actLocationList!: (params: any) => Promise<void>
 
   async mounted() {
+    const { id } = this.$route.params
     await Promise.all ([
-      this.actGetDeliveryOrderDetail('DO000000000041'),
+      this.actGetDeliveryOrderDetail(id),
       this.actGetBoxSizeList()
     ])
-    const result = await this.actGetListOriginal('DO000000000041')
+    const result = await this.actGetListOriginal(id)
     if (result) {
       this.listOriginalBox = this.originalList.map((x: any) => {
         const obj = _.cloneDeep(x)
