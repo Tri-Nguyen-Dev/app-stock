@@ -7,7 +7,7 @@
           span.user-name {{ userDisplayName }}
           span.user-role Role Ex
       .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
-    .menu-section.sidebar-menu.overflow-auto
+    .menu-section.sidebar-menu
       SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
     .menu-section.sidebar-foot
       SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
@@ -86,7 +86,7 @@ export default MenuSidebar
   @include flex-column
   float: left
   position: fixed
-  z-index: 1111 
+  z-index: 11
   top: 0
   left: 0
   bottom: 0
@@ -114,7 +114,8 @@ export default MenuSidebar
 
   &-menu
     padding-top: $space-size-16
-    overflow-x: auto
+    //overflow-y: auto
+    //overflow-x: hidden
 
   &-foot
     padding-top: $space-size-4
