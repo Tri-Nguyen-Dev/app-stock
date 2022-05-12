@@ -10,19 +10,19 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title ID receipt note
-							.filter__text(v-if='id') {{ id }}
+						.filter__text(v-if='id') {{ id }}
 				.col
 					.filter__item.item--disabled
 						.filter__title ID Creator
-						.filter__text NVN030133
+						.filter__text(v-if='user') {{user.id}}
 				.col
 					.filter__item.item--disabled
 						.filter__title Creator name
-						.filter__text Nguyen Khanh Hung
+						.filter__text(v-if='user') {{user.displayName}}
 				.col
 					.filter__item.item--disabled
 						.filter__title Create time
-						.filter__text 19-09-2022 9:24AM
+						.filter__text(v-if='generalInfo.createdAt') {{generalInfo.createdAt | dateTimeHour12}}
 				.col
 					.filter__item
 						.filter__title Warehouse
@@ -37,21 +37,19 @@
 						.filter__title Seller email
 						.filter__autocomplete
 							AutoComplete(
-								v-model='seller',
+								v-model='generalInfo.seller',
 								:suggestions='sellerList',
 								@complete='handleChangeSeller($event)',
-								field='email',
-								placeholder='Enter seller email'
+								field='email'
 							)
-						span {{ sellerEmailError }}
 				.col
 					.filter__item.item--disabled
 						.filter__title Seller phone
-						.filter__text {{ sellerPhone }}
+						.filter__text(v-if='generalInfo.seller') {{ generalInfo.seller.phoneNumber }}
 				.col
 					.filter__item.item--disabled
 						.filter__title Seller name
-						.filter__text {{ sellerName }}
+						.filter__text(v-if='generalInfo.seller') {{ generalInfo.seller.displayName  }}
 	card.card-custom
 		template(#content='')
 			.grid
@@ -83,7 +81,7 @@
 								.grid
 									.col-12.pb-0
 										span.uppercase.font-semibold.mr-1 box {{ box.index + 1 }}
-									.col-12.pb-0(v-if='checkEnableLocation(box.index) && box.location')
+									.col-12.pb-0(v-if='checkEnableLocation(box)')
 										AutoComplete.edit-location(
 											v-model='listBox[box.index].location',
 											field='name',
@@ -91,6 +89,7 @@
 											@complete='searchLocation($event)',
 											@item-select='changeItem($event)',
 											:dropdown='true'
+											:minLength='3'
 										)
 											template(#item='slotProps')
 												.grid.align-items-center.grid-nogutter
@@ -134,7 +133,7 @@
 								currency='USD',
 								locale='en-US'
 							)
-							span.font-semibold.text-base.ml-3 /day
+							span.font-semibold.text-base.ml-3 / day
 						.d-flex.col-6(class='md:col-5 lg:col-4')
 							span.font-semibold.text-base.mr-2.ml-2 Barcode
 							InputText.box-input.mr-2(
@@ -223,7 +222,7 @@
 			@addItem='addItem',
 			:barcode='boxQrCode'
 		)
-		FormAddSeller(:isShowForm='isShowFormAddSeller')
+	FormAddSeller(:isShowForm='isShowFormAddSeller')
 	Dialog(:visible.sync='isModalDelete', :modal='true')
 		.confirm-dialog__content
 			img(:srcset='"~/assets/images/confirm-delete.png"')
@@ -243,12 +242,15 @@ import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
 import { Receipt as ReceiptModel } from '~/models/Receipt'
 import { Stock as StockModel } from '~/models/Stock'
 import { RECEIPT_ACTION, RECEIPT_STATUS } from '~/utils/constants/rececipt'
+import { User } from '~/models/User'
+import { Seller as SellerModel } from '~/models/Seller'
 const nsStoreStock = namespace('stock/stock-detail')
 const nsStoreStockIn = namespace('stock-in/create-receipt')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreSeller = namespace('seller/seller-list')
 const nsStoreBoxSize = namespace('box/box-size-list')
 const nsStoreLocationList = namespace('location/location-list')
+const nsStoreUser = namespace('user-auth/user')
 
 @Component({
   components: {
@@ -269,6 +271,15 @@ class CreateOrUpdateReceipt extends Vue {
   selectedLocation: any = {}
   note: string = ''
   receiptId = 0
+  generalInfo : {
+    createdAt?: string,
+    seller?: SellerModel.Model
+  } = {
+    createdAt:undefined,
+    seller:undefined
+  }
+
+  isSuggested=false;
   @Prop() id?: string
   @nsStoreWarehouse.Action
   actWarehouseList!: (params?: any) => Promise<void>
@@ -291,18 +302,13 @@ class CreateOrUpdateReceipt extends Vue {
   @nsStoreStockIn.State
   receiptDetail!: any
 
+  @nsStoreUser.State
+  user: User.Model | undefined
+
   warehouse: any = null
   seller: any = null
   sellerEmailError: any = null
   isShowFormAddSeller: boolean = false
-
-  get sellerName() {
-    return this.seller && this.seller.name ? this.seller.name : 'name'
-  }
-
-  get sellerPhone() {
-    return this.seller && this.seller.phone ? this.seller.phone : 'phone'
-  }
 
   @nsStoreStock.State
   newStockDetail!: StockModel.CreateStock
@@ -360,9 +366,13 @@ class CreateOrUpdateReceipt extends Vue {
     }
   }
 
-  handleChangeSeller(e) {
+  async handleChangeSeller(e) {
     const params = { email: e.query }
-    this.actSellerList(params)
+    await	this.actSellerList(params)
+    if(this.sellerList.length===0)
+    {
+      this.handleAddSeller()
+    }
   }
 
   handleAddSeller() {
@@ -428,7 +438,7 @@ class CreateOrUpdateReceipt extends Vue {
   async saveReceipt(type) {
     if (!this.checkActiveAction()) return
     if (type === 1) {
-      if (!this.checkValidateInput()) {
+      if (!this.checkValidateBoxsize()) {
         return
       }
     }
@@ -458,6 +468,7 @@ class CreateOrUpdateReceipt extends Vue {
         box.listStockWithAmount?.push(itemDraft)
       })
       box.rackLocation.id = element.location!.id
+      receiptDraft.seller.id = this.generalInfo.seller?.id
       receiptDraft.boxList?.push(box)
     })
     if (this.id) {
@@ -475,6 +486,7 @@ class CreateOrUpdateReceipt extends Vue {
               : 'Successfully save receipt',
           life: 3000
         })
+        this.generalInfo.createdAt = this.newReceipt.createdAt
       }
     }
     if (type === 1 && this.newReceipt.id) {
@@ -487,6 +499,10 @@ class CreateOrUpdateReceipt extends Vue {
 
   checkActiveAction() {
     this.activeAction = true
+    if(!(this.generalInfo.seller!.id))
+    {
+      return false
+    }
     this.listBox.forEach((element) => {
       this.activeAction = element.listItemInBox.length > 0
     })
@@ -494,12 +510,19 @@ class CreateOrUpdateReceipt extends Vue {
   }
 
   async getLocationSuggest() {
+    if (!this.checkValidateBoxsize()) {
+      return
+    }
     const listBoxSize = this.listBox.map((element) => {
       return '' + element.boxSize
     })
     await this.actLocationSuggestion(listBoxSize)
+    this.isSuggested = true
     this.boxLocation.forEach((element) => {
-      this.listBox[element.index].location = element
+      if( !(this.listBox[element.index].location?.id!>0)){
+        this.listBox[element.index].location = { ...element }
+      }
+      
     })
     this.checkLocation()
   }
@@ -519,14 +542,14 @@ class CreateOrUpdateReceipt extends Vue {
 
   checkLocation() {
     this.listBox.forEach((element) => {
-      this.activeSave = !(!element.location?.id || element.location.id === '')
+      this.activeSave = !(!element.location?.id || element.location.id === 0)
     })
   }
 
   clearLocation() {
     this.listBox.forEach((element, index) => {
       element.location = {
-        id: '',
+        id: 0,
         name: '',
         index
       }
@@ -614,12 +637,17 @@ class CreateOrUpdateReceipt extends Vue {
       box.listItemInBox.push(...element.listStockWithAmount)
       this.listBox.push(box)
     })
-    this.note = this.receiptDetail.note
+    this.note = this.receiptDetail.data.note
     this.activeIndex = 0
+    this.seller = this.receiptDetail.data.seller
+    this.generalInfo.seller = this.receiptDetail.data.seller
+    this.generalInfo.createdAt = this.receiptDetail.data.createdAt
   }
 
-  checkEnableLocation(index) {
-    if (this.listBox[index].location?.id) {
+  checkEnableLocation(box) {
+    if(this.isSuggested && this.listBox[box.index].listItemInBox.length>0) {
+      return true
+    } else if(box.location?.id>0) {
       return true
     } else {
       return false
@@ -636,7 +664,7 @@ class CreateOrUpdateReceipt extends Vue {
     }
   }
 
-  checkValidateInput() {
+  checkValidateBoxsize() {
     let isValid = true
     this.listBox.forEach((element, index) => {
       if (!element.boxSize!.id) {
