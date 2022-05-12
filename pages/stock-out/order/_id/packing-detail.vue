@@ -34,7 +34,7 @@
           .grid.align-items-center
             .col-1
               .icon--large.icon-note
-            .col(v-if='packingDetail.note')
+            .col
               div Note:
               span {{packingDetail.note || 'Note is empty'}}
         .col-2.border-right-1.border-gray-300.p-1
@@ -80,13 +80,48 @@ class DeliveryOrderPackingDetail extends Vue {
 
   async mounted() {
     await Promise.all([
-      this.actGetDeliveryOrderDetail('DO000000000013'),
-      this.actGetPackingDetailById('DO000000000013')
+      this.actGetDeliveryOrderDetail('DO000000000023'),
+      this.actGetPackingDetailById('DO000000000023')
     ])
 
-    this.listOriginalBox = [...this.packingDetail.originalBox]
-    this.listOutGoingBox = [...this.packingDetail.outGoingBox]
-    this.listTranfferingBox = [...this.packingDetail.transferringBox]
+    this.listOriginalBox = _.map(this.packingDetail?.originalBox, ({ id, inventoryFee, listStockWithAmount }) => ({
+      boxCode: id,
+      locationId: listStockWithAmount.id,
+      inventoryFee,
+      items: _.map(listStockWithAmount, ({ stock, amount, initialQuantity, sku }) => ({
+        barCode: stock.barCode,
+        sku,
+        name: stock.name,
+        quantity: initialQuantity,
+        outGoingQuantity: amount
+      }))
+    }))
+
+    this.listOutGoingBox = _.map(this.packingDetail.outGoingBox, ({ id, inventoryFee, listStockWithAmount }) => ({
+      boxCode: id,
+      locationId: listStockWithAmount.id,
+      inventoryFee,
+      items: _.map(listStockWithAmount, ({ stock, originalBox, amount, sku }) => ({
+        barCode: stock.barCode,
+        sku,
+        name: stock.name,
+        quantity: amount,
+        originalBox
+      }))
+    }))
+
+    this.listTranfferingBox =  _.map(this.packingDetail.transferringBox, ({ id, inventoryFee, listStockWithAmount }) => ({
+      boxCode: id,
+      locationId: listStockWithAmount.id,
+      inventoryFee,
+      items: _.map(listStockWithAmount, ({ stock, originalBox, amount, sku }) => ({
+        barCode: stock.barCode,
+        sku,
+        name: stock.name,
+        quantity: amount,
+        originalBox
+      }))
+    }))
   }
 }
 export default DeliveryOrderPackingDetail

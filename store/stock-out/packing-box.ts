@@ -12,6 +12,8 @@ export default class StorePackingBox extends VuexModule {
     GET_ORIGINAL_BOX: '/delivery-order/:id/list-original-box',
     GET_DELIVERY_ORDER: '/delivery-order/:id/detail',
     GET_BOX_LOCATION: '/location/suggest',
+    SAVE_PACKING_ORDER: '/delivery-order/:id/packing',
+    SCAN_AIRTAG: '/airtag/scan-barcode/:barcode',
     GET_PACKING_DETAIL_BY_ID: '/delivery-order/:id/packing-detail'
   }
 
@@ -19,6 +21,8 @@ export default class StorePackingBox extends VuexModule {
   public originalList: PackingDetail.OriginalBox[] = []
   public deliveryOrderDetail: any = {}
   public boxLocation: any[] = []
+  public idPackingDetail: any = null
+  public infoTag: any = null
   public packingDetail: any = {}
 
   @Mutation
@@ -73,6 +77,24 @@ export default class StorePackingBox extends VuexModule {
     } catch (error) {}
   }
 
+  @Action({ commit: 'setIdPackingDetail', rawError: true })
+  async actSavePackingDetail(data: any): Promise<string | undefined> {
+    try{
+      const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.SAVE_PACKING_ORDER, { id: data.id })
+      const response = await $api.post(url, { ...data.data })
+      return response.data
+    } catch (error) {}
+  }
+
+  @Action({ commit: 'setInfoTag', rawError: true })
+  async actScanAirtag(barcode: any): Promise<string | undefined> {
+    try{
+      const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.SAVE_PACKING_ORDER, { barcode })
+      const response = await $api.get(url)
+      return response.data
+    } catch (error) {}
+  }
+  
   @Action({ commit: 'setPackingDetail', rawError: true })
   async actGetPackingDetailById(id: any ): Promise<any | undefined> {
     try {
