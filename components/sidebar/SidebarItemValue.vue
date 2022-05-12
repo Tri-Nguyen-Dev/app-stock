@@ -37,7 +37,7 @@ class SidebarItemValue extends Vue {
 
   @Watch('collapsed')
   showChild(){
-    if(!this.collapsed) {
+    if(this.collapsed) {
       this.isShowChildren = false
     }
   }

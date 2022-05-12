@@ -529,7 +529,7 @@ export default DeliveryOrderList
 <style lang="sass" scoped>
 .text-end
   display: flex
-  justify-content: end
+  justify-content: flex-end
 
 .stock
   @include flex-column
@@ -547,7 +547,7 @@ export default DeliveryOrderList
     text-align: right !important
 
     .p-column-header-content
-      justify-content: end !important
+      justify-content: flex-end !important
 
   ::v-deep.disable-button
     pointer-events: none

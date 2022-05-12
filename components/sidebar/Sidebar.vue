@@ -7,7 +7,7 @@
           span.user-name {{ userDisplayName }}
           span.user-role Role Ex
       .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
-    .menu-section.sidebar-menu
+    .menu-section.sidebar-menu.overflow-auto
       SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
     .menu-section.sidebar-foot
       SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
@@ -71,8 +71,6 @@ class MenuSidebar extends Vue {
   handleSelect (){
     if( _.isEmpty(this.$route.params)){
       this.selectedItem = this.pageMenu.filter((item)=> this.$route.path === item.to )[0]
-    }else {
-      this.selectedItem = this.pageMenu.filter((item)=> this.$route.path.slice(0, item.to?.length) === item.to )[0]
     }
   }
 
