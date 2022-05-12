@@ -1,7 +1,7 @@
 <template lang="pug">
-.packing__common--table.bg-white.border-round.w-full
-  Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal' @click="handleAddTab") + Add
-  span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal')
+.packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
+  Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab") + Add
+  span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.border-0.w-full.mb-1(
       type="text"
@@ -15,8 +15,13 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    TabPanel(v-for='(tab,index) in listBox' :key='tab.boxCode' :disabled="tab.key !== activeIndex && type === 'originalBox'")
-      template(#header)
+    TabPanel(v-for='(tab,index) in listBox' :key='tab.boxCode' :disabled="isDisable(tab)")
+      template(#header v-if='type === packingDetail')
+        .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
+        .icon.icon-box-packing.hidden.mr-2
+        span.uppercase.text-700 {{tab.id}}
+        .ml-1.px-1(v-if='isOutgoing') {{ tab.tagCode }}
+      template(#header v-else)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.boxCode}}
@@ -34,11 +39,14 @@
             .grid.align-items-center.grid-nogutter
               span.font-bold.text-small {{ slotProps.item.name }}
               .icon-arrow-up-right.icon
-      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal')
+      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1 Size:
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
+          .error-message(
+            v-if='($v.tab.boxSizeSelect && !$v.tab.boxSizeSelect.required)'
+          ) Please select box size!
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
           span.ml-2 Attach Tag
@@ -62,18 +70,27 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+import { required } from 'vuelidate/lib/validators'
 const nsStoreLocationList = namespace('location/location-list')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
-@Component
+@Component({
+  validations: {
+    tab: {
+      boxSizeSelect: {
+        required
+      }
+    }
+  }
+})
 class PackingOriginal extends Vue {
   activeIndex: number = 0
   tabs: any = []
   selectedsd: any = null
-
   barCodeText: string = ''
   boxCodeText: string = ''
   locationBox: any = []
+  isPackingDetail: boolean = false
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -163,6 +180,19 @@ class PackingOriginal extends Vue {
   isShowLocation(obj) {
     return _.has(obj, 'location') && this.type === 'tranferringBox'
   }
+  
+  mounted() {
+    if(this.$route.name?.includes('packing-detail')) {
+      this.isPackingDetail = true
+    }
+  }
+
+  isDisable(tab) {
+    if(this.$route.name?.includes('packing-detail')) {
+      return false
+    }
+    return tab.key !== this.activeIndex && this.type === 'originalBox'
+  }
 }
 
 export default PackingOriginal
@@ -247,4 +277,11 @@ export default PackingOriginal
         .icon.icon-box-packing
           display: inline-block !important
           background: $primary
+::v-deep.packing__common--table.packing-detail
+  .originalTable
+    .p-tabview-nav-container
+      width: 100% !important
+  .outGoingTable
+    .p-tabview-nav-container
+      width: 100% !important
 </style>

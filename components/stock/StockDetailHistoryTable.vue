@@ -16,9 +16,9 @@
     Column(field="createdAt" header="TIME" sortable :styles="{'width': '100%'}")
       template(#body="{data}")
         div {{ data.createdAt | dateTimeHour12 }}
-    Column(field="originalLocation" header="ORIGINAL LOCATION" sortable)
-    Column(field="newLocation" header="NEW LOCATION" sortable)
-    Column(field="createdBy" header="ID CREATOR" sortable)
+    Column(field="originalLocation.name" header="ORIGINAL LOCATION" sortable)
+    Column(field="newLocation.name" header="NEW LOCATION" sortable)
+    Column(field="createdBy.id" header="ID CREATOR" sortable)
     template(#footer)
       .pagination
         div.pagination__info
@@ -36,6 +36,8 @@ const nsStoreStock = namespace('stock/stock-detail')
 
 @Component
 class StockDetailHistoryTable extends Vue {
+  firstPage:any = 0
+
   @nsStoreStock.State
   historyLocationList!: any
 

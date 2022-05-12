@@ -13,16 +13,17 @@ export default class StorePackingBox extends VuexModule {
     GET_DELIVERY_ORDER: '/delivery-order/:id/detail',
     GET_BOX_LOCATION: '/location/suggest',
     SAVE_PACKING_ORDER: '/delivery-order/:id/packing',
-    SCAN_AIRTAG: '/airtag/scan-barcode/:barcode'
+    SCAN_AIRTAG: '/airtag/scan-barcode/:barcode',
+    GET_PACKING_DETAIL_BY_ID: '/delivery-order/:id/packing-detail'
   }
 
   public totalOriginalList?: number = 0
   public originalList: PackingDetail.OriginalBox[] = []
   public deliveryOrderDetail: any = {}
-
   public boxLocation: any[] = []
   public idPackingDetail: any = null
   public infoTag: any = null
+  public packingDetail: any = {}
 
   @Mutation
   setListOriginal(data: any) {
@@ -41,13 +42,8 @@ export default class StorePackingBox extends VuexModule {
   }
 
   @Mutation
-  setIdPackingDetail(data: any) {
-    this.idPackingDetail = data.id
-  }
-
-  @Mutation
-  setInfoTag(data: any) {
-    this.infoTag = data
+  setPackingDetail(data: any) {
+    this.packingDetail = data
   }
 
   @Action({ commit: 'setListOriginal', rawError: true })
@@ -97,5 +93,16 @@ export default class StorePackingBox extends VuexModule {
       const response = await $api.get(url)
       return response.data
     } catch (error) {}
+  }
+  
+  @Action({ commit: 'setPackingDetail', rawError: true })
+  async actGetPackingDetailById(id: any ): Promise<any | undefined> {
+    try {
+      const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.GET_PACKING_DETAIL_BY_ID, { id })
+      const response = await $api.get(url)
+      return response.data
+    } catch (error) {
+
+    }
   }
 }
