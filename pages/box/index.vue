@@ -77,7 +77,7 @@
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll"
       :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"
-      :rowClass="rowClass" @sort="sortData($event)" @row-click="onRowClick"
+      :rowClass="rowClass" @sort="sortData($event)"
       :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
       @row-unselect-all="rowUnSelectAll" @row-select="rowSelect" @row-unselect="rowUnselect")
         Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
@@ -85,6 +85,9 @@
           template(#body="slotProps")
             span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
         Column(field="id" header="BOX CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
+          template(#body="{data}")
+            NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/stock/${data.id}`" 
+            class="no-underline hover:underline") {{ data.id }}
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
@@ -300,10 +303,6 @@ class BoxList extends Vue {
       this.sortByColumn = ''
     }
     await this.actGetBoxList(this.getParamAPi())
-  }
-
-  onRowClick({ data }){
-    this.$router.push(`/box/${data.id}`)
   }
 
   handleEditBox(id: any) {
