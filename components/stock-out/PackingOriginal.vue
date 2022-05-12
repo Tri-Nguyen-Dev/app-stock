@@ -1,5 +1,6 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
+  Toast
   Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
@@ -132,10 +133,20 @@ class PackingOriginal extends Vue {
           this.activeIndex = index + 1
           this.$emit('selectedTab', index)
         } else {
-          // console.log('Vui long xu ly het item original (quantity = 0)')
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error Message',
+            detail: 'Please buy original item (quantity = 0)',
+            life: 3000
+          })
         }
       } else {
-        // console.log('box code khong co trong original list ')
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'The box code is not in the original listing',
+          life: 3000
+        })
       }
     }
     this.boxCodeText = ''
