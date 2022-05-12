@@ -44,46 +44,42 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(
               title="Creator ID"
-              :value="model.data.box.request.createBy"
-              value="NVN030133"
+              :value="model.data.box.createdBy.id"
               :isEdit="isEditItemDetail"
               icon="icon-tag-user"
             )
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Warehouse" link="https://rikkei.vn" :isEdit="isEditItemDetail" value="NTH001" icon="icon-warehouse")
+            StockUnit(
+              title="Warehouse"
+              link="https://rikkei.vn"
+              :isEdit="isEditItemDetail"
+              :value="model.data.box.request.warehouse.name"
+              icon="icon-warehouse"
+            )
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Location" link="https://rikkei.vn" :isEdit="isEditItemDetail" value="R03-AA-B02-02" icon="icon-location-2")
+            StockUnit(
+              title="Location"
+              link="https://rikkei.vn"
+              :isEdit="isEditItemDetail"
+              :value="model.data.box.rackLocation.name"
+              icon="icon-location-2"
+            )
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3' :class='isEditItemDetail ? "opacity-40" : "opacity-100"')
             StockUnit(title="Size (L*W*H)" icon="icon-size")
               template(v-slot:size)
-              .grid(v-if='isEditItemDetail')
-                .col-4.p-0.pl-2.pt-1
-                  InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.length')
-                .col-4.p-0.pt-1
-                  InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.width')
-                .col-4.p-0.pt-1
-                  InputNumber.w-full(:disabled='!isEditItemDetail', v-model='model.data.stock.height')
-              span.font-semibold.mr-1.uppercase(v-else)
-              | {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }}
+                span.font-semibold.mr-1.uppercase
+                | {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }}
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Weight (Kg)" :value="model.data.stock.weight" :isEdit="isEditItemDetail" icon="icon-weight")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
-            StockUnit(title="Boxcode" :value="model.data.box.barCode" :isEdit="isEditItemDetail" icon="icon-delivery")
+            StockUnit(title="Boxcode" :value="model.data.box.id" :isEdit="isEditItemDetail" icon="icon-delivery")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 mt-2')
-            .wapprer-unit.opacity-100.surface-50
-              .grid.align-items-center
-                .col-3.flex.justify-content-end
-                  .icon--large.icon-price.bg-blue-700
-                .col
-                  div.text-500 Value
-                  InputText(:disabled='!isEditItemDetail' v-model='model.data.value').w-6
             StockUnit(
               title="Value"
               type ="weight"
               :weight="model.data.value"
               :isEdit="isEditItemDetail"
               icon="icon-price"
-              @updateUnit='handleUpdateUnit'
             )
         .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
           .col
