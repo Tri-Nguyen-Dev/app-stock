@@ -418,7 +418,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowdbClick({ data }) {
-    this.$router.push(`/stock-out/order/${data.id}/packing-detail`)
+    this.$router.push(`/stock-out/order/${data.id}/packing`)
   }
 
   sortData(e: any) {
