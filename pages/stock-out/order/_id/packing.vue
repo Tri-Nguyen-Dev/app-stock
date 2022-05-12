@@ -62,8 +62,8 @@
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary {{tranferringOutGoing}}
         .col-1.flex.justify-content-end.p-1
-          Button.w-10.justify-content-center.flex(@click="handleClick") Next
-          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit") Save
+          Button.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled" ) Next
+          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if='ishowSave') Save
 </template>
 
 <script lang="ts">
@@ -149,7 +149,7 @@ class DeliveryOrderPacking extends Vue {
       items: [],
       tagCode: '',
       checked: false,
-      boxSize: ''
+      boxSize: null
     })
     if (_.size(this.listOutGoingBox) === 1)
       this.outGoingBoxActive = this.listOutGoingBox[0]
@@ -224,7 +224,7 @@ class DeliveryOrderPacking extends Vue {
       items: [],
       tagCode: '',
       checked: true,
-      boxSize: '',
+      boxSize: null,
       inventoryFee: 0,
       request:{
         id: this.originalBoxActive.requestId
@@ -279,26 +279,26 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
-    if (!this.checkQuantityOriginal(this.listOriginalBox)) {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'The number of products in the box has not been processed yet',
-        life: 3000
+    // if (!this.checkQuantityOriginal(this.listOriginalBox)) {
+    //   this.$toast.add({
+    //     severity: 'error',
+    //     summary: 'Error Message',
+    //     detail: 'The number of products in the box has not been processed yet',
+    //     life: 3000
+    //   })
+    // } else if(this.listTranfferingBox) {
+    this.nextSuggestLocation = true
+    let listBoxLocation = [ ...this.listTranfferingBox ]
+    listBoxLocation = listBoxLocation.map((item) => {
+      return item.boxSize?.id.toString()
+    })
+    const locationList = await this.actLocationSuggestion(listBoxLocation)
+    if(locationList) {
+      this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
+        return { ..._.cloneDeep(x), location: locationList[index] }
       })
-    } else if(this.listTranfferingBox) {
-      this.nextSuggestLocation = true
-      let listBoxLocation = [ ...this.listTranfferingBox ]
-      listBoxLocation = listBoxLocation.map((item) => {
-        return item.boxSize?.id.toString()
-      })
-      const locationList = await this.actLocationSuggestion(listBoxLocation)
-      if(locationList) {
-        this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
-          return { ..._.cloneDeep(x), location: locationList[index] }
-        })
-      }
     }
+    // }
   }
 
   getStocks(stocks) {
@@ -342,6 +342,22 @@ class DeliveryOrderPacking extends Vue {
     return tranferringOutGoing.reduce((accumulator:any, object:any) => {
       return accumulator + object.items.length
     },0)
+  }
+
+  get isDisabled() {
+    const unprocessedStocks = _.partition(_.flatten(_.map(this.listOriginalBox, 'items')), { 
+      quantity: 0 
+    })[1]
+    const unsetBoxSizeOutGoing = _.partition(this.listOutGoingBox, { 'boxSize': null })[0]
+    const unsetBoxSizeTranffering = _.partition(this.listTranfferingBox, { 'boxSize': null })[0]
+    if(_.size(unsetBoxSizeOutGoing) === 0 && _.size(unsetBoxSizeTranffering) === 0 && _.size(unprocessedStocks) === 0) {
+      return null
+    }
+    return 'disabled'
+  }
+
+  get ishowSave() {
+    return _.has(_.last(this.listTranfferingBox), 'location')
   }
 }
 

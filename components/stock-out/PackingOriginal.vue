@@ -96,7 +96,7 @@ class PackingOriginal extends Vue {
   actScanAirtag!: (params: any) => Promise<void>
 
   getTabKey(tab) {
-    return 'tab.boxCode' + (tab.location?.id || '')
+    return tab.boxCode + (tab.location?.id || '')
   }
 
   handleAddTab() {
