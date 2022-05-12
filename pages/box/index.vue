@@ -84,12 +84,13 @@
         Column(field="no" header="NO")
           template(#body="slotProps")
             span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-        Column(field="id" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
+        Column(field="id" header="BOX CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
-        Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold")
-          template(#body="{data}") {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
+        Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold" )
+          template(#body="{data}") 
+            div(v-if='data.boxSize') {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
         Column(field="weight" header="WEIGHT(KG)" className="text-right" bodyClass="font-semibold")
           template(#body="{data}") {{ data.weight }}
         Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right" sortField="_request.warehouse.name")
@@ -111,7 +112,10 @@
               span.table__status.table__status--disable(
                 v-else-if="data.status === 'BOX_STATUS_DISABLE'"
               ) {{ data.status | boxStatus }}
-              span.table__status.table__status--draft(v-else) {{ data.status | boxStatus }}
+              span.table__status.table__status--draft(
+                v-else-if="data.status === 'BOX_STATUS_DRAFT'"
+                ) {{ data.status | boxStatus }}
+              span.table__status.table__status--outgoing(v-else) {{ data.status | boxStatus }}
         Column(:exportable="false" header="ACTION" className="text-right")
           template(#body="{data}")
             .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
