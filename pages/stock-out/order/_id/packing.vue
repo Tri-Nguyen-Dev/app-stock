@@ -279,32 +279,33 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
-    // if (!this.checkQuantityOriginal(this.listOriginalBox)) {
-    //   this.$toast.add({
-    //     severity: 'error',
-    //     summary: 'Error Message',
-    //     detail: 'The number of products in the box has not been processed yet',
-    //     life: 3000
-    //   })
-    // } else if(this.listTranfferingBox) {
-    this.nextSuggestLocation = true
-    let listBoxLocation = [ ...this.listTranfferingBox ]
-    listBoxLocation = listBoxLocation.map((item) => {
-      return item.boxSize?.id.toString()
-    })
-    const locationList = await this.actLocationSuggestion(listBoxLocation)
-    if(locationList) {
-      this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
-        return { ..._.cloneDeep(x), location: locationList[index] }
+    if (!this.checkQuantityOriginal(this.listOriginalBox)) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'The number of products in the box has not been processed yet',
+        life: 3000
       })
+    } else if(this.listTranfferingBox) {
+      this.nextSuggestLocation = true
+      let listBoxLocation = [ ...this.listTranfferingBox ]
+      listBoxLocation = listBoxLocation.map((item) => {
+        return item.boxSize?.id.toString()
+      })
+      const locationList = await this.actLocationSuggestion(listBoxLocation)
+      if(locationList) {
+        this.listTranfferingBox = this.listTranfferingBox.map((x: any, index: any) => {
+          return { ..._.cloneDeep(x), location: locationList[index] }
+        })
+      }
     }
-    // }
   }
 
   getStocks(stocks) {
-    const result =  _.map(stocks, ({ stockId, originalBox, originalLocation, initialQuantity, quantity }) => ({
+    const result =  _.map(stocks, ({ stockId, originalBox, originalLocation, initialQuantity, quantity, sku }) => ({
       stock: { id: stockId },
       originalBox,
+      sku,
       originalLocation,
       initialQuantity,
       amount: quantity
