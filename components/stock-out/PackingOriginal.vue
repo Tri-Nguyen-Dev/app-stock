@@ -208,12 +208,16 @@ export default PackingOriginal
     .p-tabview-nav-container
       overflow: unset !important
     .p-tabview-nav li .p-tabview-nav-link
+      .pi-chevron-down 
+        color: #fff !important
       &:focus
         box-shadow: none
       &:hover
         border: none
     .p-tabview-nav-content
       overflow: unset !important
+      .edit-location
+        width: 160px !important
       .p-tabview-nav
         overflow: unset !important
         .p-disabled:first-child
@@ -226,6 +230,7 @@ export default PackingOriginal
           overflow: unset !important
         li .p-tabview-nav-link
           border-bottom: none
+          height: 100% !important
           span
             color: $text-color-900
         .p-tabview-nav-link
