@@ -15,8 +15,8 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    TabPanel(v-for='(tab,index) in listBox' :key='tab.boxCode' :disabled="isDisable(tab)")
-      template(#header v-if='type === packingDetail')
+    TabPanel(v-for='(tab,index) in listBox' :key='getTabKey(tab)' :disabled="isDisable(tab)")
+      template(#header v-if='isPackingDetail')
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.id}}
@@ -110,6 +110,10 @@ class PackingOriginal extends Vue {
 
   @nsStorePackingDetail.Action
   actScanAirtag!: (params: any) => Promise<void>
+  
+  getTabKey(tab) {
+    return 'tab.boxCode' + (tab.location?.id || '')
+  }
 
   handleAddTab() {
     if(this.listBox.length <= 9) {

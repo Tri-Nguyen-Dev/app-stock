@@ -335,6 +335,13 @@ class DeliveryOrderPacking extends Vue {
       life: 3000
     })
   }
+
+  get tranferringOutGoing() {
+    const tranferringOutGoing = [...this.listOutGoingBox,...this.listTranfferingBox]
+    return tranferringOutGoing.reduce((accumulator:any, object:any) => {
+      return accumulator + object.items.length
+    },0)
+  }
 }
 
 export default DeliveryOrderPacking
