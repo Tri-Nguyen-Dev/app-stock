@@ -1,7 +1,10 @@
 <template lang="pug">
 .grid.grid-nogutter.packing__detail--container
 	.packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-		PackingInformationDetail(:deliveryOrderDetail ='orderDetail')
+		PackingInformationDetail(
+			:deliveryOrderDetail='orderDetail',
+			:type='typeTitle'
+		)
 	.col-9.packing__detail--left.pl-4.pr-1.flex-1
 		.grid
 			.col-8
@@ -61,6 +64,7 @@ class DeliveryOrder extends Vue {
   isPack = false
   selectedItem: any[] = []
   enablePack = false
+  typeTitle = 'PICKING_LIST'
   @nsStoreOrder.State
   orderDetail!: OrderDetail.Model
 
@@ -94,12 +98,15 @@ class DeliveryOrder extends Vue {
     const dataUpdate = { ...this.orderDetail }
     dataUpdate.status = ORDER_STATUS.IN_PROGRESS
     if (!dataUpdate.assignee) {
-      dataUpdate.assignee = {
-        id: this.user ? this.user.id : 0
+      if (this.user) {
+        dataUpdate.assignee = {
+          id: this.user.id
+        }
       }
     }
     await this.actPostUpdateProgressOrder(dataUpdate)
     this.isPack = true
+    this.typeTitle = 'PACK_ITEM'
     this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
   }
 
@@ -124,6 +131,12 @@ class DeliveryOrder extends Vue {
 
   async mounted() {
     await this.actGetOrderDetail({ id: this.id })
+    if (this.orderDetail.status === ORDER_STATUS.IN_PROGRESS) {
+      this.typeTitle = 'PACK_ITEM'
+      this.isPack = true
+      this.enablePack = false
+      this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
+    }
   }
 }
 

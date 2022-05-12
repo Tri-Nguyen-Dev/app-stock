@@ -57,9 +57,9 @@ DataTable#custom-table.w-full.flex.flex-column.table__sort-icon.bg-white.box-pag
 	)
 		template(#body='{ data }')
 			span.font-bold.text-primary.text-right {{ data.stockBox.box.rackLocation.name }}
-	column(field='box.qrCode', header='BOXCODE', :sortable='true')
+	column(field='stockBox.box.id', header='BOXCODE', :sortable='true')
 		template(#body='{ data }')
-			span.font-bold.text-right {{ data.stockBox.box.qrCode }}
+			span.font-bold.text-right {{ data.stockBox.box.id }}
 	column(
 		field='amount',
 		header='QUANTITY',
@@ -125,4 +125,6 @@ export default ItemList
 	color: var(--surface-900) !important
 ::v-deep.p-datatable
 	height: 92% !important
+::v-deep.p-checkbox-disabled:hover
+	cursor: default !important
 </style>
