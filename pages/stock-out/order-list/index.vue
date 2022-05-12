@@ -25,6 +25,9 @@
               span Filter
             .btn-refresh(@click="handleRefreshFilter")
               .icon.icon-rotate-left.bg-white
+          .btn.btn-primary
+            .icon.icon-add-items
+            span Add New
           .btn__filter(class='active' @click="handleExportReceipt")
             .btn.btn-toggle.bg-white
               .icon-download.icon--large.bg-primary
@@ -113,7 +116,7 @@
           @updateFilter="handleFilter")
     .stock__table
       DataTable(
-        :value='deliveryList'
+        :value='data'
         @sort="sortData($event)"
         :class="{ 'table-wrapper-empty': !deliveryList || deliveryList.length <= 0 }"
         :rowClass="rowClass"
@@ -138,18 +141,22 @@
         Column(field='id' header='ID' sortable headerClass="grid-header-center")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.font-bold {{ data.id }}
-        Column(header='Creator ID' field='creatorId' sortable sortField="_creatorId")
+        Column(header='Creator ID' field='creatorId' sortable sortField="_assignee.id")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
         Column(header='Create Name' field='creatorName' sortable sortField="_creatorName" headerClass="grid-header-right")
           template(#body='{ data }')
             .stock__table-barcode.grid-cell-right {{ data.creatorName }}
-        Column(header='Create time' field='createTime' sortable  sortField="_createTime" headerClass="grid-header-right")
+        Column(header='Create time' field='createTime' sortable  sortField="_createdAt" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.createTime | dateTimeHour12 }}
-        Column(header='Seller email' sortable field='sellerEmail' sortField="_sellerEmail" headerClass="grid-header-right")
+        Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.sellerEmail }}
+        Column(v-if="activeTab == 2"
+          header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
+          template(#body='{ data }')
+            div.grid-cell-right {{ data.receiptDate }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.receiverAddress }}
@@ -174,23 +181,19 @@
               div update time
           template(#body='{ data }')
             div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour12 }}
-        Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouseName" headerClass="grid-header-right")
+        Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
           template(#body='{ data }')
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(header='PIC' sortable field='warehouseId' sortField="_warehouseId" headerClass="grid-header-right")
+        Column(header='PIC' sortable field='assigneeId' sortField="_assigneeId" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.warehouseId }}
+            div.grid-cell-right {{ data.assigneeId }}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.driverName }}
-        Column(v-if="activeTab == 2"
-          header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
-          template(#body='{ data }')
-            div.grid-cell-right {{ data.receiptDate }}
-        Column(field='status' header="Status" headerClass="grid-header-right")
+        Column(field='status' header="Status" sortField="_status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
               span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_NEW'") NEW
@@ -226,7 +229,7 @@
     Toast
 </template>
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { DeliveryList } from '~/models/Delivery'
 
@@ -276,6 +279,8 @@ class DeliveryOrderList extends Vue {
     warehouseId: null
   }
 
+  data :DeliveryList.Model[] =[] 
+
   @nsStoreDelivery.State
   total!: number
 
@@ -301,6 +306,16 @@ class DeliveryOrderList extends Vue {
   receiptUrl!: any
 
   // -- [ Getters ] -------------------------------------------------------------
+  @Watch ('activeTab',{ immediate: true, deep: true })
+  getList(){
+    this.handleFilterTabList()
+  }
+
+  @Watch ('deliveryList',{ immediate: true, deep: true })
+  getLists(){
+    this.handleFilterTabList()
+  }
+
   get selectedDeliveryFilter() {
     return _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
       return delivery.status !== 'STOCK_STATUS_DISABLE'
@@ -331,6 +346,30 @@ class DeliveryOrderList extends Vue {
   }
 
   // -- [ Functions ] ------------------------------------------------------------
+ 
+  handleFilterTabList() {
+    switch (this.activeTab) {
+    case 0:
+      this.data = this.deliveryList.filter(item => {
+        return item.status === 'DELIVERY_ORDER_STATUS_NEW' 
+          || item.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' || item.status === 'DELIVERY_ORDER_STATUS_CANCELLED'
+      })
+      
+      break
+    case 1:
+      this.data = this.deliveryList.filter(item => {
+        return item.status === 'DELIVERY_ORDER_STATUS_READY' || item.status === 'DELIVERY_ORDER_STATUS_DELIVERING'
+      })
+      break
+    case 2:
+      this.data = this.deliveryList.filter(item => {
+        return item.status === 'DELIVERY_ORDER_STATUS_DELIVERED' || item.status === 'DELIVERY_ORDER_STATUS_RETURNED'
+      })
+      break
+    default:
+      break
+    }
+  }
 
   handleExportReceipt() {
     _.forEach(this.selectedDelivery, async ({ id }) => {
