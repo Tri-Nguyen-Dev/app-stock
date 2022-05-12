@@ -6,24 +6,75 @@ div
   )
     .col-3
       span.font-bold.text-small.mr-1.text-label {{ item.label }}
-    .col.w-full
-      InputText.w-full( v-if='!item.options' v-model='item.value' :disabled='item.disabled' )
-      Dropdown.w-full( v-else :disabled='item.disabled' )
+    .col-9
+      AutoComplete.justify-content-end.w-full( 
+        v-if='item.autoComplete' 
+        field='email' 
+        forceSelection
+        v-model='selectedSeller'
+        :disabled='item.disabled' 
+        :suggestions='listSeller'
+        @item-select='changeItem($event)' 
+        @complete="searchCountry($event)"
+      )
+      InputText.w-full( v-else-if='!item.options' v-model='item.value' :disabled='item.disabled' @change='receiverChange', )
+      Dropdown.w-full( 
+        v-else 
+        :disabled='item.disabled' 
+        :options="warehouseBySeller" 
+        optionLabel="name" 
+        v-model='selectedWarehouse'
+        :placeholder='filedWarehouse'
+        @change='selectedItems($event)' 
+      )
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+const nsStoreSeller = namespace('seller/seller-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component
 class ItemInput extends Vue {
   @Prop() listInfor: any | undefined
+  selectedWarehouse: any = null
+  filedWarehouse: any = null
+  selectedSeller: any = null
+  name: any | string 
+  listSeller: any = []
 
   @nsStoreWarehouse.State
-  warehouseList!: any
+  warehouseBySeller!: any
 
-  @nsStoreWarehouse.Action
-  actWarehouseList!:() => Promise<void>
+  @nsStoreSeller.State
+  sellerList!: any
+
+  selectedItems( event : any  ) {
+    this.$emit('fieldWarehouse', event.value)
+  }
+
+  receiverChange( event : any  ) {
+    this.$emit('fieldReceiver', event.target.value)
+  }
+  
+  mounted() {
+    const inforObj = this.listInfor[0]
+    if(inforObj.label === 'Email' && inforObj.value !== ''  ) {
+      this.selectedSeller = inforObj.value
+    } 
+    else if ( this.listInfor[0].label === 'Name'){
+      this.filedWarehouse = inforObj.value
+    }
+  }
+ 
+  changeItem( event : any ) {
+    this.$emit('sellerInfor' , event.value)
+  }
+
+  searchCountry() {
+    this.listSeller = this.sellerList
+    this.$emit('paramSeller' , this.selectedSeller)
+  }
 
 }
 
@@ -31,6 +82,14 @@ export default ItemInput
 </script>
 <style lang="sass" scoped>
 .text-label::after
-	content: ':'
+  content: ':'
+::v-deep.p-inputwrapper
+  .p-autocomplete-input
+    width: 100%
 
+::v-deep.p-dropdown
+  .p-inputtext.p-placeholder
+    color: #495057
+  .p-dropdown-label.p-inputtext
+    color: #495057
 </style>

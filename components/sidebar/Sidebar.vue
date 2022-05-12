@@ -16,7 +16,7 @@
 <script lang='ts'>
 import { Component, namespace, ProvideReactive, Vue, Watch } from 'nuxt-property-decorator'
 import { User } from '~/models/User'
-import { PAGE_MENU, SETTING_MENU } from '~/utils'
+import { MENU_ACTION, PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
 const nsUser = namespace('user-auth/user')
 
@@ -60,6 +60,10 @@ class MenuSidebar extends Vue {
     this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
     if(!item.parentId) {
       this.parentItems = this.pageMenu.filter(value => value.parentId === item.id)
+    }
+    // handle specific actions
+    if (item.action === MENU_ACTION.LOGOUT) {
+      this.$auth.logout()
     }
   }
 
@@ -110,10 +114,12 @@ export default MenuSidebar
 
   &-menu
     padding-top: $space-size-16
+    overflow-x: auto
 
   &-foot
+    padding-top: $space-size-4
     border-top: 1px solid $text-color-400
-    height: 130px
+    min-height: 130px
     margin-top: auto
 
   .menu-section
