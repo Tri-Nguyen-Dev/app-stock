@@ -37,6 +37,9 @@ export default SidebarItem
 </script>
 
 <style lang="sass" scoped>
+.menu-item
+  cursor: pointer
+
 .item-parent-link
   width: 40px
   height: 40px
