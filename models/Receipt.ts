@@ -97,9 +97,6 @@ export namespace Receipt {
     constructor() {
       this.boxList = []
       this.seller = { id: undefined }
-      this.airtagE = { id: 1 }
-      this.driver = { id: 2 }
-      this.warehouse = { id: 1 }
     }
 
     id: string
@@ -111,16 +108,16 @@ export namespace Receipt {
       id?: string
     };
 
-    airtagE: {
+    airtagE?: {
       id: number
     };
 
-    driver: {
+    driver?: {
       id: number
     };
 
-    warehouse: {
-      id: number
+    warehouse?: {
+      id: string
     }
   }
 }

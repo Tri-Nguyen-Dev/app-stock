@@ -25,7 +25,7 @@
               span Filter
             .btn-refresh(@click="handleRefreshFilter")
               .icon.icon-rotate-left.bg-white
-          .btn.btn-primary
+          .btn.btn-primary(@click="handleAddNew")
             .icon.icon-add-items
             span Add New
           .btn__filter(class='active' @click="handleExportReceipt")
@@ -202,11 +202,12 @@
               span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
         template(#footer)
           Pagination(
+            v-if="activeTab == 0"
+            title="Cancel"
             :paging="paging"
             :total="total"
             @onDelete="showModalDelete"
             :deleted-list="selectedDelivery"
-
             @onPage="onPage")
         template(#empty)
           div.table__empty
@@ -239,10 +240,12 @@ import {
   exportFileTypePdf
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
+import { User } from '~/models/User'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreDelivery = namespace('delivery/delivery-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreExportReceipt = namespace('delivery/export-receipt')
+const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: {
@@ -276,7 +279,7 @@ class DeliveryOrderList extends Vue {
     warehouseId: null
   }
 
-  data :DeliveryList.Model[] =[] 
+  data :DeliveryList.Model[] =[]
 
   @nsStoreDelivery.State
   total!: number
@@ -301,6 +304,9 @@ class DeliveryOrderList extends Vue {
 
   @nsStoreExportReceipt.State
   receiptUrl!: any
+
+  @nsStoreUser.State
+  user!: User.Model
 
   // -- [ Getters ] -------------------------------------------------------------
   @Watch ('activeTab',{ immediate: true, deep: true })
@@ -343,15 +349,15 @@ class DeliveryOrderList extends Vue {
   }
 
   // -- [ Functions ] ------------------------------------------------------------
- 
+
   handleFilterTabList() {
     switch (this.activeTab) {
     case 0:
       this.data = this.deliveryList.filter(item => {
-        return item.status === 'DELIVERY_ORDER_STATUS_NEW' 
+        return item.status === 'DELIVERY_ORDER_STATUS_NEW'
           || item.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' || item.status === 'DELIVERY_ORDER_STATUS_CANCELLED'
       })
-      
+
       break
     case 1:
       this.data = this.deliveryList.filter(item => {
@@ -385,8 +391,8 @@ class DeliveryOrderList extends Vue {
     )
   }
 
-  rowClass(data: any) {
-    return data.stockStatus === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
+  rowClass(data: DeliveryList.Model) {
+    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? 'row-disable' :''
   }
 
   async mounted() {
@@ -516,8 +522,8 @@ class DeliveryOrderList extends Vue {
     this.activeTab = index
   }
 
-  handleAddStock() {
-    this.$router.push('/stock-in/create-receipt')
+  handleAddNew() {
+    this.$router.push('/stock-out/order')
   }
 
 }
