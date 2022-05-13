@@ -23,14 +23,19 @@
 					type='button',
 					label='Pick Items',
 					@click='pickItem',
-					v-if='!isPack'
+					v-if='!isPack  && !isReady'
 				)
 				Button.p-button-outlined.p-button-primary.bg-white.w-full(
 					type='button',
 					label='Pack Items',
 					@click='packItem',
-					v-if='isPack',
+					v-if='isPack && !isReady',
 					:disabled='!enablePack'
+				)
+				Button.p-button-outlined.p-button-primary.bg-white.w-full(
+					type='button',
+					label='Pack detail',
+					v-if='isReady',
 				)
 		ItemList(
 			:isDetail='true',
@@ -39,6 +44,7 @@
 			@enablePack='checkEnablePack($event)',
 			:listItems='item',
 			v-if='item'
+			:isReady ='isReady'
 		)
 </template>
 
@@ -65,6 +71,7 @@ class DeliveryOrder extends Vue {
   selectedItem: any[] = []
   enablePack = false
   typeTitle = 'PICKING_LIST'
+  isReady = false
   @nsStoreOrder.State
   orderDetail!: OrderDetail.Model
 
@@ -122,6 +129,10 @@ class DeliveryOrder extends Vue {
     this.$router.push(`/stock-out/order/${this.id}/packing`)
   }
 
+  packDetail() {
+    this.$router.push(`/stock-out/order/${this.id}/packing_detail`)
+  }
+
   async handleExportReceipt() {
     const result = await this.actGetOrderPdf({ id: this.id })
     if (result) {
@@ -137,6 +148,9 @@ class DeliveryOrder extends Vue {
       this.enablePack = false
       this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
     }
+    if (this.orderDetail.status === ORDER_STATUS.READY) {
+      this.isReady = true
+    }
   }
 }
 
@@ -144,10 +158,10 @@ export default DeliveryOrder
 </script>
 <style lang="sass" scoped>
 .btn-center
-  height: 70%
-  align-self: center
+	height: 70%
+	align-self: center
 .packing__detail--container
-  height: calc(100vh - 32px)
+	height: calc(100vh - 32px)
 .packing__detail--left
-  height: calc( 100% - 32px) !important
+	height: calc( 100% - 32px) !important
 </style>
