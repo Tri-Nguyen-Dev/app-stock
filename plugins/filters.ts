@@ -31,8 +31,10 @@ Vue.filter('dateMonthYear', (value) => {
 
 // -- [ AWS ] ------------------------------------------------
 Vue.filter('getImageUrl', (imagePath) => {
-  return `${baseImageUrl}/${imagePath}`
+  if (!imagePath) return null
+  return `${baseImageUrl}/cdn/${imagePath}`
 })
 Vue.filter('getThumbnailUrl', (imagePath) => {
+  if (!imagePath) return null
   return `${baseImageUrl}/thumbnail/${imagePath}`
 })

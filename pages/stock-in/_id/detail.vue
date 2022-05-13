@@ -14,22 +14,22 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title ID Creator
-						.filter__text {{ receiptDetail.data.id }}
+						.filter__text {{ receiptDetail.data.createdBy.id }}
 				.col
 					.filter__item.item--disabled
 						.filter__title Creator name
-						.filter__text {{ receiptDetail.data.id }}
+						.filter__text {{ receiptDetail.data.createdBy.displayName }}
 				.col
 					.filter__item.item--disabled
 						.filter__title Create time
-						.filter__text 19-09-2022 9:24AM
+						.filter__text {{ receiptDetail.data.createdAt | dateTimeHour12 }}
 				.col
 					.filter__item
-						.filter__title Warehouse
+						.filter__title.item--disabled Warehouse
 						.filter__text {{ receiptDetail.data.warehouse.name }}
 				.col
 					.filter__item
-						.filter__title Seller email
+						.filter__title.item--disabled Seller email
 						.filter__autocomplete
 						.filter__text {{ receiptDetail.data.seller.email }}
 				.col
@@ -283,6 +283,10 @@ class DetailReceipt extends Vue {
   }
 
   async mounted() {
+    this.$nextTick(() => {
+      this.$nuxt.$loading.start()
+      setTimeout(() => this.$nuxt.$loading.finish(), 500)
+    })
     await this.actGetReceiptDetail({ id: this.$route.params.id })
     this.prepareListBox()
   }

@@ -17,9 +17,10 @@ export namespace Receipt {
   }
 
   export interface BoxLocation {
-    id?: string,
+    id?: number,
     name: string
     index: number
+    isSuggested?:boolean
   }
 
   export class Box {
@@ -88,14 +89,14 @@ export namespace Receipt {
 
     status?: string
     rackLocation: {
-      id?: string
+      id?: number
     }
   }
 
   export class CreateReceiptDraft {
     constructor() {
       this.boxList = []
-      this.seller = { id: 1 }
+      this.seller = { id: undefined }
       this.airtagE = { id: 1 }
       this.driver = { id: 2 }
       this.warehouse = { id: 1 }
@@ -107,7 +108,7 @@ export namespace Receipt {
     status: string;
     boxList: BoxDraft[]
     seller: {
-      id: number
+      id?: string
     };
 
     airtagE: {
