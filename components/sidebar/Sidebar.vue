@@ -2,10 +2,10 @@
   .sidebar(:style="{ width: sidebarWidth }")
     .menu-section.sidebar-head
       template(v-if="!collapsed")
-        img.user-avatar(:src="userImageUrl")
+        img.user-avatar(:src="user.avatarUrl | getThumbnailUrl")
         .user-info
           span.user-name {{ userDisplayName }}
-          span.user-role Role Ex
+          span.user-role {{ userRole }}
       .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
     .menu-section.sidebar-menu
       SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
@@ -18,7 +18,7 @@ import { Component, namespace, ProvideReactive, Vue, Watch } from 'nuxt-property
 import { User } from '~/models/User'
 import { MENU_ACTION, PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
-const nsUser = namespace('user-auth/user')
+const nsUser = namespace('user-auth/store-user')
 
 @Component
 class MenuSidebar extends Vue {
@@ -33,7 +33,7 @@ class MenuSidebar extends Vue {
   @nsSidebar.Mutation('toggleSidebar')
   toggleSidebar
 
-  @nsUser.Mutation('user')
+  @nsUser.State('user')
   user!: User.Model | undefined
 
   // -- [ Properties ] ----------------------------------------------------------
@@ -47,12 +47,12 @@ class MenuSidebar extends Vue {
   settingMenu = SETTING_MENU
   // -- [ Getters ] -------------------------------------------------------------
 
-  get userImageUrl() {
-    return this.user?.avatarUrl || null
-  }
-
   get userDisplayName() {
     return this.user?.displayName || 'Unknown'
+  }
+
+  get userRole() {
+    return this.user?.role?.toUpperCase() || ''
   }
   // -- [ Methods ] ------------------------------------------------------------
 
@@ -114,8 +114,6 @@ export default MenuSidebar
 
   &-menu
     padding-top: $space-size-16
-    //overflow-y: auto
-    //overflow-x: hidden
 
   &-foot
     padding-top: $space-size-4
@@ -125,4 +123,9 @@ export default MenuSidebar
 
   .menu-section
     position: relative
+
+.user-role
+  font-size: $font-size-small
+  font-weight: $font-weight-light
+  color: $text-color-700
 </style>

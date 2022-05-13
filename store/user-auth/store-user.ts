@@ -8,7 +8,7 @@ import { User } from '~/models/User'
 
 export default class StoreUser extends VuexModule {
   private static readonly STATE_URL = {
-    USER_GET:    '/user/:id/detail',
+    USER_GET:    '/user/me',
     USER_CREATE: '/user/create'
   }
 
@@ -26,8 +26,8 @@ export default class StoreUser extends VuexModule {
   }
 
   @Action({ commit: 'setUser', rawError: true })
-  async actGetUserDetail(id: string): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreUser.STATE_URL.USER_GET, { id })
+  async actGetUserDetail(): Promise<User.Model | undefined> {
+    const url = PathBind.transform(this.context, StoreUser.STATE_URL.USER_GET)
     const response: any = await $api.get(url)
     return response.data
   }
