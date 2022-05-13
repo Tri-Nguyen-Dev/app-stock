@@ -88,7 +88,7 @@
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
-                span(@click.stop="handleEditStock(data.id)")
+                span(@click.stop="handleEditStock(data.id)" :class="{'disable-button': selectedStockFilter.length > 0}")
                   .icon.icon-edit-btn
                 span(@click.stop="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
                   .icon.icon-btn-delete
