@@ -25,6 +25,7 @@ DataTable#custom-table.w-full.flex.flex-column.table__sort-icon.bg-white.box-pag
 		styles='width: 3rem',
 		:hidden='!isPack',
 		headerClass='grid-header-center'
+		:v-if='!isReady'
 	)
 	column(
 		field='stock.imagePath',
@@ -83,6 +84,7 @@ class ItemList extends Vue {
   @Prop() getParam: () => any
   @Prop({ default: false }) isDetail!: boolean
   @Prop({ default: STOCK_OUT_ACTION.ORDER_DETAIL }) action: string
+  @Prop({ default: false }) isReady: boolean
   isPack = false
   selectedItem: any[] = []
   enablePack = false

@@ -36,16 +36,6 @@ export default class StoreCreateReceipt extends VuexModule {
   setLocationSuggestion(data:ReceiptModel.BoxLocation[]) {
     this.boxLocation = data
   }
-  // @Mutation
-  // setItemsInBox(itemsList: ReceiptModel.BoxModel) {
-  //   this.itemsList = itemsList
-  //   this.total = itemsList.data.total
-  // }
-
-  // @Mutation
-  // setItemDetail(itemDetail: ReceiptModel.BoxModel) {
-  //   this.itemDetail = itemDetail
-  // }
 
   @Action({ commit: 'setReceiptDetail', rawError: true })
   async actGetReceiptDetail(params: { id: number }): Promise<string | undefined> {

@@ -5,7 +5,7 @@
       span.pagination__total {{ showingText }}
     .pagination__delete(v-else @click="$emit('onDelete')")
       .icon.icon-btn-delete
-      span Delete {{ deletedList.length }} items selected
+      span {{title}} {{ deletedList.length }} items selected
     Paginator(
       :rows="paging.pageSize"
       :totalRecords="total"
@@ -24,6 +24,7 @@ import { LIMIT_PAGE_OPTIONS } from '~/utils'
 class Pagination extends Vue {
   pageOption = LIMIT_PAGE_OPTIONS
   // -- [ Props ] -------------------------------------------------------------
+  @Prop({ default: 'Delete' }) readonly title!: string
   @Prop() paging!: Paging.Model
   @Prop() total!: number
   @Prop() deletedList!: any[] | undefined
