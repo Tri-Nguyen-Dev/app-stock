@@ -63,7 +63,7 @@ div
       template(#body='{ data }')
         InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="1" 
           :max="maxQuantity(data)" inputClass="w-full"
-          v-if='type !== "originalBox"' @input='handleQuantity(data, $event)'
+          v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
         )
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) {{ data.quantity }}
     Column(
@@ -86,6 +86,7 @@ class PackingTableList extends Vue {
   @Prop() value!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly boxCode!: string | undefined
+  @Prop() readonly isPackingDetail!: boolean | false
   @InjectReactive() readonly listOriginalBox!: any
   @InjectReactive() readonly listOutGoingBox!: any
   @InjectReactive() readonly listTranfferingBox!: any
