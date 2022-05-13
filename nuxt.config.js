@@ -119,9 +119,8 @@ export default {
     },
     plugins: ['~/plugins/auth.ts'],
     redirect: {
-      login: '/login',
+      login: '/',
       logout: '/login',
-      callback: '/',
       home: '/stock'
     }
   },
