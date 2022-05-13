@@ -16,11 +16,11 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
   Column(field="originalLocation" header="ORIGINAL LOCATION" className="text-right" sortable)
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-600.font-bold.font-sm {{ data.originalLocation }}
+        span.text-600.font-bold.font-sm 
   Column(field="newLocation" header="NEW LOCATION" className="text-right" :sortable="true" bodyClass="font-semibold")
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-primary.font-bold.font-sm {{ data.newLocation.name }}
+        span.text-primary.font-bold.font-sm 
         .icon.icon-arrow-up-right.bg-primary
   Column(field="createdBy.id" header="CREATOR ID" sortable )
   template(#empty)

@@ -119,7 +119,7 @@
                 span.text-primary.font-bold.font-sm
                 | {{ data.box.rackLocation ? (data.box.rackLocation.name ? data.box.rackLocation.name : '' ) : ''}}
                 .icon--small.icon-arrow-up-right.bg-primary
-          Column(field="itemStatus" header="STATUS" sortable className="p-text-right" :styles="{'width': '5%'}")
+          Column(field="itemStatus" header="STATUS" sortable className="p-text-right")
             template(#body="{data}")
               div
                 Tag(v-show="data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200
