@@ -150,9 +150,6 @@
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.sellerEmail }}
-        Column(v-if="activeTab == 2"
-          header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
-          template(#body='{ data }')
             div.grid-cell-right {{ data.receiptDate }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -190,6 +187,9 @@
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.driverName }}
+        Column(v-if="activeTab == 2"
+          header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
+          template(#body='{ data }')
         Column(field='status' header="Status" sortField="_status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
@@ -402,6 +402,7 @@ class DeliveryOrderList extends Vue {
   async getProductList() {
     await this.getDeliveryList({
       ...this.filter,
+      warehouseId: this.filter.warehouse?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       status: this.filter.status?.value

@@ -18,7 +18,7 @@
             .btn-refresh(@click="handleRefeshFilter")
               .icon.icon-rotate-left.bg-white
         .col-fixed
-          .btn.btn-primary
+          .btn.btn-primary(@click='routeLinkAddBox')
             .icon.icon-add-items
             span Add box
   .grid(v-if="isShowFilter")
@@ -94,6 +94,9 @@
         Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold" )
           template(#body="{data}") 
             div(v-if='data.boxSize') {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
+        Column(field="TYPE" header="TYPE" className="text-right" bodyClass="font-semibold" )
+          template(#body="{data}") 
+            div(v-if='data.boxSize') {{ data.boxSize.name }} 
         Column(field="weight" header="WEIGHT(KG)" className="text-right" bodyClass="font-semibold")
           template(#body="{data}") {{ data.weight }}
         Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right" sortField="_request.warehouse.name")
@@ -337,6 +340,11 @@ class BoxList extends Vue {
     originalEvent.originalEvent.stopPropagation()
     this.selectedBoxes = _.filter(this.selectedBoxes, (box: Box.Model) => box.id !== data.id)
   }
+  
+  routeLinkAddBox() {
+    this.$router.push({ path: '/stock-in/create-receipt' })
+  }
+
 }
 export default BoxList
 </script>
