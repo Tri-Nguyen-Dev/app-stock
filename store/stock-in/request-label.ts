@@ -8,7 +8,7 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreRequestLabel extends VuexModule {
   private static readonly STATE_URL = {
-    GET_LABEL: '/request/:id/label/:boxId'
+    GET_LABEL: '/request/:id/label'
   }
 
   public labelUrl: any = {}

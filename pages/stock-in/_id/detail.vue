@@ -26,7 +26,7 @@
 				.col
 					.filter__item
 						.filter__title.item--disabled Warehouse
-						.filter__text {{ receiptDetail.data.warehouse.name }}
+						.filter__text(v-if='receiptDetail.data.warehouse' ) {{ receiptDetail.data.warehouse.name }}
 				.col
 					.filter__item
 						.filter__title.item--disabled Seller email
