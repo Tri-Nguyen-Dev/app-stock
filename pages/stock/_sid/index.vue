@@ -166,7 +166,8 @@ export default StockDetail
         opacity: 1
 
     ::v-deep.p-inputtext
-      border: none
+      max-width: 38px
+      border: 1px solid #b2b2bb
       background: transparent
       padding: 0
       color: #000

@@ -211,7 +211,7 @@ $small: 1025px
 				opacity: 1
 
 			.p-inputtext
-				border: none
+				border: 1px solid #b2b2bb
 				background: transparent
 				padding: 0
 				color: #000

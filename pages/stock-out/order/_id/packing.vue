@@ -172,7 +172,7 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
-        detail: 'Pass through so luong satisfies the condition of box',
+        detail: 'Can not add more item!',
         life: 3000
       })
     }
@@ -208,7 +208,7 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
-        detail: 'Pass through so luong satisfies the condition of box',
+        detail: 'Can not add more item!',
         life: 3000
       })
     }
