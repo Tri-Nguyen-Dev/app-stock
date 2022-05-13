@@ -25,7 +25,7 @@
               span Filter
             .btn-refresh(@click="handleRefreshFilter")
               .icon.icon-rotate-left.bg-white
-          .btn.btn-primary
+          .btn.btn-primary(@click="handleAddNew")
             .icon.icon-add-items
             span Add New
           .btn__filter(class='active' @click="handleExportReceipt")
@@ -279,7 +279,7 @@ class DeliveryOrderList extends Vue {
     warehouseId: null
   }
 
-  data :DeliveryList.Model[] =[] 
+  data :DeliveryList.Model[] =[]
 
   @nsStoreDelivery.State
   total!: number
@@ -304,7 +304,7 @@ class DeliveryOrderList extends Vue {
 
   @nsStoreExportReceipt.State
   receiptUrl!: any
-  
+
   @nsStoreUser.State
   user!: User.Model
 
@@ -349,15 +349,15 @@ class DeliveryOrderList extends Vue {
   }
 
   // -- [ Functions ] ------------------------------------------------------------
- 
+
   handleFilterTabList() {
     switch (this.activeTab) {
     case 0:
       this.data = this.deliveryList.filter(item => {
-        return item.status === 'DELIVERY_ORDER_STATUS_NEW' 
+        return item.status === 'DELIVERY_ORDER_STATUS_NEW'
           || item.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' || item.status === 'DELIVERY_ORDER_STATUS_CANCELLED'
       })
-      
+
       break
     case 1:
       this.data = this.deliveryList.filter(item => {
@@ -522,8 +522,8 @@ class DeliveryOrderList extends Vue {
     this.activeTab = index
   }
 
-  handleAddStock() {
-    this.$router.push('/stock-in/create-receipt')
+  handleAddNew() {
+    this.$router.push('/stock-out/order')
   }
 
 }
