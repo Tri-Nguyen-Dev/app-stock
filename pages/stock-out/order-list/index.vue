@@ -202,11 +202,12 @@
               span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
         template(#footer)
           Pagination(
+            v-if="activeTab == 0"
+            title="Cancel"
             :paging="paging"
             :total="total"
             @onDelete="showModalDelete"
             :deleted-list="selectedDelivery"
-
             @onPage="onPage")
         template(#empty)
           div.table__empty
@@ -239,10 +240,12 @@ import {
   exportFileTypePdf
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
+import { User } from '~/models/User'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreDelivery = namespace('delivery/delivery-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreExportReceipt = namespace('delivery/export-receipt')
+const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: {
@@ -301,6 +304,9 @@ class DeliveryOrderList extends Vue {
 
   @nsStoreExportReceipt.State
   receiptUrl!: any
+  
+  @nsStoreUser.State
+  user!: User.Model
 
   // -- [ Getters ] -------------------------------------------------------------
   @Watch ('activeTab',{ immediate: true, deep: true })
@@ -385,8 +391,8 @@ class DeliveryOrderList extends Vue {
     )
   }
 
-  rowClass(data: any) {
-    return data.stockStatus === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
+  rowClass(data: DeliveryList.Model) {
+    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? 'row-disable' :''
   }
 
   async mounted() {
