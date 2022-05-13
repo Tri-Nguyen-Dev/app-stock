@@ -1,7 +1,7 @@
 export namespace User {
 
   export interface Model {
-    id?: number,
+    id?: string,
     email?: string,
     username?: string,
     firstName?: string,
