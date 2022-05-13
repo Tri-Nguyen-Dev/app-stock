@@ -1,5 +1,6 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
+  Toast
   Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
@@ -15,6 +16,7 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
+    //- TabPanel(v-for='(tab,index) in listBox' :key='getTabKey(tab)' :disabled="isDisable(tab)")
     TabPanel(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
@@ -58,7 +60,7 @@
             span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
             InputText(@change='addStockByBarcode($event)' v-model="barCodeText")
-      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type')
+      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode' :isPackingDetail="isPackingDetail")
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
@@ -95,7 +97,7 @@ class PackingOriginal extends Vue {
   actScanAirtag!: (params: any) => Promise<void>
 
   getTabKey(tab) {
-    return 'tab.boxCode' + (tab.location?.id || '')
+    return tab.boxCode + (tab.location?.id || '')
   }
 
   handleAddTab() {
@@ -131,10 +133,20 @@ class PackingOriginal extends Vue {
           this.activeIndex = index + 1
           this.$emit('selectedTab', index)
         } else {
-          // console.log('Vui long xu ly het item original (quantity = 0)')
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error Message',
+            detail: 'Remaining stock is greater than 0, please process all stocks',
+            life: 3000
+          })
         }
       } else {
-        // console.log('box code khong co trong original list ')
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'The box not found in original list!',
+          life: 3000
+        })
       }
     }
     this.boxCodeText = ''
@@ -165,7 +177,7 @@ class PackingOriginal extends Vue {
   }
 
   isShowLocation(obj) {
-    return _.has(obj, 'location') && this.type === 'tranferringBox'
+    return obj?.location && this.type === 'tranferringBox'
   }
 
   mounted() {
@@ -201,7 +213,8 @@ export default PackingOriginal
   .btn-add-tab
     position: absolute
     right: 0
-    top: 4px
+    top: 21px
+    transform: translateY(-50%)
     z-index: 1
     box-shadow: none
     &::before
@@ -222,11 +235,11 @@ export default PackingOriginal
         background: $text-color-300
       .p-datatable .p-datatable-thead > tr > th
         background: #fff !important
+    ul.p-tabview-nav
+      height: 42px !important
     .p-tabview-nav-container
       overflow: unset !important
     .p-tabview-nav li .p-tabview-nav-link
-      .pi-chevron-down
-        color: #fff !important
       &:focus
         box-shadow: none
       &:hover
@@ -234,7 +247,27 @@ export default PackingOriginal
     .p-tabview-nav-content
       overflow: unset !important
       .edit-location
-        width: 160px !important
+        font-size: 14px !important
+        position: relative !important
+        z-index: 1000
+        input
+          width: 140px !important
+          font-size: $font-size-small
+          color: $text-color-800
+          box-shadow: none !important
+          border: none !important
+          background-color: unset !important
+        .p-button
+          background-color: unset !important
+          border: none !important
+          position: absolute
+          right: 0
+          top: 50%
+          transform: translateY(-50%)
+          span
+            font-size: 12px !important
+        .p-button:enabled:hover
+          box-shadow: none !important
       .p-tabview-nav
         overflow: unset !important
         .p-disabled:first-child

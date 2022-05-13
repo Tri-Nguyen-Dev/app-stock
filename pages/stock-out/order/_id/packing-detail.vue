@@ -57,13 +57,22 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, ProvideReactive } from 'nuxt-property-decorator'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
 class DeliveryOrderPackingDetail extends Vue {
+  // listOriginalBox: any = []
+  // listOutGoingBox: any = []
+  // listTranfferingBox: any = []
+
+  @ProvideReactive()
   listOriginalBox: any = []
+
+  @ProvideReactive()
   listOutGoingBox: any = []
+
+  @ProvideReactive()
   listTranfferingBox: any = []
 
   @nsStorePackingDetail.State('deliveryOrderDetail')
