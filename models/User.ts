@@ -9,8 +9,7 @@ export namespace User {
     displayName?: string,
     phoneNumber?: string,
     avatarUrl?: string,
-    roleId?: number,
-    status?: string
+    role?: string
   }
 
   export interface KeyCloak {
