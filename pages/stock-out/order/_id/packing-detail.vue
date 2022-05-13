@@ -116,7 +116,7 @@ class DeliveryOrderPackingDetail extends Vue {
         sku,
         name: stock.name,
         quantity: amount,
-        originalBox,
+        originalBox: originalBox?.id,
         imagePath: stock.imagePath
       }))
     }))
