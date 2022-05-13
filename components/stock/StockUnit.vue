@@ -1,16 +1,16 @@
 <template lang="pug">
-.grid.wapprer-unit(:class='isEdit && !model ? "opacity-40" : "opacity-100"') 
+.grid.wapprer-unit(:class='isEdit && !model ? "opacity-40" : "opacity-100"')
   .col-2.flex.align-items-center.justify-content-center
     .icon--large.bg-blue-700(:class='icon')
   .col-10.flex.flex-column.justify-content-center
-    div.font-normal.text-700.text-small {{ title }}  
+    div.font-normal.text-700.text-small {{ title }}
       slot(name='button-size')
     a(v-if="link" :href="link" target="_blank").text-link
-      span.font-bold.text-small {{value}} 
+      span.font-bold.text-small {{value}}
       .icon.icon-arrow-up-right.inline-block
     span.font-bold.text-small.mr-1.uppercase(v-else) {{ value }}
     template(v-if="model")
-      InputNumber(:disabled='!model' :value='model' @input="handleUpdateUnit")
+      InputNumber(:disabled='!isEdit' :value='model' @input="handleUpdateUnit")
     slot(name='size')
     slot(name='auto-complete')
 </template>
@@ -35,8 +35,8 @@ class StockUnit extends Vue {
 export default StockUnit
 </script>
 <style scoped lang="sass">
-.wapprer-unit 
-  height: 72px
+.wapprer-unit
+  min-height: 72px
   border-radius: 4px
   background-color: $text-color-200
   ::v-deep.p-inputtext

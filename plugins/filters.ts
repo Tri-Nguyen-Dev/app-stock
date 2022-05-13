@@ -24,6 +24,11 @@ Vue.filter('dateTimeHour12', (value) => {
   return dayjs(new Date(value)).format('DD-MM-YYYY hh:mm A')
 })
 
+// -- [ Format date time type] ------------------------------------------------
+Vue.filter('dateMonthYear', (value) => {
+  return dayjs(new Date(value)).format('DD, MMMM, YYYY')
+})
+
 // -- [ AWS ] ------------------------------------------------
 Vue.filter('getImageUrl', (imagePath) => {
   return `${baseImageUrl}/${imagePath}`
