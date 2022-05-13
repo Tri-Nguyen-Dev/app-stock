@@ -136,7 +136,7 @@ class PackingOriginal extends Vue {
           this.$toast.add({
             severity: 'error',
             summary: 'Error Message',
-            detail: 'Please buy original item (quantity = 0)',
+            detail: 'Remaining stock is greater than 0, please process all stocks',
             life: 3000
           })
         }
@@ -144,7 +144,7 @@ class PackingOriginal extends Vue {
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
-          detail: 'The box code is not in the original listing',
+          detail: 'The box not found in original list!',
           life: 3000
         })
       }

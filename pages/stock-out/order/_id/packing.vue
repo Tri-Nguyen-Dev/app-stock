@@ -180,7 +180,7 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
-        detail: 'Pass through so luong satisfies the condition of box',
+        detail: 'Can not add more item!',
         life: 3000
       })
     }
@@ -216,7 +216,7 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
-        detail: 'Pass through so luong satisfies the condition of box',
+        detail: 'Can not add more item!',
         life: 3000
       })
     }
@@ -263,7 +263,7 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
-        detail: 'Stock is not in the Original List',
+        detail: 'Stock is not found in original box!',
         life: 3000
       })
     }
