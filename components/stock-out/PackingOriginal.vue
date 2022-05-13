@@ -236,8 +236,6 @@ export default PackingOriginal
     .p-tabview-nav-container
       overflow: unset !important
     .p-tabview-nav li .p-tabview-nav-link
-      .pi-chevron-down
-        color: #fff !important
       &:focus
         box-shadow: none
       &:hover
@@ -245,7 +243,27 @@ export default PackingOriginal
     .p-tabview-nav-content
       overflow: unset !important
       .edit-location
-        width: 160px !important
+        font-size: 14px !important
+        position: relative !important
+        z-index: 1000
+        input
+          width: 140px !important
+          font-size: $font-size-small
+          color: $text-color-800
+          box-shadow: none !important
+          border: none !important
+          background-color: unset !important
+        .p-button
+          background-color: unset !important
+          border: none !important
+          position: absolute
+          right: 0
+          top: 50%
+          transform: translateY(-50%)
+          span
+            font-size: 12px !important
+        .p-button:enabled:hover
+          box-shadow: none !important
       .p-tabview-nav
         overflow: unset !important
         .p-disabled:first-child
