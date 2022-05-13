@@ -8,7 +8,7 @@
 	.col-9.packing__detail--left.pl-4.pr-1.flex-1
 		.grid
 			.col-8
-				h1.text-heading Item list
+				h1.text-heading {{textHeading}}
 				span.text-subheading {{ total }} items found
 			.col-2.btn-center
 				ThemeButtonExport.w-full(:click='handleExportReceipt', v-if='!isPack')
@@ -36,6 +36,7 @@
 					type='button',
 					label='Pack detail',
 					v-if='isReady',
+					@click='packDetail()'
 				)
 		ItemList(
 			:isDetail='true',
@@ -72,6 +73,7 @@ class DeliveryOrder extends Vue {
   enablePack = false
   typeTitle = 'PICKING_LIST'
   isReady = false
+  textHeading = 'Item list'
   @nsStoreOrder.State
   orderDetail!: OrderDetail.Model
 
@@ -113,8 +115,11 @@ class DeliveryOrder extends Vue {
     }
     await this.actPostUpdateProgressOrder(dataUpdate)
     this.isPack = true
-    this.typeTitle = 'PACK_ITEM'
-    this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
+    this.typeTitle = 'PICK_ITEM'
+    this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM 
+    this.isPack = true
+    this.enablePack = false
+    this.textHeading= 'Picking list'
   }
 
   selectItem(event) {
@@ -130,7 +135,7 @@ class DeliveryOrder extends Vue {
   }
 
   packDetail() {
-    this.$router.push(`/stock-out/order/${this.id}/packing_detail`)
+    this.$router.push(`/stock-out/order/${this.id}/packing-detail`)
   }
 
   async handleExportReceipt() {
@@ -143,10 +148,10 @@ class DeliveryOrder extends Vue {
   async mounted() {
     await this.actGetOrderDetail({ id: this.id })
     if (this.orderDetail.status === ORDER_STATUS.IN_PROGRESS) {
-      this.typeTitle = 'PACK_ITEM'
-      this.isPack = true
-      this.enablePack = false
-      this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
+      // this.typeTitle = 'PACK_ITEM'
+      // this.isPack = true
+      // this.enablePack = false
+      // this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
     }
     if (this.orderDetail.status === ORDER_STATUS.READY) {
       this.isReady = true
