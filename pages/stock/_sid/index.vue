@@ -59,7 +59,7 @@
           .col
             .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditStockDetail')
               span.uppercase save
-    .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden
+    .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1
       StockDetailTable
 </template>
 <script lang="ts">
@@ -166,7 +166,8 @@ export default StockDetail
         opacity: 1
 
     ::v-deep.p-inputtext
-      border: none
+      max-width: 38px
+      border: 1px solid #b2b2bb
       background: transparent
       padding: 0
       color: #000

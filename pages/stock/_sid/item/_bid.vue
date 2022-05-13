@@ -76,10 +76,11 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 mt-2')
             StockUnit(
               title="Value"
-              type ="weight"
-              :weight="model.data.value"
+              name="value"
+              :model="value"
               :isEdit="isEditItemDetail"
               icon="icon-price"
+              @updateUnit='handleUpdate'
             )
         .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
           .col
@@ -134,6 +135,7 @@ class ItemDetail extends Vue {
   // -- [ Properties ] ----------------------------------------------------------
   isEditItemDetail: boolean = false
   model: StockModel.ModelDetail | any = {}
+  value: any = ''
 
   // -- [ Getters ] ----------------------------------------------------------
 
@@ -157,6 +159,9 @@ class ItemDetail extends Vue {
   }
 
   // -- [ Functions ] ----------------------------------------------------------
+  handleUpdate(val: any, name: string) {
+    this[name] = val
+  }
 
   backToStockList() {
     this.$router.push(`/stock/${this.sid}`)
@@ -172,7 +177,7 @@ class ItemDetail extends Vue {
       boxId: this.$route.params.bid
     }
     this.actUpdateItem({ path: pathParams, body: {
-      value: this.model.data.value
+      value: this.value
     } })
     this.isEditItemDetail = false
   }
@@ -188,6 +193,7 @@ class ItemDetail extends Vue {
     }
     await this.actGetItemsDetail({ stockId: this.sid, boxId: this.bid })
     this.model = _.cloneDeep(this.itemDetail)
+    this.value = this.model.data.value
   }
 }
 export default ItemDetail
@@ -205,7 +211,7 @@ $small: 1025px
 				opacity: 1
 
 			.p-inputtext
-				border: none
+				border: 1px solid #b2b2bb
 				background: transparent
 				padding: 0
 				color: #000
