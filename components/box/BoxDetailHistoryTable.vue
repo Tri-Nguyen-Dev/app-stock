@@ -16,7 +16,7 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
   Column(field="originalLocation" header="ORIGINAL LOCATION" className="text-right" sortable)
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-600.font-bold.font-sm {{ data.originalLocation }}
+        span.text-600.font-bold.font-sm {{ data.originalLocation.name }}
   Column(field="newLocation" header="NEW LOCATION" className="text-right" :sortable="true" bodyClass="font-semibold")
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end

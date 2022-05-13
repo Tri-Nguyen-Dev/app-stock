@@ -9,7 +9,7 @@
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
-      .icon.bg-primary.surface-900.mr-3.icon-buildings
+      .icon.bg-primary.surface-900.mr-3.icon-warehouse-info
       span.uppercase.text-800.font-bold warehouse contact
     div
       StockOutItemInput( :listInfor='infomation.warehouse' @fieldWarehouse='handleWarehouse' )
