@@ -180,7 +180,7 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
-        detail: 'Can not add more item!',
+        detail: 'Item not found in original box!',
         life: 3000
       })
     }
@@ -327,8 +327,8 @@ class DeliveryOrderPacking extends Vue {
 
   get isDisabled() {
     if(_.size(this.listOriginalBox)) {
-      const unprocessedStocks = _.partition(_.flatten(_.map(this.listOriginalBox, 'items')), { 
-        quantity: 0 
+      const unprocessedStocks = _.partition(_.flatten(_.map(this.listOriginalBox, 'items')), {
+        quantity: 0
       })[1]
       const unsetBoxSizeOutGoing = _.partition(this.listOutGoingBox, { 'boxSize': null })[0]
       const unsetBoxSizeTranffering = _.partition(this.listTranfferingBox, { 'boxSize': null })[0]
