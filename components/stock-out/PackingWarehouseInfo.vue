@@ -1,7 +1,7 @@
 <template lang="pug">
 .packingWarehouseInfo.grid(v-if="warehouseInfo.warehouse")
   .icon.icon-warehouse-info.mr-2.bg-blue-700.inline-block
-  span.uppercase.font-bold.mb-4 warehouse information
+  span.uppercase.font-bold.mb-4 {{warehouseInfo.warehouse.name}}
   .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
     StockUnit.location-unit(title="Address" :value="warehouseInfo.warehouse.address" icon="icon-location-r")
   .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')

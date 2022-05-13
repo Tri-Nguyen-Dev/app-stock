@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import ItemList from '~/components/stock-out/item/ItemList.vue'
 import PackingInformationDetail from '~/components/stock-out/PackingInformationDetail.vue'
 import { STOCK_OUT_ACTION, ORDER_STATUS } from '~/utils/constants/stock-out'
@@ -71,7 +71,7 @@ class DeliveryOrder extends Vue {
   isPack = false
   selectedItem: any[] = []
   enablePack = false
-  typeTitle = 'PICKING_LIST'
+  typeTitle = 'DO_DETAIL'
   isReady = false
   textHeading = 'Item list'
   @nsStoreOrder.State
@@ -114,12 +114,12 @@ class DeliveryOrder extends Vue {
       }
     }
     await this.actPostUpdateProgressOrder(dataUpdate)
-    this.isPack = true
     this.typeTitle = 'PICK_ITEM'
     this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM 
     this.isPack = true
     this.enablePack = false
     this.textHeading= 'Picking list'
+    this.$router.push(`/stock-out/order/${this.id}?isPick=false`)
   }
 
   selectItem(event) {
@@ -155,6 +155,28 @@ class DeliveryOrder extends Vue {
     }
     if (this.orderDetail.status === ORDER_STATUS.READY) {
       this.isReady = true
+    }
+    if(this.$route.query.isPick === 'false'){
+      this.initialValue(STOCK_OUT_ACTION.ORDER_PICK_ITEM)
+    } else {
+      this.initialValue(STOCK_OUT_ACTION.ORDER_DETAIL)
+    }
+  }
+
+  initialValue(action){
+    this.isPack = action===STOCK_OUT_ACTION.ORDER_PICK_ITEM
+    this.typeTitle = action===STOCK_OUT_ACTION.ORDER_PICK_ITEM?'PICK_ITEM' : 'DO_DETAIL'
+    this.action = action
+    this.enablePack = false
+    this.textHeading= action===STOCK_OUT_ACTION.ORDER_PICK_ITEM?'Picking list' : 'Delivery order detail'
+  }
+
+  @Watch('$route')
+  checkQuery() {
+    if(this.$route.query.isPick === 'true'){
+      this.initialValue(STOCK_OUT_ACTION.ORDER_DETAIL)
+    } else {
+      this.initialValue(STOCK_OUT_ACTION.ORDER_PICK_ITEM)
     }
   }
 }

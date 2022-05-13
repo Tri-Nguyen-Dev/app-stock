@@ -31,18 +31,19 @@ class PackingInformationDetail extends Vue {
   }
 
   get breadcrumbItem() {
-    if (this.type === 'PICKING_LIST') {
+    if (this.type === 'DO_DETAIL') {
       return [
-        { label: 'Delivery order detail', to: `/stock-out/order/${this.deliveryOrderDetail.id}`, icon: 'pi pi-info-circle' }
+        { label: 'Delivery order detail', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=true`, icon: 'pi pi-info-circle' }
       ]
     } else if (this.type === 'PICK_ITEM') {
       return [
-        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}`, icon: 'pi pi-info-circle' },
-        { label: 'Packing list', to: `/stock-out/order/${this.deliveryOrderDetail.id}`, icon: 'pi pi-list' }
+        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=true`, icon: 'pi pi-info-circle' }, 
+        { label: 'Picking list', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-list' }
       ]
     } else {
       return [
-        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}`, icon: 'pi pi-info-circle' },
+        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=true`, icon: 'pi pi-info-circle' },
+        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-list' },
         {
           label: 'Packing detail',
           to: `/stock-out/order/${this.deliveryOrderDetail.id}/packing`,
