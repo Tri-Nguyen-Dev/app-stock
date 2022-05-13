@@ -102,7 +102,8 @@ class DeliveryOrderPackingDetail extends Vue {
         sku,
         name: stock.name,
         quantity: initialQuantity,
-        outGoingQuantity: amount
+        outGoingQuantity: amount,
+        imagePath: stock.imagePath
       }))
     }))
 
@@ -115,7 +116,8 @@ class DeliveryOrderPackingDetail extends Vue {
         sku,
         name: stock.name,
         quantity: amount,
-        originalBox: originalBox?.id
+        originalBox: originalBox?.id,
+        imagePath: stock.imagePath
       }))
     }))
 
@@ -128,7 +130,8 @@ class DeliveryOrderPackingDetail extends Vue {
         sku,
         name: stock.name,
         quantity: amount,
-        originalBox
+        originalBox,
+        imagePath: stock.imagePath
       }))
     }))
   }

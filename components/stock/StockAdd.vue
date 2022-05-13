@@ -7,15 +7,15 @@
       .p-input-icon-right.w-full
         .icon.icon--right.icon-scan
         InputText(v-model='stockInformation.barCode').w-full
-      h5.mb-1 SKU
-      InputText(v-model='stockInformation.sku').w-full
+      //- h5.mb-1 SKU
+      //- InputText(v-model='stockInformation.sku').w-full
       h5.mb-1.required__title Name
       InputText(v-model='stockInformation.name' :class="{'name--error' : $v.stockInformation.name.$error}").w-full
       .error-message(v-if='$v.stockInformation.name.$dirty && !$v.stockInformation.name.required') Name cannot be empty!
       h5.mb-1.required__title Category
       Dropdown(
         v-model='stockInformation.category'
-        :options="warehouseList" optionLabel="name"
+        :options="categoryList" optionLabel="name"
         :filter="true" placeholder="Select a category"
         :showClear="true" :class="{'category--error' : $v.stockInformation.category.$error}"
         ).w-full
@@ -48,11 +48,11 @@
             InputText(type="number" :min="1" v-model='stockInformation.weight').w-full
             .error-message(v-if='stockInformation.weight < 0') Weight cannot be negative!
         .col-6
-          h5.mb-1 Value
+          h5.mb-1.required__title Value
           .p-input-icon-right.w-full
             .icon.icon--right $
             InputText(type="number" :min="1" v-model='stockInformation.value').w-full
-            .error-message(v-if='stockInformation.weight < 0') Value cannot be negative!
+            .error-message( v-if='$v.stockInformation.unit.$dirty && stockInformation.value < 0') Value cannot be null or negative!
       .grid.mb-3
         .col
           h5.mb-1 Length
@@ -96,7 +96,7 @@ import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
 import { required } from 'vuelidate/lib/validators'
 import { GenerateUploadUrl } from '~/models/common/UploadImage'
 import { Stock as StockModel } from '~/models/Stock'
-const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreCategory = namespace('category/category-list')
 const nsStoreUnit = namespace('stock/unit')
 const nsStoreUploadImage = namespace('upload-image/aws-upload')
 const nsStoreStock = namespace('stock/stock-detail')
@@ -114,6 +114,9 @@ const nsStoreStock = namespace('stock/stock-detail')
         required
       },
       category: {
+        required
+      },
+      value: {
         required
       }
     }
@@ -138,8 +141,8 @@ class AddNewStock extends Vue {
   @Prop() barcode!:string
   extension!: string
 
-  @nsStoreWarehouse.State
-  warehouseList!: any
+  @nsStoreCategory.State
+  categoryList!: any
 
   @nsStoreUnit.State
   unitList!: any
@@ -153,8 +156,8 @@ class AddNewStock extends Vue {
     url: ''
   }
 
-  @nsStoreWarehouse.Action
-  actWarehouseList!: () => Promise<void>
+  @nsStoreCategory.Action
+  actCategoryList!: () => Promise<void>
 
   @nsStoreUnit.Action
   actUnitList!: () => Promise<void>
@@ -174,6 +177,7 @@ class AddNewStock extends Vue {
     this.$v.stockInformation.unit?.$touch()
     this.$v.stockInformation.category?.$touch()
     this.$v.stockInformation.quantity?.$touch()
+    this.$v.stockInformation.value?.$touch()
     if (this.$v.$invalid) {
       return
     }
@@ -188,7 +192,7 @@ class AddNewStock extends Vue {
       length: this.stockInformation.length,
       width: this.stockInformation.width,
       height: this.stockInformation.height,
-      imageUrl: this.stockInformation.imageUrl,
+      imagePath: this.stockInformation.imagePath,
       attributeValue: []
     })
     if (this.newStockDetail) {
@@ -239,7 +243,7 @@ class AddNewStock extends Vue {
   }
 
   async mounted() {
-    await Promise.all([this.actUnitList(), this.actWarehouseList()])
+    await Promise.all([this.actUnitList(), this.actCategoryList()])
     this.stockInformation.barCode = this.barcode
   }
 }
