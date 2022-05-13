@@ -212,7 +212,8 @@ export default PackingOriginal
   .btn-add-tab
     position: absolute
     right: 0
-    top: 4px
+    top: 21px
+    transform: translateY(-50%)
     z-index: 1
     box-shadow: none
     &::before
@@ -233,6 +234,8 @@ export default PackingOriginal
         background: $text-color-300
       .p-datatable .p-datatable-thead > tr > th
         background: #fff !important
+    ul.p-tabview-nav
+      height: 42px !important
     .p-tabview-nav-container
       overflow: unset !important
     .p-tabview-nav li .p-tabview-nav-link
