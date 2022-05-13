@@ -101,14 +101,16 @@
           template(#body="{data}") {{ data.weight }}
         Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right" sortField="_request.warehouse.name")
           template(#body="{data}")
-            .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
-              .icon.icon-arrow-up-right.bg-primary.bg-white-active
+            div(v-if="data.warehouseName")
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
+                .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right" sortField="_rackLocation.name")
           template(#body="{data}")
-            .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
-              .icon.icon-arrow-up-right.bg-primary.bg-white-active
+            div(v-if="data.location")
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
+                .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(field="status" header="STATUS" :sortable="true" className="text-right" sortField="_status")
           template(#body="{data}")
             .flex.justify-content-end
