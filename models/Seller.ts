@@ -1,10 +1,13 @@
 export namespace Seller {
   export interface Model {
-    id: string,
-    name: string,
-    phone: string,
-    email: string,
-    address: string,
-    status: string
+    avatarUrl?: string
+    displayName?: string
+    email?: string
+    firstName?: string
+    id?: string
+    lastName?: string
+    phoneNumber?: string
+    role?: string
+    username?: string
   }
 }
