@@ -2,7 +2,7 @@
   .sidebar(:style="{ width: sidebarWidth }")
     .menu-section.sidebar-head
       template(v-if="!collapsed")
-        img.user-avatar(:src="userImageUrl")
+        img.user-avatar(:src="user.avatarUrl | getThumbnailUrl")
         .user-info
           span.user-name {{ userDisplayName }}
           span.user-role {{ userRole }}
@@ -46,10 +46,6 @@ class MenuSidebar extends Vue {
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
   // -- [ Getters ] -------------------------------------------------------------
-
-  get userImageUrl() {
-    return this.user?.avatarUrl || null
-  }
 
   get userDisplayName() {
     return this.user?.displayName || 'Unknown'
