@@ -130,7 +130,7 @@
                         placeholder="Select" 
                         :filter='true')
               BoxDetailTable.flex-1(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
-            TabPanel.h-full
+            TabPanel
               template(#header)
                 .icon.icon-location-2.mr-2.surface-600
                 span Location history
