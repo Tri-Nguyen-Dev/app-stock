@@ -50,7 +50,7 @@ import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
 import { INFORMATION } from '~/utils'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreSeller = namespace('seller/seller-list')
-const nsStoreUserDetail = namespace('user-auth/user')
+const nsStoreUserDetail = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
 @Component

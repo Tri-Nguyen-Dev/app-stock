@@ -1,5 +1,5 @@
 <template lang="pug">
-DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
+DataTable(
   responsiveLayout="scroll"
   :value='locationHistory'  
   dataKey="id"
@@ -15,13 +15,15 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
       span.font-bold {{ data.createdAt | dateTimeHour12 }}
   Column(field="originalLocation" header="ORIGINAL LOCATION" className="text-right" sortable)
     template(#body="{data}")
-      .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-600.font-bold.font-sm 
+      div(v-if='data.originalLocation')
+        .flex.align-items-center.cursor-pointer.justify-content-end
+          span.text-600.font-bold.font-sm {{ data.originalLocation.name }}
   Column(field="newLocation" header="NEW LOCATION" className="text-right" :sortable="true" bodyClass="font-semibold")
     template(#body="{data}")
-      .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-primary.font-bold.font-sm 
-        .icon.icon-arrow-up-right.bg-primary
+      div(v-if='data.newLocation')
+        .flex.align-items-center.cursor-pointer.justify-content-end
+          span.text-primary.font-bold.font-sm {{ data.newLocation.name }}
+          .icon.icon-arrow-up-right.bg-primary
   Column(field="createdBy.id" header="CREATOR ID" sortable )
   template(#empty)
     div.flex.align-items-center.justify-content-center.flex-column
@@ -75,10 +77,39 @@ class BoxDetailHistory extends Vue {
   async onPageHistory(event: any) {
     this.pageNumber = event.page + 1
     await this.actLocationHistory({ id: this.$route.params.id })
-
   }
+
 }
 
 export default BoxDetailHistory
 </script>
 
+<style lang="sass" scoped>
+.p-column-header-content
+  .p-column-title
+    color: #464D64
+    font-weight: 700
+    text-transform: uppercase
+    letter-spacing: 1px
+.p-datatable
+  .p-datatable-thead
+    tr
+      th
+        background: var(--surface-300)
+.p-paginator
+  justify-content: end
+  .p-paginator-first , .p-paginator-last
+    display: none
+  .p-paginator-element
+    border: none
+    color: var(--surface-900)
+  .p-paginator-pages
+    .p-paginator-page.p-highlight
+      background-color: var(--surface-0)
+      box-shadow: none
+      color: var(--primary-color) !important
+    .p-paginator-page.p-paginator-element
+      font-weight:  bold
+      border: none
+      color: var(--surface-500)
+</style>

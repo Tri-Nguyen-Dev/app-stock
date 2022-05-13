@@ -1,5 +1,4 @@
 <template lang="pug">
-.box-page-container.flex.flex-column
   .grid.flex.grid-nogutter
     div.bg-white.border-round-top.sub-tab(class='col-3 md:col-3 lg:col-3 xl:col-3')
       .col.flex.align-items-center.p-3
@@ -92,67 +91,72 @@
             .col
               .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1( @click='handleUpdateData' )
                 span.uppercase save
-    div.ml-5.flex-1.flex.flex-column( class=' col-7  md:col-8  lg:col-8 xl:col-8' )
-      .grid.justify-content-between
-        .col-fixed.mb-2
-          h1.text-heading Box Detail
-      .grid.w-full.grid-nogutter.right__information--stock.tabview-relative
-        .col( class=' col-12  md:col-12 lg:col-12 xl:col-12' ).h-full
-          TabView.flex.flex-column.h-full( @tab-change="onTabClick($event)" )
-            TabPanel.h-full
-              template(#header)
-                .icon.icon-history.mr-2.surface-600
-                span Item list
-              .grid.my-2(v-if="isFilter")
-                .col
-                  .bg-white.border-round
-                    div.pt-2.pl-1.pb-1
-                      span.text-600.text-sm.pl-2 SKU
-                    span.p-input-icon-right.w-full
-                      .icon.icon--right.icon-search.surface-900
-                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="filterParams.sku")
-                .col
-                  .bg-white.border-round
-                    div.pt-2.pl-1.pb-1
-                      span.text-600.text-sm.pl-2 Barcode
-                    span.p-input-icon-right.w-full
-                      .icon.icon--right.icon-search.surface-900
-                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="filterParams.barCode")
-                .col
-                  .bg-white.border-round
-                    div.pt-2.pl-1.pb-1
-                      span.text-600.text-sm.pl-2 Category
-                      MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(
-                        v-model="filterParams.category" 
-                        :options='categoryList' 
-                        optionLabel="name" 
-                        optionValue="id" 
-                        placeholder="Select" 
-                        :filter='true')
-              BoxDetailTable.flex-1(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
-            TabPanel
-              template(#header)
-                .icon.icon-location-2.mr-2.surface-600
-                span Location history
-              BoxDetailHistoryTable
-            TabPanel.h-full
-              template(#header)
-                .icon.icon-box-1.mr-2.surface-600
-                span Box history
-              BoxHistory
-        .grid.tabview-left( v-if='activeTab ==  0 ' )
-          div.mr-3
-            .header__search
-              .icon.icon--left.icon-search
-              InputText(type="text" placeholder="Search" v-model="filterParams.name" )
-          div
-          .btn__filter(:class="{'active': isFilter}")
-            .btn-toggle(@click="isFilter = !isFilter")
-              .icon.icon-filter(v-if="!isFilter")
-              .icon.icon-chevron-up.bg-primary(v-else)
-              span Filter
-            .btn-refresh(@click="refreshFilter")
-              .icon.icon-rotate-left.bg-white
+    div.ml-5.flex-1( class=' col-7  md:col-8  lg:col-8 xl:col-8' )
+      .box-page
+        .grid.justify-content-between
+          .col-fixed.mb-2
+            h1.text-heading Box Detail
+        .grid.w-full.grid-nogutter.right__information--stock.tabview-relative
+          .col( class=' col-12  md:col-12 lg:col-12 xl:col-12' ).h-full
+            TabView.flex.flex-column.h-full( @tab-change="onTabClick($event)" )
+              TabPanel.h-full
+                template(#header)
+                  .icon.icon-history.mr-2.surface-600
+                  span Item list
+                .grid.my-2(v-if="isFilter")
+                  .col
+                    .bg-white.border-round
+                      div.pt-2.pl-1.pb-1
+                        span.text-600.text-sm.pl-2 SKU
+                      span.p-input-icon-right.w-full
+                        .icon.icon--right.icon-search.surface-900
+                        InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="filterParams.sku")
+                  .col
+                    .bg-white.border-round
+                      div.pt-2.pl-1.pb-1
+                        span.text-600.text-sm.pl-2 Barcode
+                      span.p-input-icon-right.w-full
+                        .icon.icon--right.icon-search.surface-900
+                        InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="filterParams.barCode")
+                  .col
+                    .bg-white.border-round
+                      div.pt-2.pl-1.pb-1
+                        span.text-600.text-sm.pl-2 Category
+                        MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(
+                          v-model="filterParams.category" 
+                          :options='categoryList' 
+                          optionLabel="name" 
+                          optionValue="id" 
+                          placeholder="Select" 
+                          :filter='true')
+              TabPanel.h-full
+                template(#header)
+                  .icon.icon-location-2.mr-2.surface-600
+                  span Location history
+              TabPanel.h-full
+                template(#header)
+                  .icon.icon-box-1.mr-2.surface-600
+                  span Box history
+          .grid.tabview-left( v-if='activeTab ==  0 ' )
+            div.mr-3
+              .header__search
+                .icon.icon--left.icon-search
+                InputText(type="text" placeholder="Search" v-model="filterParams.name" )
+            div
+            .btn__filter(:class="{'active': isFilter}")
+              .btn-toggle(@click="isFilter = !isFilter")
+                .icon.icon-filter(v-if="!isFilter")
+                .icon.icon-chevron-up.bg-primary(v-else)
+                span Filter
+              .btn-refresh(@click="refreshFilter")
+                .icon.icon-rotate-left.bg-white
+        .box__table.flex(v-if='activeTab ==  0' )
+          BoxDetailTable.flex-1(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
+        .box__table(v-if='activeTab ==  1' )
+          BoxDetailHistoryTable
+        .box__table(v-if='activeTab ==  2' )
+          BoxHistory
+
 </template>
 
 <script lang="ts">
@@ -329,6 +333,13 @@ export default BoxDetail
 </script>
 
 <style lang="sass" scoped>
+.box-page 
+  display: flex
+  flex-direction: column
+  height: calc( 100vh - 32px )
+.box__table 
+  flex: 1
+  overflow: hidden
 @media (max-width: 1024px)
   .tabview-left
     top: -4rem !important
@@ -360,7 +371,6 @@ export default BoxDetail
   
 .right__information--stock
   display: flex
-  height: 100%
   flex-direction: column
   ::v-deep.p-tabview-panel
     display: flex
