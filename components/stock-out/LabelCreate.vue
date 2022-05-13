@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import { INFORMATION } from '~/utils'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreSeller = namespace('seller/seller-list')
@@ -61,7 +61,6 @@ class LabelCreate extends Vue {
   deliveryDate: string | any = 'Fill receiver information'
   estimatedDate: string | any  = 'Fill receiver information'
   infomation = INFORMATION
-  paramEmail: string | any 
   @nsStoreUserDetail.State
   user!: any
 
@@ -71,11 +70,7 @@ class LabelCreate extends Vue {
   @nsStoreSeller.Action
   actSellerList!:(params: any) => Promise<void>
 
-  @nsStoreUserDetail.Action
-  actGetUserDetail!:(params: any) => Promise<void>
-
-  async mounted() {
-    await this.actGetUserDetail(this.$auth.$state.user.sub)
+  mounted() {
     this.handleUser()
   }
 
