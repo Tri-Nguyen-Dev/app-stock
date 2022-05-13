@@ -32,11 +32,11 @@
                 span.text-primary.uppercase.ml-2 {{ boxDetail.id }}
       div.sub--scroll
           div.wrap-unit.px-4
-            StockUnit(title="Receipt note ID" link="https://rikkei.vn" :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
+            StockUnit(title="Receipt note ID"  :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
           div.wrap-unit.px-4(v-if='boxDetail.createdBy')
             StockUnit(title="Create ID" :value="boxDetail.createdBy.id" :isEdit="isEditBox" icon="icon-tag-user")
           div.wrap-unit.px-4
-            StockUnit(title="Warehouse" link="https://rikkei.vn" :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
+            StockUnit(title="Warehouse"  :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
           div.wrap-unit.px-4
             StockUnit(title="Location" icon="icon-location-2")
               template(v-slot:auto-complete)
@@ -299,7 +299,7 @@ class BoxDetail extends Vue {
   }
 
   get boxWarehouse() {
-    return this.boxDetail.request?.warehouse.name || null
+    return this.boxDetail.request?.warehouse?.name || null
   }
 
   get boxSellerInfor() {
