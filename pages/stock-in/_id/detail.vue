@@ -14,7 +14,7 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title ID Creator
-						.filter__text {{ receiptDetail.data.id }}
+						.filter__text {{ receiptDetail.data.createdBy.id }}
 				.col
 					.filter__item.item--disabled
 						.filter__title Creator name
