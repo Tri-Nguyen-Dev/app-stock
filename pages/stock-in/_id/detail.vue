@@ -14,7 +14,7 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title ID Creator
-						.filter__text {{ receiptDetail.data.createdBy.id }}
+						.filter__text {{ receiptDetail.data.createdBy.email }}
 				.col
 					.filter__item.item--disabled
 						.filter__title Creator name
@@ -35,11 +35,11 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title Seller phone
-						.filter__text {{ receiptDetail.data.seller.phone }}
+						.filter__text {{ receiptDetail.data.seller.phoneNumber }}
 				.col
 					.filter__item.item--disabled
 						.filter__title Seller name
-						.filter__text {{ receiptDetail.data.seller.name }}
+						.filter__text {{ receiptDetail.data.seller.displayName }}
 	card.card-custom
 		template(#content='')
 			.grid

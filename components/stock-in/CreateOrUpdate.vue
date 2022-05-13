@@ -499,7 +499,7 @@ class CreateOrUpdateReceipt extends Vue {
 
   checkActiveAction() {
     this.activeAction = true
-    if(!(this.generalInfo.seller!.id))
+    if(!(this.generalInfo.seller)  || !(this.generalInfo.seller!.id))
     {
       return false
     }
