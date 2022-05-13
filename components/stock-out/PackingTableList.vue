@@ -61,7 +61,11 @@ div
       :styles="{'width': '1%'}"
     )
       template(#body='{ data }')
-        .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right {{ data.quantity }}
+        InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="1" 
+          :max="maxQuantity(data)" inputClass="w-full"
+          v-if='type !== "originalBox"' @input='handleQuantity(data, $event)'
+        )
+        .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) {{ data.quantity }}
     Column(
       header='OUTGOING QUANTITY'
       field='outGoingQuantity'
@@ -73,7 +77,7 @@ div
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right {{ data.outGoingQuantity }}
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, InjectReactive } from 'nuxt-property-decorator'
 import { PAGINATE_DEFAULT,calculateIndex } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 @Component
@@ -81,6 +85,10 @@ class PackingTableList extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   @Prop() value!: Array<any>
   @Prop() readonly type!: string | undefined
+  @Prop() readonly boxCode!: string | undefined
+  @InjectReactive() readonly listOriginalBox!: any
+  @InjectReactive() readonly listOutGoingBox!: any
+  @InjectReactive() readonly listTranfferingBox!: any
   originalList: {} = {}
 
   getIndexPaginate(index: number) {
@@ -93,6 +101,44 @@ class PackingTableList extends Vue {
 
   rowClass(data: any) {
     return data.outGoingQuantity <= 0 ? 'row-outgoing' : ''
+  }
+
+  sumQuantity(data) {
+    const list = this.type === 'tranferringBox' ? this.listTranfferingBox : this.listOutGoingBox
+    const boxNotActive = _.partition(list, { 'boxCode': this.boxCode })[1]
+    const sumNotActive = _.partition(_.flatten(_.map(boxNotActive, 'items')), { 
+      barCode: data.barCode, originalBox: data.originalBox
+    })[0]
+    const sum =_.sumBy(sumNotActive, o => {
+      return o.quantity
+    })
+    return sum
+  }
+
+  maxQuantity(data) {
+    const box = _.find(this.listOriginalBox, { boxCode: data.originalBox })
+    const stock = _.find(box.items, { barCode: data.barCode })
+    const { initialQuantity, outGoingQuantity } = stock
+    if(this.type === 'tranferringBox') {
+      return initialQuantity - outGoingQuantity - this.sumQuantity(data)
+    } else {
+      return outGoingQuantity - this.sumQuantity(data)
+    }
+  }
+
+  handleQuantity(data, event) {
+    const sum = this.sumQuantity(data)
+    const box = _.find(this.listOriginalBox, { boxCode: data.originalBox })
+    const stock = _.find(box.items, { barCode: data.barCode })
+    if(stock.initialQuantity - stock.outGoingQuantity - sum - event >= 0 && this.type === 'tranferringBox') {
+      _.set(data, 'quantity', event)
+      _.set(stock, 'actualTranffering', event + sum)
+      _.set(stock, 'quantity', stock.initialQuantity - sum - event - stock.actualOutGoing)
+    } else if(this.type === 'outGoingBox' && stock.outGoingQuantity - sum - event >= 0) {
+      _.set(data, 'quantity', event)
+      _.set(stock, 'actualOutGoing', event + sum)
+      _.set(stock, 'quantity', stock.initialQuantity - sum - event - stock.actualTranffering)
+    }
   }
 }
 

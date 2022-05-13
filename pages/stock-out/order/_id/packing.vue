@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, ProvideReactive } from 'nuxt-property-decorator'
 import { PackingDetail } from '~/models/PackingDetail'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 const nsStoreBox = namespace('box/box-size-list')
@@ -78,8 +78,17 @@ class DeliveryOrderPacking extends Vue {
   originalBoxActive: any = {}
   outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
   tranfferingBoxActive: any = { boxCode: 'EX1', items: [] }
+  // listOriginalBox: any = []
+  // listOutGoingBox: any = []
+  // listTranfferingBox: any = []
+
+  @ProvideReactive()
   listOriginalBox: any = []
+
+  @ProvideReactive()
   listOutGoingBox: any = []
+
+  @ProvideReactive()
   listTranfferingBox: any = []
 
   @nsStorePackingDetail.State('totalOriginalList')
@@ -157,7 +166,7 @@ class DeliveryOrderPacking extends Vue {
   addStockInOutGoing(barCode: string) {
     const stockOriginal = _.find(this.originalBoxActive.items, { barCode })
     if (stockOriginal) {
-      const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode })
+      const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode, originalBox: this.originalBoxActive.boxCode })
       const { outGoingQuantity, actualOutGoing } = stockOriginal
       const isFullQuantityStock = outGoingQuantity > actualOutGoing
       this.addStock(
@@ -238,7 +247,7 @@ class DeliveryOrderPacking extends Vue {
     const stockOriginal = _.find(this.originalBoxActive.items, { barCode })
     if (stockOriginal) {
       const tranfferingStock = _.find(this.tranfferingBoxActive.items, {
-        barCode
+        barCode, originalBox: this.originalBoxActive.boxCode
       })
       const { initialQuantity, outGoingQuantity, actualTranffering } =
         stockOriginal
