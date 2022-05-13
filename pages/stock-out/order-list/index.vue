@@ -202,6 +202,7 @@
               span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
         template(#footer)
           Pagination(
+            v-if="activeTab == 0"
             title="Cancel"
             :paging="paging"
             :total="total"
@@ -391,7 +392,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id ? 'row-disable' :''
+    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? 'row-disable' :''
   }
 
   async mounted() {
