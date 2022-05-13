@@ -152,7 +152,8 @@ class createOrder extends Vue {
   actDeliveryOrder!: (params: any) => Promise<void>
 
   mounted() {
-    this.listItemsAdd = this.outGoingListStore.map((x: any) => ({ ..._.cloneDeep(x), hasAirtag: false }))
+    this.listItemsAdd = this.outGoingListStore.map((x: any) => (
+      { ..._.cloneDeep(x), hasAirtag: false }))
     if(this.listItemsAdd.length > 0 ){
       this.disableInput()
     }
@@ -221,6 +222,8 @@ class createOrder extends Vue {
     await this.actDeliveryOrder({
       seller: {
         id: this.infomation.seller[0].id
+      },assignee: {
+        id: this.$auth.$state.user.sub
       },
       receiverAddress: listReceiver[0].value,
       receiverEmail: listReceiver[1].value,
@@ -241,7 +244,6 @@ class createOrder extends Vue {
     })
     this.handleCancel()
     this.disableInput()
-    this.$router.push({ path: '/stock-out/order-list' })
   }
 
   handleCancelEdit (data : any ) {
