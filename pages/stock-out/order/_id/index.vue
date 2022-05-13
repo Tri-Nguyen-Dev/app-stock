@@ -34,7 +34,7 @@
 				)
 				Button.p-button-outlined.p-button-primary.bg-white.w-full(
 					type='button',
-					label='Pack detail',
+					label='Packing detail',
 					v-if='isReady',
 					@click='packDetail()'
 				)
