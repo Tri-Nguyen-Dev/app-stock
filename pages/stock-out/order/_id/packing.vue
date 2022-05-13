@@ -63,7 +63,7 @@
               .font-semibold.text-primary {{tranferringOutGoing}}
         .col-1.flex.justify-content-end.p-1
           Button.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled") Next
-          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if="ishowSave" ) Save
+          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if="ishowSave") Save
 </template>
 
 <script lang="ts">
@@ -284,6 +284,7 @@ class DeliveryOrderPacking extends Vue {
         _.set(obj, 'location', locationList[index])
       })
     }
+    // }
   }
 
   getStocks(stocks) {
