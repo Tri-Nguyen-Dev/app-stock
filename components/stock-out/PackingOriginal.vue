@@ -4,11 +4,12 @@
   Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-    InputText.border-0.w-full.mb-1(
+    InputText.w-full.inputSearchCode(
       type="text"
       @change='changeBoxCode($event)'
       v-model="boxCodeText"
       placeholder='Please enter box code!'
+      ref="inputScanBoxCode"
     )
   TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
@@ -52,17 +53,20 @@
               InputText.w-4(v-model='tab.inventoryFee' type='number')
               span.ml-1 / day
           .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
-            span.mr-1 Tag code:
-            InputText(@change='addTagByBarCode')
+            InputText.inputSearchCode(@change='addTagByBarCode' placeholder='Please enter tag code!')
         .col.py-3.flex.justify-content-end
           span.p-input-icon-right
-            span.mr-1 Barcode:
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-            InputText(@change='addStockByBarcode($event)' v-model="barCodeText")
+            InputText.inputSearchCode(
+              placeholder='Please enter bar code!'
+              @change='addStockByBarcode($event)'
+              v-model="barCodeText"
+              ref="inputScanBarCode"
+            )
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode' :isPackingDetail="isPackingDetail")
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, namespace, Watch } from 'nuxt-property-decorator'
 const nsStoreLocationList = namespace('location/location-list')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
@@ -94,6 +98,15 @@ class PackingOriginal extends Vue {
 
   @nsStorePackingDetail.Action
   actScanAirtag!: (params: any) => Promise<void>
+
+  @Watch('activeIndex')
+  async inputChange(value) {
+    await this.$nextTick()
+    if(this.$refs.inputScanBarCode && !this.isOriginal) {
+      const inputRef = this.$refs.inputScanBarCode[value - 1] as any
+      await this.$nextTick(() =>  inputRef?.$el.focus())
+    }    
+  }
 
   getTabKey(tab) {
     return tab.boxCode + (tab.location?.id || '')
@@ -135,7 +148,7 @@ class PackingOriginal extends Vue {
           this.$toast.add({
             severity: 'error',
             summary: 'Error Message',
-            detail: 'Remaining stock is greater than 0, please process all stocks',
+            detail: 'Current box processing has not been complete. Please complete before moving to others',
             life: 3000
           })
         }
@@ -180,6 +193,10 @@ class PackingOriginal extends Vue {
   }
 
   mounted() {
+    if(this.$refs.inputScanBoxCode) {
+      const inputRef = this.$refs.inputScanBoxCode as any
+      inputRef.$el.focus()
+    }
     if(this.$route.name?.includes('packing-detail')) {
       this.isPackingDetail = true
     }
@@ -201,15 +218,23 @@ export default PackingOriginal
   position: relative
   .originalTable
     .p-tabview-nav-container
-      width: calc(100% - 235px)
+      width: calc(100% - 200px)
   .outGoingTable
     .p-tabview-nav-container
       width: calc(100% - 59px)
   .p-inputtext
     background: $text-color-300
   .scan__boxcode
-    top: 2px
     right: 0
+    height: 42px !important
+    width: 200px !important
+    top: 0
+    .p-inputtext
+      height: 100%
+      margin: 0 !important
+    .p-inputtext:enabled:focus
+      box-shadow: none !important
+  
   .btn-add-tab
     position: absolute
     right: 0
