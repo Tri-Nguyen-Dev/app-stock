@@ -269,7 +269,6 @@ class CreateOrUpdateReceipt extends Vue {
   activeSave = false
   boxQrCode: string = ''
   isModalDelete = false
-  selectedLocation: any = {}
   note: string = ''
   receiptId = 0
   generalInfo: {
@@ -495,23 +494,12 @@ class CreateOrUpdateReceipt extends Vue {
       }
     }
     if (type === 1 && this.newReceipt.id) {
-      setTimeout(
-        () => this.$router.push(`/stock-in/${this.newReceipt.id}/detail`),
-        2000
-      )
+      await this.$router.push(`/stock-in/${this.newReceipt.id}/detail`)
     }
   }
 
   checkActiveAction() {
-    this.activeAction = true
-    if (this.generalInfo.seller === undefined) {
-      this.activeAction = false
-    }
-    if (this.activeAction) {
-      this.listBox.forEach((element) => {
-        this.activeAction = element.listItemInBox.length > 0
-      })
-    }
+    this.activeAction = !!this.generalInfo.seller && !this.listBox.find(e => !e.listItemInBox.length)
     return this.activeAction
   }
 
