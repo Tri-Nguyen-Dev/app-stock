@@ -1,16 +1,11 @@
 import { Plugin } from '@nuxt/types'
 import axios from 'axios'
+import { ToastServiceMethods } from 'primevue/toastservice'
 import { ErrorResponse, initializeAxios } from '~/utils'
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $bvToast: {
-      toast(message: string, options: any): void
-    }
-    $bvModal: {
-      show(id: string): void
-      hide(id: string): void
-    }
+    $toast: ToastServiceMethods
   }
 }
 const auth: Plugin = ({ app, $auth, store }) => {

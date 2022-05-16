@@ -52,11 +52,11 @@
             template(#body='{data}')
               span(v-if='isActive !== data.id ') {{ data.delivery }}
               InputNumber(
-              v-model="data.delivery" 
-              mode="decimal" 
-              :min="0" 
-              :max="data.amount" 
-              inputClass="w-full" 
+              v-model="data.delivery"
+              mode="decimal"
+              :min="0"
+              :max="data.amount"
+              inputClass="w-full"
               v-else ).w-7rem
           column(field='tag', header='TAG', headerClass='grid-header-center')
             template(#body='{ data }')
@@ -125,8 +125,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { INFORMATION , getDeleteMessage } from '~/utils'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { getDeleteMessage, INFORMATION } from '~/utils'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreCreateOrder = namespace('stock-out/create-order')
 
@@ -138,8 +138,7 @@ class createOrder extends Vue {
   listItemsAdd: any = []
   isActive: string = ''
   delivery: string = ''
-  listInforId: any
-  noteBox: any = null 
+  noteBox: any = null
   infomation = INFORMATION
   oldItem: any = null
   isModalDelete: boolean = false
@@ -170,14 +169,14 @@ class createOrder extends Vue {
     }
   }
 
-  async createStockOut() {
+  createStockOut() {
     const note = this.noteBox
     const listInfoAdd = { ...this.infomation , note }
     this.$router.push('/stock-out/order/add-items')
-    await this.actGetCreateOrder(
+    this.actGetCreateOrder(
       _.cloneDeep(listInfoAdd)
     )
-  }  
+  }
 
   editItem(data: any ) {
     this.isActive = data.id
@@ -221,7 +220,7 @@ class createOrder extends Vue {
       })
     }
   }
-  
+
   async handleSubmit(){
     const listReceiver = this.listInfor.receiver
     const deliveryItemList: any = []
@@ -258,7 +257,7 @@ class createOrder extends Vue {
         detail: 'Successfully Add New Order ',
         life: 3000
       })
-      this.handleCancel()
+      await this.handleCancel()
     } else {
       this.$toast.add({
         severity: 'error',
@@ -277,17 +276,14 @@ class createOrder extends Vue {
   async handleCancel() {
     const emptyList =  this.listItemsAdd = []
     await this.actGetCreateOrder(_.cloneDeep(emptyList))
-    await  this.actOutGoingList(_.cloneDeep(emptyList))
+    await this.actOutGoingList(_.cloneDeep(emptyList))
     _.forEach(this.infomation, function(item){
       _.forEach(item, function(i) {
         i.value = null
       })
     })
     this.disableInput()
-    setTimeout(() => {
-      this.$router.push({ path: '/stock-out/order-list' })
-    }, 1000)
-    
+    await this.$router.push({ path: '/stock-out/order-list' })
   }
 
   disableInput() {
@@ -338,8 +334,8 @@ export default createOrder
 .btn-action
   border: none
   padding: 0
-  height: 2rem 
-  width: 2rem 
+  height: 2rem
+  width: 2rem
   justify-content: center
   background: var(--surface-200)
 ::v-deep.p-datatable
@@ -351,8 +347,8 @@ export default createOrder
     width: 100%
   .btn
     border: none
-    padding: 0px 25px 
-    margin: 5px 10px 0px 
+    padding: 0px 25px
+    margin: 5px 10px 0px
     &__priamry
       background-color: $primary
       font-weight: 700

@@ -2,6 +2,7 @@
   .layout-wrapper.layout-static
     MenuSidebar
     .main-container(:style="{ marginLeft: sidebarWidth }")
+      Toast
       Nuxt
 </template>
 
