@@ -94,13 +94,12 @@
             sortable
             className="p-text-right"
             bodyClass="font-semibold"
-            :styles="{'width': '5%'}"
           )
             template(#body="{data}")
-              .flex.align-items-center.cursor-pointer.justify-content-end(v-if="data.itemStatus === 'ITEM_STATUS_DRAFT'")
-                span N/A
-              .flex.align-items-center.cursor-pointer.justify-content-end
+              .flex.align-items-center.cursor-pointer.justify-content-end(v-if="data.box.id")
                 span {{data.box.id}}
+              .flex.align-items-center.cursor-pointer.justify-content-end(v-else)
+                span N/A
           Column(
             field="box.request.warehouse.name"
             sortable header="WAREHOUSE"
@@ -108,17 +107,19 @@
             :styles="{'width': '5%'}"
           )
             template(#body="{data}")
-              .flex.align-items-center.cursor-pointer.justify-content-end
+              .flex.align-items-center.cursor-pointer.justify-content-end(v-if='data.box.request && data.box.request.warehouse')
                 span.text-primary.font-bold.font-sm {{data.box.request.warehouse.name}}
                 .icon--small.icon-arrow-up-right.bg-primary
+              .flex.align-items-center.cursor-pointer.justify-content-end(v-else)
+                span.text-primary.font-bold.font-sm N/A
           Column(field="box.rackLocation.name" header="LOCATION" sortable className="p-text-right")
             template(#body="{data}")
-              .flex.align-items-center.cursor-pointer.justify-content-end(v-if="data.itemStatus === 'ITEM_STATUS_DRAFT'")
-                span N/A
-              .flex.align-items-center.cursor-pointer.justify-content-end(v-else)
+              .flex.align-items-center.cursor-pointer.justify-content-end(v-if="data.box.rackLocation")
                 span.text-primary.font-bold.font-sm
                 | {{ data.box.rackLocation ? (data.box.rackLocation.name ? data.box.rackLocation.name : '' ) : ''}}
                 .icon--small.icon-arrow-up-right.bg-primary
+              .flex.align-items-center.cursor-pointer.justify-content-end(v-else)
+                span N/A
           Column(field="itemStatus" header="STATUS" sortable className="p-text-right")
             template(#body="{data}")
               div
@@ -141,14 +142,12 @@
               )
                 .icon--small.icon-btn-delete
           template(#footer)
-            .pagination
-              div.pagination__info(v-if='!selectedStockFilter.length > 0')
-                img(:src="require('~/assets/icons/filter-left.svg')")
-                span.pagination__total {{ getInfoPaginate }}
-              div.pagination__delete(v-else @click="showModalDelete()")
-                img(:src="require('~/assets/icons/trash-white.svg')")
-                span Delete {{ selectedStockFilter.length }} items selected
-              Paginator(:first.sync="firstPage" :rows="paginate.pageSize" :totalRecords="itemsList.data.total" @page="onPage($event)")
+            Pagination(
+              :paging="paging"
+              :total="total"
+              :deleted-list="selectedStockFilter"
+              @onDelete="showModalDelete"
+              @onPage="onPage")
           template(#empty)
             div.flex.align-items-center.justify-content-center.flex-column
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
@@ -170,25 +169,31 @@
 <script lang="ts">
 import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import Pagination from '~/components/common/Pagination.vue'
+import { Paging } from '~/models/common/Paging'
 import { Stock as StockModel } from '~/models/Stock'
-const nsStoreStockTable = namespace('stock/stock-detail')
+import {
+  LIMIT_PAGE_OPTIONS,
+  PAGINATE_DEFAULT,
+  calculateIndex
+} from '~/utils'const nsStoreStockTable = namespace('stock/stock-detail')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component({
-  components: { ConfirmDialogCustom }
+  components: { ConfirmDialogCustom, Pagination }
 })
 class StockDetailTable extends Vue {
-
   @Prop() sku!: string
   isShowFilter: boolean = false
   selectedWarehouse = []
   selectedStatus = null
-  selectedStock :StockModel.ModelDetail[] = []
+  selectedStock: StockModel.ModelDetail[] = []
   deleteStockList = []
   isModalDelete: boolean = false
   ids: string[] = []
   loadingSubmit: boolean = false
-  firstPage:any = 0
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  limitOptions = LIMIT_PAGE_OPTIONS
 
   filter: any = {
     sellerName: null,
@@ -226,7 +231,7 @@ class StockDetailTable extends Vue {
   warehouseList!: any
 
   @nsStoreStockTable.Action
-  actGetItemsList!: (params:any) => Promise<void>
+  actGetItemsList!: (params: any) => Promise<void>
 
   @nsStoreWarehouse.Action
   actWarehouseList!: () => Promise<void>
@@ -243,10 +248,13 @@ class StockDetailTable extends Vue {
   }
 
   get selectedStockFilter() {
-    return this.selectedStock.filter((item: any) => item.itemStatus !== 'ITEM_STATUS_DISABLE')
+    return this.selectedStock.filter(
+      (item: any) => item.itemStatus !== 'ITEM_STATUS_DISABLE'
+    )
   }
 
   onPage(event: any) {
+    this.paginate.pageSize = event.rows
     this.paginate.pageNumber = event.page
     this.getItemsList()
   }
@@ -266,9 +274,9 @@ class StockDetailTable extends Vue {
     this.isModalDelete = true
   }
 
-  sortData(e: any){
+  sortData(e: any) {
     const { sortField, sortOrder } = e
-    if(sortOrder){
+    if (sortOrder) {
       this.sort.desc = sortOrder !== 1
       this.sort.sortBy = sortField.replace('_', '')
     }
@@ -283,6 +291,14 @@ class StockDetailTable extends Vue {
     this.isModalDelete = false
   }
 
+  getIndexPaginate(index: number) {
+    return calculateIndex(
+      index,
+      this.paging.pageNumber,
+      this.paging.pageSize
+    )
+  }
+
   async handleDeleteItems() {
     this.loadingSubmit = true
     await this.actDeleteItemsById(this.ids)
@@ -294,8 +310,6 @@ class StockDetailTable extends Vue {
       detail: 'Successfully deleted stock',
       life: 3000
     })
-    this.paginate.pageNumber = 0
-    this.firstPage = 0
     this.getItemsList()
     this.selectedStock = []
   }
@@ -308,7 +322,7 @@ class StockDetailTable extends Vue {
       location: this.filter?.location,
       warehouseId: this.filter?.warehouse?.id,
       itemStatus: this.filter.status?.value,
-      pageNumber:this.paginate.pageNumber,
+      pageNumber: this.paginate.pageNumber,
       pageSize: this.paginate.pageSize,
       sortBy: this.sort?.sortBy,
       desc: this.sort.desc && this.sort?.desc
@@ -321,12 +335,12 @@ class StockDetailTable extends Vue {
     await this.actGetItemsList(params)
   }
 
-  handleFilter(e: any, name: string){
+  handleFilter(e: any, name: string) {
     this.filter[name] = e
     this.getItemsList()
   }
 
-  handleRefreshFilter () {
+  handleRefreshFilter() {
     this.filter = {
       name: null,
       warehouse: null,
@@ -341,8 +355,11 @@ class StockDetailTable extends Vue {
     this.$router.push(`${this.$route.params.sid}/item/${data.box.id}`)
   }
 
-  editItemDetail(id:any) {
-    this.$router.push({ path: `${this.$route.params.sid}/item/${id}`, query: { plan: 'edit' } })
+  editItemDetail(id: any) {
+    this.$router.push({
+      path: `${this.$route.params.sid}/item/${id}`,
+      query: { plan: 'edit' }
+    })
   }
 
   mounted() {
@@ -353,28 +370,28 @@ class StockDetailTable extends Vue {
 export default StockDetailTable
 </script>
 <style lang="sass" scoped>
-  .btn-filter
-    height: 58px
-    width: 166px
-    .refresh-filter
-      background-color: $primary
-      display: flex
-      align-items: center
-      width: 50px
-      justify-content: center
-      border-top-right-radius: 4px
-      border-bottom-right-radius: 4px
-    .btn-filter-toggle
-      // gap: 18px
-      border-top-left-radius: 4px
-      border-bottom-left-radius: 4px
-      display: flex
-      justify-content: center
+.btn-filter
+  height: 58px
+  width: 166px
+  .refresh-filter
+    background-color: $primary
+    display: flex
+    align-items: center
+    width: 50px
+    justify-content: center
+    border-top-right-radius: 4px
+    border-bottom-right-radius: 4px
+  .btn-filter-toggle
+    // gap: 18px
+    border-top-left-radius: 4px
+    border-bottom-left-radius: 4px
+    display: flex
+    justify-content: center
 
-  .stock__mutidelete
-    background-color: #FF7171
-  ::v-deep.p-inputtext,
-  ::v-deep.p-dropdown,
-  ::v-deep.p-button
-    box-shadow: none !important
+.stock__mutidelete
+  background-color: #FF7171
+::v-deep.p-inputtext,
+::v-deep.p-dropdown,
+::v-deep.p-button
+  box-shadow: none !important
 </style>

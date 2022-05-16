@@ -126,7 +126,7 @@ export default class StoreStockDetail extends VuexModule {
   }
 
   @Action({ commit: 'setHistoryLocation', rawError: true })
-  async actGetHistoryLocation(params: {stockId: number, boxId: number}): Promise<string | undefined> {
+  async actGetHistoryLocation(params:any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreStockDetail.STATE_URL.GET_HISTORY_LOCATION, params)
     return await $api.get(url)
   }

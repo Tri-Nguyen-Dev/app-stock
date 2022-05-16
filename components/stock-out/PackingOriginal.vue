@@ -205,6 +205,7 @@ class PackingOriginal extends Vue {
   isDisable(tab) {
     if(this.$route.name?.includes('packing-detail')) {
       this.activeIndex = 1
+      return
     }
     return tab.key !== this.activeIndex && this.type === 'originalBox'
   }
