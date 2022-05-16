@@ -25,7 +25,7 @@
               span Filter
             .btn-refresh(@click="handleRefreshFilter")
               .icon.icon-rotate-left.bg-white
-          .btn.btn-primary(@click="handleAddNew")
+          .btn.btn-primary(v-if="activeTab === 0" @click="handleAddNew")
             .icon.icon-add-items
             span Add New
           .btn__filter(class='active' @click="handleExportReceipt")
@@ -312,6 +312,7 @@ class DeliveryOrderList extends Vue {
   @Watch ('activeTab',{ immediate: true, deep: true })
   getList(){
     this.handleFilterTabList()
+    this.selectedDelivery = []
   }
 
   @Watch ('deliveryList',{ immediate: true, deep: true })
@@ -320,9 +321,12 @@ class DeliveryOrderList extends Vue {
   }
 
   get selectedDeliveryFilter() {
-    return _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
-      return delivery.status !== 'STOCK_STATUS_DISABLE'
-    })
+    if(this.activeTab === 0) {
+      return _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
+        return delivery
+      })
+    }
+    
   }
 
   get classHeaderMuti() {
@@ -345,7 +349,7 @@ class DeliveryOrderList extends Vue {
   }
 
   get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'stock')
+    return getDeleteMessage(this.onEventDeleteList, 'delivery order')
   }
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -495,7 +499,13 @@ class DeliveryOrderList extends Vue {
   }
 
   rowSelectAll({ data }) {
-    this.selectedDelivery = _.union(this.selectedDelivery, data)
+    if(this.activeTab === 0) {
+      this.selectedDelivery = _.filter(
+        data,(item: any) => item.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && item.assigneeId === this.user.id && item.status !== 'DELIVERY_ORDER_STATUS_CANCELLED'
+      )
+    }else {
+      this.selectedDelivery = _.union(this.selectedDelivery, data)
+    }
   }
 
   rowUnSelectAll() {
@@ -514,7 +524,7 @@ class DeliveryOrderList extends Vue {
     originalEvent.originalEvent.stopPropagation()
     this.selectedDelivery = _.filter(
       this.selectedDelivery,
-      (stock: any) => stock.id !== data.id
+      (item: any) => item.id !== data.id
     )
   }
 
