@@ -501,8 +501,9 @@ class DeliveryOrderList extends Vue {
   rowSelectAll({ data }) {
     if(this.activeTab === 0) {
       this.selectedDelivery = _.filter(
-        data,(item: any) => item.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && item.assigneeId === this.user.id && item.status !== 'DELIVERY_ORDER_STATUS_CANCELLED'
+        data,(item: any) => item.status === 'DELIVERY_ORDER_STATUS_NEW' || item.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && (item.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && item.assigneeId === this.user.id)
       )
+      this.selectedDelivery = _.union(this.selectedDelivery, this.selectedDelivery)
     }else {
       this.selectedDelivery = _.union(this.selectedDelivery, data)
     }
