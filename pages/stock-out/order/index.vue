@@ -286,7 +286,7 @@ class createOrder extends Vue {
     this.disableInput()
     setTimeout(() => {
       this.$router.push({ path: '/stock-out/order-list' })
-    }, 2500)
+    }, 1000)
     
   }
 
