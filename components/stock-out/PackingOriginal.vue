@@ -17,7 +17,6 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    //- TabPanel(v-for='(tab,index) in listBox' :key='getTabKey(tab)' :disabled="isDisable(tab)")
     TabPanel(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700

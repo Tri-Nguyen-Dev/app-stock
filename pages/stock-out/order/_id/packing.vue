@@ -45,8 +45,8 @@
             .col-1
               .icon--large.icon-note
             .col
-              div Note:
-              Textarea.note-area.border-white.w-full(rows="1" cols="40" placeholder='Write something...')
+              div(style="padding-left: 10.5px") Note:
+              Textarea.inputSearchCode.w-full(rows="1" cols="40" placeholder='Write something...')
         .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
