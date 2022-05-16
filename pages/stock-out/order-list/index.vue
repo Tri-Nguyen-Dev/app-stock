@@ -134,7 +134,7 @@
         Column(
           selectionMode='multiple'
           :styles="{'width': '1%'}"
-          :headerClass="classHeaderMuti")
+          :exportable="false")
         Column(field='no' header='NO' :styles="{'width': '1%'}" )
           template(#body='{ index }')
             span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -207,7 +207,7 @@
             :paging="paging"
             :total="total"
             @onDelete="showModalDelete"
-            :deleted-list="selectedDelivery"
+            :deleted-list="selectedDeliveryFilter"
             @onPage="onPage")
         template(#empty)
           div.table__empty
@@ -321,12 +321,11 @@ class DeliveryOrderList extends Vue {
   }
 
   get selectedDeliveryFilter() {
-    if(this.activeTab === 0) {
-      return _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
-        return delivery
-      })
-    }
-    
+    return _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
+      if(this.activeTab === 0) {
+        return delivery.status === 'DELIVERY_ORDER_STATUS_NEW' || delivery.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && (delivery.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && delivery.assigneeId === this.user.id)
+      }else return delivery
+    })
   }
 
   get classHeaderMuti() {
@@ -499,14 +498,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowSelectAll({ data }) {
-    if(this.activeTab === 0) {
-      this.selectedDelivery = _.filter(
-        data,(item: any) => item.status === 'DELIVERY_ORDER_STATUS_NEW' || item.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && (item.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && item.assigneeId === this.user.id)
-      )
-      this.selectedDelivery = _.union(this.selectedDelivery, this.selectedDelivery)
-    }else {
-      this.selectedDelivery = _.union(this.selectedDelivery, data)
-    }
+    this.selectedDelivery = _.union(this.selectedDelivery, data)
   }
 
   rowUnSelectAll() {
