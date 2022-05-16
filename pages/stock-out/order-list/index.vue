@@ -25,7 +25,7 @@
               span Filter
             .btn-refresh(@click="handleRefreshFilter")
               .icon.icon-rotate-left.bg-white
-          .btn.btn-primary(@click="handleAddNew")
+          .btn.btn-primary(v-if="activeTab === 0" @click="handleAddNew")
             .icon.icon-add-items
             span Add New
           .btn__filter(class='active' @click="handleExportReceipt")
@@ -134,7 +134,7 @@
         Column(
           selectionMode='multiple'
           :styles="{'width': '1%'}"
-          :headerClass="classHeaderMuti")
+          :exportable="false")
         Column(field='no' header='NO' :styles="{'width': '1%'}" )
           template(#body='{ index }')
             span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -207,7 +207,7 @@
             :paging="paging"
             :total="total"
             @onDelete="showModalDelete"
-            :deleted-list="selectedDelivery"
+            :deleted-list="selectedDeliveryFilter"
             @onPage="onPage")
         template(#empty)
           div.table__empty
@@ -312,6 +312,7 @@ class DeliveryOrderList extends Vue {
   @Watch ('activeTab',{ immediate: true, deep: true })
   getList(){
     this.handleFilterTabList()
+    this.selectedDelivery = []
   }
 
   @Watch ('deliveryList',{ immediate: true, deep: true })
@@ -321,7 +322,9 @@ class DeliveryOrderList extends Vue {
 
   get selectedDeliveryFilter() {
     return _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
-      return delivery.status !== 'STOCK_STATUS_DISABLE'
+      if(this.activeTab === 0) {
+        return delivery.status === 'DELIVERY_ORDER_STATUS_NEW' || delivery.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && (delivery.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && delivery.assigneeId === this.user.id)
+      }else return delivery
     })
   }
 
@@ -345,7 +348,7 @@ class DeliveryOrderList extends Vue {
   }
 
   get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'stock')
+    return getDeleteMessage(this.onEventDeleteList, 'delivery order')
   }
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -514,7 +517,7 @@ class DeliveryOrderList extends Vue {
     originalEvent.originalEvent.stopPropagation()
     this.selectedDelivery = _.filter(
       this.selectedDelivery,
-      (stock: any) => stock.id !== data.id
+      (item: any) => item.id !== data.id
     )
   }
 

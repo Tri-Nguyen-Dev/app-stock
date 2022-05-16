@@ -67,15 +67,16 @@ class MenuSidebar extends Vue {
     }
   }
 
-  @Watch('$route.path',{ immediate: true, deep: true })
-  handleSelect (){
-    if( _.isEmpty(this.$route.params)){
-      this.selectedItem = this.pageMenu.filter((item)=> this.$route.path === item.to )[0]
-    }else {
-      this.selectedItem = this.pageMenu.filter((item)=> this.$route.path.slice(0, item.to?.length) === item.to )[0]
+  @Watch('$route.path', { immediate: true, deep: true })
+  handleSelect(path) {
+    const rootRoute = _.trim(path, '/').split('/')[0]
+    if (rootRoute) {
+      this.selectedItem = this.pageMenu.find(item => {
+        const menuRoute = item.root || item.to
+        return _.trim(menuRoute, '/') === rootRoute
+      })
     }
   }
-
 }
 
 export default MenuSidebar
