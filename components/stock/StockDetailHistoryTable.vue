@@ -37,6 +37,7 @@ const nsStoreStock = namespace('stock/stock-detail')
 @Component
 class StockDetailHistoryTable extends Vue {
   firstPage:any = 0
+  filter: any = {}
 
   @nsStoreStock.State
   historyLocationList!: any
@@ -49,6 +50,11 @@ class StockDetailHistoryTable extends Vue {
     pageSize: 10
   }
 
+  sort: any = {
+    sortBy: null,
+    desc: null
+  }
+
   get getInfoPaginate() {
     const { pageNumber, pageSize } = this.paginate
     const start = (pageNumber + 1) * pageSize - (pageSize - 1)
@@ -57,8 +63,36 @@ class StockDetailHistoryTable extends Vue {
     return `Showing ${convertStart} - ${end} of ${this.historyLocationList.data.total}`
   }
 
-  async mounted() {
-    await this.actGetHistoryLocation({ stockId: this.$route.params.sid, boxId: this.$route.params.bid })
+  async getLocationList() {
+    const filter = {
+      pageNumber: this.paginate.pageNumber,
+      pageSize: this.paginate.pageSize,
+      sortBy: this.sort?.sortBy,
+      desc: this.sort.desc && this.sort?.desc
+    }    const params = {
+      filter,
+      ...this.paginate,
+      stockId: this.$route.params.sid,
+      boxId: this.$route.params.bid
+    }
+
+    await this.actGetHistoryLocation(params)
+  }
+
+  mounted() {
+    this.getLocationList()
+  }
+
+  sortData(e: any){
+    const { sortField, sortOrder } = e
+    if (sortOrder) {
+      this.filter.desc = sortOrder !== 1
+      this.filter.sortBy = sortField.replace('_', '')
+    } else {
+      this.filter.desc = null
+      this.filter.sortBy = null
+    }
+    this.getLocationList()
   }
 }
 
