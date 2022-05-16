@@ -398,9 +398,9 @@ class DeliveryOrderList extends Vue {
     return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? 'row-disable' :''
   }
 
-  async mounted() {
+  mounted() {
     this.getProductList()
-    await this.actWarehouseList()
+    this.actWarehouseList()
   }
 
   handleFilter(e: any, name: string) {
@@ -416,10 +416,6 @@ class DeliveryOrderList extends Vue {
       pageNumber: this.paging.pageNumber,
       status: this.filter.status?.value
     })
-  }
-
-  handleChangeFilter() {
-    this.getProductList()
   }
 
   onPage(event: any) {
@@ -478,16 +474,6 @@ class DeliveryOrderList extends Vue {
     }
     this.getProductList()
   }
-
-  debounceSearchName = _.debounce((value) => {
-    this.filter.name = value
-    this.getProductList()
-  }, 500)
-
-  debounceSearchCode = _.debounce((value) => {
-    this.filter.barCode = value
-    this.getProductList()
-  }, 500)
 
   handleRefreshFilter() {
     this.filter.name = null

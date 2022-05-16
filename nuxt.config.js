@@ -17,7 +17,7 @@ export default {
     link: []
   },
 
-  plugins: ['~/plugins/vuelidate.ts', '~/plugins/toast.ts', '~/plugins/filters.ts'],
+  plugins: ['~/plugins/vuelidate.ts', '~/plugins/filters.ts'],
 
   components: true,
 
@@ -71,7 +71,8 @@ export default {
       'Sidebar',
       'InputNumber',
       'FileUpload',
-      'Breadcrumb'
+      'Breadcrumb',
+      'Toast'
     ],
     directives: ['Tooltip', 'Badge']
   },
