@@ -95,9 +95,15 @@ class ItemList extends Vue {
 
   @Watch('action')
   changePack() {
-    this.isPack = true
+    if(this.action===STOCK_OUT_ACTION.ORDER_DETAIL) {
+      this.isPack = false
+      this.selectedItem = []
+    } else {
+      this.isPack = true
+    }
+   
   }
-
+	
   editItemDetail() {}
 
   showModalDelete() {}
