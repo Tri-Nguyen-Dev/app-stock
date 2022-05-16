@@ -62,12 +62,12 @@
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary {{tranferringOutGoing}}
         .col-1.flex.justify-content-end.p-1
-          Button.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled") Next
-          Button.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if="ishowSave") Save
+          Button.btn.btn-primary.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled") Next
+          Button.btn.btn-primary.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if="ishowSave") Save
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace, ProvideReactive } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, ProvideReactive, Watch } from 'nuxt-property-decorator'
 import { PackingDetail } from '~/models/PackingDetail'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 const nsStoreBox = namespace('box/box-size-list')
@@ -78,15 +78,19 @@ class DeliveryOrderPacking extends Vue {
   originalBoxActive: any = {}
   outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
   tranfferingBoxActive: any = { boxCode: 'EX1', items: [] }
-  // listOriginalBox: any = []
-  // listOutGoingBox: any = []
-  // listTranfferingBox: any = []
-
   @ProvideReactive()
   listOriginalBox: any = []
 
   @ProvideReactive()
-  listOutGoingBox: any = []
+  listOutGoingBox: any = [
+    {
+      boxCode: 'EX01',
+      items: [],
+      tagCode: '',
+      checked: false,
+      boxSize: null
+    }
+  ]
 
   @ProvideReactive()
   listTranfferingBox: any = []
@@ -284,7 +288,6 @@ class DeliveryOrderPacking extends Vue {
         _.set(obj, 'location', locationList[index])
       })
     }
-    // }
   }
 
   getStocks(stocks) {
@@ -337,6 +340,32 @@ class DeliveryOrderPacking extends Vue {
       }
     }
     return 'disabled'
+  }
+
+  get isNextBox() {
+    if(_.size(this.listOriginalBox) && _.size(this.originalBoxActive.items)) {
+      const unprocessedStocks = _.find(this.originalBoxActive.items, function(o) { return o.quantity > 0 })
+      const unsetBoxSizeOutGoing = _.find(this.listOutGoingBox, function(o) { return o.boxSize === null })
+      const unsetBoxSizeTranffering = _.find(this.listTranfferingBox, function(o) { return o.boxSize === null })
+      if(unprocessedStocks || unsetBoxSizeOutGoing || unsetBoxSizeTranffering) {
+        return false
+      }
+      else {
+        return true
+      }
+    }
+  }
+
+  @Watch('isNextBox')
+  handleNextBox(newValue) {
+    if(newValue) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: `Box ${this.originalBoxActive.boxCode} has been successfully process. Please move to another box!`,
+        life: 3000
+      })
+    }
   }
 
   get ishowSave() {
