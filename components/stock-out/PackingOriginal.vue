@@ -53,7 +53,9 @@
               InputText.w-4(v-model='tab.inventoryFee' type='number')
               span.ml-1 / day
           .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
-            InputText.inputSearchCode(@change='addTagByBarCode' placeholder='Please enter tag code!')
+            span.p-input-icon-right
+              .icon--small.icon--right.icon-scan.surface-900.icon--absolute
+              InputText.inputSearchCode(@change='addTagByBarCode' placeholder='Please enter tag code!')
         .col.py-3.flex.justify-content-end
           span.p-input-icon-right
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
@@ -88,7 +90,7 @@ class PackingOriginal extends Vue {
   @Prop() listBox!: Array<any>
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
-  // @Prop() location !: Array<any>
+  @Prop() readonly autoActiveTabOut!: boolean | false
 
   @nsStoreLocationList.State
   locationList: {}
@@ -100,12 +102,20 @@ class PackingOriginal extends Vue {
   actScanAirtag!: (params: any) => Promise<void>
 
   @Watch('activeIndex')
-  async inputChange(value) {
+  async inputChange(index) {
     await this.$nextTick()
     if(this.$refs.inputScanBarCode && !this.isOriginal) {
-      const inputRef = this.$refs.inputScanBarCode[value - 1] as any
+      const inputRef = this.$refs.inputScanBarCode[index - 1] as any
       await this.$nextTick(() =>  inputRef?.$el.focus())
     }    
+  }
+
+  @Watch('autoActiveTabOut')
+  activeFirstOutTag(value) {
+    if(value && this.isOutgoing) {
+      this.activeIndex = 1
+      this.$emit('selectedTab', 1)
+    }
   }
 
   getTabKey(tab) {

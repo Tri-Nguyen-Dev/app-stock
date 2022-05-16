@@ -25,6 +25,7 @@
             @addBoxNew="addNewBoxOutGoing"
             @addStockByBarcode='addStockInOutGoing'
             :boxSizeList='boxSizeList'
+            :autoActiveTabOut="autoActiveTabOut"
           )
         .grid.grid-nogutter.my-3
           StockOutPackingOriginal(
@@ -78,6 +79,8 @@ class DeliveryOrderPacking extends Vue {
   originalBoxActive: any = {}
   outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
   tranfferingBoxActive: any = { boxCode: 'EX1', items: [] }
+  indexScanBoxCode: number = 0
+  autoActiveTabOut: boolean = false
   @ProvideReactive()
   listOriginalBox: any = []
 
@@ -152,6 +155,10 @@ class DeliveryOrderPacking extends Vue {
   }
 
   selectedOriginalBox(index: number) {
+    this.indexScanBoxCode++
+    if(this.indexScanBoxCode === 1) {
+      this.autoActiveTabOut = true
+    }
     this.originalBoxActive = this.listOriginalBox[index]
   }
 
