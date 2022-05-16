@@ -94,7 +94,6 @@
             sortable
             className="p-text-right"
             bodyClass="font-semibold"
-            :styles="{'width': '5%'}"
           )
             template(#body="{data}")
               .flex.align-items-center.cursor-pointer.justify-content-end(v-if="data.itemStatus === 'ITEM_STATUS_DRAFT'")
