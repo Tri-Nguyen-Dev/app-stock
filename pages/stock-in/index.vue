@@ -108,9 +108,10 @@
             template(#body='{ data }') {{ data.sellerEmail }}
           Column(field="warehouse" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" className="text-right")
             template(#body="{data}")
-              .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.text-white-active(v-if='data.warehouse' ) {{ data.warehouse.name }}
-                .icon.icon-arrow-up-right.bg-primary.bg-white-active
+              div(v-if='data.warehouse')
+                .flex.align-items-center.cursor-pointer.justify-content-end
+                  span.text-primary.font-bold.text-white-active(v-if='data.warehouse' ) {{ data.warehouse.name }}
+                  .icon.icon-arrow-up-right.bg-primary.bg-white-active
           Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorId }}

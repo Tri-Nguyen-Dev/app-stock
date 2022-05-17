@@ -269,7 +269,6 @@ class CreateOrUpdateReceipt extends Vue {
   activeSave = false
   boxQrCode: string = ''
   isModalDelete = false
-  selectedLocation: any = {}
   note: string = ''
   receiptId = 0
   generalInfo: {
@@ -495,23 +494,12 @@ class CreateOrUpdateReceipt extends Vue {
       }
     }
     if (type === 1 && this.newReceipt.id) {
-      setTimeout(
-        () => this.$router.push(`/stock-in/${this.newReceipt.id}/detail`),
-        2000
-      )
+      await this.$router.push(`/stock-in/${this.newReceipt.id}/detail`)
     }
   }
 
   checkActiveAction() {
-    this.activeAction = true
-    if (this.generalInfo.seller === undefined) {
-      this.activeAction = false
-    }
-    if (this.activeAction) {
-      this.listBox.forEach((element) => {
-        this.activeAction = element.listItemInBox.length > 0
-      })
-    }
+    this.activeAction = !!this.generalInfo.seller && !this.listBox.find(e => !e.listItemInBox.length)
     return this.activeAction
   }
 
@@ -525,7 +513,7 @@ class CreateOrUpdateReceipt extends Vue {
     await this.actLocationSuggestion(listBoxSize)
     this.isSuggested = true
     this.boxLocation.forEach((element) => {
-      if (!(this.listBox[element.index].location?.id! > 0)) {
+      if (this.listBox[element.index].location?.id! <= 0) {
         this.listBox[element.index].location = { ...element }
       }
     })
@@ -533,8 +521,8 @@ class CreateOrUpdateReceipt extends Vue {
   }
 
   async mounted() {
-    this.actWarehouseList()
-    this.actGetBoxSizeList()
+    await this.actWarehouseList()
+    await this.actGetBoxSizeList()
     if (this.id) {
       await this.actGetReceiptDetail({ id: this.id })
       this.prepareListBox()
@@ -653,11 +641,7 @@ class CreateOrUpdateReceipt extends Vue {
   checkEnableLocation(box) {
     if (this.isSuggested && this.listBox[box.index].listItemInBox.length > 0) {
       return true
-    } else if (box.location?.id > 0) {
-      return true
-    } else {
-      return false
-    }
+    } else return box.location?.id > 0
   }
 
   checkDeleteBox() {
