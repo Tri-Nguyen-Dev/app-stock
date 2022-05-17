@@ -75,7 +75,7 @@ div
     )
       template(#body='{ data }')
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right {{ data.outGoingQuantity }}
-  ConfirmDialogCustom(
+    ConfirmDialogCustom(
       title="Confirm delete"
       image="confirm-delete"
       :isShow="isModalDelete"
@@ -103,8 +103,6 @@ class PackingTableList extends Vue {
   isModalDelete: boolean = false
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
-  stockSelect: any = null
-  currentQuantity: number = 0
   @Prop() value!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly boxCode!: string | undefined
@@ -149,16 +147,7 @@ class PackingTableList extends Vue {
     }
   }
 
-  handleQuantity(data, event) {
-    if(!event) {
-      this.onEventDeleteList = [data]
-      this.isModalDelete = true
-      this.stockSelect = data
-      this.currentQuantity = _.get(data, 'quantity')
-      // console.log('get', this.currentQuantity);
-      _.set(data, 'quantity', 0)
-      return
-    }
+  changeQuantity(data, event) {
     const sum = this.sumQuantity(data)
     const box = _.find(this.listOriginalBox, { boxCode: data.originalBox })
     const stock = _.find(box.items, { barCode: data.barCode })
@@ -173,17 +162,27 @@ class PackingTableList extends Vue {
     }
   }
 
+  handleQuantity(data, event) {
+    if(!event) {
+      this.onEventDeleteList = [data]
+      this.isModalDelete = true
+    } else {
+      this.changeQuantity(data, event)
+    }
+  }
+
   handleDeleteStock() {
-    // console.log('delete', this.stockSelect);
-    // const list = this.type === 'tranferringBox' ? this.listTranfferingBox : this.listOutGoingBox
-    // const box = _.find(list, { boxCode: this.boxCode })
-    // _.set(box, 'items', [])
+    const stockDelete = this.onEventDeleteList[0]
+    const list = this.type === 'tranferringBox' ? this.listTranfferingBox : this.listOutGoingBox
+    const box = _.find(list, { boxCode: this.boxCode })
+    _.remove(box.items, function({ barCode, originalBox }) {
+      return stockDelete.barCode === barCode && originalBox === stockDelete.originalBox
+    })
+    this.changeQuantity(stockDelete, 0)
     this.isModalDelete = false
   }
 
   handleCancel() {
-    // console.log('cancel', this.currentQuantity)
-    _.set(this.stockSelect, 'quantity', this.currentQuantity)
     this.isModalDelete = false
   }
 
