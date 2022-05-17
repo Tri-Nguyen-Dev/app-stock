@@ -52,11 +52,11 @@
             template(#body='{data}')
               span(v-if='isActive !== data.id ') {{ data.delivery }}
               InputNumber(
-              v-model="data.delivery" 
-              mode="decimal" 
-              :min="0" 
-              :max="data.amount" 
-              inputClass="w-full" 
+              v-model="data.delivery"
+              mode="decimal"
+              :min="0"
+              :max="data.amount"
+              inputClass="w-full"
               v-else ).w-7rem
           column(field='tag', header='TAG', headerClass='grid-header-center')
             template(#body='{ data }')
@@ -73,7 +73,7 @@
                   )
                     .icon--small.icon-btn-edit
                   Button.btn-action(
-                    @click='showModalDelete(data.id)',
+                    @click='showModalDelete([data.stock])',
                   )
                     .icon--small.icon-btn-delete
               .table__action(v-else)
@@ -87,7 +87,7 @@
                   .icon--small.pi.pi-times.text-primary
           template( #footer  )
             .mr-4.flex.justify-content-end( v-if="listItemsAddSize > 0" )
-              Button( label='Cancel' @click='handleCancel' ).btn.btn__default.flex-initial
+              Button( label='Cancel' @click='showModalCancel' ).btn.btn__default.flex-initial
               Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
             .grid.grid-nogutter.ml-3( v-else )
               .flex.align-items-center.justify-content-center.pl-3
@@ -109,13 +109,24 @@
         :loading="loadingSubmit"
       )
         template(v-slot:message)
-          p {{ deleteMessage }}  
+          p  {{ deleteMessage }}
+
+      ConfirmDialogCustom(
+        title="Confirm Cancel"
+        image="confirm-delete"
+        :isShow="isModalCancel"
+        :onOk="handleCancel"
+        :onCancel="handleModalCancel"
+        :loading="loadingSubmit"
+      )
+        template(v-slot:message)
+          p  Are You Want Cancel Order
     Toast
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { INFORMATION , getDeleteMessage } from '~/utils'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { getDeleteMessage, INFORMATION } from '~/utils'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreCreateOrder = namespace('stock-out/create-order')
 
@@ -127,8 +138,7 @@ class createOrder extends Vue {
   listItemsAdd: any = []
   isActive: string = ''
   delivery: string = ''
-  listInforId: any
-  noteBox: any = null 
+  noteBox: any = null
   infomation = INFORMATION
   oldItem: any = null
   isModalDelete: boolean = false
@@ -159,14 +169,14 @@ class createOrder extends Vue {
     }
   }
 
-  async createStockOut() {
+  createStockOut() {
     const note = this.noteBox
     const listInfoAdd = { ...this.infomation , note }
     this.$router.push('/stock-out/order/add-items')
-    await this.actGetCreateOrder(
+    this.actGetCreateOrder(
       _.cloneDeep(listInfoAdd)
     )
-  }  
+  }
 
   editItem(data: any ) {
     this.isActive = data.id
@@ -177,13 +187,17 @@ class createOrder extends Vue {
     this.isModalDelete = false
   }
 
-  handleCancelAdd() {
+  handleModalCancel() {
     this.isModalCancel = false
   }
 
   showModalDelete(data?: any) {
     this.onEventDeleteList = data
     this.isModalDelete = true
+  }
+
+  showModalCancel() {
+    this.isModalCancel = true
   }
 
   async saveEditItem( ) {
@@ -206,7 +220,7 @@ class createOrder extends Vue {
       })
     }
   }
-  
+
   async handleSubmit(){
     const listReceiver = this.listInfor.receiver
     const deliveryItemList: any = []
@@ -219,7 +233,7 @@ class createOrder extends Vue {
         hasAirtag
       })
     })
-    await this.actDeliveryOrder({
+    const result : any = await this.actDeliveryOrder({
       seller: {
         id: this.infomation.seller[0].id
       },assignee: {
@@ -236,14 +250,22 @@ class createOrder extends Vue {
       },
       deliveryItemList
     })
-    this.$toast.add({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: 'Successfully new order ',
-      life: 3000
-    })
-    this.handleCancel()
-    this.disableInput()
+    if( result ) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully Add New Order ',
+        life: 3000
+      })
+      await this.handleCancel()
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Error Add New Order',
+        life: 3000
+      })
+    }
   }
 
   handleCancelEdit (data : any ) {
@@ -254,13 +276,14 @@ class createOrder extends Vue {
   async handleCancel() {
     const emptyList =  this.listItemsAdd = []
     await this.actGetCreateOrder(_.cloneDeep(emptyList))
-    await  this.actOutGoingList(_.cloneDeep(emptyList))
+    await this.actOutGoingList(_.cloneDeep(emptyList))
     _.forEach(this.infomation, function(item){
       _.forEach(item, function(i) {
         i.value = null
-      } )
+      })
     })
-    this.$router.push({ path: '/stock-out/order-list' })
+    this.disableInput()
+    await this.$router.push({ path: '/stock-out/order-list' })
   }
 
   disableInput() {
@@ -278,7 +301,7 @@ class createOrder extends Vue {
   }
 
   get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'New Order')
+    return getDeleteMessage(this.onEventDeleteList, 'Item List')
   }
 
   get homeItem() {
@@ -311,8 +334,8 @@ export default createOrder
 .btn-action
   border: none
   padding: 0
-  height: 2rem 
-  width: 2rem 
+  height: 2rem
+  width: 2rem
   justify-content: center
   background: var(--surface-200)
 ::v-deep.p-datatable
@@ -324,8 +347,8 @@ export default createOrder
     width: 100%
   .btn
     border: none
-    padding: 0px 25px 
-    margin: 5px 10px 0px 
+    padding: 0px 25px
+    margin: 5px 10px 0px
     &__priamry
       background-color: $primary
       font-weight: 700

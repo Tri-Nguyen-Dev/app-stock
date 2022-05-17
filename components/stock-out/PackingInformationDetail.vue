@@ -27,7 +27,7 @@ class PackingInformationDetail extends Vue {
   @Prop() deliveryOrderDetail!: any
   @Prop() type!: string
   get homeItem() {
-    return { label: '', to: '/order-list', icon: 'pi pi-list' }
+    return { label: '', to: '/stock-out/order-list', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
@@ -37,7 +37,7 @@ class PackingInformationDetail extends Vue {
       ]
     } else if (this.type === 'PICK_ITEM') {
       return [
-        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=true`, icon: 'pi pi-info-circle' }, 
+        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=true`, icon: 'pi pi-info-circle' },
         { label: 'Picking list', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-list' }
       ]
     } else {
@@ -51,7 +51,7 @@ class PackingInformationDetail extends Vue {
         }
       ]
     }
-		
+
   }
 }
 export default PackingInformationDetail
