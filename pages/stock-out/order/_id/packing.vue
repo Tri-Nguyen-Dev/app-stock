@@ -165,9 +165,12 @@ class DeliveryOrderPacking extends Vue {
   }
 
   get numberOutGoing() {
-    const boxCode = this.listOutGoingBox[this.listOutGoingBox.length - 1].boxCode
-    const lastChar = boxCode.replace('EX', '')
-    return parseInt(lastChar) 
+    if(this.listOutGoingBox.length > 0) {
+      const boxCode = this.listOutGoingBox[this.listOutGoingBox.length - 1]?.boxCode
+      const lastChar = boxCode.replace('EX', '')
+      return parseInt(lastChar) 
+    }
+    else return 0
   }
 
   get numberTranfer() {
