@@ -133,7 +133,7 @@
             template(#body="{data}")
               Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(
                 :disabled="data.itemStatus == 'ITEM_STATUS_DISABLE'"
-                 @click='editItemDetail(data.id)'
+                 @click='editItemDetail(data.box.id)'
                 )
                 .icon--small.icon-btn-edit
               Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(
@@ -176,7 +176,8 @@ import {
   LIMIT_PAGE_OPTIONS,
   PAGINATE_DEFAULT,
   calculateIndex
-} from '~/utils'const nsStoreStockTable = namespace('stock/stock-detail')
+} from '~/utils'
+const nsStoreStockTable = namespace('stock/stock-detail')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component({
