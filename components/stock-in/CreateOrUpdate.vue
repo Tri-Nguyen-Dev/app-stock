@@ -34,15 +34,20 @@
             )
         .col
           .filter__item
-            .filter__title Seller email
+            .filter__title.required__title Seller email
             .filter__autocomplete
               AutoComplete(
                 v-model='generalInfo.seller',
                 :suggestions='sellerList',
                 @complete='handleChangeSeller($event)',
-                @item-select='selectedItem()',
-                field='email'
+                @item-select='selectedItem($event)',
+                field='email',
+                @clear='clearItem($event)'
               )
+              .input-errors(
+                v-if='$v.generalInfo.seller.$dirty && $v.generalInfo.seller.$invalid'
+              )
+                .error-message Please enter email!
         .col
           .filter__item.item--disabled
             .filter__title Seller phone
@@ -98,7 +103,7 @@
                           .icon-arrow-up-right.icon
         .col-10
           .grid.border__grid(v-if='boxSizeList && listBox[activeIndex]')
-            .d-flex.col-12.border__right(class='md:col-5 lg:col-4')
+            .col-12.pt-4.pb-4.border__right(class='md:col-5 lg:col-4')
               span.font-semibold.text-base.mr-3.ml-3.required__title Size
               Dropdown.box-input(
                 style='width: 70%',
@@ -111,31 +116,20 @@
                 :showClear='true'
               )
               span.font-semibold.text-base.ml-3 (cm)
-              //- .grid
-              //- 	.col-12
-              //- 		span.font-semibold.text-base.mr-3.ml-3.required__title Size
-              //- 		Dropdown.box-input(
-              //- 			style='width: 70%',
-              //- 			:options='boxSizeList',
-              //- 			optionLabel='name',
-              //- 			optionValue='id',
-              //- 			placeholder='Select size',
-              //- 			v-model='listBox[activeIndex].boxSize.id'
-              //- 		)
-              //- 		span.font-semibold.text-base.ml-3 (cm)
-              //- 	.col-2
-              //- 	.col-10
-              //- 		small(style='color:red') You must select box size
-            .d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
+              .input-errors( v-if='listBox[activeIndex] && $v.listBox.$each[activeIndex].boxSize.id.$dirty && $v.listBox.$each[activeIndex].boxSize.id.$invalid' style='text-align: center')
+                .error-message Please enter select box size Fee!
+            .col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4') 
               span.font-semibold.text-base.mr-3.ml-2.required__title Estimate Inventory Fee
               InputNumber.number-input(
                 v-model='listBox[activeIndex].inventoryFee',
                 mode='currency',
                 currency='USD',
                 locale='en-US'
-              )
+              ) 
               span.font-semibold.text-base.ml-3 / day
-            .d-flex.col-6(class='md:col-5 lg:col-4')
+              .input-errors(v-if='$v.listBox.$each[activeIndex].inventoryFee.$dirty && $v.listBox.$each[activeIndex].inventoryFee.$invalid' style='text-align: center')
+                .error-message() Please enter Inventory Fee!
+            .col-6.pt-4.pb-4(class='md:col-5 lg:col-4')
               span.font-semibold.text-base.mr-2.ml-2 Barcode
               InputText.box-input.mr-2(
                 placeholder='Enter barcode',
@@ -233,10 +227,10 @@
       .confirm-dialog__footer
         Button.confirm-dialog__btn.btn--discard(@click='handleCancel') No
         Button.confirm-dialog__btn.btn--agree(@click='deleteBox()') Yes
-  Toast
 </template>
 <script lang="ts">
 import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
+import { required } from 'vuelidate/lib/validators'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
 import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
@@ -258,6 +252,19 @@ const nsStoreUser = namespace('user-auth/user')
     ConfirmDialogCustom,
     ItemDataTable,
     FormAddSeller
+  },
+  validations: {
+    listBox: {
+      $each: {
+        inventoryFee: { required },
+        boxSize: {
+          id: { required }
+        }
+      }
+    },
+    generalInfo: {
+      seller: { required }
+    }
   }
 })
 class CreateOrUpdateReceipt extends Vue {
@@ -271,6 +278,8 @@ class CreateOrUpdateReceipt extends Vue {
   isModalDelete = false
   note: string = ''
   receiptId = 0
+  invalidBoxsize = false
+  invalidInventoryFee = false
   generalInfo: {
     createdAt?: string
     seller?: SellerModel.Model
@@ -434,10 +443,11 @@ class CreateOrUpdateReceipt extends Vue {
     this.isModalDelete = false
   }
 
+  // type=1: saved; type=0: save draft
   async saveReceipt(type) {
     if (!this.checkActiveAction()) return
     if (type === 1) {
-      if (!this.checkValidateBoxsize()) {
+      if (!this.checkValidateInput()) {
         return
       }
     }
@@ -478,6 +488,15 @@ class CreateOrUpdateReceipt extends Vue {
     if (this.id) {
       receiptDraft.id = this.id
       await this.actUpdateReceipt(receiptDraft)
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail:
+          type === 0
+            ? 'Successfully save draft receipt'
+            : 'Successfully save receipt',
+        life: 3000
+      })
     } else {
       await this.actCreateNewReceipt(receiptDraft)
       if (this.newReceipt) {
@@ -499,6 +518,7 @@ class CreateOrUpdateReceipt extends Vue {
   }
 
   checkActiveAction() {
+    this.activeAction = true
     this.activeAction = !!this.generalInfo.seller && !this.listBox.find(e => !e.listItemInBox.length)
     return this.activeAction
   }
@@ -508,12 +528,12 @@ class CreateOrUpdateReceipt extends Vue {
       return
     }
     const listBoxSize = this.listBox.map((element) => {
-      return '' + element.boxSize
+      return '' + element.boxSize?.id
     })
     await this.actLocationSuggestion(listBoxSize)
     this.isSuggested = true
     this.boxLocation.forEach((element) => {
-      if (this.listBox[element.index].location?.id! <= 0) {
+      if (!this.listBox[element.index].location?.id) {
         this.listBox[element.index].location = { ...element }
       }
     })
@@ -675,6 +695,22 @@ class CreateOrUpdateReceipt extends Vue {
 
   selectedItem() {
     this.checkActiveAction()
+  }
+
+  checkValidateInput() {
+    this.$v.generalInfo.seller?.$touch()
+    this.$v.listBox.$each?.$touch()
+    if (this.$v.$invalid) {
+      this.activeIndex = this.listBox.find((element) =>{
+        return this.$v.listBox.$each![element.index]?.$invalid
+      })!.index
+      return false
+    }
+    return true
+  }
+
+  clearItem() {
+    this.generalInfo.seller = undefined
   }
 }
 
