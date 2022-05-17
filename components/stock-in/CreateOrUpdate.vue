@@ -227,7 +227,6 @@
       .confirm-dialog__footer
         Button.confirm-dialog__btn.btn--discard(@click='handleCancel') No
         Button.confirm-dialog__btn.btn--agree(@click='deleteBox()') Yes
-  Toast
 </template>
 <script lang="ts">
 import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
@@ -529,12 +528,12 @@ class CreateOrUpdateReceipt extends Vue {
       return
     }
     const listBoxSize = this.listBox.map((element) => {
-      return '' + element.boxSize
+      return '' + element.boxSize?.id
     })
     await this.actLocationSuggestion(listBoxSize)
     this.isSuggested = true
     this.boxLocation.forEach((element) => {
-      if (this.listBox[element.index].location?.id! <= 0) {
+      if (!this.listBox[element.index].location?.id) {
         this.listBox[element.index].location = { ...element }
       }
     })
