@@ -83,12 +83,12 @@ class LabelCreate extends Vue {
   }
 
   async handleSeller( event : any ){
+    await this.actWarehouseBySeller({ email: event.email })
     const InforSeller = this.infomation.seller
     InforSeller[0].value = event.email
     InforSeller[0].id = event.id
     InforSeller[1].value = event.displayName
     InforSeller[2].value = event.phoneNumber
-    await this.actWarehouseBySeller({ email: event.email })
   }
 
   handleUser() {

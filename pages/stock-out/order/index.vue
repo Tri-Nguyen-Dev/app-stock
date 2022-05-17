@@ -46,7 +46,7 @@
               span.font-bold.text-right {{ data.stock.name }}
           column(field='box.id', header='BOXCODE', :sortable='true')
             template(#body='{ data }')
-              span.font-bold.text-right {{ data.stock.barCode }}
+              span.font-bold.text-right {{ data.box.id }}
           column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' :sortable='true' className="text-right" )
           column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' className="text-right" )
             template(#body='{data}')
@@ -54,7 +54,7 @@
               InputNumber(
               v-model="data.delivery"
               mode="decimal"
-              :min="0"
+              :min="1"
               :max="data.amount"
               inputClass="w-full"
               v-else ).w-7rem
@@ -66,14 +66,14 @@
             :exportable='false',
             header='ACTION',
           )
-            template(#body='{ data }')
+            template(#body='{ data}')
               .table__action(v-if='isActive !== data.id')
                   Button.btn-action(
                     @click='editItem(data)'
                   )
                     .icon--small.icon-btn-edit
                   Button.btn-action(
-                    @click='showModalDelete([data.stock])',
+                    @click='showModalDelete( [data] )',
                   )
                     .icon--small.icon-btn-delete
               .table__action(v-else)
@@ -145,6 +145,7 @@ class createOrder extends Vue {
   isModalCancel : boolean = false
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
+  valueDelete: any
 
   @nsStoreCreateOrder.State
   listInfor:any
@@ -164,8 +165,10 @@ class createOrder extends Vue {
   mounted() {
     this.listItemsAdd = this.outGoingListStore.map((x: any) => (
       { ..._.cloneDeep(x), hasAirtag: false }))
-    if(this.listItemsAdd.length > 0 ){
-      this.disableInput()
+    if(this.listItemsAdd.length > 0){
+      this.disableInput(true)
+    }else if (!this.infomation.seller[0].value ){
+      this.disableInput(false)
     }
   }
 
@@ -178,7 +181,7 @@ class createOrder extends Vue {
     )
   }
 
-  editItem(data: any ) {
+  editItem(data: any  ) {
     this.isActive = data.id
     this.oldItem = _.cloneDeep(data)
   }
@@ -191,8 +194,11 @@ class createOrder extends Vue {
     this.isModalCancel = false
   }
 
-  showModalDelete(data?: any) {
-    this.onEventDeleteList = data
+  showModalDelete(data?: any ) {
+    _.forEach(data, (obj)=> {
+      this.onEventDeleteList = [obj.stock]
+    })
+    this.valueDelete = data
     this.isModalDelete = true
   }
 
@@ -200,14 +206,15 @@ class createOrder extends Vue {
     this.isModalCancel = true
   }
 
-  async saveEditItem( ) {
+  async saveEditItem() {
     await this.actOutGoingList(
       _.cloneDeep(this.listItemsAdd))
     this.isActive = ''
   }
 
-  async handleDelete( data : any ) {
-    this.listItemsAdd.splice(this.listItemsAdd.indexOf(data),1)
+  async handleDelete() {
+    const b = this.valueDelete[0]
+    _.remove(this.listItemsAdd, ({ id }) => id === b.id)
     const result : any =  await this.actOutGoingList(
       _.cloneDeep(this.listItemsAdd))
     if( result ) {
@@ -219,6 +226,7 @@ class createOrder extends Vue {
         life: 3000
       })
     }
+    if(this.listItemsAdd.length === 0) this.disableInput(false)
   }
 
   async handleSubmit(){
@@ -282,15 +290,14 @@ class createOrder extends Vue {
         i.value = null
       })
     })
-    this.disableInput()
     await this.$router.push({ path: '/stock-out/order-list' })
   }
 
-  disableInput() {
+  disableInput(isDisable: boolean) {
     _.forEach(this.infomation, function(obj){
       _.forEach(obj, function(o){
         if(_.has(o, 'disabled')) {
-          _.set(o, 'disabled' , !o.disabled)
+          _.set(o, 'disabled' , isDisable)
         }
       })
     })
@@ -301,7 +308,7 @@ class createOrder extends Vue {
   }
 
   get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'Item List')
+    return getDeleteMessage(this.onEventDeleteList, 'item')
   }
 
   get homeItem() {
@@ -317,6 +324,7 @@ class createOrder extends Vue {
       }
     ]
   }
+
 }
 
 export default createOrder

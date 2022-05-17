@@ -16,7 +16,7 @@ export namespace FilterConstants {
     ['REQUEST_STATUS_DRAFT', 'DRAFT']
   ])
   export const STATUS_HISTORY_MAP = new Map<string, string>([
-    ['REQUEST_ACTION_TO_TRANSFERRING_BOX', 'TRANSFERRING'],
+    ['REQUEST_ACTION_TO_TRANSFERRING_BOX', 'TRANSFERRED'],
     ['REQUEST_ACTION_TO_OUTGOING_BOX', 'OUTGOING']
   ])
 }
