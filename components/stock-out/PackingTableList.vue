@@ -61,7 +61,7 @@ div
       :styles="{'width': '1%'}"
     )
       template(#body='{ data }')
-        InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="1" 
+        InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="0" 
           :max="maxQuantity(data)" inputClass="w-full"
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
         )
@@ -75,14 +75,36 @@ div
     )
       template(#body='{ data }')
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right {{ data.outGoingQuantity }}
+  ConfirmDialogCustom(
+      title="Confirm delete"
+      image="confirm-delete"
+      :isShow="isModalDelete"
+      :onOk="handleDeleteStock"
+      :onCancel="handleCancel"
+      :loading="loadingSubmit"
+    )
+      template(v-slot:message)
+        p {{ deleteMessage }}
+
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, InjectReactive } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT,calculateIndex } from '~/utils'
+import { PAGINATE_DEFAULT,calculateIndex, getDeleteMessage } from '~/utils'
 import { Paging } from '~/models/common/Paging'
-@Component
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+
+@Component({
+  components: {
+    ConfirmDialogCustom
+  }
+})
 class PackingTableList extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  isModalDelete: boolean = false
+  loadingSubmit: boolean = false
+  onEventDeleteList: any = []
+  stockSelect: any = null
+  currentQuantity: number = 0
   @Prop() value!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly boxCode!: string | undefined
@@ -128,6 +150,15 @@ class PackingTableList extends Vue {
   }
 
   handleQuantity(data, event) {
+    if(!event) {
+      this.onEventDeleteList = [data]
+      this.isModalDelete = true
+      this.stockSelect = data
+      this.currentQuantity = _.get(data, 'quantity')
+      // console.log('get', this.currentQuantity);
+      _.set(data, 'quantity', 0)
+      return
+    }
     const sum = this.sumQuantity(data)
     const box = _.find(this.listOriginalBox, { boxCode: data.originalBox })
     const stock = _.find(box.items, { barCode: data.barCode })
@@ -140,6 +171,24 @@ class PackingTableList extends Vue {
       _.set(stock, 'actualOutGoing', event + sum)
       _.set(stock, 'quantity', stock.initialQuantity - sum - event - stock.actualTranffering)
     }
+  }
+
+  handleDeleteStock() {
+    // console.log('delete', this.stockSelect);
+    // const list = this.type === 'tranferringBox' ? this.listTranfferingBox : this.listOutGoingBox
+    // const box = _.find(list, { boxCode: this.boxCode })
+    // _.set(box, 'items', [])
+    this.isModalDelete = false
+  }
+
+  handleCancel() {
+    // console.log('cancel', this.currentQuantity)
+    _.set(this.stockSelect, 'quantity', this.currentQuantity)
+    this.isModalDelete = false
+  }
+
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'box')
   }
 }
 
