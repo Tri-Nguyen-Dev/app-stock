@@ -24,6 +24,7 @@
             @selectedTab='selectedOutGoingBox'
             @addBoxNew="addNewBoxOutGoing"
             @addStockByBarcode='addStockInOutGoing'
+            @handelDeteleBoxEmpty='handelDeteleBoxEmpty'
             :boxSizeList='boxSizeList'
             :autoActiveTabOut="autoActiveTabOut"
           )
@@ -38,9 +39,10 @@
             @selectedTab='selectedTranfferingBox'
             @addBoxNew="addNewBoxTranferring"
             @addStockByBarcode='addStockInTranferring'
+            @handelDeteleBoxEmpty='handelDeteleBoxEmpty'
             :boxSizeList='boxSizeList'
           )
-      .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
+      .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0
         .col.p-1
           .grid.align-items-center
             .col-1
@@ -87,7 +89,7 @@ class DeliveryOrderPacking extends Vue {
   @ProvideReactive()
   listOutGoingBox: any = [
     {
-      boxCode: 'EX01',
+      boxCode: 'EX1',
       items: [],
       tagCode: '',
       checked: false,
@@ -162,9 +164,24 @@ class DeliveryOrderPacking extends Vue {
     this.originalBoxActive = this.listOriginalBox[index]
   }
 
+  get numberOutGoing() {
+    const boxCode = this.listOutGoingBox[this.listOutGoingBox.length - 1].boxCode
+    const lastChar = boxCode.replace('EX', '')
+    return parseInt(lastChar) 
+  }
+
+  get numberTranfer() {
+    if(this.listTranfferingBox.length > 0) {
+      const boxCode = this.listTranfferingBox[this.listTranfferingBox.length - 1]?.boxCode
+      const lastChar = boxCode.replace('IN', '')
+      return parseInt(lastChar) 
+    }
+    else return 0
+  }
+
   addNewBoxOutGoing() {
     this.listOutGoingBox.push({
-      boxCode: `EX0${_.size(this.listOutGoingBox) + 1}`,
+      boxCode: `EX${this.numberOutGoing + 1}`,
       items: [],
       tagCode: '',
       checked: false,
@@ -239,7 +256,7 @@ class DeliveryOrderPacking extends Vue {
 
   addNewBoxTranferring() {
     this.listTranfferingBox.push({
-      boxCode: `IN0${_.size(this.listTranfferingBox) + 1}`,
+      boxCode: `IN${this.numberTranfer + 1}`,
       items: [],
       tagCode: '',
       checked: true,
@@ -379,6 +396,15 @@ class DeliveryOrderPacking extends Vue {
     return _.size(_.partition(this.listTranfferingBox, {
       'location': null
     })[0]) === 0 && !this.isDisabled
+  }
+
+  handelDeteleBoxEmpty(type, index) {
+    if(type === 'tranferringBox') {
+      this.listTranfferingBox.splice(index, 1)
+    }
+    else { 
+      this.listOutGoingBox.splice(index, 1)
+    }
   }
 }
 
