@@ -22,7 +22,7 @@
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.boxCode}}
-        span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)" style="position: relative; z-index: 1000")
+        span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
         .ml-1.px-1(v-if='isOutgoing && tab.checked') {{ tab.tagCode }}
         AutoComplete.edit-location.ml-1(
@@ -237,6 +237,8 @@ export default PackingOriginal
 ::v-deep.packing__common--table
   position: relative
   .delete-box
+    position: relative
+    z-index: 1000
     font-size: 10px !important
     color: red !important
   .originalTable
