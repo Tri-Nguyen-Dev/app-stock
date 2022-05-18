@@ -143,7 +143,7 @@
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
             p.text-900.font-bold.mt-3(v-if="!isFilter") List is empty!, Click
-              span.text-primary.underline.cursor-pointer &nbsp;here
+              span.text-primary.underline.cursor-pointer(@click='routeLinkAddBox') &nbsp;here
               span &nbsp;to add item.
             p.text-900.font-bold.mt-3(v-else) Item not found!
 
