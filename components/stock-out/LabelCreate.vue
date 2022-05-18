@@ -5,14 +5,18 @@
       .icon.bg-primary.surface-900.mr-3.icon-sender-info
       span.uppercase.text-800.font-bold seller information
     div
-      StockOutItemInput( :listInfor='infomation.seller' @sellerInfor='handleSeller' @paramSeller='paramSeller' )
+      StockOutItemInput( 
+        :listInfor='infomation.seller' 
+        @sellerInfor='handleSeller' 
+        @paramSeller='paramSeller' 
+        :sellerList='sellerList' )
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
       .icon.bg-primary.surface-900.mr-3.icon-warehouse-info
       span.uppercase.text-800.font-bold warehouse contact
     div
-      StockOutItemInput( :listInfor='infomation.warehouse' @fieldWarehouse='handleWarehouse' )
+      StockOutItemInput( :listInfor='infomation.warehouse' @fieldWarehouse='handleWarehouse'  )
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
@@ -64,6 +68,9 @@ class LabelCreate extends Vue {
   @nsStoreUserDetail.State
   user!: any
 
+  @nsStoreSeller.State
+  sellerList!: any
+
   @nsStoreWarehouse.Action
   actWarehouseBySeller!:(params : any) => Promise<void>
 
@@ -76,7 +83,7 @@ class LabelCreate extends Vue {
 
   handleWarehouse( event : any ) {
     const InforWarehouse = this.infomation.warehouse
-    InforWarehouse[0].value = event.name
+    // InforWarehouse[0].value = event.name
     InforWarehouse[0].warehouseId = event.id
     InforWarehouse[1].value = event.email
     InforWarehouse[2].value = event.phone
@@ -89,6 +96,7 @@ class LabelCreate extends Vue {
     InforSeller[0].id = event.id
     InforSeller[1].value = event.displayName
     InforSeller[2].value = event.phoneNumber
+    this.unSelectedSeller()
   }
 
   handleUser() {
@@ -114,6 +122,11 @@ class LabelCreate extends Vue {
     }
   }
 
+  unSelectedSeller() {
+    _.forEach(this.infomation.warehouse, ( val )=>{
+      val.value = null
+    })
+  }
 }
 
 export default LabelCreate

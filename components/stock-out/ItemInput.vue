@@ -13,9 +13,9 @@ div
         forceSelection
         v-model='selectedSeller'
         :disabled='item.disabled' 
-        :suggestions='listSeller'
+        :suggestions='sellerList'
         @item-select='changeItem($event)' 
-        @complete="searchCountry($event)"
+        @complete="searchSeller($event)"
       )
       InputText.w-full( v-else-if='!item.options' v-model='item.value' :disabled='item.disabled' @change='receiverChange', )
       Dropdown.w-full( 
@@ -23,20 +23,21 @@ div
         :disabled='item.disabled' 
         :options="warehouseBySeller" 
         optionLabel="name" 
-        v-model='selectedWarehouse'
-        :placeholder='filedWarehouse'
+        v-model='item.value'
         @change='selectedItems($event)' 
+        
       )
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
-const nsStoreSeller = namespace('seller/seller-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component
 class ItemInput extends Vue {
   @Prop() listInfor: any | undefined
+  @Prop() readonly sellerList: any | undefined
+
   selectedWarehouse: any = null
   filedWarehouse: any = null
   selectedSeller: any = null
@@ -45,9 +46,6 @@ class ItemInput extends Vue {
 
   @nsStoreWarehouse.State
   warehouseBySeller!: any
-
-  @nsStoreSeller.State
-  sellerList!: any
 
   selectedItems( event : any  ) {
     this.$emit('fieldWarehouse', event.value)
@@ -71,8 +69,7 @@ class ItemInput extends Vue {
     this.$emit('sellerInfor' , event.value)
   }
 
-  searchCountry() {
-    this.listSeller = this.sellerList
+  searchSeller() {
     this.$emit('paramSeller' , this.selectedSeller)
   }
 
