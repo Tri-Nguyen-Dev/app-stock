@@ -118,14 +118,14 @@
               span.font-semibold.text-base.ml-3 (cm)
               .input-errors( v-if='listBox[activeIndex] && $v.listBox.$each[activeIndex].boxSize.id.$dirty && $v.listBox.$each[activeIndex].boxSize.id.$invalid' style='text-align: center')
                 .error-message Please enter select box size Fee!
-            .col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4') 
+            .col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
               span.font-semibold.text-base.mr-3.ml-2.required__title Estimate Inventory Fee
               InputNumber.number-input(
                 v-model='listBox[activeIndex].inventoryFee',
                 mode='currency',
                 currency='USD',
                 locale='en-US'
-              ) 
+              )
               span.font-semibold.text-base.ml-3 / day
               .input-errors(v-if='$v.listBox.$each[activeIndex].inventoryFee.$dirty && $v.listBox.$each[activeIndex].inventoryFee.$invalid' style='text-align: center')
                 .error-message() Please enter Inventory Fee!
@@ -141,7 +141,7 @@
             style='margin-right: 0px',
             v-if='listBox && listBox[activeIndex]'
           )
-            ItemDataTable(:listItemInBox='listBox[activeIndex].listItemInBox')
+            ItemDataTable(:listItemInBox='listBox[activeIndex].listItemInBox' :activeInputSku='activeInputSku')
     template(#footer='')
       .grid
         .d-flex.pt-2.col-12(class='md:col-4 lg:col-4')
@@ -288,6 +288,8 @@ class CreateOrUpdateReceipt extends Vue {
     seller: undefined
   }
 
+  activeInputSku: string = ''
+
   isSuggested = false
   @Prop() id?: string
   @nsStoreWarehouse.Action
@@ -433,6 +435,7 @@ class CreateOrUpdateReceipt extends Vue {
     this.listBox[this.activeIndex].listItemInBox?.push(...itemInBox)
     this.checkActiveAction()
     this.checkLocation()
+    this.activeInputSku = stockInformation.barCode
   }
 
   selectBox(box) {
@@ -617,6 +620,7 @@ class CreateOrUpdateReceipt extends Vue {
             id: stock.id
           }
           this.addItem(stockInformation)
+          this.activeInputSku = stockInformation.barCode
           this.boxQrCode = ''
         } else {
           this.boxQrCode = event.target.value
