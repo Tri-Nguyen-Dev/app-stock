@@ -58,7 +58,7 @@ import { OrderDetail } from '~/models/OrderDetail'
 import { exportFileTypePdf } from '~/utils'
 const nsStoreOrder = namespace('stock-out/order-detail')
 const nsStoreExportOrder = namespace('stock-out/order-export')
-const nsUser = namespace('user-auth/user')
+const nsUser = namespace('user-auth/store-user')
 @Component({
   components: {
     ItemList,

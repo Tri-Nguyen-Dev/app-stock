@@ -103,7 +103,7 @@
       Column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_')
         template(#body='{data}')
           InputNumber.w-7rem(v-model="data.delivery" mode="decimal" :min="0" 
-            :max="data.amount" inputClass="w-full" @input='handleDeliveryChange(data)'
+            :max="data.amount" inputClass="w-full" @input='handleDeliveryChange'
           )
       Column(field='image' header='IMAGE')
         template(#body='{data}')
@@ -270,13 +270,10 @@ class AddItems extends Vue {
     this.getDataList()
   }
 
-  handleDeliveryChange(data) {
-    const item = _.find(this.outGoingList, { id: data.id })
-    if(!item && _.get(data, 'delivery', 0))  {
-      this.outGoingList.push(data)
-    } else if(!data.delivery) {
-      _.remove(this.outGoingList, ({ id }) => id === data.id)
-    }
+  handleDeliveryChange() {
+    this.outGoingList = _.filter(this.inventoryList, ({ delivery }) => {
+      return delivery && delivery > 0
+    })
     this.isDisabled =  _.size(this.outGoingList) < 1 ? 'disabled' : null
   }
 

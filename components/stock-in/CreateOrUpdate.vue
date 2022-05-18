@@ -11,10 +11,12 @@
           .filter__item.item--disabled
             .filter__title ID receipt note
             .filter__text(v-if='id') {{ id }}
+            .filter__text(v-else)
+              i.filter__title auto generate...
         .col
           .filter__item.item--disabled
             .filter__title ID Creator
-            .filter__text(v-if='user') {{ user.id }}
+            .filter__text(v-if='user') {{ user.email }}
         .col
           .filter__item.item--disabled
             .filter__title Creator name
@@ -23,6 +25,8 @@
           .filter__item.item--disabled
             .filter__title Create time
             .filter__text(v-if='generalInfo.createdAt') {{ generalInfo.createdAt | dateTimeHour12 }}
+            .filter__text(v-else)
+              i.filter__title auto generate...
         .col
           .filter__item
             .filter__title Warehouse
@@ -43,11 +47,16 @@
                 @item-select='selectedItem($event)',
                 field='email',
                 @clear='clearItem($event)'
+                :delay='500'
               )
               .input-errors(
                 v-if='$v.generalInfo.seller.$dirty && $v.generalInfo.seller.$invalid'
               )
                 .error-message Please enter email!
+              .input-errors(
+                v-if='emailInvalid'
+              )
+                .error-message Email invalid
         .col
           .filter__item.item--disabled
             .filter__title Seller phone
@@ -217,7 +226,17 @@
       @addItem='addItem',
       :barcode='boxQrCode'
     )
-  FormAddSeller(:isShowForm='isShowFormAddSeller')
+  Sidebar(
+    :visible='isShowFormAddSeller',
+    :baseZIndex='1000',
+    position='right',
+    ariaCloseLabel='to'
+  )
+    FormAddSeller(
+        @cancelCreateSeller='cancelCreateSeller',
+        @createSeller='createSeller($event)',
+        :email='generalInfo.seller'
+    )
   Dialog(:visible.sync='isModalDelete', :modal='true')
     .confirm-dialog__content
       img(:srcset='"~/assets/images/confirm-delete.png"')
@@ -230,7 +249,7 @@
 </template>
 <script lang="ts">
 import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
-import { required } from 'vuelidate/lib/validators'
+import { email, required } from 'vuelidate/lib/validators'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
 import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
@@ -238,14 +257,13 @@ import { Receipt as ReceiptModel } from '~/models/Receipt'
 import { Stock as StockModel } from '~/models/Stock'
 import { RECEIPT_ACTION, RECEIPT_STATUS } from '~/utils/constants/rececipt'
 import { User } from '~/models/User'
-import { Seller as SellerModel } from '~/models/Seller'
 const nsStoreStock = namespace('stock/stock-detail')
 const nsStoreStockIn = namespace('stock-in/create-receipt')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreSeller = namespace('seller/seller-list')
 const nsStoreBoxSize = namespace('box/box-size-list')
 const nsStoreLocationList = namespace('location/location-list')
-const nsStoreUser = namespace('user-auth/user')
+const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: {
@@ -263,7 +281,11 @@ const nsStoreUser = namespace('user-auth/user')
       }
     },
     generalInfo: {
-      seller: { required }
+      seller: {
+        email:{
+          email
+        }
+      }
     }
   }
 })
@@ -282,15 +304,16 @@ class CreateOrUpdateReceipt extends Vue {
   invalidInventoryFee = false
   generalInfo: {
     createdAt?: string
-    seller?: SellerModel.Model
+    seller?: any
   } = {
     createdAt: undefined,
     seller: undefined
   }
 
   activeInputSku: string = ''
-
+  emailInvalid = false
   isSuggested = false
+
   @Prop() id?: string
   @nsStoreWarehouse.Action
   actWarehouseList!: (params?: any) => Promise<void>
@@ -381,12 +404,12 @@ class CreateOrUpdateReceipt extends Vue {
     const params = { email: e.query }
     await this.actSellerList(params)
     if (this.sellerList.length === 0) {
-      this.handleAddSeller()
+      if(this.validateEmail()){
+        this.isShowFormAddSeller = true
+      } else {
+        this.isShowFormAddSeller = false
+      }
     }
-  }
-
-  handleAddSeller() {
-    this.isShowFormAddSeller = !this.isShowFormAddSeller
   }
 
   showModalAddStock() {
@@ -395,6 +418,34 @@ class CreateOrUpdateReceipt extends Vue {
 
   cancelAddStock() {
     this.isShowModalAddStock = false
+  }
+
+  cancelCreateSeller(){
+    this.isShowFormAddSeller = false
+  }
+
+  createSeller(event){
+    if(event){
+      this.generalInfo.seller = {
+        email : event.email,
+        phoneNumber: event.phoneNumber,
+        displayName: `${event.firstName} ${event.lastName}`,
+        id: event.id
+      }
+    }
+
+  }
+
+  validateEmail() {
+    if(this.generalInfo.seller.length>0)
+    {
+      if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(this.generalInfo.seller)) {
+        this.emailInvalid = false
+      } else {
+        this.emailInvalid = true
+      }
+    }
+    return !this.emailInvalid
   }
 
   addItem(stockInformation: any) {
@@ -715,6 +766,8 @@ class CreateOrUpdateReceipt extends Vue {
 
   clearItem() {
     this.generalInfo.seller = undefined
+    this.emailInvalid = false
+    this.checkActiveAction()
   }
 }
 
