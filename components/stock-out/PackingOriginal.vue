@@ -65,7 +65,9 @@
               v-model="barCodeText"
               ref="inputScanBarCode"
             )
-      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode' :isPackingDetail="isPackingDetail")
+      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode' 
+        :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
+      )
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace, Watch } from 'nuxt-property-decorator'
@@ -218,6 +220,15 @@ class PackingOriginal extends Vue {
       return
     }
     return tab.key !== this.activeIndex && this.type === 'originalBox'
+  }
+
+  handleDeleteStock(stockDelete, boxCode) {
+    const box = _.find(this.listBox, { boxCode })
+    if(box) {
+      _.remove(box.items, ({ barCode, originalBox }) => {
+        return barCode === stockDelete.barCode && originalBox === stockDelete.originalBox
+      })
+    }
   }
 }
 

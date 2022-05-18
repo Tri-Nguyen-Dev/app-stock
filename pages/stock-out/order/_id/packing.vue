@@ -76,15 +76,12 @@ const nsStoreLocationList = namespace('location/location-list')
 
 @Component
 class DeliveryOrderPacking extends Vue {
-  originalBoxActive: any = {}
   outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
   tranfferingBoxActive: any = { boxCode: 'EX1', items: [] }
   indexScanBoxCode: number = 0
   autoActiveTabOut: boolean = false
-  @ProvideReactive()
   listOriginalBox: any = []
-
-  @ProvideReactive()
+  listTranfferingBox: any = []
   listOutGoingBox: any = [
     {
       boxCode: 'EX01',
@@ -96,7 +93,7 @@ class DeliveryOrderPacking extends Vue {
   ]
 
   @ProvideReactive()
-  listTranfferingBox: any = []
+  originalBoxActive: any = {}
 
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number

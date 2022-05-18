@@ -61,7 +61,7 @@ div
       :styles="{'width': '1%'}"
     )
       template(#body='{ data }')
-        InputNumber.w-7rem(:value="valueStock(data.quantity)" mode="decimal" :min="0" 
+        InputNumber.w-7rem(:value="quantityStock(data.quantity)" mode="decimal" :min="0" 
           :max="maxQuantity(data)" inputClass="w-full"
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
         )
@@ -109,9 +109,7 @@ class PackingTableList extends Vue {
   @Prop() readonly type!: string | undefined
   @Prop() readonly boxCode!: string | undefined
   @Prop() readonly isPackingDetail!: boolean | false
-  @InjectReactive() readonly listOriginalBox!: any
-  @InjectReactive() readonly listOutGoingBox!: any
-  @InjectReactive() readonly listTranfferingBox!: any
+  @InjectReactive() readonly originalBoxActive!: any
   originalList: {} = {}
 
   getIndexPaginate(index: number) {
@@ -126,41 +124,37 @@ class PackingTableList extends Vue {
     return data.outGoingQuantity <= 0 ? 'row-outgoing' : ''
   }
 
-  sumQuantity(data) {
-    const list = this.type === 'tranferringBox' ? this.listTranfferingBox : this.listOutGoingBox
-    const boxNotActive = _.partition(list, { 'boxCode': this.boxCode })[1]
-    const sumNotActive = _.partition(_.flatten(_.map(boxNotActive, 'items')), { 
-      barCode: data.barCode, originalBox: data.originalBox
-    })[0]
-    const sum =_.sumBy(sumNotActive, o => {
-      return o.quantity
-    })
-    return sum
+  getStockInOriginal({ barCode }) {
+    return _.find(this.originalBoxActive.items, { barCode })
   }
 
-  maxQuantity(data) {
-    const box = _.find(this.listOriginalBox, { boxCode: data.originalBox })
-    const stock = _.find(box.items, { barCode: data.barCode })
-    const { initialQuantity, outGoingQuantity } = stock
+  getSumQuantityOtherBox({ actualTranffering, actualOutGoing }, quantity: number) {
+    return this.type === 'tranferringBox' ? actualTranffering - quantity : actualOutGoing - quantity
+  }
+
+  maxQuantity({ barCode, quantity }) {
+    const stockInOriginal = this.getStockInOriginal({ barCode })
+    const { initialQuantity, outGoingQuantity, actualTranffering, actualOutGoing } = stockInOriginal
+    const sum = this.getSumQuantityOtherBox({ actualTranffering, actualOutGoing }, quantity)
     if(this.type === 'tranferringBox') {
-      return initialQuantity - outGoingQuantity - this.sumQuantity(data)
+      return initialQuantity - outGoingQuantity - sum
     } else {
-      return outGoingQuantity - this.sumQuantity(data)
+      return outGoingQuantity - sum
     }
   }
 
-  changeQuantity(data, event) {
-    const sum = this.sumQuantity(data)
-    const box = _.find(this.listOriginalBox, { boxCode: data.originalBox })
-    const stock = _.find(box.items, { barCode: data.barCode })
-    if(stock.initialQuantity - stock.outGoingQuantity - sum - event >= 0 && this.type === 'tranferringBox') {
-      _.set(data, 'quantity', event)
-      _.set(stock, 'actualTranffering', event + sum)
-      _.set(stock, 'quantity', stock.initialQuantity - sum - event - stock.actualOutGoing)
-    } else if(this.type === 'outGoingBox' && stock.outGoingQuantity - sum - event >= 0) {
-      _.set(data, 'quantity', event)
-      _.set(stock, 'actualOutGoing', event + sum)
-      _.set(stock, 'quantity', stock.initialQuantity - sum - event - stock.actualTranffering)
+  changeQuantity(stock, textValue) {
+    const stockInOriginal = this.getStockInOriginal(stock)
+    const { initialQuantity, outGoingQuantity, actualTranffering, actualOutGoing } = stockInOriginal
+    const sum = this.getSumQuantityOtherBox({ actualTranffering, actualOutGoing }, stock.quantity)
+    if(initialQuantity - outGoingQuantity - sum - textValue >= 0 && this.type === 'tranferringBox') {
+      _.set(stock, 'quantity', textValue)
+      _.set(stockInOriginal, 'actualTranffering', textValue + sum)
+      _.set(stockInOriginal, 'quantity', initialQuantity - sum - textValue - actualOutGoing)
+    } else if(this.type === 'outGoingBox' && outGoingQuantity - sum - textValue >= 0) {
+      _.set(stock, 'quantity', textValue)
+      _.set(stockInOriginal, 'actualOutGoing', textValue + sum)
+      _.set(stockInOriginal, 'quantity', initialQuantity - sum - textValue - actualTranffering)
     }
   }
 
@@ -177,11 +171,7 @@ class PackingTableList extends Vue {
 
   handleDeleteStock() {
     const stockDelete = this.onEventDeleteList[0]
-    const list = this.type === 'tranferringBox' ? this.listTranfferingBox : this.listOutGoingBox
-    const box = _.find(list, { boxCode: this.boxCode })
-    _.remove(box.items, function({ barCode, originalBox }) {
-      return stockDelete.barCode === barCode && originalBox === stockDelete.originalBox
-    })
+    this.$emit('handleDeleteStock', stockDelete, this.boxCode)
     this.changeQuantity(stockDelete, 0)
     this.isModalDelete = false
   }
@@ -194,7 +184,7 @@ class PackingTableList extends Vue {
     return getDeleteMessage(this.onEventDeleteList, 'box')
   }
 
-  valueStock(quantity) {
+  quantityStock(quantity) {
     return this.isModalDelete ? 0 : quantity
   }
 }
