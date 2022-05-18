@@ -15,19 +15,22 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
       span.font-bold {{ data.createdAt | dateTimeHour12 }}
   Column(field="endBoxId" header="Box Code" className="text-right" sortable)
     template(#body="{data}")
-      .flex.align-items-center.cursor-pointer.justify-content-end
-        span.font-bold.font-sm {{ data.endBoxId }}
-        .icon.icon-arrow-up-right
+      div(v-if='data.endBoxId')
+        .flex.align-items-center.cursor-pointer.justify-content-end
+          span.font-bold.font-sm {{ data.endBoxId }}
+          .icon.icon-arrow-up-right
   Column(field="location" header="LOCATION" className="text-right" :sortable="true" bodyClass="font-semibold")
     template(#body="{data}")
-      .flex.align-items-center.cursor-pointer.justify-content-end
-        span.text-primary.font-bold.font-sm {{ data.location }}
-        .icon.icon-arrow-up-right.bg-primary
+      div(v-if='data.location')
+        .flex.align-items-center.cursor-pointer.justify-content-end
+          span.text-primary.font-bold.font-sm {{ data.location }}
+          .icon.icon-arrow-up-right.bg-primary
   Column(field="description" header="Status" className="text-right" sortable)
     template(#body="{data}")
-      .flex.align-items-center.cursor-pointer.justify-content-end
-        span.font-bold.font-sm {{ data.description | statusBoxHistory }}
-        .icon.ml-1( :class="data.description === 'REQUEST_ACTION_TO_OUTGOING_BOX' ? 'icon-arrow-up-right' : 'icon-rotate-left' "  )
+      div(v-if='data.description')
+        .flex.align-items-center.cursor-pointer.justify-content-end
+          span.font-bold.font-sm {{ data.description | statusBoxHistory }}
+          .icon.ml-1( :class="data.description === 'REQUEST_ACTION_TO_OUTGOING_BOX' ? 'icon-arrow-up-right' : 'icon-rotate-left' "  )
   Column(field="pic" header="PIC" sortable )
     template(#body="{data}")
       .flex.align-items-center.cursor-pointer.justify-content-end
