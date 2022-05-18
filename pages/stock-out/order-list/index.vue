@@ -116,7 +116,7 @@
           @updateFilter="handleFilter")
     .stock__table
       DataTable(
-        :value='data'
+        :value='deliveryList'
         @sort="sortData($event)"
         :class="{ 'table-wrapper-empty': !deliveryList || deliveryList.length <= 0 }"
         :rowClass="rowClass"
@@ -279,8 +279,6 @@ class DeliveryOrderList extends Vue {
     warehouseId: null
   }
 
-  data :DeliveryList.Model[] =[]
-
   @nsStoreDelivery.State
   total!: number
 
@@ -311,13 +309,20 @@ class DeliveryOrderList extends Vue {
   // -- [ Getters ] -------------------------------------------------------------
   @Watch ('activeTab',{ immediate: true, deep: true })
   getList(){
-    this.handleFilterTabList()
     this.selectedDelivery = []
+    this.paging.pageSize = 20
+    this.paging.pageNumber = 0
+    this.getDeliveryList({
+      ...this.filter,
+      warehouseId: this.filter.warehouse?.id,
+      pageSize: this.paging.pageSize,
+      pageNumber: this.paging.pageNumber,
+      status: this.activeStatus
+    })
   }
-
-  @Watch ('deliveryList',{ immediate: true, deep: true })
-  getLists(){
-    this.handleFilterTabList()
+  
+  get activeStatus() {
+    return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
   }
 
   get selectedDeliveryFilter() {
@@ -327,7 +332,7 @@ class DeliveryOrderList extends Vue {
       }else return delivery
     })
   }
-
+ 
   get classHeaderMuti() {
     return !this.deliveryList ||
       this.deliveryList.length <= 0 ||
@@ -353,30 +358,6 @@ class DeliveryOrderList extends Vue {
 
   // -- [ Functions ] ------------------------------------------------------------
 
-  handleFilterTabList() {
-    switch (this.activeTab) {
-    case 0:
-      this.data = this.deliveryList.filter(item => {
-        return item.status === 'DELIVERY_ORDER_STATUS_NEW'
-          || item.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' || item.status === 'DELIVERY_ORDER_STATUS_CANCELLED'
-      })
-
-      break
-    case 1:
-      this.data = this.deliveryList.filter(item => {
-        return item.status === 'DELIVERY_ORDER_STATUS_READY' || item.status === 'DELIVERY_ORDER_STATUS_DELIVERING'
-      })
-      break
-    case 2:
-      this.data = this.deliveryList.filter(item => {
-        return item.status === 'DELIVERY_ORDER_STATUS_DELIVERED' || item.status === 'DELIVERY_ORDER_STATUS_RETURNED'
-      })
-      break
-    default:
-      break
-    }
-  }
-
   handleExportReceipt() {
     _.forEach(this.selectedDelivery, async ({ id }) => {
       const result = await this.actGetReceiptLable({ id })
@@ -399,7 +380,7 @@ class DeliveryOrderList extends Vue {
   }
 
   mounted() {
-    this.getProductList()
+    // this.getProductList()
     this.actWarehouseList()
   }
 
@@ -414,7 +395,7 @@ class DeliveryOrderList extends Vue {
       warehouseId: this.filter.warehouse?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
-      status: this.filter.status?.value
+      status: this.activeStatus?.includes(this.filter.status?.value) ? this.filter.status?.value : this.activeStatus
     })
   }
 
