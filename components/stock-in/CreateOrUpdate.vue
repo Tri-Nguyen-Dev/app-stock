@@ -11,10 +11,12 @@
           .filter__item.item--disabled
             .filter__title ID receipt note
             .filter__text(v-if='id') {{ id }}
+            .filter__text(v-else) 
+              i.filter__title auto generate...
         .col
           .filter__item.item--disabled
             .filter__title ID Creator
-            .filter__text(v-if='user') {{ user.id }}
+            .filter__text(v-if='user') {{ user.email }}
         .col
           .filter__item.item--disabled
             .filter__title Creator name
@@ -23,6 +25,8 @@
           .filter__item.item--disabled
             .filter__title Create time
             .filter__text(v-if='generalInfo.createdAt') {{ generalInfo.createdAt | dateTimeHour12 }}
+            .filter__text(v-else) 
+              i.filter__title auto generate...
         .col
           .filter__item
             .filter__title Warehouse
@@ -43,6 +47,7 @@
                 @item-select='selectedItem($event)',
                 field='email',
                 @clear='clearItem($event)'
+                :delay='500'
               )
               .input-errors(
                 v-if='$v.generalInfo.seller.$dirty && $v.generalInfo.seller.$invalid'
@@ -258,7 +263,7 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreSeller = namespace('seller/seller-list')
 const nsStoreBoxSize = namespace('box/box-size-list')
 const nsStoreLocationList = namespace('location/location-list')
-const nsStoreUser = namespace('user-auth/user')
+const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: {
@@ -419,12 +424,15 @@ class CreateOrUpdateReceipt extends Vue {
   }
 
   createSeller(event){
-    this.generalInfo.seller={
-      email : event.email,
-      phoneNumber: event.phoneNumber,
-      displayName: event.name,
-      id: event.id
+    if(event){
+      this.generalInfo.seller = {
+        email : event.email,
+        phoneNumber: event.phoneNumber,
+        displayName: `${event.firstName} ${event.lastName}`,
+        id: event.id
+      }
     }
+    
   }
 
   validateEmail() {

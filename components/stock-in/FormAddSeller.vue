@@ -5,22 +5,21 @@
       h3.px-3 Add Seller
     .addSellerContent.p-3
       h5.my-1.required__title Email
-      .p-input-icon-right.w-full
-        InputText.w-full(v-model='seller.email')
-      //- h5.mb-1 SKU
-      //- InputText(v-model='seller.sku').w-full
-      h5.mb-1.required__title Full Name
+      InputText.w-full(v-model='seller.email')
+      h5.mb-1 First name
       InputText.w-full(
-        v-model='seller.name',
-        :class='{ "name--error": $v.seller.name.$error }'
+        v-model='seller.firstName',
       )
-      .error-message(v-if='$v.seller.name.$dirty && !$v.seller.name.required') Name cannot be empty!
-      h5.mb-1.required__title Phone number
+      //- .error-message(v-if='$v.seller.firstName.$dirty && !$v.seller.firstName.required') Name cannot be empty!
+      h5.mb-1 Last name
+      InputText.w-full(
+        v-model='seller.lastName',
+      )
+      //- .error-message(v-if='$v.seller.lastName.$dirty && !$v.seller.lastName.required') Name cannot be empty!
+      h5.mb-1 Phone number
       InputText.w-full(
         v-model='seller.phoneNumber',
-        :class='{ "name--error": $v.seller.name.$error }'
       )
-      .error-message(v-if='$v.seller.name.$dirty && !$v.seller.name.required') Phone number cannot be empty!
     .addSellerFooter.p-3
       .grid
         .col
@@ -42,9 +41,6 @@ const nsStoreSeller = namespace('seller/seller-create')
 @Component({
   validations: {
     seller: {
-      name: {
-        required
-      },
       email: {
         required
       }
@@ -54,10 +50,10 @@ const nsStoreSeller = namespace('seller/seller-create')
 class FormAddSeller extends Vue {
   @Prop({ default:'' }) email!: string
   seller = {
-    name: undefined,
+    firstName: undefined,
+    lastName:  undefined,
     email: this.email,
-    /// phoneNumber: undefined,
-    password: '123456'
+    phoneNumber: undefined
   }
 
   @nsStoreSeller.State
@@ -85,7 +81,6 @@ class FormAddSeller extends Vue {
 
   checkValidateInput() {
     this.$v.seller.email?.$touch()
-    this.$v.seller.name?.$touch()
     if (this.$v.$invalid) {
       return false
     }
