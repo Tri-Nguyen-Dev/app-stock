@@ -244,8 +244,6 @@ class createOrder extends Vue {
     const result : any = await this.actDeliveryOrder({
       seller: {
         id: this.infomation.seller[0].id
-      },assignee: {
-        id: this.$auth.$state.user.sub
       },
       receiverAddress: listReceiver[0].value,
       receiverEmail: listReceiver[1].value,
