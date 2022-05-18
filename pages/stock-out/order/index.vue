@@ -312,7 +312,7 @@ class createOrder extends Vue {
   }
 
   get homeItem() {
-    return { to: '/stock-out', icon: 'pi pi-list' }
+    return { to: '/stock-out/order-list', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {

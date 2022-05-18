@@ -93,7 +93,7 @@ class LabelCreate extends Vue {
 
   handleUser() {
     const InforCreator = this.infomation.creator
-    InforCreator[0].value = this.user.id
+    InforCreator[0].value = this.user.staffId
     InforCreator[1].value = this.user.email
     InforCreator[2].value = this.user.displayName
     InforCreator[3].value = this.user.phoneNumber
