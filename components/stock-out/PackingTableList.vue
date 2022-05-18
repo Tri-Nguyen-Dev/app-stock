@@ -61,7 +61,7 @@ div
       :styles="{'width': '1%'}"
     )
       template(#body='{ data }')
-        InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="0" 
+        InputNumber.w-7rem(:value="valueStock(data.quantity)" mode="decimal" :min="0" 
           :max="maxQuantity(data)" inputClass="w-full"
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
         )
@@ -82,6 +82,7 @@ div
       :onOk="handleDeleteStock"
       :onCancel="handleCancel"
       :loading="loadingSubmit"
+      :key="componentKey"
     )
       template(v-slot:message)
         p {{ deleteMessage }}
@@ -103,6 +104,7 @@ class PackingTableList extends Vue {
   isModalDelete: boolean = false
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
+  componentKey: number = 0
   @Prop() value!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly boxCode!: string | undefined
@@ -163,11 +165,13 @@ class PackingTableList extends Vue {
   }
 
   handleQuantity(data, event) {
-    if(!event) {
-      this.onEventDeleteList = [data]
-      this.isModalDelete = true
-    } else {
-      this.changeQuantity(data, event)
+    if(!_.isNil(event)) {
+      if(!event) {
+        this.onEventDeleteList = [data]
+        this.isModalDelete = true
+      } else {
+        this.changeQuantity(data, event)
+      }
     }
   }
 
@@ -188,6 +192,10 @@ class PackingTableList extends Vue {
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'box')
+  }
+
+  valueStock(quantity) {
+    return this.isModalDelete ? 0 : quantity
   }
 }
 
