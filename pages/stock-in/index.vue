@@ -133,7 +133,7 @@
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
               p.empty__text(v-if="!isFilter") List is empty!, Click
-                span &nbsp;here
+                span(@click='createStockIn') &nbsp;here
                 span &nbsp;to add item.
               p.notfound__text(v-else) Item not found!
           template(#footer)
