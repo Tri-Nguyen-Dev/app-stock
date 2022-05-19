@@ -312,6 +312,10 @@ class DeliveryOrderList extends Vue {
     this.selectedDelivery = []
     this.paging.pageSize = 20
     this.paging.pageNumber = 0
+    this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS
+    this.statusList = this.statusList.filter((item: any) => {
+      return this.activeStatus?.split(',').includes(item.value.toString()) 
+    })
     this.getDeliveryList({
       ...this.filter,
       warehouseId: this.filter.warehouse?.id,
