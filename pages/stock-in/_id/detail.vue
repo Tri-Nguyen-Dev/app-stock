@@ -59,7 +59,7 @@
 								.grid
 									.col-12.pb-0
 										span.uppercase.font-semibold.mr-1 box {{ box.index + 1 }}
-									.col-12.pb-0(v-if='box.location.name != ""')
+									.col-12.pb-0(v-if='box.location && box.location.name != ""')
 										.icon.icon-map-pin(
 											:class='{ "bg-blue-700": box.index !== activeIndex }'
 										)
