@@ -62,18 +62,12 @@ const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
 class DeliveryOrderPackingDetail extends Vue {
-  // listOriginalBox: any = []
-  // listOutGoingBox: any = []
-  // listTranfferingBox: any = []
-
-  @ProvideReactive()
   listOriginalBox: any = []
-
-  @ProvideReactive()
   listOutGoingBox: any = []
+  listTranfferingBox: any = []
 
   @ProvideReactive()
-  listTranfferingBox: any = []
+  originalBoxActive: any = {}
 
   @nsStorePackingDetail.State('deliveryOrderDetail')
   deliveryOrderDetail!: any
