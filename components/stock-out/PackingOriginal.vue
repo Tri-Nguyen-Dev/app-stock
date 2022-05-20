@@ -67,6 +67,14 @@
               v-model="barCodeText"
               ref="inputScanBarCode"
             )
+      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && isPackingDetail')
+        .col-3.py-3.border-right-1.border-gray-300
+          span.mr-1.font-semibold Size: {{tab.boxSize.name}} {{tab.boxSize.height}}*{{tab.boxSize.width}}*{{tab.boxSize.length}}
+          span.ml-1.font-semibold (cm)
+        .col-3.ml-2.py-3.border-right-1.border-gray-300
+          .grid.align-items-center.pl-3(v-if='isTranffering')
+              div.font-semibold Estimated Inventory Fee: {{tab.inventoryFee}} $
+              span.ml-1.font-semibold / day
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode' 
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )
