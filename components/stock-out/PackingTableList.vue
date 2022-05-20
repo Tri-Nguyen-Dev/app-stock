@@ -39,14 +39,13 @@ div
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
     Column(
       header='TAG'
-      field='tag'
+      field='hasAirtag'
       :sortable="true"
       :styles="{'width': '1%'}"
       v-if='type === "originalBox"'
     )
       template(#body='{ data }')
-        .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-if='data.tag') Yes
-        .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) No
+        .text-right {{ data.hasAirtag | checkHasTag }}
     Column(
       header='ORIGINAL BOX CODE'
       field='originalBox'
@@ -61,7 +60,7 @@ div
       :styles="{'width': '1%'}"
     )
       template(#body='{ data }')
-        InputNumber.w-7rem(:value="valueStock(data.quantity)" mode="decimal" :min="0" 
+        InputNumber.w-7rem(:value="valueStock(data.quantity)" mode="decimal" :min="0"
           :max="maxQuantity(data)" inputClass="w-full"
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
         )
@@ -129,7 +128,7 @@ class PackingTableList extends Vue {
   sumQuantity(data) {
     const list = this.type === 'tranferringBox' ? this.listTranfferingBox : this.listOutGoingBox
     const boxNotActive = _.partition(list, { 'boxCode': this.boxCode })[1]
-    const sumNotActive = _.partition(_.flatten(_.map(boxNotActive, 'items')), { 
+    const sumNotActive = _.partition(_.flatten(_.map(boxNotActive, 'items')), {
       barCode: data.barCode, originalBox: data.originalBox
     })[0]
     const sum =_.sumBy(sumNotActive, o => {
