@@ -78,15 +78,12 @@ const nsStoreLocationList = namespace('location/location-list')
 
 @Component
 class DeliveryOrderPacking extends Vue {
-  originalBoxActive: any = {}
   outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
   tranfferingBoxActive: any = { boxCode: 'EX1', items: [] }
   indexScanBoxCode: number = 0
   autoActiveTabOut: boolean = false
-  @ProvideReactive()
   listOriginalBox: any = []
-
-  @ProvideReactive()
+  listTranfferingBox: any = []
   listOutGoingBox: any = [
     {
       boxCode: 'EX1',
@@ -98,7 +95,7 @@ class DeliveryOrderPacking extends Vue {
   ]
 
   @ProvideReactive()
-  listTranfferingBox: any = []
+  originalBoxActive: any = {}
 
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
@@ -164,27 +161,20 @@ class DeliveryOrderPacking extends Vue {
     this.originalBoxActive = this.listOriginalBox[index]
   }
 
-  get numberOutGoing() {
-    if(this.listOutGoingBox.length > 0) {
-      const boxCode = this.listOutGoingBox[this.listOutGoingBox.length - 1]?.boxCode
-      const lastChar = boxCode.replace('EX', '')
-      return parseInt(lastChar) 
+  genearateBoxCode(listPacking, subname) {
+    let boxCode = subname
+    if(listPacking.length > 0) {
+      const lastNo = _.last(listPacking)?.boxCode.replace(subname, '')
+      boxCode += parseInt(lastNo) + 1
+    } else {
+      boxCode += 1
     }
-    else return 0
-  }
-
-  get numberTranfer() {
-    if(this.listTranfferingBox.length > 0) {
-      const boxCode = this.listTranfferingBox[this.listTranfferingBox.length - 1]?.boxCode
-      const lastChar = boxCode.replace('IN', '')
-      return parseInt(lastChar) 
-    }
-    else return 0
+    return boxCode
   }
 
   addNewBoxOutGoing() {
     this.listOutGoingBox.push({
-      boxCode: `EX${this.numberOutGoing + 1}`,
+      boxCode: this.genearateBoxCode(this.listOutGoingBox, 'EX'),
       items: [],
       tagCode: '',
       checked: false,
@@ -259,7 +249,7 @@ class DeliveryOrderPacking extends Vue {
 
   addNewBoxTranferring() {
     this.listTranfferingBox.push({
-      boxCode: `IN${this.numberTranfer + 1}`,
+      boxCode: this.genearateBoxCode(this.listTranfferingBox, 'IN'),
       items: [],
       tagCode: '',
       checked: true,
@@ -370,17 +360,8 @@ class DeliveryOrderPacking extends Vue {
   }
 
   get isNextBox() {
-    if(_.size(this.listOriginalBox) && _.size(this.originalBoxActive.items)) {
-      const unprocessedStocks = _.find(this.originalBoxActive.items, function(o) { return o.quantity > 0 })
-      const unsetBoxSizeOutGoing = _.find(this.listOutGoingBox, function(o) { return o.boxSize === null })
-      const unsetBoxSizeTranffering = _.find(this.listTranfferingBox, function(o) { return o.boxSize === null })
-      if(unprocessedStocks || unsetBoxSizeOutGoing || unsetBoxSizeTranffering) {
-        return false
-      }
-      else {
-        return true
-      }
-    }
+    const itemsBox = _.get(this.originalBoxActive, 'items')
+    return !_.size(_.partition(itemsBox, ['quantity', 0])[1]) && itemsBox
   }
 
   @Watch('isNextBox')
