@@ -44,7 +44,7 @@
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
-          Checkbox(v-model="tab.checked" :binary="true")
+          Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock')
           span.ml-2 Attach Tag
         .col-3.ml-2.py-3.border-right-1.border-gray-300
           .grid.align-items-center(v-if='isTranffering')
@@ -237,6 +237,18 @@ class PackingOriginal extends Vue {
     } else if(index === this.activeIndex - 1) {
       this.$nextTick(() => (this.activeIndex = 0))
     }
+  }
+
+  get hasTagStock() {
+    let disabled = false
+    _.forEach(this.listBox, (box) => {
+      const isHasTag = _.find(box.items, { hasAirtag: true })
+      if(isHasTag) {
+        box.checked = true
+        disabled = true
+      }
+    })
+    return disabled
   }
 }
 
