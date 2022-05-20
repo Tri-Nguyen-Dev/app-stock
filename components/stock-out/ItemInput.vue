@@ -25,8 +25,8 @@ div
         optionLabel="name" 
         v-model='item.value'
         @change='selectedItems($event)' 
-        
       )
+    p {{ item }}
 </template>
 
 <script lang="ts">

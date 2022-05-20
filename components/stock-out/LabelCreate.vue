@@ -83,7 +83,6 @@ class LabelCreate extends Vue {
 
   handleWarehouse( event : any ) {
     const InforWarehouse = this.infomation.warehouse
-    // InforWarehouse[0].value = event.name
     InforWarehouse[0].warehouseId = event.id
     InforWarehouse[1].value = event.email
     InforWarehouse[2].value = event.phone
