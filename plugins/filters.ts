@@ -38,3 +38,8 @@ Vue.filter('getThumbnailUrl', (imagePath) => {
   if (!imagePath) return null
   return `${baseImageUrl}/thumbnail/${imagePath}`
 })
+
+// --  [ has tag check ] -------------------------------------------------
+Vue.filter('checkHasTag', (value) => {
+  return value ? 'Yes' : 'No'
+})

@@ -101,7 +101,7 @@ class DeliveryOrderPackingDetail extends Vue {
       }))
     }))
 
-    this.listOutGoingBox = _.map(this.packingDetail.outGoingBox, ({ id, inventoryFee, listStockWithAmount }) => ({
+    this.listOutGoingBox = _.map(this.packingDetail.outGoingBox, ({ id, inventoryFee, listStockWithAmount, boxSize }) => ({
       boxCode: id,
       locationId: listStockWithAmount.id,
       inventoryFee,
@@ -112,10 +112,11 @@ class DeliveryOrderPackingDetail extends Vue {
         quantity: amount,
         originalBox,
         imagePath: stock.imagePath
-      }))
+      })),
+      boxSize
     }))
 
-    this.listTranfferingBox =  _.map(this.packingDetail.transferringBox, ({ id, inventoryFee, listStockWithAmount }) => ({
+    this.listTranfferingBox =  _.map(this.packingDetail.transferringBox, ({ id, inventoryFee, listStockWithAmount, boxSize }) => ({
       boxCode: id,
       locationId: listStockWithAmount.id,
       inventoryFee,
@@ -126,7 +127,8 @@ class DeliveryOrderPackingDetail extends Vue {
         quantity: amount,
         originalBox,
         imagePath: stock.imagePath
-      }))
+      })),
+      boxSize
     }))
   }
 

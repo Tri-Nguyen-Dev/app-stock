@@ -39,14 +39,13 @@ div
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
     Column(
       header='TAG'
-      field='tag'
+      field='hasAirtag'
       :sortable="true"
       :styles="{'width': '1%'}"
       v-if='type === "originalBox"'
     )
       template(#body='{ data }')
-        .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-if='data.tag') Yes
-        .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) No
+        .text-right {{ data.hasAirtag | checkHasTag }}
     Column(
       header='ORIGINAL BOX CODE'
       field='originalBox'
