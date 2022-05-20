@@ -6,24 +6,26 @@
       span.uppercase.text-800.font-bold seller information
     div
       StockOutItemInput( 
+        :validations= "$v.seller"
         :listInfor='infomation.seller' 
         @sellerInfor='handleSeller' 
         @paramSeller='paramSeller' 
-        :sellerList='sellerList' )
+        :sellerList='sellerList'
+       )
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
       .icon.bg-primary.surface-900.mr-3.icon-warehouse-info
       span.uppercase.text-800.font-bold warehouse contact
     div
-      StockOutItemInput( :listInfor='infomation.warehouse' @fieldWarehouse='handleWarehouse'  )
+      StockOutItemInput( :listInfor='infomation.warehouse' @fieldWarehouse='handleWarehouse' :validations= "$v.seller"  )
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
       .icon.bg-primary.surface-900.mr-3.icon-receive-square
       span.uppercase.text-800.font-bold receiver information
     div
-      StockOutItemInput( :listInfor='infomation.receiver' @fieldReceiver='handleReveiver'   )
+      StockOutItemInput( :listInfor='infomation.receiver' @fieldReceiver='handleReveiver' :validations= "$v.seller"  )
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
@@ -46,10 +48,11 @@
       .icon.bg-primary.surface-900.mr-3.icon-profile-circle
       span.uppercase.text-800.font-bold creator information
     div
-      StockOutItemInput( :listInfor='infomation.creator' )
+      StockOutItemInput( :listInfor='infomation.creator' :validations= "$v.seller")
 </template>
 
 <script lang="ts">
+import { required } from 'vuelidate/lib/validators'
 import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import { INFORMATION } from '~/utils'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
@@ -57,7 +60,23 @@ const nsStoreSeller = namespace('seller/seller-list')
 const nsStoreUserDetail = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
-@Component
+@Component({
+  validations: {
+    infomation: {
+      seller: {
+        Email: {
+          required
+        },
+        Name: {
+          required
+        },
+        Phone: {
+          required
+        }
+      }
+    }
+  }
+})
 class LabelCreate extends Vue {
   @Prop() readonly title!: any | undefined
   @Prop() readonly icon!: any | undefined
@@ -126,6 +145,7 @@ class LabelCreate extends Vue {
       val.value = null
     })
   }
+
 }
 
 export default LabelCreate
