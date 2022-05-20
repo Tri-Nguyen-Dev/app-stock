@@ -42,7 +42,7 @@
             @handelDeteleBoxEmpty='handelDeteleBoxEmpty'
             :boxSizeList='boxSizeList'
           )
-      .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
+      .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.align-items-center.absolute.right-0.left-0.bottom-0
         .col.p-1
           .grid.align-items-center
             .col-1
@@ -64,9 +64,11 @@
             .col
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary {{tranferringOutGoing}}
-        .col-1.flex.justify-content-end.p-1
-          Button.btn.btn-primary.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled") Next
-          Button.btn.btn-primary.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if="ishowSave") Save
+        .col-2.flex.justify-content-end.p-1
+          Button.btn.btn-primary.justify-content-center.flex(@click="handleClick" v-if='packingStep === 1' :disabled="isDisabled") Next
+          div.flex
+            Button.btn.btn-outline.ml-2(@click="handleBack" v-if="ishowSave && packingStep === 2") Back
+            Button.btn.btn-primary.ml-3(@click="handleSubmit" v-if="ishowSave && packingStep === 2") Save
 </template>
 
 <script lang="ts">
@@ -96,6 +98,9 @@ class DeliveryOrderPacking extends Vue {
 
   @ProvideReactive()
   originalBoxActive: any = {}
+
+  @ProvideReactive()
+  packingStep: number | string = 1
 
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
@@ -295,6 +300,7 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
+    this.packingStep = 2
     let listBoxLocation = [ ...this.listTranfferingBox ]
     listBoxLocation = listBoxLocation.map((item) => {
       return item.boxSize?.id.toString()
@@ -389,6 +395,10 @@ class DeliveryOrderPacking extends Vue {
     else { 
       this.listOutGoingBox.splice(index, 1)
     }
+  }
+
+  handleBack() {
+    this.packingStep = 1
   }
 }
 
