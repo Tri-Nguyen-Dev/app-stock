@@ -45,12 +45,16 @@
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
           span.ml-1 (cm)
         .col.py-3.border-right-1.border-left-1.border-gray-300.flex.align-items-center.px-3(v-if='isOutgoing')
-          Checkbox(v-model="tab.checked" :binary="true")
+          Checkbox(v-model="tab.checked" :binary="true" @input="handleChangeTag")
           span.ml-2 Attach Tag
           div.ml-2(v-if='isOutgoing && tab.checked')
             span.p-input-icon-right
               .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-              InputText.inputSearchCode(@change='addTagByBarCode' placeholder='Please enter tag code!')
+              InputText.inputSearchCode(
+                @change='addTagByBarCode'
+                placeholder='Please enter tag code!'
+                ref="inputScanTag"
+              )
         .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
           div.flex.align-items-center
             div
@@ -260,6 +264,16 @@ class PackingOriginal extends Vue {
       this.$nextTick(() => (this.activeIndex = 0))
     }
   }
+
+  async handleChangeTag(value) {
+    if(value) {
+      await this.$nextTick()
+      if(this.$refs.inputScanTag && this.isOutgoing) {
+        const inputRef = this.$refs.inputScanTag[this.activeIndex - 1] as any
+        await this.$nextTick(() =>  inputRef?.$el.focus())
+      }  
+    }
+  }
 }
 
 export default PackingOriginal
@@ -306,6 +320,10 @@ export default PackingOriginal
       background-color: #dee2e6
       left: 0
   .p-tabview
+    .p-tabview-nav-btn.p-link
+      border-radius: 3px
+      box-shadow: none
+      border: 1px solid #dee2e6
     .icon
       background: $primary-dark
     .p-tabview-panels
