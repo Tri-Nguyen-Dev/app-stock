@@ -59,8 +59,9 @@
             div.ml-2
               InputText.w-4.inputSearchCode(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
               span.ml-1 / day
-        .col.py-3.flex.justify-content-end
-          span.p-input-icon-right
+        .col.py-3.flex.justify-content-end.align-items-center
+          span.mr-1 Barcode:
+          span.ml-1.p-input-icon-right
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
             InputText.inputSearchCode(
               placeholder='Please enter bar code!'
