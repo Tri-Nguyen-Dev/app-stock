@@ -60,7 +60,7 @@ div
       :styles="{'width': '1%'}"
     )
       template(#body='{ data }')
-        InputNumber.w-7rem(:value="quantityStock(data.quantity)" mode="decimal" :min="0" 
+        InputNumber.inputNumber.w-6rem(:value="quantityStock(data.quantity)" mode="decimal" showButtons :min="0" 
           :max="maxQuantity(data)" inputClass="w-full"
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
           :disabled="disableEditQty"

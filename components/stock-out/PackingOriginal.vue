@@ -57,7 +57,7 @@
               div Estimated
               div Inventory Fee:
             div.ml-2
-              InputText.w-4(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
+              InputText.w-4.inputSearchCode(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
               span.ml-1 / day
         .col.py-3.flex.justify-content-end
           span.p-input-icon-right
