@@ -3,7 +3,7 @@
     Toast
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
       StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
-    .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
+    .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
       div.flex.flex-column
         .grid.grid-nogutter.mb-3
           StockOutPackingOriginal(
@@ -42,7 +42,7 @@
             @handelDeteleBoxEmpty='handelDeteleBoxEmpty'
             :boxSizeList='boxSizeList'
           )
-      .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.align-items-center.absolute.right-0.left-0.bottom-0
+      .packing__detail--footer.grid.grid-nogutter.bg-white.border-round.align-items-center
         .col.p-1
           .grid.align-items-center
             .col-1
@@ -413,6 +413,10 @@ export default DeliveryOrderPacking
     height: calc(100vh - 32px)
     max-width: 21.5rem
     overflow: hidden
+  .packing__detail--footer
+    height: 82px
+    padding: 0 12px
+    margin-top: auto
 ::-webkit-scrollbar
   width: 7px
   height: 7px
