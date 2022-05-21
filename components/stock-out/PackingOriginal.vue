@@ -1,7 +1,7 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
   Toast
-  Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab" :disabled="disableEditQty") + Add
+  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab" :disabled="disableEditQty") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.w-full.inputSearchCode(
@@ -40,25 +40,25 @@
               span.font-bold.text-small {{ slotProps.item.name }}
               .icon-arrow-up-right.icon
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
-        .col-3.py-3.border-right-1.border-gray-300
+        .col.py-3
           span.mr-1 Size:
-          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty").w-9
+          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
           span.ml-1 (cm)
-        .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
+        .col.py-3.border-right-1.border-left-1.border-gray-300.flex.align-items-center.px-3(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true")
           span.ml-2 Attach Tag
-        .col-3.ml-2.py-3.border-right-1.border-gray-300
-          .grid.align-items-center(v-if='isTranffering')
-            .col-4
-              div Estimated
-              div Inventory Fee:
-            .col
-              InputText.w-4(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty")
-              span.ml-1 / day
-          .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
+          div.ml-2(v-if='isOutgoing && tab.checked')
             span.p-input-icon-right
               .icon--small.icon--right.icon-scan.surface-900.icon--absolute
               InputText.inputSearchCode(@change='addTagByBarCode' placeholder='Please enter tag code!')
+        .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
+          div.flex.align-items-center
+            div
+              div Estimated
+              div Inventory Fee:
+            div.ml-2
+              InputText.w-4(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
+              span.ml-1 / day
         .col.py-3.flex.justify-content-end
           span.p-input-icon-right
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
