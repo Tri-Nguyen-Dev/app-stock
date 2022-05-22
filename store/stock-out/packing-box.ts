@@ -24,6 +24,7 @@ export default class StorePackingBox extends VuexModule {
   public idPackingDetail: any = null
   public infoTag: any = null
   public packingDetail: any = {}
+  public tagCode: any = {}
 
   @Mutation
   setListOriginal(data: any) {
@@ -44,6 +45,11 @@ export default class StorePackingBox extends VuexModule {
   @Mutation
   setPackingDetail(data: any) {
     this.packingDetail = data
+  }
+
+  @Mutation
+  setInfoTag(data: any) {
+    this.tagCode = data
   }
 
   @Action({ commit: 'setListOriginal', rawError: true })
@@ -89,10 +95,11 @@ export default class StorePackingBox extends VuexModule {
   @Action({ commit: 'setInfoTag', rawError: true })
   async actScanAirtag(barcode: any): Promise<string | undefined> {
     try{
-      const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.SAVE_PACKING_ORDER, { barcode })
+      const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.SCAN_AIRTAG, { barcode })
       const response = await $api.get(url)
       return response.data
-    } catch (error) {}
+    } catch (error) {
+    }
   }
   
   @Action({ commit: 'setPackingDetail', rawError: true })

@@ -17,7 +17,7 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    TabPanel(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
+    TabPanel(v-for='(tab,index) in listBox' :key='tab.boxCode' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -44,7 +44,7 @@
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
-          Checkbox(v-model="tab.checked" :binary="true")
+          Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock(tab)' @change="handleChangeTag")
           span.ml-2 Attach Tag
         .col-3.ml-2.py-3.border-right-1.border-gray-300
           .grid.align-items-center(v-if='isTranffering')
@@ -57,7 +57,7 @@
           .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
             span.p-input-icon-right
               .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-              InputText.inputSearchCode(@change='addTagByBarCode' placeholder='Please enter tag code!')
+              InputText.inputSearchCode(@change='addTagByBarCode' placeholder='Please enter tag code!' v-model='tagCodeText')
         .col.py-3.flex.justify-content-end
           span.p-input-icon-right
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
@@ -91,6 +91,7 @@ class PackingOriginal extends Vue {
   selectedsd: any = null
   barCodeText: string = ''
   boxCodeText: string = ''
+  tagCodeText: string = ''
   locationBox: any = []
   isPackingDetail: boolean = false
 
@@ -111,7 +112,7 @@ class PackingOriginal extends Vue {
   actLocationList!: (params: any) => Promise<void>
 
   @nsStorePackingDetail.Action
-  actScanAirtag!: (params: any) => Promise<void>
+  actScanAirtag!: (params: any) => Promise<any>
 
   @Watch('activeIndex')
   async inputChange(index) {
@@ -188,8 +189,13 @@ class PackingOriginal extends Vue {
 
   async addTagByBarCode(e:any) {
     const barCode = e.target.value
-    await this.actScanAirtag(barCode)
-    this.listBox[this.activeIndex - 1].tagCode = e.target.value
+    const tagCode = await this.actScanAirtag(barCode)
+    if(tagCode) {
+      if(tagCode.status === 'AIRTAG_STATUS_AVAILABLE') {
+        this.listBox[this.activeIndex - 1].tagCode = e.target.value
+      }
+    }
+    this.tagCodeText = ''
   }
 
   get getTotalBox() {
@@ -238,6 +244,10 @@ class PackingOriginal extends Vue {
       _.remove(box.items, ({ barCode, originalBox }) => {
         return barCode === stockDelete.barCode && originalBox === stockDelete.originalBox
       })
+      if(!this.hasTagStock(box)) {
+        box.checked = false
+        box.tagCode = null
+      }
     }
   }
   
@@ -248,6 +258,16 @@ class PackingOriginal extends Vue {
     } else if(index === this.activeIndex - 1) {
       this.$nextTick(() => (this.activeIndex = 0))
     }
+  }
+
+  hasTagStock(box) {
+    if(!box) return
+    const isHasTag = _.find(box.items, { hasAirtag: true })
+    return !!isHasTag
+  }
+
+  handleChangeTag() {
+    // console.log(event);
   }
 }
 

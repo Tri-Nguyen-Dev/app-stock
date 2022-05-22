@@ -188,7 +188,7 @@ class DeliveryOrderPacking extends Vue {
     const stockOriginal = _.find(this.originalBoxActive.items, { barCode })
     if (stockOriginal) {
       const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode, originalBox: this.originalBoxActive.boxCode })
-      const { outGoingQuantity, actualOutGoing } = stockOriginal
+      const { outGoingQuantity, actualOutGoing, hasAirtag } = stockOriginal
       const isFullQuantityStock = outGoingQuantity > actualOutGoing
       this.addStock(
         this.outGoingBoxActive,
@@ -197,6 +197,9 @@ class DeliveryOrderPacking extends Vue {
         isFullQuantityStock,
         true
       )
+      if(hasAirtag && !this.outGoingBoxActive.checked && isFullQuantityStock) {
+        this.outGoingBoxActive.checked = hasAirtag
+      }
     } else {
       this.$toast.add({
         severity: 'error',
