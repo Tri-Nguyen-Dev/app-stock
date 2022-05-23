@@ -445,7 +445,9 @@ class DeliveryOrderList extends Vue {
   }
 
   rowdbClick({ data }) {
-    this.$router.push(`/stock-out/order/${data.id}`)
+    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
+      this.$router.push(`/stock-out/order/${data.id}`)
+    }
   }
 
   sortData(e: any) {
