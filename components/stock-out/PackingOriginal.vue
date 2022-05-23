@@ -18,7 +18,7 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    TabPanel(v-for='(tab,index) in listBox' :key='tab.boxCode' :disabled="isDisable(tab)")
+    TabPanel(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -50,7 +50,6 @@
                 @change='addTagByBarCode'
                 v-model="tagCodeText"
                 ref="inputScanTag"
-                v-model="tagCodeText"
               )
         .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
           div.flex.align-items-center
@@ -75,10 +74,12 @@
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1.font-semibold Size: {{tab.boxSize.name}} {{tab.boxSize.height}}*{{tab.boxSize.width}}*{{tab.boxSize.length}}
           span.ml-1.font-semibold (cm)
-        .col-3.ml-2.py-3.border-right-1.border-gray-300
-          .grid.align-items-center.pl-3(v-if='isTranffering')
+        .col-3.ml-2.py-3.border-right-1.border-gray-300(v-if='isTranffering')
+          .grid.align-items-center.pl-3
               div.font-semibold Estimated Inventory Fee: {{tab.inventoryFee}} $
               span.ml-1.font-semibold / day
+        .col.ml-2.py-3.flex.justify-content-end
+          span.font-semibold Box Code: {{tab.newBoxCode}}
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )

@@ -397,13 +397,16 @@ class DeliveryOrderPacking extends Vue {
     if(type === 'tranferringBox') {
       this.listTranfferingBox.splice(index, 1)
     }
-    else { 
+    else {
       this.listOutGoingBox.splice(index, 1)
     }
   }
 
   handleBack() {
     this.packingStep = 1
+    _.forEach(this.listTranfferingBox, function (obj) {
+      _.set(obj, 'location', null)
+    })
   }
 }
 
