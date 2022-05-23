@@ -25,7 +25,7 @@
         span.uppercase.text-700 {{tab.boxCode}}
         span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
-        .ml-1.px-1(v-if='isOutgoing && tab.checked') {{ tab.tagCode }}
+        .ml-1.px-1(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
         AutoComplete.edit-location.ml-1(
           v-if="isShowLocation(tab)"
           v-model='tab.location',
@@ -48,7 +48,7 @@
               .icon--small.icon--right.icon-scan.surface-900.icon--absolute
               InputText.inputSearchCode(
                 @change='addTagByBarCode'
-                placeholder='Please enter tag code!'
+                v-model="tagCodeText"
                 ref="inputScanTag"
                 v-model="tagCodeText"
               )
@@ -196,7 +196,12 @@ class PackingOriginal extends Vue {
     const barCode = e.target.value
     const tagCode = await this.actScanAirtag(barCode)
     if(tagCode) {
-      const tagCodeExist = _.find(this.listBox, { tagCode: barCode })
+      this.tagCodeText = ''
+      const tagCodeExist = _.find(this.listBox, function({ airtag }) {
+        if (airtag?.barCode === barCode) {
+          return true
+        }
+      })
       if(tagCodeExist) {
         this.$toast.add({
           severity: 'error',
@@ -205,7 +210,10 @@ class PackingOriginal extends Vue {
           life: 3000
         })
       } else if(tagCode.status === 'AIRTAG_STATUS_AVAILABLE') {
-        this.listBox[this.activeIndex - 1].tagCode = e.target.value
+        this.listBox[this.activeIndex - 1].airtag = {
+          id: tagCode.id,
+          barCode: e.target.value
+        }
       } else {
         this.$toast.add({
           severity: 'error',
@@ -280,7 +288,7 @@ class PackingOriginal extends Vue {
       })
       if(!this.hasTagStock(box)) {
         box.checked = false
-        box.tagCode = null
+        box.airtag = null
       }
     }
     this.$forceUpdate()
@@ -304,7 +312,7 @@ class PackingOriginal extends Vue {
   async handleChangeTag(box) {
     if(box) {
       if(!box.checked) {
-        _.set(box, 'tagCode', '')
+        _.set(box, 'airtag', null)
       } else {
         await this.$nextTick()
         if(this.$refs.inputScanTag && this.isOutgoing) {
