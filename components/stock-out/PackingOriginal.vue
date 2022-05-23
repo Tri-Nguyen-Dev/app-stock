@@ -35,10 +35,6 @@
           :dropdown='true'
           forceSelection
         )
-          template(#item='slotProps')
-            .grid.align-items-center.grid-nogutter
-              span.font-bold.text-small {{ slotProps.item.name }}
-              .icon-arrow-up-right.icon
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
           span.mr-1 Size:
@@ -349,6 +345,8 @@ export default PackingOriginal
         font-size: 14px !important
         position: relative !important
         z-index: 1000
+        .p-autocomplete-panel
+          font-size: 12px !important
         input
           width: 140px !important
           font-size: $font-size-small
