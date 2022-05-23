@@ -50,6 +50,7 @@
                 @change='addTagByBarCode'
                 placeholder='Please enter tag code!'
                 ref="inputScanTag"
+                v-model="tagCodeText"
               )
         .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
           div.flex.align-items-center
@@ -59,10 +60,6 @@
             div.ml-2
               InputText.w-4.inputSearchCode(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
               span.ml-1 / day
-          .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
-            span.p-input-icon-right
-              .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-              InputText.inputSearchCode(@change='addTagByBarCode' placeholder='Please enter tag code!' v-model='tagCodeText')
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:
           span.ml-1.p-input-icon-right
