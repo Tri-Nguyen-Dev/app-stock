@@ -60,8 +60,8 @@ div
       :styles="{'width': '1%'}"
     )
       template(#body='{ data }')
-        InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="0" 
-          :max="maxQuantity(data)" inputClass="w-full" :disabled='data.originalBox !== originalBoxActive.boxCode'
+        InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="0"
+          :max="maxQuantity(data)" inputClass="w-full" :disabled='data.originalBox !== originalBoxActive.boxCode || disableEditQty'
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
         )
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) {{ data.quantity }}
@@ -109,6 +109,7 @@ class PackingTableList extends Vue {
   @Prop() readonly boxCode!: string | undefined
   @Prop() readonly isPackingDetail!: boolean | false
   @InjectReactive() readonly originalBoxActive!: any
+  @InjectReactive() readonly packingStep!: any
   originalList: {} = {}
 
   getIndexPaginate(index: number) {
@@ -185,6 +186,13 @@ class PackingTableList extends Vue {
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'box')
+  }
+
+  get disableEditQty() {
+    if(this.packingStep === 2) {
+      return 'disabled'
+    }
+    else return null
   }
 }
 

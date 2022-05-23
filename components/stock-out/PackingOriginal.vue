@@ -1,7 +1,7 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
   Toast
-  Button.bg-white.text-primary.border-0.btn-add-tab(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab") + Add
+  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab" :disabled="disableEditQty") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.w-full.inputSearchCode(
@@ -10,6 +10,7 @@
       v-model="boxCodeText"
       placeholder='Please enter box code!'
       ref="inputScanBoxCode"
+      :disabled="disableEditQty"
     )
   TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
@@ -34,38 +35,44 @@
           :dropdown='true'
           forceSelection
         )
-          template(#item='slotProps')
-            .grid.align-items-center.grid-nogutter
-              span.font-bold.text-small {{ slotProps.item.name }}
-              .icon-arrow-up-right.icon
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
-        .col-3.py-3.border-right-1.border-gray-300
+        .col.py-3
           span.mr-1 Size:
-          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name").w-9
+          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
           span.ml-1 (cm)
-        .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
+        .col.py-3.border-right-1.border-left-1.border-gray-300.flex.align-items-center.px-3(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock(tab)' @change="handleChangeTag(tab)")
           span.ml-2 Attach Tag
-        .col-3.ml-2.py-3.border-right-1.border-gray-300
-          .grid.align-items-center(v-if='isTranffering')
-            .col-4
+          div.ml-2(v-if='isOutgoing && tab.checked')
+            span.p-input-icon-right
+              .icon--small.icon--right.icon-scan.surface-900.icon--absolute
+              InputText.inputSearchCode(
+                @change='addTagByBarCode'
+                placeholder='Please enter tag code!'
+                ref="inputScanTag"
+              )
+        .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
+          div.flex.align-items-center
+            div
               div Estimated
               div Inventory Fee:
-            .col
-              InputText.w-4(v-model='tab.inventoryFee' type='number')
+            div.ml-2
+              InputText.w-4.inputSearchCode(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
               span.ml-1 / day
           .grid.justify-content-center.align-items-center(v-if='isOutgoing && tab.checked')
             span.p-input-icon-right
               .icon--small.icon--right.icon-scan.surface-900.icon--absolute
               InputText.inputSearchCode(@change='addTagByBarCode' placeholder='Please enter tag code!' v-model='tagCodeText')
-        .col.py-3.flex.justify-content-end
-          span.p-input-icon-right
+        .col.py-3.flex.justify-content-end.align-items-center
+          span.mr-1 Barcode:
+          span.ml-1.p-input-icon-right
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
             InputText.inputSearchCode(
               placeholder='Please enter bar code!'
               @change='addStockByBarcode($event)'
               v-model="barCodeText"
               ref="inputScanBarCode"
+              :disabled="disableEditQty"
             )
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && isPackingDetail')
         .col-3.py-3.border-right-1.border-gray-300
@@ -80,7 +87,7 @@
       )
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, namespace, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, namespace, Watch, InjectReactive } from 'nuxt-property-decorator'
 const nsStoreLocationList = namespace('location/location-list')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
@@ -104,6 +111,7 @@ class PackingOriginal extends Vue {
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly autoActiveTabOut!: boolean | false
+  @InjectReactive() readonly packingStep!: any
 
   @nsStoreLocationList.State
   locationList: {}
@@ -193,12 +201,29 @@ class PackingOriginal extends Vue {
     if(tagCode) {
       const tagCodeExist = _.find(this.listBox, { tagCode: barCode })
       if(tagCodeExist) {
-        // console.log('tag nay da duo gan vao box ' + tagCodeExist.boxCode)
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'This tag is not available in this time!',
+          life: 3000
+        })
       } else if(tagCode.status === 'AIRTAG_STATUS_AVAILABLE') {
         this.listBox[this.activeIndex - 1].tagCode = e.target.value
       } else {
-        // console.log(TagCode khong ton tai)
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'This tag is not exist!',
+          life: 3000
+        })
       }
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'This tag code is not exist!',
+        life: 3000
+      })
     }
     this.tagCodeText = ''
   }
@@ -213,6 +238,13 @@ class PackingOriginal extends Vue {
       return accumulator +  length
     }, 0)
     return sum
+  }
+
+  get disableEditQty() {
+    if(this.packingStep === 2) {
+      return 'disabled'
+    }
+    else return null
   }
 
   async searchLocation (e) {
@@ -272,10 +304,16 @@ class PackingOriginal extends Vue {
     return !!isHasTag
   }
 
-  handleChangeTag(box) {
+  async handleChangeTag(box) {
     if(box) {
       if(!box.checked) {
         _.set(box, 'tagCode', '')
+      } else {
+        await this.$nextTick()
+        if(this.$refs.inputScanTag && this.isOutgoing) {
+          const inputRef = this.$refs.inputScanTag[this.activeIndex - 1] as any
+          await this.$nextTick(() =>  inputRef?.$el.focus())
+        }
       }
     }
   }
@@ -325,6 +363,10 @@ export default PackingOriginal
       background-color: #dee2e6
       left: 0
   .p-tabview
+    .p-tabview-nav-btn.p-link
+      border-radius: 3px
+      box-shadow: none
+      border: 1px solid #dee2e6
     .icon
       background: $primary-dark
     .p-tabview-panels
@@ -350,6 +392,8 @@ export default PackingOriginal
         font-size: 14px !important
         position: relative !important
         z-index: 1000
+        .p-autocomplete-panel
+          font-size: 12px !important
         input
           width: 140px !important
           font-size: $font-size-small
