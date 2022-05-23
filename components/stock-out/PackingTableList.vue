@@ -60,8 +60,8 @@ div
       :styles="{'width': '1%'}"
     )
       template(#body='{ data }')
-        InputNumber.w-7rem(:value="quantityStock(data.quantity)" mode="decimal" :min="0" 
-          :max="maxQuantity(data)" inputClass="w-full"
+        InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="0" 
+          :max="maxQuantity(data)" inputClass="w-full" :disabled='data.originalBox !== originalBoxActive.boxCode'
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
         )
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) {{ data.quantity }}
@@ -185,10 +185,6 @@ class PackingTableList extends Vue {
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'box')
-  }
-
-  quantityStock(quantity) {
-    return this.isModalDelete ? 0 : quantity
   }
 }
 
