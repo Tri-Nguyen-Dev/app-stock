@@ -44,7 +44,7 @@
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
-          Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock')
+          Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock()')
           span.ml-2 Attach Tag
         .col-3.ml-2.py-3.border-right-1.border-gray-300
           .grid.align-items-center(v-if='isTranffering')
@@ -75,7 +75,7 @@
           .grid.align-items-center.pl-3(v-if='isTranffering')
               div.font-semibold Estimated Inventory Fee: {{tab.inventoryFee}} $
               span.ml-1.font-semibold / day
-      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode' 
+      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )
 </template>
@@ -119,7 +119,7 @@ class PackingOriginal extends Vue {
     if(this.$refs.inputScanBarCode && !this.isOriginal) {
       const inputRef = this.$refs.inputScanBarCode[index - 1] as any
       await this.$nextTick(() =>  inputRef?.$el.focus())
-    }    
+    }
   }
 
   @Watch('autoActiveTabOut')
@@ -239,9 +239,10 @@ class PackingOriginal extends Vue {
         return barCode === stockDelete.barCode && originalBox === stockDelete.originalBox
       })
     }
+    this.$forceUpdate()
   }
-  
-  handleDeleteBox(index) { 
+
+  handleDeleteBox(index) {
     this.$emit('handelDeteleBoxEmpty', this.type, index)
     if(index < this.activeIndex - 1) {
       this.$nextTick(() => (this.activeIndex = this.activeIndex - 1))
@@ -250,13 +251,15 @@ class PackingOriginal extends Vue {
     }
   }
 
-  get hasTagStock() {
+  hasTagStock() {
     let disabled = false
     _.forEach(this.listBox, (box) => {
       const isHasTag = _.find(box.items, { hasAirtag: true })
       if(isHasTag) {
         box.checked = true
         disabled = true
+      } else {
+        box.checked = false
       }
     })
     return disabled
@@ -291,7 +294,7 @@ export default PackingOriginal
       margin: 0 !important
     .p-inputtext:enabled:focus
       box-shadow: none !important
-  
+
   .btn-add-tab
     position: absolute
     right: 0
