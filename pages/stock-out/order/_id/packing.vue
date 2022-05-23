@@ -90,7 +90,7 @@ class DeliveryOrderPacking extends Vue {
     {
       boxCode: 'EX1',
       items: [],
-      tagCode: '',
+      airtag: null,
       checked: false,
       boxSize: null
     }
@@ -181,7 +181,7 @@ class DeliveryOrderPacking extends Vue {
     this.listOutGoingBox.push({
       boxCode: this.genearateBoxCode(this.listOutGoingBox, 'EX'),
       items: [],
-      tagCode: '',
+      airtag: null,
       checked: false,
       boxSize: null
     })
@@ -259,7 +259,7 @@ class DeliveryOrderPacking extends Vue {
     this.listTranfferingBox.push({
       boxCode: this.genearateBoxCode(this.listTranfferingBox, 'IN'),
       items: [],
-      tagCode: '',
+      airtag: null,
       checked: true,
       boxSize: null,
       inventoryFee: 0,
@@ -331,9 +331,10 @@ class DeliveryOrderPacking extends Vue {
   async handleSubmit() {
     const data: any = {}
     data.originalBox = _.map(this.listOriginalBox, 'boxCode')
-    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items }) => ({
+    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items, airtag }) => ({
       boxSize,
-      listStockWithAmount: this.getStocks(items)
+      listStockWithAmount: this.getStocks(items),
+      airtag
     }))
     data.transferringBox = _.map(this.listTranfferingBox, ({ boxSize, items, inventoryFee, location, request }) => ({
       boxSize,
@@ -360,8 +361,9 @@ class DeliveryOrderPacking extends Vue {
         quantity: 0
       })[1]
       const unsetBoxSizeOutGoing = _.partition(this.listOutGoingBox, { 'boxSize': null })[0]
+      const unsetTagCode = _.partition(this.listOutGoingBox, { 'airtag': null, checked: true  })[0]
       const unsetBoxSizeTranffering = _.partition(this.listTranfferingBox, { 'boxSize': null })[0]
-      if(_.size(unsetBoxSizeOutGoing) === 0 && _.size(unsetBoxSizeTranffering) === 0 && _.size(unprocessedStocks) === 0) {
+      if(_.size(unsetBoxSizeOutGoing) === 0 && _.size(unsetBoxSizeTranffering) === 0 && _.size(unprocessedStocks) === 0 && _.size(unsetTagCode) === 0) {
         return null
       }
     }
