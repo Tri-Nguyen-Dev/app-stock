@@ -90,7 +90,7 @@ class DeliveryOrderPacking extends Vue {
     {
       boxCode: 'EX1',
       items: [],
-      tagCode: '',
+      airtag: null,
       checked: false,
       boxSize: null
     }
@@ -181,7 +181,7 @@ class DeliveryOrderPacking extends Vue {
     this.listOutGoingBox.push({
       boxCode: this.genearateBoxCode(this.listOutGoingBox, 'EX'),
       items: [],
-      tagCode: '',
+      airtag: null,
       checked: false,
       boxSize: null
     })
@@ -193,7 +193,7 @@ class DeliveryOrderPacking extends Vue {
     const stockOriginal = _.find(this.originalBoxActive.items, { barCode })
     if (stockOriginal) {
       const stockOutGoing = _.find(this.outGoingBoxActive.items, { barCode, originalBox: this.originalBoxActive.boxCode })
-      const { outGoingQuantity, actualOutGoing } = stockOriginal
+      const { outGoingQuantity, actualOutGoing, hasAirtag } = stockOriginal
       const isFullQuantityStock = outGoingQuantity > actualOutGoing
       this.addStock(
         this.outGoingBoxActive,
@@ -202,6 +202,9 @@ class DeliveryOrderPacking extends Vue {
         isFullQuantityStock,
         true
       )
+      if(hasAirtag && !this.outGoingBoxActive.checked && isFullQuantityStock) {
+        this.outGoingBoxActive.checked = hasAirtag
+      }
     } else {
       this.$toast.add({
         severity: 'error',
@@ -256,7 +259,7 @@ class DeliveryOrderPacking extends Vue {
     this.listTranfferingBox.push({
       boxCode: this.genearateBoxCode(this.listTranfferingBox, 'IN'),
       items: [],
-      tagCode: '',
+      airtag: null,
       checked: true,
       boxSize: null,
       inventoryFee: 0,
@@ -328,9 +331,10 @@ class DeliveryOrderPacking extends Vue {
   async handleSubmit() {
     const data: any = {}
     data.originalBox = _.map(this.listOriginalBox, 'boxCode')
-    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items }) => ({
+    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items, airtag }) => ({
       boxSize,
-      listStockWithAmount: this.getStocks(items)
+      listStockWithAmount: this.getStocks(items),
+      airtag
     }))
     data.transferringBox = _.map(this.listTranfferingBox, ({ boxSize, items, inventoryFee, location, request }) => ({
       boxSize,
@@ -357,8 +361,9 @@ class DeliveryOrderPacking extends Vue {
         quantity: 0
       })[1]
       const unsetBoxSizeOutGoing = _.partition(this.listOutGoingBox, { 'boxSize': null })[0]
+      const unsetTagCode = _.partition(this.listOutGoingBox, { 'airtag': null, checked: true  })[0]
       const unsetBoxSizeTranffering = _.partition(this.listTranfferingBox, { 'boxSize': null })[0]
-      if(_.size(unsetBoxSizeOutGoing) === 0 && _.size(unsetBoxSizeTranffering) === 0 && _.size(unprocessedStocks) === 0) {
+      if(_.size(unsetBoxSizeOutGoing) === 0 && _.size(unsetBoxSizeTranffering) === 0 && _.size(unprocessedStocks) === 0 && _.size(unsetTagCode) === 0) {
         return null
       }
     }
@@ -392,13 +397,16 @@ class DeliveryOrderPacking extends Vue {
     if(type === 'tranferringBox') {
       this.listTranfferingBox.splice(index, 1)
     }
-    else { 
+    else {
       this.listOutGoingBox.splice(index, 1)
     }
   }
 
   handleBack() {
     this.packingStep = 1
+    _.forEach(this.listTranfferingBox, function (obj) {
+      _.set(obj, 'location', null)
+    })
   }
 }
 

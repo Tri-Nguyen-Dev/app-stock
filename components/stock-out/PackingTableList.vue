@@ -60,10 +60,9 @@ div
       :styles="{'width': '1%'}"
     )
       template(#body='{ data }')
-        InputNumber.inputNumber.w-6rem(:value="quantityStock(data.quantity)" mode="decimal" showButtons :min="0" 
-          :max="maxQuantity(data)" inputClass="w-full"
+        InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="0"
+          :max="maxQuantity(data)" inputClass="w-full" :disabled='data.originalBox !== originalBoxActive.boxCode || disableEditQty'
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
-          :disabled="disableEditQty"
         )
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) {{ data.quantity }}
     Column(
@@ -194,10 +193,6 @@ class PackingTableList extends Vue {
       return 'disabled'
     }
     else return null
-  }
-
-  quantityStock(quantity) {
-    return this.isModalDelete ? 0 : quantity
   }
 }
 

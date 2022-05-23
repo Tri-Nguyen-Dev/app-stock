@@ -25,7 +25,7 @@
         span.uppercase.text-700 {{tab.boxCode}}
         span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
-        .ml-1.px-1(v-if='isOutgoing && tab.checked') {{ tab.tagCode }}
+        .ml-1.px-1(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
         AutoComplete.edit-location.ml-1(
           v-if="isShowLocation(tab)"
           v-model='tab.location',
@@ -41,14 +41,14 @@
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
           span.ml-1 (cm)
         .col.py-3.border-right-1.border-left-1.border-gray-300.flex.align-items-center.px-3(v-if='isOutgoing')
-          Checkbox(v-model="tab.checked" :binary="true" @input="handleChangeTag")
+          Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock(tab)' @change="handleChangeTag(tab)")
           span.ml-2 Attach Tag
           div.ml-2(v-if='isOutgoing && tab.checked')
             span.p-input-icon-right
               .icon--small.icon--right.icon-scan.surface-900.icon--absolute
               InputText.inputSearchCode(
                 @change='addTagByBarCode'
-                placeholder='Please enter tag code!'
+                v-model="tagCodeText"
                 ref="inputScanTag"
               )
         .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
@@ -74,11 +74,13 @@
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1.font-semibold Size: {{tab.boxSize.name}} {{tab.boxSize.height}}*{{tab.boxSize.width}}*{{tab.boxSize.length}}
           span.ml-1.font-semibold (cm)
-        .col-3.ml-2.py-3.border-right-1.border-gray-300
-          .grid.align-items-center.pl-3(v-if='isTranffering')
+        .col-3.ml-2.py-3.border-right-1.border-gray-300(v-if='isTranffering')
+          .grid.align-items-center.pl-3
               div.font-semibold Estimated Inventory Fee: {{tab.inventoryFee}} $
               span.ml-1.font-semibold / day
-      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode' 
+        .col.ml-2.py-3.flex.justify-content-end
+          span.font-semibold Box Code: {{tab.newBoxCode}}
+      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )
 </template>
@@ -94,6 +96,7 @@ class PackingOriginal extends Vue {
   selectedsd: any = null
   barCodeText: string = ''
   boxCodeText: string = ''
+  tagCodeText: string = ''
   locationBox: any = []
   isPackingDetail: boolean = false
 
@@ -115,7 +118,7 @@ class PackingOriginal extends Vue {
   actLocationList!: (params: any) => Promise<void>
 
   @nsStorePackingDetail.Action
-  actScanAirtag!: (params: any) => Promise<void>
+  actScanAirtag!: (params: any) => Promise<any>
 
   @Watch('activeIndex')
   async inputChange(index) {
@@ -123,7 +126,7 @@ class PackingOriginal extends Vue {
     if(this.$refs.inputScanBarCode && !this.isOriginal) {
       const inputRef = this.$refs.inputScanBarCode[index - 1] as any
       await this.$nextTick(() =>  inputRef?.$el.focus())
-    }    
+    }
   }
 
   @Watch('autoActiveTabOut')
@@ -192,8 +195,43 @@ class PackingOriginal extends Vue {
 
   async addTagByBarCode(e:any) {
     const barCode = e.target.value
-    await this.actScanAirtag(barCode)
-    this.listBox[this.activeIndex - 1].tagCode = e.target.value
+    const tagCode = await this.actScanAirtag(barCode)
+    if(tagCode) {
+      this.tagCodeText = ''
+      const tagCodeExist = _.find(this.listBox, function({ airtag }) {
+        if (airtag?.barCode === barCode) {
+          return true
+        }
+      })
+      if(tagCodeExist) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'This tag is not available in this time!',
+          life: 3000
+        })
+      } else if(tagCode.status === 'AIRTAG_STATUS_AVAILABLE') {
+        this.listBox[this.activeIndex - 1].airtag = {
+          id: tagCode.id,
+          barCode: e.target.value
+        }
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'This tag is not exist!',
+          life: 3000
+        })
+      }
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'This tag code is not exist!',
+        life: 3000
+      })
+    }
+    this.tagCodeText = ''
   }
 
   get getTotalBox() {
@@ -249,10 +287,15 @@ class PackingOriginal extends Vue {
       _.remove(box.items, ({ barCode, originalBox }) => {
         return barCode === stockDelete.barCode && originalBox === stockDelete.originalBox
       })
+      if(!this.hasTagStock(box)) {
+        box.checked = false
+        box.airtag = null
+      }
     }
+    this.$forceUpdate()
   }
-  
-  handleDeleteBox(index) { 
+
+  handleDeleteBox(index) {
     this.$emit('handelDeteleBoxEmpty', this.type, index)
     if(index < this.activeIndex - 1) {
       this.$nextTick(() => (this.activeIndex = this.activeIndex - 1))
@@ -261,13 +304,23 @@ class PackingOriginal extends Vue {
     }
   }
 
-  async handleChangeTag(value) {
-    if(value) {
-      await this.$nextTick()
-      if(this.$refs.inputScanTag && this.isOutgoing) {
-        const inputRef = this.$refs.inputScanTag[this.activeIndex - 1] as any
-        await this.$nextTick(() =>  inputRef?.$el.focus())
-      }  
+  hasTagStock(box) {
+    if(!box) return
+    const isHasTag = _.find(box.items, { hasAirtag: true })
+    return !!isHasTag
+  }
+
+  async handleChangeTag(box) {
+    if(box) {
+      if(!box.checked) {
+        _.set(box, 'airtag', null)
+      } else {
+        await this.$nextTick()
+        if(this.$refs.inputScanTag && this.isOutgoing) {
+          const inputRef = this.$refs.inputScanTag[this.activeIndex - 1] as any
+          await this.$nextTick(() =>  inputRef?.$el.focus())
+        }
+      }
     }
   }
 }
@@ -300,7 +353,7 @@ export default PackingOriginal
       margin: 0 !important
     .p-inputtext:enabled:focus
       box-shadow: none !important
-  
+
   .btn-add-tab
     position: absolute
     right: 0

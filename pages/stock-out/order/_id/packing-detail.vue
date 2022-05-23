@@ -102,7 +102,8 @@ class DeliveryOrderPackingDetail extends Vue {
     }))
 
     this.listOutGoingBox = _.map(this.packingDetail.outGoingBox, ({ id, inventoryFee, listStockWithAmount, boxSize }) => ({
-      boxCode: id,
+      boxCode: this.genearateBoxCode(this.listOutGoingBox, 'EX'),
+      newBoxCode: id,
       locationId: listStockWithAmount.id,
       inventoryFee,
       items: _.map(listStockWithAmount, ({ stock, originalBox, amount, sku }) => ({
@@ -117,7 +118,8 @@ class DeliveryOrderPackingDetail extends Vue {
     }))
 
     this.listTranfferingBox =  _.map(this.packingDetail.transferringBox, ({ id, inventoryFee, listStockWithAmount, boxSize }) => ({
-      boxCode: id,
+      boxCode: this.genearateBoxCode(this.listTranfferingBox, 'IN'),
+      newBoxCode: id,
       locationId: listStockWithAmount.id,
       inventoryFee,
       items: _.map(listStockWithAmount, ({ stock, originalBox, amount, sku }) => ({
@@ -137,6 +139,17 @@ class DeliveryOrderPackingDetail extends Vue {
     return tranferringOutGoing.reduce((accumulator:any, object:any) => {
       return accumulator + object.items.length
     },0)
+  }
+
+  genearateBoxCode(listPacking, subname) {
+    let boxCode = subname
+    if(listPacking.length > 0) {
+      const lastNo = _.last(listPacking)?.boxCode.replace(subname, '')
+      boxCode += parseInt(lastNo) + 1
+    } else {
+      boxCode += 1
+    }
+    return boxCode
   }
 }
 export default DeliveryOrderPackingDetail
