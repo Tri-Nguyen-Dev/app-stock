@@ -44,7 +44,7 @@
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name").w-9
           span.ml-1 (cm)
         .col-1.py-3.ml-2.border-right-1.border-gray-300(v-if='isOutgoing')
-          Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock(tab)' @change="handleChangeTag")
+          Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock(tab)' @change="handleChangeTag(tab)")
           span.ml-2 Attach Tag
         .col-3.ml-2.py-3.border-right-1.border-gray-300
           .grid.align-items-center(v-if='isTranffering')
@@ -191,8 +191,13 @@ class PackingOriginal extends Vue {
     const barCode = e.target.value
     const tagCode = await this.actScanAirtag(barCode)
     if(tagCode) {
-      if(tagCode.status === 'AIRTAG_STATUS_AVAILABLE') {
+      const tagCodeExist = _.find(this.listBox, { tagCode: barCode })
+      if(tagCodeExist) {
+        // console.log('tag nay da duo gan vao box ' + tagCodeExist.boxCode)
+      } else if(tagCode.status === 'AIRTAG_STATUS_AVAILABLE') {
         this.listBox[this.activeIndex - 1].tagCode = e.target.value
+      } else {
+        // console.log(TagCode khong ton tai)
       }
     }
     this.tagCodeText = ''
@@ -266,8 +271,12 @@ class PackingOriginal extends Vue {
     return !!isHasTag
   }
 
-  handleChangeTag() {
-    // console.log(event);
+  handleChangeTag(box) {
+    if(box) {
+      if(!box.checked) {
+        _.set(box, 'tagCode', '')
+      }
+    }
   }
 }
 
