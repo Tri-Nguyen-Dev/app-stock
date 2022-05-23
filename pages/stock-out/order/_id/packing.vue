@@ -3,7 +3,7 @@
     Toast
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
       StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
-    .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
+    .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
       div.flex.flex-column
         .grid.grid-nogutter.mb-3
           StockOutPackingOriginal(
@@ -42,7 +42,7 @@
             @handelDeteleBoxEmpty='handelDeteleBoxEmpty'
             :boxSizeList='boxSizeList'
           )
-      .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
+      .packing__detail--footer.grid.grid-nogutter.bg-white.border-round.align-items-center
         .col.p-1
           .grid.align-items-center
             .col-1
@@ -64,9 +64,11 @@
             .col
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary {{tranferringOutGoing}}
-        .col-1.flex.justify-content-end.p-1
-          Button.btn.btn-primary.w-10.justify-content-center.flex(@click="handleClick" v-if='!ishowSave' :disabled="isDisabled") Next
-          Button.btn.btn-primary.ml-2.w-10.justify-content-center.flex(@click="handleSubmit" v-if="ishowSave") Save
+        .col-2.flex.justify-content-end.p-1
+          Button.btn.btn-primary.justify-content-center.flex(@click="handleClick" v-if='packingStep === 1' :disabled="isDisabled") Next
+          div.flex
+            Button.btn.btn-outline.ml-2(@click="handleBack" v-if="ishowSave && packingStep === 2") Back
+            Button.btn.btn-primary.ml-3(@click="handleSubmit" v-if="ishowSave && packingStep === 2") Save
 </template>
 
 <script lang="ts">
@@ -96,6 +98,9 @@ class DeliveryOrderPacking extends Vue {
 
   @ProvideReactive()
   originalBoxActive: any = {}
+
+  @ProvideReactive()
+  packingStep: number | string = 1
 
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
@@ -295,6 +300,7 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
+    this.packingStep = 2
     let listBoxLocation = [ ...this.listTranfferingBox ]
     listBoxLocation = listBoxLocation.map((item) => {
       return item.boxSize?.id.toString()
@@ -390,6 +396,10 @@ class DeliveryOrderPacking extends Vue {
       this.listOutGoingBox.splice(index, 1)
     }
   }
+
+  handleBack() {
+    this.packingStep = 1
+  }
 }
 
 export default DeliveryOrderPacking
@@ -403,6 +413,10 @@ export default DeliveryOrderPacking
     height: calc(100vh - 32px)
     max-width: 21.5rem
     overflow: hidden
+  .packing__detail--footer
+    height: 82px
+    padding: 0 12px
+    margin-top: auto
 ::-webkit-scrollbar
   width: 7px
   height: 7px

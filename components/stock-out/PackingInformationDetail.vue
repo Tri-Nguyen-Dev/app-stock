@@ -3,9 +3,9 @@
 	.packing__detail--header.border-bottom-1.border-gray-300
 		Breadcrumb(:home='homeItem', :model='breadcrumbItem')
 	.packing__detail--content.p-3
-		.my-3.font-bold
+		.my-3.font-bold.flex.align-items-center
 			.icon.icon-info.inline-block
-			span.uppercase order detail
+			span.uppercase.ml-1 order detail
 		h3.uppercase.m-1 id: {{ deliveryOrderDetail.id }}
 		h5.uppercase.inline-block.text-400 Create time:&nbsp;
 		span.uppercase.font-bold 13rd April 2022 12:22AM
@@ -58,6 +58,15 @@ export default PackingInformationDetail
 </script>
 <style lang="sass" scoped>
 ::v-deep.order__packing--detail
+  .p-breadcrumb
+    .p-menuitem-link
+      display: flex
+      align-items: center
+      .p-menuitem-icon
+        display: block !important
+        height: 100%
+      .p-menuitem-text
+        margin-left: 4px
   .packing__detail--content
     .p-tabview .p-tabview-nav li
       .p-tabview-nav-link
