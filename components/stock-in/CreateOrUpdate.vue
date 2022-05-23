@@ -29,34 +29,35 @@
               i.filter__title auto generate...
         .col
           .filter__item
-            .filter__title Warehouse
+            .filter__title.required__title Warehouse
             Dropdown.general__dropdown(
               v-model='warehouse',
               :options='warehouseList',
               optionLabel='name',
               placeholder='Select'
             )
+            .input-errors
+              .error-message(v-if='$v.warehouse.$dirty && $v.warehouse.$invalid') Please enter warehouse!
         .col
           .filter__item
             .filter__title.required__title Seller email
-            .filter__autocomplete
-              AutoComplete(
-                v-model='generalInfo.seller',
-                :suggestions='sellerList',
-                @complete='handleChangeSeller($event)',
-                @item-select='selectedItem($event)',
-                field='email',
-                @clear='clearItem($event)'
-                :delay='500'
-              )
-              .input-errors(
-                v-if='$v.generalInfo.seller.$dirty && $v.generalInfo.seller.$invalid'
-              )
-                .error-message Please enter email!
-              .input-errors(
-                v-if='emailInvalid'
-              )
-                .error-message Email invalid
+            AutoComplete(
+              v-model='generalInfo.seller',
+              :suggestions='sellerList',
+              @complete='handleChangeSeller($event)',
+              @item-select='selectedItem($event)',
+              field='email',
+              @clear='clearItem($event)'
+              :delay='500'
+            )
+            .input-errors(
+              v-if='$v.generalInfo.seller.$dirty && $v.generalInfo.seller.$invalid'
+            )
+              .error-message Please enter email!
+            .input-errors(
+              v-if='emailInvalid'
+            )
+              .error-message Email invalid
         .col
           .filter__item.item--disabled
             .filter__title Seller phone
@@ -68,9 +69,9 @@
   card.card-custom
     template(#content='')
       .grid
-        .col-2.border-top.pl-3
+        .col-12.pl-3.border__top(class='md:col-3 lg:col-2')
           .grid.mb-2
-            .col.flex.align-items-center.justify-content-center.mb-1.pt-4
+            .col.flex.align-items-center.justify-content-center.mb-1.pt-4.pb-5
               Button.text-primary(
                 type='button',
                 icon='pi pi-plus',
@@ -78,7 +79,7 @@
                 @click='addBox',
                 label='Add box'
               )
-          .overflow-y-auto(style='height: 55vh', v-if='listBox')
+          .overflow-y-auto(style='height: 53vh', v-if='listBox')
             .grid.box-card.m-2(
               v-for='box in listBox',
               @click='selectBox(box)',
@@ -110,41 +111,48 @@
                         .grid.align-items-center.grid-nogutter
                           span.font-bold.text-small {{ slotProps.item.name }}
                           .icon-arrow-up-right.icon
-        .col-10
+        .col-12.p-0(class='md:col-9 lg:col-10')
           .grid.border__grid(v-if='boxSizeList && listBox[activeIndex]')
-            .col-12.pt-4.pb-4.border__right(class='md:col-5 lg:col-4')
-              span.font-semibold.text-base.mr-3.ml-3.required__title Size
-              Dropdown.box-input(
-                style='width: 70%',
-                :options='boxSizeList',
-                optionLabel='name',
-                optionValue='id',
-                placeholder='Select size',
-                v-model='listBox[activeIndex].boxSize.id',
-                :filter='true',
-                :showClear='true'
-              )
-              span.font-semibold.text-base.ml-3 (cm)
-              .input-errors( v-if='listBox[activeIndex] && $v.listBox.$each[activeIndex].boxSize.id.$dirty && $v.listBox.$each[activeIndex].boxSize.id.$invalid' style='text-align: center')
-                .error-message Please enter select box size Fee!
-            .col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4') 
-              span.font-semibold.text-base.mr-3.ml-2.required__title Estimate Inventory Fee
-              InputNumber.number-input(
-                v-model='listBox[activeIndex].inventoryFee',
-                mode='currency',
-                currency='USD',
-                locale='en-US'
-              ) 
-              span.font-semibold.text-base.ml-3 / day
-              .input-errors(v-if='$v.listBox.$each[activeIndex].inventoryFee.$dirty && $v.listBox.$each[activeIndex].inventoryFee.$invalid' style='text-align: center')
-                .error-message() Please enter Inventory Fee!
-            .col-6.pt-4.pb-4(class='md:col-5 lg:col-4')
+            .col-12.pt-4.pb-4.border__right(class='md:col-6 lg:col-4')
+              .grid
+                .col-12.content-center
+                  span.font-semibold.text-base.mr-3.ml-3.required__title Size
+                  Dropdown.box-input(
+                    style='width: 70%',
+                    :options='boxSizeList',
+                    optionLabel='name',
+                    optionValue='id',
+                    placeholder='Select size',
+                    v-model='listBox[activeIndex].boxSize.id',
+                    :filter='true',
+                    :showClear='true'
+                  )
+                  span.font-semibold.text-base.ml-3 (cm)
+                  .input-errors( v-if='listBox[activeIndex] && $v.listBox.$each[activeIndex].boxSize.id.$dirty && $v.listBox.$each[activeIndex].boxSize.id.$invalid' style='text-align: center')
+                    .error-message Please enter select box size Fee!
+            .col-12.border__right.pt-4.pb-4(class='md:col-6 lg:col-4') 
+              .grid
+                .col-12.content-center(class='md:col-6 lg:col-6') 
+                  span.font-semibold.text-base.mr-3.ml-2.required__title Estimate Inventory Fee
+                .col-12(class='md:col-6 lg:col-6')   
+                  InputNumber.number-input(
+                    v-model='listBox[activeIndex].inventoryFee',
+                    mode='currency',
+                    currency='USD',
+                    locale='en-US'
+                    style='width:60%'
+                  ) 
+                  span.font-semibold.text-base.ml-3 / day
+              .input-errors()
+                .error-message(v-if='$v.listBox.$each[activeIndex].inventoryFee.$dirty && $v.listBox.$each[activeIndex].inventoryFee.$invalid' style='text-align: center') Please enter Inventory Fee!
+            .col-12.pt-4.pb-4.content-center(class='md:col-6 lg:col-3')
               span.font-semibold.text-base.mr-2.ml-2 Barcode
               InputText.box-input.mr-2(
                 placeholder='Enter barcode',
-                style='width: 40%',
+                style='width: 60%',
                 @change='changeBarcode($event)',
                 v-model='boxQrCode'
+                @keyup.enter='changeBarcode($event)'
               )
           .grid.border__left.border__right.mt-0.pb-3(
             style='margin-right: 0px',
@@ -166,7 +174,7 @@
                 style='border: none',
                 v-model='note'
               )
-        .d-flex.col-6(class='md:col-2 lg:col-2')
+        .d-flex.col-12(class='md:col-4 lg:col-2')
           .grid.w-full.border__right
             .col-3.flex.align-items-center.justify-content-end
               img(src='~/assets/icons/box-border.svg')
@@ -174,7 +182,7 @@
               span.font-semibold.text-base.mr-1 Total boxes:
               br
               span.font-semibold.text-primary {{ listBox.length }}
-        .d-flex.col-6(class='md:col-2 lg:col-2')
+        .d-flex.col-12(class='md:col-4 lg:col-2')
           .grid.w-full.border__right
             .col-3.flex.align-items-center.justify-content-end
               img(src='~/assets/icons/total-items-border.svg')
@@ -182,15 +190,15 @@
               span.font-semibold.text-base.mr-1 Total items:
               br
               span.font-semibold.text-primary {{ totalItem() }}
-        .d-flex.col-6(class='md:col-2 lg:col-2')
+        .d-flex.col-12(class='md:col-4 lg:col-2')
           .grid.w-full.border__right
             .col-3.flex.align-items-center.justify-content-end
               img(src='~/assets/icons/total-fee.svg')
             .col-9
               span.font-semibold.text-base.mr-1 Total fee:
               br
-              span.font-semibold.text-primary $ {{ totalFee() }} /day
-        .d-flex.justify-content-center.col-6(class='md:col-2 lg:col-2')
+              span.font-semibold.text-primary $ {{ Number(totalFee()).toLocaleString() }} /day
+        .d-flex.justify-content-center.col-12(class='md:col-4 lg:col-2')
           Button.p-button-secondary.mr-2(
             label='Save draft',
             icon='pi pi-file-o',
@@ -249,7 +257,7 @@
 </template>
 <script lang="ts">
 import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
-import { email, required } from 'vuelidate/lib/validators'
+import { required } from 'vuelidate/lib/validators'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ItemDataTable from '~/components/stock-in/ItemDatatable.vue'
 import FormAddSeller from '~/components/stock-in/FormAddSeller.vue'
@@ -281,12 +289,9 @@ const nsStoreUser = namespace('user-auth/store-user')
       }
     },
     generalInfo: {
-      seller: {
-        email:{
-          email
-        } 
-      }
-    }
+      seller: { required }  
+    },
+    warehouse: { required }
   }
 })
 class CreateOrUpdateReceipt extends Vue {
@@ -751,8 +756,9 @@ class CreateOrUpdateReceipt extends Vue {
 
   checkValidateInput() {
     this.$v.generalInfo.seller?.$touch()
+    this.$v.warehouse?.$touch()
     this.$v.listBox.$each?.$touch()
-    if (this.$v.$invalid) {
+    if (this.$v.listBox.$invalid) {
       this.activeIndex = this.listBox.find((element) =>{
         return this.$v.listBox.$each![element.index]?.$invalid
       })!.index
@@ -803,7 +809,7 @@ export default CreateOrUpdateReceipt
       border-bottom: solid 1px $text-color-400
   .card-custom
     ::v-deep.p-datatable
-      height: 55vh
+      height: 53vh
     ::v-deep.p-card-body
       padding: 0 !important
       .p-card-content
@@ -914,4 +920,8 @@ export default CreateOrUpdateReceipt
 .button-disabled
   background-color: #979AA4 !important
   border-color: #979AA4 !important
+::v-deep.filter__item .p-autocomplete-input
+  width: 150px !important
+::v-deep.grid
+  margin: 0 !important
 </style>
