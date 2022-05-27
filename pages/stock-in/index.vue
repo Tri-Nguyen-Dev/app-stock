@@ -96,10 +96,10 @@
               span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
-              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'" 
-              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }} 
-              NuxtLink.text-white-active.text-900.font-bold(v-else 
-              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }} 
+              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'"
+              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }}
+              NuxtLink.text-white-active.text-900.font-bold(v-else
+              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }}
           Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
@@ -116,10 +116,10 @@
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorId }}
           Column(
-          header='CREATOR NAME' 
-          field='data.creatorName' 
-          :sortable="true" 
-          sortField="_createdBy.displayName" 
+          header='CREATOR NAME'
+          field='data.creatorName'
+          :sortable="true"
+          sortField="_createdBy.displayName"
           className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorName }}
@@ -152,7 +152,7 @@
         :loading="loadingSubmit"
       )
         template(v-slot:message)
-          p {{ deleteMessage }}  
+          p {{ deleteMessage }}
     Toast
 
 </template>
@@ -161,7 +161,7 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/RequestList'
-import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage } from '~/utils'
+import { REQUEST_STATUS, refreshAllFilter, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
@@ -178,14 +178,12 @@ const dayjs = require('dayjs')
 class StockIn extends Vue {
   selectedStockIn: any = []
   isShowFilter: boolean = false
-  selectedWarehouse: any = null
   statusRequest = REQUEST_STATUS
   isModalDelete: boolean = false
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
   sortByColumn: string = ''
   isDescending: boolean | null = null
-  boxCodeDelete: string = ''
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   filter: any = {
     id: null,
@@ -296,18 +294,6 @@ class StockIn extends Vue {
     this.filter[name] = e
     await this.actGetStockIn(this.getParamApi())
     this.selectedStockIn = []
-  }
-
-  debounceSearch = _.debounce(async () => {
-    await this.actGetStockIn(this.getParamApi())
-  }, 500)
-
-  getIndexPaginate(index: number) {
-    return calculateIndex(
-      index,
-      this.paging.pageNumber,
-      this.paging.pageSize
-    )
   }
 
   showModalDelete() {

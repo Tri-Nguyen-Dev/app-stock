@@ -42,11 +42,11 @@
               template(v-slot:auto-complete)
                 .mt-1.flex.align-items-center
                   AutoComplete.edit-location(
-                    v-model="isLocation" 
-                    field='name' 
-                    :suggestions='locationList' 
-                    forceSelection :readOnly='!isEditBox' 
-                    :placeholder='boxLocation' 
+                    v-model="isLocation"
+                    field='name'
+                    :suggestions='locationList'
+                    forceSelection :readOnly='!isEditBox'
+                    :placeholder='boxLocation'
                     @complete="searchLocation($event)"  )
                     template(#item="slotProps")
                       .grid.align-items-center.grid-nogutter
@@ -60,14 +60,14 @@
             StockUnit(title="Estimated inventory Fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
           div.wrap-unit.px-4(v-if="boxDetail.boxSize" :class='isEditBox ? "opacity-40" : "opacity-100"')
             StockUnit(
-              title="Box size:" 
-              type ="size" 
-              :height="boxDetail.boxSize.height" 
-              :length="boxDetail.boxSize.length" 
-              :width="boxDetail.boxSize.width" 
+              title="Box size:"
+              type ="size"
+              :height="boxDetail.boxSize.height"
+              :length="boxDetail.boxSize.length"
+              :width="boxDetail.boxSize.width"
               icon="icon-size")
               template(v-slot:size)
-                span.font-bold.text-small.mt-1.uppercase 
+                span.font-bold.text-small.mt-1.uppercase
                   | {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
               template(v-slot:button-size='')
                 span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(
@@ -123,11 +123,11 @@
                       div.pt-2.pl-1.pb-1
                         span.text-600.text-sm.pl-2 Category
                         MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(
-                          v-model="filterParams.category" 
-                          :options='categoryList' 
-                          optionLabel="name" 
-                          optionValue="id" 
-                          placeholder="Select" 
+                          v-model="filterParams.category"
+                          :options='categoryList'
+                          optionLabel="name"
+                          optionValue="id"
+                          placeholder="Select"
                           :filter='true')
               TabPanel.h-full
                 template(#header)
@@ -260,7 +260,7 @@ class BoxDetail extends Vue {
       this.isEditBox = true
     }
     await this.actGetBoxDetail({ id: this.$route?.params?.id })
-    this.actCategoryList()
+    await this.actCategoryList()
   }
 
   backToBox() {
@@ -333,11 +333,11 @@ export default BoxDetail
 </script>
 
 <style lang="sass" scoped>
-.box-page 
+.box-page
   display: flex
   flex-direction: column
   height: calc( 100vh - 32px )
-.box__table 
+.box__table
   flex: 1
   overflow: hidden
 @media (max-width: 1024px)
@@ -368,7 +368,7 @@ export default BoxDetail
   height: calc(100vh - 280px)
   max-width: 21.5rem
   overflow: auto
-  
+
 .right__information--stock
   display: flex
   flex-direction: column
@@ -424,7 +424,7 @@ export default BoxDetail
   background-color: #979AA4
 .p-disabled, .p-component:disabled
   opacity: 1
-.wrap-unit 
+.wrap-unit
   width: 300px
   margin-bottom: 16px
 </style>

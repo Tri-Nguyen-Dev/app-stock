@@ -28,20 +28,20 @@ export const INFORMATION = {
     { id: 4, label: 'Phone', value:'', disabled: false, type: INPUT_TYPE.Text, validator: required }
   ],
   receiver:  [
-    { id: 5, label: 'Address' , value:'' },
-    { id: 6, label: 'Email' , value:'' },
-    { id: 7, label: 'Name' , value:'' },
-    { id: 8, label: 'Phone' , value:'' }
+    { id: 5, label: 'Address' , value:'', type: INPUT_TYPE.Text },
+    { id: 6, label: 'Email' , value:'', type: INPUT_TYPE.Text },
+    { id: 7, label: 'Name' , value:'', type: INPUT_TYPE.Text },
+    { id: 8, label: 'Phone' , value:'', type: INPUT_TYPE.Text }
   ],
   warehouse: [
-    { id: 1, label: 'Name', options:'options', disabled: false,  value:'', warehouseId: '' },
-    { id: 2, label: 'Email', value:'', disabled: false },
-    { id: 3, label: 'Phone', value:'', disabled: false }
+    { id: 1, label: 'Name', disabled: false,  value:'', warehouseId: '', type: INPUT_TYPE.Dropdown },
+    { id: 2, label: 'Email', value:'', disabled: false ,type: INPUT_TYPE.Text },
+    { id: 3, label: 'Phone', value:'', disabled: false, type: INPUT_TYPE.Text }
   ],
   creator: [
-    { id: 1, label: 'ID', value:'', disabled: false },
-    { id: 3, label: 'Email', value:'', disabled: false },
-    { id: 2, label: 'Name', value:'', disabled: false },
-    { id: 4, label: 'Phone', value:'', disabled: false }
+    { id: 1, label: 'ID', value:'', disabled: false, type: INPUT_TYPE.Text },
+    { id: 3, label: 'Email', value:'', disabled: false, type: INPUT_TYPE.Text },
+    { id: 2, label: 'Name', value:'', disabled: false, type: INPUT_TYPE.Text },
+    { id: 4, label: 'Phone', value:'', disabled: false, type: INPUT_TYPE.Text }
   ]
 }

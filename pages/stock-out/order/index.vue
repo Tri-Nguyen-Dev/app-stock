@@ -132,14 +132,13 @@ const nsStoreCreateOrder = namespace('stock-out/create-order')
 
 @Component({
   components: { ConfirmDialogCustom }
-
 })
 class createOrder extends Vue {
   listItemsAdd: any = []
   isActive: string = ''
   delivery: string = ''
   noteBox: any = null
-  infomation = INFORMATION
+  information = INFORMATION
   oldItem: any = null
   isModalDelete: boolean = false
   isModalCancel : boolean = false
@@ -148,7 +147,7 @@ class createOrder extends Vue {
   valueDelete: any
 
   @nsStoreCreateOrder.State
-  listInfor:any
+  listInfo:any
 
   @nsStoreCreateOrder.State
   outGoingListStore:any
@@ -167,14 +166,14 @@ class createOrder extends Vue {
       { ..._.cloneDeep(x), hasAirtag: false }))
     if(this.listItemsAdd.length > 0){
       this.disableInput(true)
-    }else if (!this.infomation.seller[0].value ){
+    }else if (!this.information.seller[0].value ){
       this.disableInput(false)
     }
   }
 
   createStockOut() {
     const note = this.noteBox
-    const listInfoAdd = { ...this.infomation , note }
+    const listInfoAdd = { ...this.information , note }
     this.$router.push('/stock-out/order/add-items')
     this.actGetCreateOrder(
       _.cloneDeep(listInfoAdd)
@@ -230,7 +229,7 @@ class createOrder extends Vue {
   }
 
   async handleSubmit(){
-    const listReceiver = this.listInfor.receiver
+    const listReceiver = this.listInfo.receiver
     const deliveryItemList: any = []
     _.forEach(this.listItemsAdd, ({ id, delivery, hasAirtag }) =>{
       deliveryItemList.push({
@@ -243,7 +242,7 @@ class createOrder extends Vue {
     })
     const result : any = await this.actDeliveryOrder({
       seller: {
-        id: this.infomation.seller[0].id
+        id: this.information.seller[0].id
       },
       receiverAddress: listReceiver[0].value,
       receiverEmail: listReceiver[1].value,
@@ -252,7 +251,7 @@ class createOrder extends Vue {
       dueDeliveryDate: null,
       estimatedDeliveryTime: null,
       warehouse: {
-        id: this.listInfor.warehouse[0].warehouseId
+        id: this.listInfo.warehouse[0].warehouseId
       },
       deliveryItemList
     })
@@ -283,7 +282,7 @@ class createOrder extends Vue {
     const emptyList =  this.listItemsAdd = []
     await this.actGetCreateOrder(_.cloneDeep(emptyList))
     await this.actOutGoingList(_.cloneDeep(emptyList))
-    _.forEach(this.infomation, function(item){
+    _.forEach(this.information, function(item){
       _.forEach(item, function(i) {
         i.value = null
       })
@@ -292,7 +291,7 @@ class createOrder extends Vue {
   }
 
   disableInput(isDisable: boolean) {
-    _.forEach(this.infomation, function(obj){
+    _.forEach(this.information, function(obj){
       _.forEach(obj, function(o){
         if(_.has(o, 'disabled')) {
           _.set(o, 'disabled' , isDisable)
@@ -331,7 +330,7 @@ export default createOrder
 <style lang="sass" scoped>
 .sub__tab
   height: 100%
-  min-width: 20rem
+  width: 22rem
   border-radius: var(--border-radius)
 .sub__tab--scroll
   background-color: #ffffff
