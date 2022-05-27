@@ -27,12 +27,16 @@ class Dashboard extends Vue {
 
   @nsSidebar.State
   widthScreen!: number
+  
+  @nsSidebar.Mutation('openSidebar')
+  openSidebar
 
   @nsSidebar.Action
   handleGetWidth!: (params?: any) => Promise<void>
 
   handleToggleMenu() {
     this.visibleMenu = !this.visibleMenu
+    this.openSidebar()
   }
   
   onResize(_e: any) {
@@ -58,7 +62,7 @@ export default Dashboard
 <style lang="sass">
 .main-container
   background-color: $bg-body-base
-  height: 100vh
+  min-height: 100vh
   padding: $space-size-16
   @incluce desktop
     padding: $space-size-32

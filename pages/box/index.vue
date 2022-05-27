@@ -1,56 +1,50 @@
 <template lang="pug">
 .box-page-container.flex.flex-column
-  .grid.justify-content-between
-    .col-fixed
+  .box__header
+    div
       h1.text-heading Box list
       span.text-subheading(v-if="boxList") {{ totalBoxRecords }} products found
-    .col-fixed
-      .grid
-        .col-fixed
-          .header__search
-            .icon.icon--left.icon-search
-            InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
-        .col-fixed
-          .btn__filter
-            .btn-toggle(@click="isShowFilter = !isShowFilter")
-              .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
-              span Filter
-            .btn-refresh(@click="handleRefeshFilter")
-              .icon.icon-rotate-left.bg-white
-        .col-fixed
-          .btn.btn-primary(@click='routeLinkAddBox')
-            .icon.icon-add-items
-            span Add box
+    .header__action
+      .header__search
+        .icon.icon--left.icon-search
+        InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
+      .btn__filter
+        .btn-toggle(@click="isShowFilter = !isShowFilter")
+          .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
+          span Filter
+        .btn-refresh(@click="handleRefeshFilter")
+          .icon.icon-rotate-left.bg-white
+      .btn.btn-primary(@click='routeLinkAddBox')
+        .icon.icon-add-items
+        span Add box
   .grid(v-if="isShowFilter")
-    .col-8
-      .grid
-        .col
-          FilterTable(
-            title="Warehouse"
-            :value="filter.warehouse"
-            :options="warehouseList"
-            name="warehouse"
-            @updateFilter="handleFilterBox"
-          )
-        .col
-          FilterTable(
-            title="Location"
-            :value="filter.location"
-            placeholder="Enter location"
-            name="location"
-            :searchText="true"
-            @updateFilter="handleFilterBox"
-          )
-        .col
-          FilterTable(
-            title="Box Code"
-            :value="filter.barCode"
-            placeholder="Enter code"
-            name="barCode"
-            :searchText="true"
-            @updateFilter="handleFilterBox"
-          )
-    .col-4
+    div(class="col-12 md:col")
+      FilterTable(
+        title="Warehouse"
+        :value="filter.warehouse"
+        :options="warehouseList"
+        name="warehouse"
+        @updateFilter="handleFilterBox"
+      )
+    div(class="col-12 md:col")
+      FilterTable(
+        title="Location"
+        :value="filter.location"
+        placeholder="Enter location"
+        name="location"
+        :searchText="true"
+        @updateFilter="handleFilterBox"
+      )
+    div(class="col-12 md:col")
+      FilterTable(
+        title="Box Code"
+        :value="filter.barCode"
+        placeholder="Enter code"
+        name="barCode"
+        :searchText="true"
+        @updateFilter="handleFilterBox"
+      )
+    div(class="col-12 md:col-4")
       .grid.grid-nogutter
         .col
           FilterCalendar(
@@ -371,4 +365,33 @@ export default BoxList
     background-color: $text-color-300
     .icon
       background-color: $text-color-500
+.box__header
+  flex-direction: column
+  flex-wrap: wrap
+  margin-bottom: 24px
+  @include desktop
+    flex-direction: row
+    @include flex-center-space-between
+.header__action
+    margin-top: 12px
+    display: flex
+    @include flex-column
+    flex-wrap:  wrap
+    gap: 10px 16px
+    @include desktop
+      @include flex-center
+      flex-direction: row
+      margin-top: 0
+.header__search
+  flex: 1
+  @include desktop
+    flex: auto
+  input 
+    width: 100%
+    @include desktop
+      width: 300px
+.btn__filter 
+  width: 100%
+  @include desktop
+    width: 166px
 </style>

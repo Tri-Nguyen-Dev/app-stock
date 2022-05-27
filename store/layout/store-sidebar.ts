@@ -21,6 +21,11 @@ export default class StoreSidebar extends VuexModule {
   }
   
   @Mutation
+  openSidebar() {
+    this.collapsed = false
+  }
+
+  @Mutation
   toggleMenu() {
     this.visibleMenu = !this.visibleMenu
   }

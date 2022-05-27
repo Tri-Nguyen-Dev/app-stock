@@ -369,12 +369,14 @@ export default Stock
       @include flex-center-space-between
   .header__action
     display: flex
+    margin-top: 12px
     @include flex-column
     flex-wrap:  wrap
     gap: 10px 16px
     @include desktop
       @include flex-center
       flex-direction: row
+      margin-top: 0
 .stock__table
   border-radius: 4px
   flex: 1
