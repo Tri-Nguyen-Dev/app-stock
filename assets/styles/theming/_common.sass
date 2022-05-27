@@ -2,12 +2,16 @@
   padding: $space-size-20
 
 // global
+.p-sidebar-header 
+  z-index: 11111111
 .text-heading
-  font-size: 30px
+  font-size: 20px
   color: $text-color-900
   font-weight: $font-weight-bold
   line-height: calc(38 / 30)
   margin: 0
+  @include desktop
+    font-size: 30px
 
 .text-subheading
   font-size: $font-size-small

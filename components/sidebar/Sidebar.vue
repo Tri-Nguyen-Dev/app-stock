@@ -6,9 +6,9 @@
         .user-info
           span.user-name {{ userDisplayName }}
           span.user-role {{ userRole }}
-      .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
+      .icon.icon--xlarge.icon-menu-toggle.surface-500(v-if="widthScreen > 1024" :class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
     .menu-section.sidebar-menu
-      SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
+      SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)" @toggleMenu="toggleMenu")
     .menu-section.sidebar-foot
       SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
 </template>
@@ -23,10 +23,12 @@ const nsUser = namespace('user-auth/store-user')
 @Component
 class MenuSidebar extends Vue {
   // -- [ Statement Properties ] ------------------------------------------------
-
+  @nsSidebar.State
+  widthScreen!: number
+  
   @nsSidebar.Getter('sidebarWidth')
   sidebarWidth!: string
-
+  
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
@@ -55,6 +57,10 @@ class MenuSidebar extends Vue {
     return this.user?.role?.toUpperCase() || ''
   }
   // -- [ Methods ] ------------------------------------------------------------
+  
+  toggleMenu() {
+    this.$emit('toggleMenu')
+  }
 
   onSelectMenu(item) {
     this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
