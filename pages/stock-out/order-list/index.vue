@@ -33,9 +33,9 @@
               .icon-download.icon--large.bg-primary
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      .col-1
+      div(class='col-12 md:col-4 lg:col-3 xl:col-1')
         FilterTable(title="ID" placeholder="Search ID" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
-      .col-3
+      div(class='col-12 md:col-8 lg:col-9 xl:col-3')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -48,7 +48,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-          .col.ml-1
+          .col.ml-3
             FilterCalendar(
               title="To"
               border="createTimeTo"
@@ -59,7 +59,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      .col-3
+      div(class='col-12 md:col-8 lg:col-9 xl:col-3')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -72,7 +72,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-          .col.ml-1
+          .col.ml-3
             FilterCalendar(
               title="To"
               border="right"
@@ -83,7 +83,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      .col
+      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
@@ -91,7 +91,7 @@
           name="warehouse"
           @updateFilter="handleFilter"
         )
-      .col
+      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
         FilterTable(
           title="Seller email"
           :value="filter.sellerEmail"
@@ -99,7 +99,7 @@
           name="sellerEmail"
           @updateFilter="handleFilter"
         )
-      .col
+      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
         FilterTable(
           title="Assignee"
           :value="filter.assignee"
@@ -107,7 +107,7 @@
           name="assignee"
           @updateFilter="handleFilter"
         )
-      .col
+      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
         FilterTable(
           title="Status"
           :value="filter.status"
@@ -568,9 +568,15 @@ export default DeliveryOrderList
         background-color: var(--primary-color) !important
 
   .header__action
-    @include flex-center-vert
-    justify-content: flex-end
-    gap: 0 16px
+    margin-top: 12px
+    display: flex
+    @include flex-column
+    gap: 10px 16px
+    @include desktop
+      align-items: flex-end
+      flex-direction: row
+      // flex-wrap:  wrap
+      margin-top: 0
 
 .stock__table
   border-radius: 4px
@@ -594,4 +600,8 @@ export default DeliveryOrderList
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
+.btn__filter 
+  width: 100%
+  @include desktop
+    width: 166px
 </style>

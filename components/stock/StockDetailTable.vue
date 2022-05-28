@@ -1,8 +1,8 @@
 <template lang="pug">
   .flex.flex-column.h-full
-    .grid.justify-content-between
+    .grid.justify-content-between(class="mt-2 lg:mt-0")
       .col-fixed
-        h1.font-bold.m-0.font-size-4xlarge.line-height-1 Stock detail
+        h1.text-heading Stock detail
         span.text-600.font-sm(v-if="itemsList.data") {{itemsList.data.total}} results found
       .col-fixed
         .grid
@@ -13,7 +13,7 @@
             div.cursor-pointer.refresh-filter(@click="handleRefreshFilter")
               img(:src="require(`~/assets/icons/rotate-left.svg`)")
     .grid(v-show="isShowFilter")
-      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col')
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 col-12')
         FilterTable(
           title="Seller"
           placeholder="Enter seller"
@@ -22,7 +22,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col')
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 col-12')
         FilterTable(
           title="SKU"
           placeholder="Enter SKU"
@@ -31,7 +31,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col-12')
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 col-12')
         FilterTable(
           title="Enter box code"
           placeholder="Enter box code"
@@ -40,7 +40,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col-12')
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 col-12')
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
@@ -48,7 +48,7 @@
           name="warehouse"
           @updateFilter="handleFilter"
         )
-      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col-12')
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 col-12')
         FilterTable(
           title="Location"
           placeholder="Enter location"
@@ -59,8 +59,8 @@
         )
       .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col-12')
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
-    .grid.grid-nogutter.flex-1.relative.overflow-hidden
-      .col.h-full.absolute.top-0.left-0.right-0
+    .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
+      .col.h-full.absolute.top-0.left-0.right-0.mt-2
         DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column(
           v-if="itemsList.data"
           :value="itemsList.data.items"
@@ -179,11 +179,15 @@ import {
 } from '~/utils'
 const nsStoreStockTable = namespace('stock/stock-detail')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsSidebar = namespace('layout/store-sidebar')
 
 @Component({
   components: { ConfirmDialogCustom, Pagination }
 })
 class StockDetailTable extends Vue {
+  @nsSidebar.State
+  widthScreen!: number
+
   @Prop() sku!: string
   isShowFilter: boolean = false
   selectedWarehouse = []

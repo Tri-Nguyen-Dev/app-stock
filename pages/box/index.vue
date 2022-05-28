@@ -67,7 +67,7 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-  .grid.grid-nogutter.flex-1.relative.overflow-hidden
+  .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700 
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll"
       :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"
@@ -347,7 +347,7 @@ export default BoxList
 
 <style lang="sass" scoped>
 .box-page-container
-  height: calc(100vh - 32px)
+  min-height: calc(100vh - 32px)
   ::v-deep.p-component
     font-family: $font-family-primary
   ::v-deep.pi-calendar:before

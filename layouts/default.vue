@@ -3,8 +3,14 @@
     MenuSidebar(v-if="widthScreen > 1024")
     Sidebar(v-else :visible.sync="visibleMenu")
       MenuSidebar(@toggleMenu='toggleMenu')
+    .menu-mobile(v-if="widthScreen <= 1024")
+      .menu-section.sidebar-head
+        img.user-avatar(:src="user.avatarUrl | getThumbnailUrl")
+        .user-info
+          span.user-name {{ userDisplayName }}
+          span.user-role {{ userRole }}
+      .menu-mobile-icon.pi.pi-align-justify( @click="handleToggleMenu")
     .main-container(:style="{ marginLeft: widthScreen > 1024 ? sidebarWidth : 0 }")
-      .menu-mobile.pi.pi-align-justify(v-if="widthScreen <= 1024" @click="handleToggleMenu")
       Toast
       Nuxt
 </template>
@@ -12,8 +18,10 @@
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import Sidebar from 'primevue/sidebar'
+import { User } from '~/models/User'
 import MenuSidebar from '~/components/sidebar/Sidebar.vue'
 const nsSidebar = namespace('layout/store-sidebar')
+const nsUser = namespace('user-auth/store-user')
 
 @Component({
   middleware: 'authenticate',
@@ -31,8 +39,19 @@ class Dashboard extends Vue {
   @nsSidebar.Mutation('openSidebar')
   openSidebar
 
+  @nsUser.State('user')
+  user!: User.Model | undefined
+
   @nsSidebar.Action
   handleGetWidth!: (params?: any) => Promise<void>
+  
+  get userDisplayName() {
+    return this.user?.displayName || 'Unknown'
+  }
+
+  get userRole() {
+    return this.user?.role?.toUpperCase() || ''
+  }
 
   handleToggleMenu() {
     this.visibleMenu = !this.visibleMenu
@@ -66,9 +85,34 @@ export default Dashboard
   padding: $space-size-16
   @incluce desktop
     padding: $space-size-32
-  .menu-mobile 
-    font-size: 20px
 .layout-static
   ::v-deep.p-sidebar-header 
     z-index: 1111
+
+.menu-mobile
+  @include flex-center-space-between
+  flex-direction: row
+  background-color: $color-white
+  padding: 8px 16px
+  .menu-mobile-icon 
+    font-size: 24px
+  .sidebar-head 
+    @include flex-center-vert
+    .user-avatar
+      @include size(48px)
+      border: 2px solid #0095FF
+      border-radius: 8px
+      margin-right: $space-size-12
+
+    .user-info
+      @include flex-column
+      flex-grow: 1
+
+      .user-name
+        font-size: $font-size-large
+        font-weight: $font-weight-bold
+      .user-role
+        font-size: $font-size-small
+        font-weight: $font-weight-light
+        color: $text-color-700
 </style>
