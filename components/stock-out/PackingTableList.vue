@@ -128,37 +128,28 @@ class PackingTableList extends Vue {
     return _.find(this.originalBoxActive.items, { barCode })
   }
 
-  getSumQuantityOtherBox({ actualTranffering, actualOutGoing }, quantity: number) {
-    return this.type === 'tranferringBox' ? actualTranffering - quantity : actualOutGoing - quantity
+  getSumQuantityOtherBox(actualOutGoing: number, quantity: number) {
+    return actualOutGoing - quantity
   }
 
   maxQuantity({ barCode, quantity }) {
     const stockInOriginal = this.getStockInOriginal({ barCode })
     if(stockInOriginal) {
-      const { initialQuantity, outGoingQuantity, actualTranffering, actualOutGoing } = stockInOriginal
-      const sum = this.getSumQuantityOtherBox({ actualTranffering, actualOutGoing }, quantity)
-      if(this.type === 'tranferringBox') {
-        return initialQuantity - outGoingQuantity - sum
-      } else {
-        return outGoingQuantity - sum
-      }
+      const { outGoingQuantity, actualOutGoing } = stockInOriginal
+      const sum = this.getSumQuantityOtherBox(actualOutGoing, quantity)
+      return outGoingQuantity - sum
     }
   }
 
   changeQuantity(stock, textValue) {
     const stockInOriginal = this.getStockInOriginal(stock)
-    const actualTranffering = 0
     if(stockInOriginal) {
       const { initialQuantity, outGoingQuantity, actualOutGoing } = stockInOriginal
-      const sum = this.getSumQuantityOtherBox({ actualTranffering, actualOutGoing }, stock.quantity)
-      if(initialQuantity - outGoingQuantity - sum - textValue >= 0 && this.type === 'tranferringBox') {
-        _.set(stock, 'quantity', textValue)
-        _.set(stockInOriginal, 'actualTranffering', textValue + sum)
-        _.set(stockInOriginal, 'quantity', initialQuantity - sum - textValue - actualOutGoing)
-      } else if(this.type === 'outGoingBox' && outGoingQuantity - sum - textValue >= 0) {
+      const sum = this.getSumQuantityOtherBox(actualOutGoing, stock.quantity)
+      if(outGoingQuantity - sum - textValue >= 0) {
         _.set(stock, 'quantity', textValue)
         _.set(stockInOriginal, 'actualOutGoing', textValue + sum)
-        _.set(stockInOriginal, 'quantity', initialQuantity - sum - textValue - actualTranffering)
+        _.set(stockInOriginal, 'quantity', initialQuantity - sum - textValue)
       }
     }
   }

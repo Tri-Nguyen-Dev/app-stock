@@ -26,15 +26,6 @@
         span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
         .ml-1.px-1(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
-        AutoComplete.edit-location.ml-1(
-          v-if="isShowLocation(tab)"
-          v-model='tab.location',
-          field='name',
-          :suggestions='locationList',
-          @complete='searchLocation($event)'
-          :dropdown='true'
-          forceSelection
-        )
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
           span.mr-1 Size:
@@ -52,14 +43,6 @@
                 ref="inputScanTag"
                 :disabled="disableEditQty"
               )
-        .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
-          div.flex.align-items-center
-            div
-              div Estimated
-              div Inventory Fee:
-            div.ml-2
-              InputText.w-4.inputSearchCode(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
-              span.ml-1 / day
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:
           span.ml-1.p-input-icon-right
@@ -75,10 +58,6 @@
         .col-3.py-3.border-right-1.border-gray-300
           span.mr-1.font-semibold Size: {{tab.boxSize.name}} {{tab.boxSize.height}}*{{tab.boxSize.width}}*{{tab.boxSize.length}}
           span.ml-1.font-semibold (cm)
-        .col-3.ml-2.py-3.border-right-1.border-gray-300(v-if='isTranffering')
-          .grid.align-items-center.pl-3
-              div.font-semibold Estimated Inventory Fee: {{tab.inventoryFee}} $
-              span.ml-1.font-semibold / day
         .col.ml-2.py-3.flex.justify-content-end
           span.font-semibold Box Code: {{tab.newBoxCode}}
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
@@ -87,7 +66,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace, Watch, InjectReactive } from 'nuxt-property-decorator'
-const nsStoreLocationList = namespace('location/location-list')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
@@ -98,25 +76,17 @@ class PackingOriginal extends Vue {
   barCodeText: string = ''
   boxCodeText: string = ''
   tagCodeText: string = ''
-  locationBox: any = []
   isPackingDetail: boolean = false
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
-  // @Prop() readonly isTranffering!: boolean | false
   @Prop() listBox!: Array<any>
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly autoActiveTabOut!: boolean | false
   @InjectReactive() readonly packingStep!: any
-
-  @nsStoreLocationList.State
-  locationList: {}
-
-  @nsStoreLocationList.Action
-  actLocationList!: (params: any) => Promise<void>
 
   @nsStorePackingDetail.Action
   actScanAirtag!: (params: any) => Promise<any>
@@ -252,16 +222,6 @@ class PackingOriginal extends Vue {
       return 'disabled'
     }
     else return null
-  }
-
-  async searchLocation (e) {
-    await this.actLocationList({
-      location: e.query
-    })
-  }
-
-  isShowLocation(obj) {
-    return obj?.location && this.type === 'tranferringBox'
   }
 
   mounted() {
