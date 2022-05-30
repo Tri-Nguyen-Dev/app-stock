@@ -147,8 +147,9 @@ class PackingTableList extends Vue {
 
   changeQuantity(stock, textValue) {
     const stockInOriginal = this.getStockInOriginal(stock)
+    const actualTranffering = 0
     if(stockInOriginal) {
-      const { initialQuantity, outGoingQuantity, actualTranffering, actualOutGoing } = stockInOriginal
+      const { initialQuantity, outGoingQuantity, actualOutGoing } = stockInOriginal
       const sum = this.getSumQuantityOtherBox({ actualTranffering, actualOutGoing }, stock.quantity)
       if(initialQuantity - outGoingQuantity - sum - textValue >= 0 && this.type === 'tranferringBox') {
         _.set(stock, 'quantity', textValue)

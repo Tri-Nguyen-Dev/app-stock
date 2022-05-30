@@ -50,6 +50,7 @@
                 @change='addTagByBarCode'
                 v-model="tagCodeText"
                 ref="inputScanTag"
+                :disabled="disableEditQty"
               )
         .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
           div.flex.align-items-center
@@ -104,7 +105,7 @@ class PackingOriginal extends Vue {
   @Prop() readonly icon!: string | undefined
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
-  @Prop() readonly isTranffering!: boolean | false
+  // @Prop() readonly isTranffering!: boolean | false
   @Prop() listBox!: Array<any>
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
@@ -170,7 +171,7 @@ class PackingOriginal extends Vue {
       const index = _.findIndex(this.listBox, { boxCode })
       if(index >= 0){
         const itemsBox = _.get(this.listBox[this.activeIndex - 1], 'items')
-        if(!_.size(_.partition(itemsBox, ['quantity', 0])[1]) || !itemsBox) {
+        if(!_.size(_.partition(itemsBox, ({ outGoingQuantity, actualOutGoing }) => outGoingQuantity === actualOutGoing)[1]) || !itemsBox) {
           this.activeIndex = index + 1
           this.$emit('selectedTab', index)
         } else {
@@ -296,7 +297,7 @@ class PackingOriginal extends Vue {
   }
 
   handleDeleteBox(index) {
-    this.$emit('handelDeteleBoxEmpty', this.type, index)
+    this.$emit('handelDeteleBoxEmpty', index)
     if(index < this.activeIndex - 1) {
       this.$nextTick(() => (this.activeIndex = this.activeIndex - 1))
     } else if(index === this.activeIndex - 1) {
