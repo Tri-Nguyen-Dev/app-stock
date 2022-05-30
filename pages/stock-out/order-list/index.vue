@@ -182,7 +182,7 @@
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.assigneeId }}
+            div.grid-cell-right {{ data.creatorId }}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -314,7 +314,7 @@ class DeliveryOrderList extends Vue {
     this.paging.pageNumber = 0
     this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS
     this.statusList = this.statusList.filter((item: any) => {
-      return this.activeStatus?.split(',').includes(item.value.toString()) 
+      return this.activeStatus?.split(',').includes(item.value.toString())
     })
     this.getDeliveryList({
       ...this.filter,
@@ -324,7 +324,7 @@ class DeliveryOrderList extends Vue {
       status: this.activeStatus
     })
   }
-  
+
   get activeStatus() {
     return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
   }
@@ -336,7 +336,7 @@ class DeliveryOrderList extends Vue {
       }else return delivery
     })
   }
- 
+
   get classHeaderMuti() {
     return !this.deliveryList ||
       this.deliveryList.length <= 0 ||
