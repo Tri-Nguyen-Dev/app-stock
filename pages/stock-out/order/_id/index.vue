@@ -1,52 +1,62 @@
 <template lang="pug">
 .grid.grid-nogutter.packing__detail--container
-	.packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-		PackingInformationDetail(
-			:deliveryOrderDetail='orderDetail',
-			:type='typeTitle'
-		)
-	.col-9.packing__detail--left.pl-4.pr-1.flex-1
-		.grid
-			.col-8
-				h1.text-heading {{textHeading}}
-				span.text-subheading {{ total }} items found
-			.col-2.btn-center
-				ThemeButtonExport.w-full(:click='handleExportReceipt', v-if='!isPack')
-				Button.p-button-outlined.p-button-primary.bg-white.w-full(
-					type='button',
-					label='Map',
-					@click='packItem',
-					v-if='isPack'
-				)
-			.col-2.btn-center
-				Button.p-button-outlined.p-button-primary.bg-white.w-full(
-					type='button',
-					label='Pick Items',
-					@click='pickItem',
-					v-if='!isPack  && !isReady'
-				)
-				Button.p-button-outlined.p-button-primary.bg-white.w-full(
-					type='button',
-					label='Pack Items',
-					@click='packItem',
-					v-if='isPack && !isReady',
-					:disabled='!enablePack'
-				)
-				Button.p-button-outlined.p-button-primary.bg-white.w-full(
-					type='button',
-					label='Packing detail',
-					v-if='isReady',
-					@click='packDetail()'
-				)
-		ItemList(
-			:isDetail='true',
-			:action='action',
-			@selectRow='selectItem($event)',
-			@enablePack='checkEnablePack($event)',
-			:listItems='item',
-			v-if='item'
-			:isReady ='isReady'
-		)
+  .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
+    PackingInformationDetail(
+      :deliveryOrderDetail='orderDetail',
+      :type='typeTitle'
+    )
+  .col-9.packing__detail--left.pl-4.pr-1.flex-1
+    .grid
+      .col-4
+        h1.text-heading {{textHeading}}
+        span.text-subheading {{ total }} items found
+      .col-8.btn-right
+        ThemeButtonExport.w-25(:click='handleExportReceipt', v-if='!isPack')
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Map',
+          @click='packItem',
+          v-if='isPack'
+        )
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Pick Items',
+          @click='pickItem',
+          v-if='!isPack  && !isReady'
+        )
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Pack Items',
+          @click='packItem',
+          v-if='isPack && !isReady',
+          :disabled='!enablePack'
+        )
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Packing detail',
+          v-if='isReady',
+          @click='packDetail()'
+        )
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Set Delivery',
+          v-if='isReady',
+          @click='setDelivery()'
+        )
+         Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Reset Delivery',
+          v-if='isDelevering',
+          @click='resetDelivery()'
+        )
+    ItemList(
+      :isDetail='true',
+      :action='action',
+      @selectRow='selectItem($event)',
+      @enablePack='checkEnablePack($event)',
+      :listItems='item',
+      v-if='item'
+    )
 </template>
 
 <script lang="ts">
@@ -74,6 +84,7 @@ class DeliveryOrder extends Vue {
   typeTitle = 'DO_DETAIL'
   isReady = false
   textHeading = 'Item list'
+  isDelevering = false
   @nsStoreOrder.State
   orderDetail!: OrderDetail.Model
 
@@ -169,6 +180,8 @@ class DeliveryOrder extends Vue {
     this.action = action
     this.enablePack = false
     this.textHeading= action===STOCK_OUT_ACTION.ORDER_PICK_ITEM?'Picking list' : 'Delivery order detail'
+    this.total = this.orderDetail.deliveryItemList!.length
+    this.isDelevering = this.orderDetail.status === ORDER_STATUS.IN_PROGRESS
   }
 
   @Watch('$route')
@@ -179,16 +192,23 @@ class DeliveryOrder extends Vue {
       this.initialValue(STOCK_OUT_ACTION.ORDER_PICK_ITEM)
     }
   }
+
+  setDelivery(){
+    
+  }
 }
 
 export default DeliveryOrder
 </script>
 <style lang="sass" scoped>
-.btn-center
-	height: 70%
-	align-self: center
+.btn-right
+  height: 70%
+  text-align: right
 .packing__detail--container
-	height: calc(100vh - 32px)
+  height: calc(100vh - 32px)
 .packing__detail--left
-	height: calc( 100% - 32px) !important
+  height: calc( 100% - 32px) !important
+.w-25
+  width: 25%
+  margin-left: 7px
 </style>
