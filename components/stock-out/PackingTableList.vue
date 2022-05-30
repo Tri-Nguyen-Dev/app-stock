@@ -85,8 +85,8 @@ div.relative
     )
       template(v-slot:message)
         p {{ deleteMessage }}
-  span.absolute.buttonShow(v-if="type == 'originalBox' && value.length > 2 && isShowMore" @click='showMoreItem') Show more
-  span.absolute.buttonShow(v-if="type == 'originalBox' && !isShowMore" @click='showLessItem') Show less
+  span.absolute.buttonShow(v-if="value.length > 2 && isShowMore" @click='showMoreItem') Show more
+  span.absolute.buttonShow(v-if="!isShowMore" @click='showLessItem') Show less
 
 </template>
 <script lang="ts">
@@ -245,6 +245,7 @@ export default PackingTableList
   .row-outgoing
     background-color: $text-color-100 !important
 .buttonShow
+  font-size: 12px
   left: calc(50% - 40px)
   bottom: -15px
   background-color: #fff
