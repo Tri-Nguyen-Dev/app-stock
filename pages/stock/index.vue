@@ -359,7 +359,7 @@ export default Stock
 <style lang="sass" scoped>
 .stock
   @include flex-column
-  height: 100%
+  height: 100vh
   &__header
     flex-direction: column
     flex-wrap: wrap

@@ -59,7 +59,7 @@
           div(class='lg:col-6 col-3')
             .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditStockDetail')
               span.uppercase save
-    .py-0(class="xl:pl-5 lg:pl-2 col-12 md:col-9")
+    .py-0(class="xl:pl-5 lg:pl-2 col-12 lg:col-9 md:col-12")
       StockDetailTable
 </template>
 <script lang="ts">

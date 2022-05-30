@@ -144,9 +144,9 @@
         Column(header='Creator ID' field='creatorId' sortable sortField="_assignee.id")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
-        Column(header='Create time' field='createTime' sortable  sortField="_createdAt" headerClass="grid-header-right")
+        Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
-            div.grid-cell-right {{ data.createTime | dateTimeHour12 }}
+            div {{ data.createTime | dateTimeHour12 }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.sellerEmail }}
@@ -190,7 +190,7 @@
         Column(v-if="activeTab == 2"
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')
-        Column(field='status' header="Status" sortField="_status" headerClass="grid-header-right")
+        Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
               span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_NEW'") NEW
@@ -513,7 +513,7 @@ export default DeliveryOrderList
 
 .stock
   @include flex-column
-  height: 100%
+  height: 100vh
 
   ::v-deep.pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
@@ -554,6 +554,7 @@ export default DeliveryOrderList
         background: var(--bg-body-bas)
         border: none
         box-shadow: none !important
+        color: $text-color-700
 
     ::v-deep.p-tabview .p-tabview-panels
       background: var(--bg-body-bas)
