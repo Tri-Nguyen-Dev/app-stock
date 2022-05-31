@@ -18,7 +18,7 @@
         div {{ data.createdAt | dateTimeHour12 }}
     Column(field="originalLocation.name" header="ORIGINAL LOCATION" sortable)
     Column(field="newLocation.name" header="NEW LOCATION" sortable)
-    Column(field="createdBy.id" header="ID CREATOR" sortable)
+    Column(field="createdBy.staffId" header="ID CREATOR" sortable)
     template(#footer)
       .pagination
         div.pagination__info
@@ -69,7 +69,8 @@ class StockDetailHistoryTable extends Vue {
       pageSize: this.paginate.pageSize,
       sortBy: this.sort?.sortBy,
       desc: this.sort.desc && this.sort?.desc
-    }    const params = {
+    }
+    const params = {
       filter,
       ...this.paginate,
       stockId: this.$route.params.sid,

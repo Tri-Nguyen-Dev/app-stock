@@ -314,7 +314,7 @@ class DeliveryOrderList extends Vue {
     this.paging.pageNumber = 0
     this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS
     this.statusList = this.statusList.filter((item: any) => {
-      return this.activeStatus?.split(',').includes(item.value.toString()) 
+      return this.activeStatus?.split(',').includes(item.value.toString())
     })
     this.getDeliveryList({
       ...this.filter,
@@ -324,7 +324,7 @@ class DeliveryOrderList extends Vue {
       status: this.activeStatus
     })
   }
-  
+
   get activeStatus() {
     return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
   }
@@ -336,7 +336,7 @@ class DeliveryOrderList extends Vue {
       }else return delivery
     })
   }
- 
+
   get classHeaderMuti() {
     return !this.deliveryList ||
       this.deliveryList.length <= 0 ||
