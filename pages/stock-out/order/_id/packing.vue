@@ -33,7 +33,7 @@
               .icon--large.icon-note
             .col
               div(style="padding-left: 10.5px") Note:
-              Textarea.inputSearchCode.w-full(rows="1" cols="40" placeholder='Write something...')
+              InputText.inputSearchCode.w-full(v-model="noteText" rows="1" cols="40" placeholder='Write something...')
         .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
@@ -47,12 +47,9 @@
               img(src='~/assets/icons/total-items-border.svg')
             .col
               span.font-semibold.text-base.mr-1 Total items:
-              .font-semibold.text-primary {{tranferringOutGoing}}
+              .font-semibold.text-primary {{totalItem}}
         .col-2.flex.justify-content-end.p-1
-          Button.btn.btn-primary.justify-content-center.flex(@click="handleNextClick" v-if='packingStep === 1' :disabled="isDisabled") Next
-          div.flex
-            Button.btn.btn-outline.ml-2(@click="handleBack" v-if="packingStep === 2") Back
-            Button.btn.btn-primary.ml-3(@click="handleSubmit" v-if="packingStep === 2") Save
+          Button.btn.btn-primary.ml-3(@click="handleSubmit" :disabled="isDisabled") Save
 </template>
 
 <script lang="ts">
@@ -60,7 +57,6 @@ import { Component, Vue, namespace, ProvideReactive, Watch } from 'nuxt-property
 import { PackingDetail } from '~/models/PackingDetail'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 const nsStoreBox = namespace('box/box-size-list')
-const nsStoreLocationList = namespace('location/location-list')
 
 @Component
 class DeliveryOrderPacking extends Vue {
@@ -68,6 +64,7 @@ class DeliveryOrderPacking extends Vue {
   indexScanBoxCode: number = 0
   autoActiveTabOut: boolean = false
   listOriginalBox: any = []
+  noteText: string = ''
   listOutGoingBox: any = [
     {
       boxCode: 'EX1',
@@ -81,9 +78,6 @@ class DeliveryOrderPacking extends Vue {
   @ProvideReactive()
   originalBoxActive: any = {}
 
-  @ProvideReactive()
-  packingStep: number | string = 1
-
   @nsStorePackingDetail.State('totalOriginalList')
   totalOriginalList!: number
 
@@ -92,9 +86,6 @@ class DeliveryOrderPacking extends Vue {
 
   @nsStorePackingDetail.State('deliveryOrderDetail')
   deliveryOrderDetail!: any
-
-  @nsStorePackingDetail.State('boxLocation')
-  boxLocation!: any[]
 
   @nsStoreBox.State
   boxSizeList!: any
@@ -109,13 +100,7 @@ class DeliveryOrderPacking extends Vue {
   actGetBoxSizeList!:() => Promise<any>
 
   @nsStorePackingDetail.Action
-  actLocationSuggestion!:(data: any) => Promise<any>
-
-  @nsStorePackingDetail.Action
   actSavePackingDetail!:(data: any) => Promise<any>
-
-  @nsStoreLocationList.Action
-  actLocationList!: (params: any) => Promise<void>
 
   async mounted() {
     const { id } = this.$route.params
@@ -230,18 +215,16 @@ class DeliveryOrderPacking extends Vue {
     this.outGoingBoxActive = this.listOutGoingBox[index - 1]
   }
 
-  handleNextClick() {
-    this.packingStep = 2
-  }
-
   getStocks(stocks) {
-    const result =  _.map(stocks, ({ stockId, originalBox, originalLocation, initialQuantity, quantity, sku }) => ({
+    const result =  _.map(stocks, ({ stockId, stockBoxId, originalBox, sku, originalLocation, initialQuantity, quantity, airtag }) => ({
       stock: { id: stockId },
+      originalItem: stockBoxId,
       originalBox,
       sku,
       originalLocation,
       initialQuantity,
-      amount: quantity
+      amount: quantity,
+      airtag
     }))
     return result
   }
@@ -254,14 +237,17 @@ class DeliveryOrderPacking extends Vue {
       listStockWithAmount: this.getStocks(items),
       airtag
     }))
+    data.note = this.noteText
     const { id } = this.$route.params
-    await this.actSavePackingDetail({ data, id })
-    this.$router.push(`/stock-out/order/${id}/packing-detail`)
+    const result = await this.actSavePackingDetail({ data, id })
+    if(result) {
+      this.$router.push(`/stock-out/order/${id}/packing-detail`)
+    }
   }
 
-  get tranferringOutGoing() {
-    const tranferringOutGoing = [...this.listOutGoingBox]
-    return tranferringOutGoing.reduce((accumulator:any, object:any) => {
+  get totalItem() {
+    const totalItem = [...this.listOutGoingBox]
+    return totalItem.reduce((accumulator:any, object:any) => {
       return accumulator + object.items.length
     },0)
   }
@@ -299,10 +285,6 @@ class DeliveryOrderPacking extends Vue {
 
   handelDeteleBoxEmpty(index) {
     this.listOutGoingBox.splice(index, 1)
-  }
-
-  handleBack() {
-    this.packingStep = 1
   }
 }
 

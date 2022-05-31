@@ -1,7 +1,7 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
   Toast
-  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab" :disabled="disableEditQty") + Add
+  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.w-full.inputSearchCode(
@@ -10,7 +10,6 @@
       v-model="boxCodeText"
       placeholder='Please enter box code!'
       ref="inputScanBoxCode"
-      :disabled="disableEditQty"
     )
   TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
@@ -29,7 +28,7 @@
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
           span.mr-1 Size:
-          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
+          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name")
           span.ml-1 (cm)
         .col.py-3.border-right-1.border-left-1.border-gray-300.flex.align-items-center.px-3(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock(tab)' @change="handleChangeTag(tab)")
@@ -41,7 +40,6 @@
                 @change='addTagByBarCode'
                 v-model="tagCodeText"
                 ref="inputScanTag"
-                :disabled="disableEditQty"
               )
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:
@@ -52,7 +50,6 @@
               @change='addStockByBarcode($event)'
               v-model="barCodeText"
               ref="inputScanBarCode"
-              :disabled="disableEditQty"
             )
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && isPackingDetail')
         .col-3.py-3.border-right-1.border-gray-300
@@ -65,7 +62,7 @@
       )
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, namespace, Watch, InjectReactive } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, namespace, Watch } from 'nuxt-property-decorator'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
@@ -86,7 +83,6 @@ class PackingOriginal extends Vue {
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly autoActiveTabOut!: boolean | false
-  @InjectReactive() readonly packingStep!: any
 
   @nsStorePackingDetail.Action
   actScanAirtag!: (params: any) => Promise<any>
@@ -215,13 +211,6 @@ class PackingOriginal extends Vue {
       return accumulator +  length
     }, 0)
     return sum
-  }
-
-  get disableEditQty() {
-    if(this.packingStep === 2) {
-      return 'disabled'
-    }
-    else return null
   }
 
   mounted() {
