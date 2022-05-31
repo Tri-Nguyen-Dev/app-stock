@@ -28,20 +28,6 @@
             :boxSizeList='boxSizeList'
             :autoActiveTabOut="autoActiveTabOut"
           )
-        .grid.grid-nogutter.my-3
-          StockOutPackingOriginal(
-            title='tranferring box'
-            icon='icon-repeat'
-            :isTranffering='true'
-            :listBox="listTranfferingBox"
-            :location="boxLocation"
-            type='tranferringBox'
-            @selectedTab='selectedTranfferingBox'
-            @addBoxNew="addNewBoxTranferring"
-            @addStockByBarcode='addStockInTranferring'
-            @handelDeteleBoxEmpty='handelDeteleBoxEmpty'
-            :boxSizeList='boxSizeList'
-          )
       .packing__detail--footer.grid.grid-nogutter.bg-white.border-round.align-items-center
         .col.p-1
           .grid.align-items-center

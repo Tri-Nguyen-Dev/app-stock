@@ -35,6 +35,12 @@
           :dropdown='true'
           forceSelection
         )
+      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if="isOriginal")
+        .col.py-3
+          span.mr-1 Capacity:
+          AutoComplete
+        .col.py-3.flex.justify-content-end
+          Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
           span.mr-1 Size:
@@ -83,6 +89,14 @@
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )
+  Sidebar(
+    :visible='isShowModalReport',
+    :baseZIndex='1000',
+    position='right',
+    ariaCloseLabel='to'
+    class="modal-report"
+  )
+    StockOutPackingAddReport(@cancelReportModal='cancelReportModal')
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace, Watch, InjectReactive } from 'nuxt-property-decorator'
@@ -99,6 +113,7 @@ class PackingOriginal extends Vue {
   tagCodeText: string = ''
   locationBox: any = []
   isPackingDetail: boolean = false
+  isShowModalReport: boolean = false
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -323,6 +338,14 @@ class PackingOriginal extends Vue {
       }
     }
   }
+
+  showFormReport() {
+    this.isShowModalReport = true
+  }
+
+  cancelReportModal(){
+    this.isShowModalReport = false
+  }
 }
 
 export default PackingOriginal
@@ -330,6 +353,15 @@ export default PackingOriginal
 <style lang="sass" scoped>
 ::v-deep.packing__common--table
   position: relative
+  .modal-report
+    width: 50%
+    .p-sidebar-header
+      display: none
+    .p-sidebar-content
+      padding: 0
+      height: 100%
+    .p-sidebar-close
+      display: none
   .delete-box
     position: relative
     z-index: 1000
