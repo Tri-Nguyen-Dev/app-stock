@@ -1,6 +1,6 @@
 <template lang="pug">
   .grid.grid-nogutter.stock__information-detail
-    .col-3.p-0.surface-0.border-round.h-full.overflow-y-auto.sub-tab(v-if='model.data')
+    .p-0.border-round.surface-0.sub-tab(class="lg:col-3 col-12" v-if='model.data')
       .grid.border-bottom-1.border-gray-300
         .col.flex.align-items-center.breadcrumb-section
           Button(@click='backToStockList').p-button-link
@@ -8,10 +8,10 @@
           Breadcrumb(:home="homeItem" :model="breadcrumbItem")
       .stock__information--gerenal.border-bottom-1.border-gray-300
         .grid.mb-3.align-items-center.p-4
-          .pl-0.flex(class='xl:col-9 lg:col-9 md:col-12 sm:col-12 xs:col-12')
+          .pl-0.flex.col-9
             .icon.icon-box-info.mr-1.bg-blue-700(class='xl:inline lg:hidden md:hidden sm:hidden xs:hidden')
             span.uppercase.font-bold.text-sm general information
-          .flex.justify-content-end(class='xl:col-3 lg:col-3 md:col-12 sm:col-12 xs:col-12')
+          .flex.justify-content-end.col-3
             .surface-hover.border-round.cursor-pointer.p-2.edit__detail--button(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon.icon-btn-edit
         .grid.mb-3.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
@@ -34,12 +34,12 @@
           .wrap-unit.px-4
             StockUnit(title="Size (L*W*H)" icon="icon-size")
               template(v-slot:size)
-                .grid(v-if='isEditStockDetail')
-                  .col-4.p-0.pl-2.pt-1
+                .grid.mt-1(v-if='isEditStockDetail')
+                  div(class="col-4 p-0 pl-2 pt-1")
                     InputNumber.w-full(:disabled='!isEditStockDetail', v-model='lengthBox')
-                  .col-4.p-0.pt-1
+                  .col-4.pl-2.p-0.pt-1
                     InputNumber.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
-                  .col-4.p-0.pt-1
+                  .col-4.pl-2.p-0.pt-1
                     InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
                 span.font-bold.text-small.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
           .wrap-unit.px-4
@@ -52,14 +52,14 @@
               @updateUnit='handleUpdateUnit'
             )
         div
-        .grid.mt-1.px-4(:class='isEditStockDetail ? " " : "hidden"')
-          .col
+        .grid.mb-4.px-4(:class='isEditStockDetail ? null : "hidden"')
+          div(class='lg:col-6 col-3')
             .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
               span.uppercase.font-semibold cancel
-          .col
+          div(class='lg:col-6 col-3')
             .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditStockDetail')
               span.uppercase save
-    .col-9.pl-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1
+    .py-0(class="xl:pl-5 lg:pl-2 col-12 lg:col-9 md:col-12")
       StockDetailTable
 </template>
 <script lang="ts">
@@ -156,7 +156,7 @@ export default StockDetail
 
 <style lang="sass" scoped>
 .stock__information-detail
-  height: calc(100vh - 64px)
+  min-height: calc(100vh - 64px)
   .stock__information--gerenal
     ::v-deep.p-inputnumber-input
       box-shadow: none !important
@@ -166,12 +166,13 @@ export default StockDetail
         opacity: 1
 
     ::v-deep.p-inputtext
-      max-width: 38px
       border: 1px solid #b2b2bb
       background: transparent
-      padding: 0
       color: #000
+      padding-left: 4px
       font-weight: 600
+      @include desktop
+        max-width: 38px
 
 .p-paginator.p-component.p-paginator-bottom
   .p-paginator-left-content
@@ -209,19 +210,23 @@ export default StockDetail
 .grid.surface-hover
   background-color: #F8F7FA !important
 .wrap-unit
-  width: 300px
+  width: 100%
   margin-bottom: 16px
 .sub-tab
-  height: calc(100vh - 32px)
-  max-width: 21.5rem
-  overflow: hidden
+  @include desktop 
+    max-width: 21.5rem
+    height: calc(100vh - 32px)
+    overflow: hidden
+    overflow-y: auto !important
+    
 .sub--scroll
-  max-width: 21.5rem
-  overflow: auto
+  width: 100%
+  @include desktop 
+    max-width: 21.5rem
+    overflow: auto
 
-@media (min-width: 768px) and (max-width: 841px)
-  .edit__detail--button
-    width: 100%
+.edit__detail--button
+    width: 32px
     justify-content: center
     display: flex
 </style>
