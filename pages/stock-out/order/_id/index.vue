@@ -57,6 +57,9 @@
       :listItems='item',
       v-if='item'
     )
+    Dialog(:visible.sync='isModalDriverList', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "1500px"}' )
+      DriverList
+
 </template>
 
 <script lang="ts">
@@ -66,13 +69,15 @@ import PackingInformationDetail from '~/components/stock-out/PackingInformationD
 import { STOCK_OUT_ACTION, ORDER_STATUS } from '~/utils/constants/stock-out'
 import { OrderDetail } from '~/models/OrderDetail'
 import { exportFileTypePdf } from '~/utils'
+import DriverList from '~/components/stock-out/driver/DriverList.vue'
 const nsStoreOrder = namespace('stock-out/order-detail')
 const nsStoreExportOrder = namespace('stock-out/order-export')
 const nsUser = namespace('user-auth/store-user')
 @Component({
   components: {
     ItemList,
-    PackingInformationDetail
+    PackingInformationDetail,
+    DriverList
   }
 })
 class DeliveryOrder extends Vue {
@@ -85,6 +90,7 @@ class DeliveryOrder extends Vue {
   isReady = false
   textHeading = 'Item list'
   isDelevering = false
+  isModalDriverList = false
   @nsStoreOrder.State
   orderDetail!: OrderDetail.Model
 
@@ -194,7 +200,7 @@ class DeliveryOrder extends Vue {
   }
 
   setDelivery(){
-    
+    this.isModalDriverList = true
   }
 }
 
