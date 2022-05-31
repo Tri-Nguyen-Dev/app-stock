@@ -174,15 +174,15 @@
               div.text-end Latest
               div update time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour12 }}
+            div {{ data.lastedUpdateTime | dateTimeHour12 }}
         Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
           template(#body='{ data }')
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(header='PIC' sortable field='assigneeId' sortField="_assignee.id" headerClass="grid-header-right")
+        Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.assigneeId }}
+            div.grid-cell-right {{ data.creatorId }}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')

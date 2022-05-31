@@ -352,7 +352,7 @@ export default BoxDetail
     .input-absolute
       width: 15rem !important
   .tabview-relative
-    margin-top: 3rem
+    margin-top: 1rem
 .tabview-relative
   position: relative
   .tabview-left
@@ -432,12 +432,12 @@ export default BoxDetail
     margin-top: 12px
     display: flex
     @include flex-column
-    flex-wrap:  wrap
     gap: 10px 16px
     @include desktop
       justify-content: flex-end
       flex-direction: row
       margin-top: 0
+      
 .header__search
   flex: 1
   @include desktop

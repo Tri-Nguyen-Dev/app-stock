@@ -255,6 +255,10 @@ class Stock extends Vue {
 
   handleChangeFilter() {
     this.getProductList()
+    if(this.filter.categories.length === 0) {
+      this.filter.categories = ''
+      this.getProductList()
+    }
   }
 
   onPage(event: any) {
