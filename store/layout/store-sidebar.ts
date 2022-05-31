@@ -1,4 +1,4 @@
-import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import { Module, Mutation, VuexModule } from 'vuex-module-decorators'
 
 export const SIDEBAR_WIDTH = 270
 export const SIDEBAR_WIDTH_COLLAPSED = 90
@@ -21,7 +21,7 @@ export default class StoreSidebar extends VuexModule {
   }
   
   @Mutation
-  openSidebar() {
+  closeSidebar() {
     this.collapsed = false
   }
 
@@ -33,10 +33,5 @@ export default class StoreSidebar extends VuexModule {
   @Mutation
   getWidthScreen(payload: number) {
     this.widthScreen = payload
-  }
-
-  @Action({ commit: 'getWidthScreen', rawError: true })
-  handleGetWidth(data: number) {
-    return data
   }
 }

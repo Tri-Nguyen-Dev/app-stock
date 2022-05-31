@@ -30,30 +30,15 @@ class Dashboard extends Vue {
   widthScreen!: number
   
   @nsSidebar.Mutation('openSidebar')
-  openSidebar
-
-  @nsSidebar.Action
-  handleGetWidth!: (params?: any) => Promise<void>
+  closeSidebar
 
   handleToggleMenu() {
     this.visibleMenu = !this.visibleMenu
-    this.openSidebar()
-  }
-  
-  onResize(_e: any) {
-    this.handleGetWidth(window.innerWidth)
+    this.closeSidebar()
   }
   
   toggleMenu(){
     this.handleToggleMenu()
-  }
-
-  created() {
-    window.addEventListener('resize', this.onResize)
-  }
-
-  destroyed() {
-    window.removeEventListener('resize', this.onResize)
   }
 }
 

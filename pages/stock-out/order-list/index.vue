@@ -2,7 +2,7 @@
   .stock
     h1.text-heading Delivery order list
     .stock__header.grid.mt-3
-      div.col-12(class="xl:col-6")
+      div.col-12(class="lg:col-6")
         TabView(@tab-click="handleTab($event)")
           TabPanel
             template(#header)
@@ -16,7 +16,7 @@
             template(#header)
               .icon.icon-check-circle.mr-2.surface-600
               span Delivered
-      div.col-12(class="xl:col-6")
+      div.col-12(class="lg:col-6")
         .header__action
           .btn__filter(:class="{'active': isShowFilter}")
             .btn-toggle(@click.stop="isShowFilter = !isShowFilter")
@@ -33,9 +33,9 @@
               .icon-download.icon--large.bg-primary
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      div(class='col-12 md:col-4 lg:col-3 xl:col-1')
+      div(class='col-12 md:col-4 lg:col-3 xl:col-2')
         FilterTable(title="ID" placeholder="Search ID" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
-      div(class='col-12 md:col-8 lg:col-9 xl:col-3')
+      div(class='col-12 md:col-8 lg:col-9 xl:col-5')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -59,7 +59,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      div(class='col-12 md:col-8 lg:col-9 xl:col-3')
+      div(class='col-12 md:col-8 lg:col-9 xl:col-5')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -574,7 +574,7 @@ export default DeliveryOrderList
     @include flex-column
     gap: 10px 16px
     @include desktop
-      align-items: flex-end
+      justify-content: flex-end
       flex-direction: row
       // flex-wrap:  wrap
       margin-top: 0
