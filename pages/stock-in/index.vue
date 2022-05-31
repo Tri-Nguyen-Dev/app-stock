@@ -57,6 +57,7 @@
           :options="warehouseList"
           name="warehouse"
           @updateFilter="handleFilter")
+
       .col-2
         FilterTable(
           title="Seller Email"
@@ -96,10 +97,10 @@
               span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
-              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'" 
-              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }} 
-              NuxtLink.text-white-active.text-900.font-bold(v-else 
-              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }} 
+              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'"
+              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }}
+              NuxtLink.text-white-active.text-900.font-bold(v-else
+              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }}
           Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
@@ -116,10 +117,10 @@
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorId }}
           Column(
-          header='CREATOR NAME' 
-          field='data.creatorName' 
-          :sortable="true" 
-          sortField="_createdBy.displayName" 
+          header='CREATOR NAME'
+          field='data.creatorName'
+          :sortable="true"
+          sortField="_createdBy.displayName"
           className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorName }}
@@ -152,7 +153,7 @@
         :loading="loadingSubmit"
       )
         template(v-slot:message)
-          p {{ deleteMessage }}  
+          p {{ deleteMessage }}
     Toast
 
 </template>
