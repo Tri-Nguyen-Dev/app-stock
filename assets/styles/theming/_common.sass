@@ -28,13 +28,18 @@
     color: red
 .header__search
   position: relative
-
+  flex: 1
+  @include desktop
+    flex: auto
   input
-    @include size(300px, 48px)
+    @include size(100%, 38px)
     border-radius: 4px
     padding: 0 0 0 50px
     border: none
     outline: none
+    width: 100%
+    @include desktop
+      @include size(300px, 48px)
 
     &::placeholder
       font-size: $font-size-base
@@ -46,9 +51,11 @@
       box-shadow: none
 
 .btn__filter
-    @include size(166px, 48px)
-    @include flex-center-space-between
     cursor: pointer
+    @include size(100%, 38px)
+    @include flex-center-space-between
+    @include desktop
+      @include size(166px, 48px)
     .btn-toggle
         @include flex-center
         gap: 0 18px

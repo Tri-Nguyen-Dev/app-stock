@@ -437,17 +437,5 @@ export default BoxDetail
       justify-content: flex-end
       flex-direction: row
       margin-top: 0
-      
-.header__search
-  flex: 1
-  @include desktop
-    flex: auto
-  input 
-    width: 100%
-    @include desktop
-      width: 300px
-.btn__filter 
-  width: 100%
-  @include desktop
-    width: 166px
+    
 </style>

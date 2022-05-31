@@ -398,16 +398,4 @@ export default Stock
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
-.header__search
-  flex: 1
-  @include desktop
-    flex: auto
-  input 
-    width: 100%
-    @include desktop
-      width: 300px
-.btn__filter 
-  width: 100%
-  @include desktop
-    width: 166px
 </style>
