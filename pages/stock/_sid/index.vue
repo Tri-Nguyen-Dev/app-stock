@@ -8,11 +8,11 @@
           Breadcrumb(:home="homeItem" :model="breadcrumbItem")
       .stock__information--gerenal.border-bottom-1.border-gray-300
         .grid.mb-3.align-items-center.p-4
-          .col-9.pl-0.flex
-            .icon.icon-box-info.mr-1.bg-blue-700
+          .pl-0.flex(class='xl:col-9 lg:col-9 md:col-12 sm:col-12 xs:col-12')
+            .icon.icon-box-info.mr-1.bg-blue-700(class='xl:inline lg:hidden md:hidden sm:hidden xs:hidden')
             span.uppercase.font-bold.text-sm general information
-          .col.flex.justify-content-end
-            .surface-hover.border-round.cursor-pointer.p-2(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
+          .flex.justify-content-end(class='xl:col-3 lg:col-3 md:col-12 sm:col-12 xs:col-12')
+            .surface-hover.border-round.cursor-pointer.p-2.edit__detail--button(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
               .icon.icon-btn-edit
         .grid.mb-3.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
           img(:src="model.data.imagePath | getImageUrl").border-round.w-full
@@ -30,7 +30,7 @@
           span.uppercase.font-semibold.text-blue-700
         div.sub--scroll
           .wrap-unit.px-4
-            StockUnit(title="Total inventory quantity" :value="total" icon="icon-total-inventory" :isEdit="isEditStockDetail")
+            StockUnit(title="Total inventory quantity" :value="model.data.totalInventoryQuantity" icon="icon-total-inventory" :isEdit="isEditStockDetail")
           .wrap-unit.px-4
             StockUnit(title="Size (L*W*H)" icon="icon-size")
               template(v-slot:size)
@@ -218,4 +218,10 @@ export default StockDetail
 .sub--scroll
   max-width: 21.5rem
   overflow: auto
+
+@media (min-width: 768px) and (max-width: 841px)
+  .edit__detail--button
+    width: 100%
+    justify-content: center
+    display: flex
 </style>

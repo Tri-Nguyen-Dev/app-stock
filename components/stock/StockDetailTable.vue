@@ -13,7 +13,7 @@
             div.cursor-pointer.refresh-filter(@click="handleRefreshFilter")
               img(:src="require(`~/assets/icons/rotate-left.svg`)")
     .grid(v-show="isShowFilter")
-      .col
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col')
         FilterTable(
           title="Seller"
           placeholder="Enter seller"
@@ -22,7 +22,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col')
         FilterTable(
           title="SKU"
           placeholder="Enter SKU"
@@ -31,7 +31,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col-12')
         FilterTable(
           title="Enter box code"
           placeholder="Enter box code"
@@ -40,7 +40,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col-12')
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
@@ -48,7 +48,7 @@
           name="warehouse"
           @updateFilter="handleFilter"
         )
-      .col
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col-12')
         FilterTable(
           title="Location"
           placeholder="Enter location"
@@ -57,7 +57,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col
+      .col(class='xl:col-2 lg:col-6 md:col-6 sm:col-12 xs:col-12')
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0
@@ -133,7 +133,7 @@
             template(#body="{data}")
               Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(
                 :disabled="data.itemStatus == 'ITEM_STATUS_DISABLE'"
-                 @click='editItemDetail(data.id)'
+                 @click='editItemDetail(data.box.id)'
                 )
                 .icon--small.icon-btn-edit
               Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(
@@ -176,7 +176,8 @@ import {
   LIMIT_PAGE_OPTIONS,
   PAGINATE_DEFAULT,
   calculateIndex
-} from '~/utils'const nsStoreStockTable = namespace('stock/stock-detail')
+} from '~/utils'
+const nsStoreStockTable = namespace('stock/stock-detail')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component({

@@ -57,7 +57,7 @@ DataTable#custom-table.w-full.flex.flex-column.table__sort-icon.bg-white.box-pag
 		:hidden='!isPack'
 	)
 		template(#body='{ data }')
-			span.font-bold.text-primary.text-right {{ data.stockBox.box.rackLocation.name }}
+			span.font-bold.text-primary.text-right(v-if='data.stockBox.box.rackLocation') {{ data.stockBox.box.rackLocation.name }}
 	column(field='stockBox.box.id', header='BOXCODE', :sortable='true')
 		template(#body='{ data }')
 			span.font-bold.text-right {{ data.stockBox.box.id }}

@@ -1,4 +1,4 @@
-<template lang="pug">
+          <template lang="pug">
 .receipt-note
   card.mb-5
     template(#title='')
@@ -11,7 +11,7 @@
           .filter__item.item--disabled
             .filter__title ID receipt note
             .filter__text(v-if='id') {{ id }}
-            .filter__text(v-else) 
+            .filter__text(v-else)
               i.filter__title auto generate...
         .col
           .filter__item.item--disabled
@@ -25,7 +25,7 @@
           .filter__item.item--disabled
             .filter__title Create time
             .filter__text(v-if='generalInfo.createdAt') {{ generalInfo.createdAt | dateTimeHour12 }}
-            .filter__text(v-else) 
+            .filter__text(v-else)
               i.filter__title auto generate...
         .col
           .filter__item
@@ -158,7 +158,7 @@
             style='margin-right: 0px',
             v-if='listBox && listBox[activeIndex]'
           )
-            ItemDataTable(:listItemInBox='listBox[activeIndex].listItemInBox')
+            ItemDataTable(:listItemInBox='listBox[activeIndex].listItemInBox' :activeInputSku='activeInputSku')
     template(#footer='')
       .grid
         .d-flex.pt-2.col-12(class='md:col-4 lg:col-4')
@@ -315,6 +315,7 @@ class CreateOrUpdateReceipt extends Vue {
     seller: undefined
   }
 
+  activeInputSku: string = ''
   emailInvalid = false
   isSuggested = false
 
@@ -437,7 +438,7 @@ class CreateOrUpdateReceipt extends Vue {
         id: event.id
       }
     }
-    
+
   }
 
   validateEmail() {
@@ -490,6 +491,7 @@ class CreateOrUpdateReceipt extends Vue {
     this.listBox[this.activeIndex].listItemInBox?.push(...itemInBox)
     this.checkActiveAction()
     this.checkLocation()
+    this.activeInputSku = stockInformation.barCode
   }
 
   selectBox(box) {
@@ -674,6 +676,7 @@ class CreateOrUpdateReceipt extends Vue {
             id: stock.id
           }
           this.addItem(stockInformation)
+          this.activeInputSku = stockInformation.barCode
           this.boxQrCode = ''
         } else {
           this.boxQrCode = event.target.value
