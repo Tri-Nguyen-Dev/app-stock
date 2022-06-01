@@ -17,7 +17,7 @@
           .col-fixed
             .btn.btn-primary(@click='createStockIn')
                 .icon.icon-add-items.surface-900.bg-white
-                span.text-900.text-white.mr-3 Add receipt note
+                span.text-900.text-white.mr-3 Add recepit note
           .col-fixed
             .btn__filter(class='active' @click="handleExportReceipt")
               .btn.btn-toggle.bg-white
@@ -57,7 +57,6 @@
           :options="warehouseList"
           name="warehouse"
           @updateFilter="handleFilter")
-
       .col-2
         FilterTable(
           title="Seller Email"
@@ -105,32 +104,23 @@
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
             template(#body='{ data }') {{ data.sellerName }}
-          Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_seller.email" )
+          Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_seller.email")
             template(#body='{ data }') {{ data.sellerEmail }}
-          Column(field="warehouse" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" headerClass="grid-header-right")
+          Column(field="warehouse" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" className="text-right")
             template(#body="{data}")
               div(v-if='data.warehouse')
                 .flex.align-items-center.cursor-pointer.justify-content-end
                   span.text-primary.font-bold.text-white-active(v-if='data.warehouse' ) {{ data.warehouse.name }}
                   .icon.icon-arrow-up-right.bg-primary.bg-white-active
-          Column(
-            header='CREATOR ID'
-            field='data.creatorId'
-            :sortable="true"
-            sortField="_createdBy.id"
-            className="text-right"
-            headerClass="grid-header-right"
-          )
+          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorId }}
           Column(
-            header='CREATOR NAME'
-            field='data.creatorName'
-            :sortable="true"
-            sortField="_createdBy.displayName"
-            className="text-right"
-            headerClass="grid-header-right"
-          )
+          header='CREATOR NAME'
+          field='data.creatorName'
+          :sortable="true"
+          sortField="_createdBy.displayName"
+          className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorName }}
           Column(header='STATUS' field=' data.status' :sortable="true" sortField="_status")

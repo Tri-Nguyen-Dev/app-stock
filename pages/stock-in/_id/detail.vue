@@ -117,14 +117,14 @@
 								template(#body='{ data }')
 									span.font-bold.text-right {{ data.stock.name }}
 							column(
-								field='amount',
+								field='originalAmount',
 								header='QUANTITY',
 								:show-filter-match-modes='false',
 								className='p-text-right',
 								style='width: 10%'
 							)
 								template(#body='{ data }')
-									span.text-primary.font-bold.text-right {{ data.amount }}
+									span.text-primary.font-bold.text-right {{ data.originalAmount }}
 							column(
 								field='unit.name',
 								header='UNIT',
