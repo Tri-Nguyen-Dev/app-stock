@@ -33,9 +33,9 @@
               .icon-download.icon--large.bg-primary
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      div(class='col-12 md:col-4 lg:col-3 xl:col-2')
+      div(class='col-12 md:col-4 lg:col-2 xl:col-2')
         FilterTable(title="ID" placeholder="Search ID" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
-      div(class='col-12 md:col-8 lg:col-9 xl:col-5')
+      div(class='col-12 md:col-8 lg:col-4 xl:col-5')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -48,7 +48,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-          .col.ml-3
+          .col.ml-1
             FilterCalendar(
               title="To"
               border="createTimeTo"
@@ -59,7 +59,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      div(class='col-12 md:col-8 lg:col-9 xl:col-5')
+      div(class='col-12 md:col-8 lg:col-4 xl:col-5')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -72,7 +72,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-          .col.ml-3
+          .col.ml-1
             FilterCalendar(
               title="To"
               border="right"
@@ -83,7 +83,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-4 lg:col-2 xl:col-3')
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
@@ -91,7 +91,7 @@
           name="warehouse"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-4 lg:col-2 xl:col-3')
         FilterTable(
           title="Seller email"
           :value="filter.sellerEmail"
@@ -99,7 +99,7 @@
           name="sellerEmail"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-4 lg:col-2 xl:col-3')
         FilterTable(
           title="Assignee"
           :value="filter.assignee"
@@ -107,7 +107,7 @@
           name="assignee"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-4 lg:col-2 xl:col-3')
         FilterTable(
           title="Status"
           :value="filter.status"
@@ -380,7 +380,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? 'row-disable' :''
+    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
   mounted() {

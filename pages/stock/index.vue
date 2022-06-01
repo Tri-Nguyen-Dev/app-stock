@@ -41,7 +41,8 @@
         )
       .div(class="col-12 md:col-4")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
-    .stock__table
+    .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
+      .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable(
           @sort="sortData($event)"
           :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }"
@@ -363,7 +364,12 @@ export default Stock
 <style lang="sass" scoped>
 .stock
   @include flex-column
-  height: 100vh
+  @include mobile
+    min-height: calc(100vh - 32px)
+  @include tablet
+    min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 32px)
   &__header
     flex-direction: column
     flex-wrap: wrap
