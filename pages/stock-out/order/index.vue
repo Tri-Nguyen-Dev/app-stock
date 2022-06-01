@@ -1,10 +1,10 @@
 <template lang="pug">
-.h-full.flex
-  .bg-white.sub__tab
+.grid
+  div(class="bg-white sub__tab col-12 lg:col-3")
     Breadcrumb(:home="homeItem" :model="breadcrumbItem")
     div.sub__tab--scroll
       StockOutLabelCreate
-  .ml-5.flex-1.overflow-hidden
+  div(class="lg:pl-5 pl-0 lg:mt-0 mt-4 col-12 lg:col-9")
     .grid.grid-nogutter.h-full.flex.flex-column
       .col-12.justify-content-between.flex
         div
@@ -330,13 +330,16 @@ export default createOrder
 
 <style lang="sass" scoped>
 .sub__tab
-  height: 100%
-  min-width: 20rem
-  border-radius: var(--border-radius)
+  overflow: auto
+  @include desktop 
+    height: 100%
+    max-width: 20rem
+    border-radius: var(--border-radius)
 .sub__tab--scroll
   background-color: #ffffff
-  height: calc(100vh - 110px)
-  overflow: auto
+  @include desktop 
+    height: calc(100vh - 110px)
+    overflow: auto
 .btn-action
   border: none
   padding: 0
