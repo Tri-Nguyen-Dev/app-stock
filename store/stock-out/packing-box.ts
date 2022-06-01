@@ -83,13 +83,15 @@ export default class StorePackingBox extends VuexModule {
     } catch (error) {}
   }
 
-  @Action({ commit: 'setIdPackingDetail', rawError: true })
-  async actSavePackingDetail(data: any): Promise<string | undefined> {
+  @Action({ rawError: true })
+  async actSavePackingDetail(data: any): Promise<boolean> {
     try{
       const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.SAVE_PACKING_ORDER, { id: data.id })
       const response = await $api.post(url, { ...data.data })
-      return response.data
-    } catch (error) {}
+      return !!response.data
+    } catch (error) {
+      return false
+    }
   }
 
   @Action({ commit: 'setInfoTag', rawError: true })

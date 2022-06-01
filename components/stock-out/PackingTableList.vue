@@ -1,12 +1,13 @@
 <template lang="pug">
-div.relative
-  DataTable.packing__detail--table(
+div.relative.flex-1
+  DataTable.table-packing(
     :class="{ 'table-wrapper-empty': !value || value.length <= 0, 'full-table': !isShowMore }"
     responsiveLayout="scroll"
     dataKey='id'
     :rowHover='true'
     :value='value'
     :rowClass="rowClass"
+    scrollHeight="300px"
   )
     Column(field='no' header='NO' :styles="{'width': '1%'}" )
       template(#body='{ index }')
@@ -61,7 +62,7 @@ div.relative
     )
       template(#body='{ data }')
         InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="0"
-          :max="maxQuantity(data)" inputClass="w-full" :disabled='data.originalBox !== originalBoxActive.boxCode || disableEditQty'
+          :max="maxQuantity(data)" inputClass="w-full" :disabled='data.originalBox !== originalBoxActive.boxCode'
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
         )
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) {{ data.quantity }}
@@ -112,7 +113,6 @@ class PackingTableList extends Vue {
   @Prop() readonly boxCode!: string | undefined
   @Prop() readonly isPackingDetail!: boolean | false
   @InjectReactive() readonly originalBoxActive!: any
-  @InjectReactive() readonly packingStep!: any
   originalList: {} = {}
 
   getIndexPaginate(index: number) {
@@ -127,71 +127,28 @@ class PackingTableList extends Vue {
     return _.find(this.originalBoxActive.items, { barCode })
   }
 
-  getSumQuantityOtherBox(
-    { actualTranffering, actualOutGoing },
-    quantity: number
-  ) {
-    return this.type === 'tranferringBox'
-      ? actualTranffering - quantity
-      : actualOutGoing - quantity
+  getSumQuantityOtherBox(actualOutGoing: number, quantity: number) {
+    return actualOutGoing - quantity
   }
 
   maxQuantity({ barCode, quantity }) {
     const stockInOriginal = this.getStockInOriginal({ barCode })
-    if (stockInOriginal) {
-      const {
-        initialQuantity,
-        outGoingQuantity,
-        actualTranffering,
-        actualOutGoing
-      } = stockInOriginal
-      const sum = this.getSumQuantityOtherBox(
-        { actualTranffering, actualOutGoing },
-        quantity
-      )
-      if (this.type === 'tranferringBox') {
-        return initialQuantity - outGoingQuantity - sum
-      } else {
-        return outGoingQuantity - sum
-      }
+    if(stockInOriginal) {
+      const { outGoingQuantity, actualOutGoing } = stockInOriginal
+      const sum = this.getSumQuantityOtherBox(actualOutGoing, quantity)
+      return outGoingQuantity - sum
     }
   }
 
   changeQuantity(stock, textValue) {
     const stockInOriginal = this.getStockInOriginal(stock)
-    if (stockInOriginal) {
-      const {
-        initialQuantity,
-        outGoingQuantity,
-        actualTranffering,
-        actualOutGoing
-      } = stockInOriginal
-      const sum = this.getSumQuantityOtherBox(
-        { actualTranffering, actualOutGoing },
-        stock.quantity
-      )
-      if (
-        initialQuantity - outGoingQuantity - sum - textValue >= 0 &&
-        this.type === 'tranferringBox'
-      ) {
-        _.set(stock, 'quantity', textValue)
-        _.set(stockInOriginal, 'actualTranffering', textValue + sum)
-        _.set(
-          stockInOriginal,
-          'quantity',
-          initialQuantity - sum - textValue - actualOutGoing
-        )
-      } else if (
-        this.type === 'outGoingBox' &&
-        outGoingQuantity - sum - textValue >= 0
-      ) {
+    if(stockInOriginal) {
+      const { initialQuantity, outGoingQuantity, actualOutGoing } = stockInOriginal
+      const sum = this.getSumQuantityOtherBox(actualOutGoing, stock.quantity)
+      if(outGoingQuantity - sum - textValue >= 0) {
         _.set(stock, 'quantity', textValue)
         _.set(stockInOriginal, 'actualOutGoing', textValue + sum)
-        _.set(
-          stockInOriginal,
-          'quantity',
-          initialQuantity - sum - textValue - actualTranffering
-        )
+        _.set(stockInOriginal, 'quantity', initialQuantity - sum - textValue)
       }
     }
   }
@@ -221,27 +178,15 @@ class PackingTableList extends Vue {
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'box')
   }
-
-  get disableEditQty() {
-    if (this.packingStep === 2) {
-      return 'disabled'
-    } else return null
-  }
-
-  showMoreItem() {
-    this.isShowMore = !this.isShowMore
-  }
-
-  showLessItem() {
-    this.isShowMore = !this.isShowMore
-  }
 }
 
 export default PackingTableList
 </script>
 <style lang="sass">
+.table-packing
+  position: relative
+  overflow: hidden
 .packing__detail--table
-  height: 166px !important
   .row-outgoing
     background-color: $text-color-100 !important
 .buttonShow
