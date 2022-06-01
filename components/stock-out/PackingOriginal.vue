@@ -29,8 +29,7 @@
         .col.py-3
           span.mr-2 Capacity:
           .p-input-icon-right
-            .icon.icon--right.icon-capacity %
-            InputNumber.w-9rem
+            InputNumber(id="percent" prefix="%" v-model="tab.usedCapacity" :max="100" :disabled="isDisabledCapcity")
         .col.py-3.flex.justify-content-end
           Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
@@ -111,6 +110,7 @@ class PackingOriginal extends Vue {
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly autoActiveTabOut!: boolean | false
+  @Prop() readonly isNextBox!: any
 
   @nsStorePackingDetail.Action
   actScanAirtag!: (params: any) => Promise<any>
@@ -241,6 +241,12 @@ class PackingOriginal extends Vue {
     return sum
   }
 
+  get isDisabledCapcity() {
+    if(!this.isNextBox) {
+      return 'disabled' 
+    }
+  }
+
   mounted() {
     if(this.$refs.inputScanBoxCode) {
       const inputRef = this.$refs.inputScanBoxCode as any
@@ -320,15 +326,6 @@ export default PackingOriginal
 <style lang="sass" scoped>
 ::v-deep.packing__common--table
   position: relative
-  .modal-report
-    width: 50%
-    .p-sidebar-header
-      display: none
-    .p-sidebar-content
-      padding: 0
-      height: 100%
-    .p-sidebar-close
-      display: none
   .delete-box
     position: relative
     z-index: 1000

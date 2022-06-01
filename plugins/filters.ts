@@ -43,3 +43,8 @@ Vue.filter('getThumbnailUrl', (imagePath) => {
 Vue.filter('checkHasTag', (value) => {
   return value ? 'Yes' : 'No'
 })
+
+// --  [ convert percent ] -------------------------------------------------
+Vue.filter('convertPercent', (value) => {
+  return (value * 100)
+})

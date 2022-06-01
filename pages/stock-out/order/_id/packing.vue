@@ -12,6 +12,7 @@
           :listBox="listOriginalBox"
           type='originalBox'
           @selectedTab='selectedOriginalBox'
+          :isNextBox="isNextBox"
         )
         StockOutPackingOriginal.mb-2.flex-1(
           title='outgoing box'
@@ -65,6 +66,7 @@ class DeliveryOrderPacking extends Vue {
   autoActiveTabOut: boolean = false
   listOriginalBox: any = []
   noteText: string = ''
+  valueCapacity: any = 0
   listOutGoingBox: any = [
     {
       boxCode: 'EX1',
@@ -232,10 +234,11 @@ class DeliveryOrderPacking extends Vue {
   async handleSubmit() {
     const data: any = {}
     data.originalBox = _.map(this.listOriginalBox, 'boxCode')
-    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items, airtag }) => ({
+    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items, airtag, usedCapacity }) => ({
       boxSize,
       listStockWithAmount: this.getStocks(items),
-      airtag
+      airtag,
+      usedCapacity
     }))
     data.note = this.noteText
     const { id } = this.$route.params
@@ -277,9 +280,11 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
-        detail: `Box ${this.originalBoxActive.boxCode} has been successfully process. Please move to another box!`,
+        detail: 'Please check the used capacity!',
         life: 3000
       })
+      const indexBoxOriginalActive = _.findIndex(this.listOriginalBox, { 'boxCode': this.originalBoxActive.boxCode })
+      this.listOriginalBox[indexBoxOriginalActive].usedCapacity = this.listOriginalBox[indexBoxOriginalActive].suggestCapacity
     }
   }
 
