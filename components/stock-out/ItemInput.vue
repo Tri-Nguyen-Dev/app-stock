@@ -36,18 +36,10 @@ div
 
 <script lang="ts">
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
-import { required } from 'vuelidate/lib/validators'
 import { INPUT_TYPE } from '~/utils/constants/stock-out'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component({
-  validations: {
-    listInfor: {
-      $each: {
-        value:{ required }
-      }
-    }
-  }
 })
 
 class ItemInput extends Vue {

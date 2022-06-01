@@ -12,15 +12,17 @@
         :sellerList='sellerList'
        )
       .input-errors(
-        v-if='$v.information.seller.$each[1].value.$dirty && $v.information.seller.$each[1].value.$invalid || $v.information.seller.$each[2].value.$dirty && $v.information.seller.$each[2].value.$invalid '
+        v-if='$v.information.seller.$each[0].value.$dirty && $v.information.seller.$each[0].value.$invalid '
         style='text-align: center')
-        .error-message Please, fill in seller information
+        .error-message Please, fill in Email
       .input-errors(
-        v-else-if='$v.information.seller.$each[0].value.$dirty && $v.information.seller.$each[0].value.$invalid '
+        v-else-if='$v.information.seller.$each[1].value.$dirty && $v.information.seller.$each[1].value.$invalid '
         style='text-align: center')
-        .error-message Seller not found
-
-      button(@click='abc') hehe
+        .error-message Please, fill in Name
+      .input-errors(
+        v-else-if='$v.information.seller.$each[2].value.$dirty && $v.information.seller.$each[2].value.$invalid  '
+        style='text-align: center')
+        .error-message Please, fill in Phone
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
@@ -31,6 +33,19 @@
         :listInfor='information.warehouse'
         @fieldWarehouse='handleWarehouse'
       )
+      .input-errors(
+        v-if='$v.information.warehouse.$each[0].value.$dirty && $v.information.warehouse.$each[0].value.$invalid '
+        style='text-align: center')
+        .error-message Please, select Warehouse
+      .input-errors(
+        v-else-if='$v.information.warehouse.$each[1].value.$dirty && $v.information.warehouse.$each[1].value.$invalid '
+        style='text-align: center')
+        .error-message Please, fill in Email
+      .input-errors(
+        v-else-if='$v.information.warehouse.$each[2].value.$dirty && $v.information.warehouse.$each[2].value.$invalid  '
+        style='text-align: center')
+        .error-message Please, fill in Phone
+
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
@@ -41,6 +56,22 @@
         :listInfor='information.receiver'
         @fieldReceiver='handleReceiver'
       )
+      .input-errors(
+        v-if='$v.information.receiver.$each[0].value.$dirty && $v.information.receiver.$each[0].value.$invalid'
+        style='text-align: center')
+        .error-message Please, fill Address
+      .input-errors(
+        v-else-if='$v.information.receiver.$each[1].value.$dirty && $v.information.receiver.$each[1].value.$invalid'
+        style='text-align: center')
+        .error-message Please, fill in Email
+      .input-errors(
+        v-else-if='$v.information.receiver.$each[2].value.$dirty && $v.information.receiver.$each[2].value.$invalid'
+        style='text-align: center')
+        .error-message Please, fill in Name
+      .input-errors(
+        v-else-if='$v.information.receiver.$each[2].value.$dirty && $v.information.receiver.$each[3].value.$invalid'
+        style='text-align: center')
+        .error-message Please, fill in Phone
   .border-top-1.border-gray-300.grid-nogutter
   .col.p-4
     .grid.grid-nogutter.align-items-center.mb-4
@@ -64,6 +95,22 @@
       span.uppercase.text-800.font-bold creator information
     div
       StockOutItemInput( :listInfor='information.creator')
+      .input-errors(
+        v-if='$v.information.creator.$each[0].value.$dirty && $v.information.creator.$each[0].value.$invalid'
+        style='text-align: center')
+        .error-message Please, fill ID
+      .input-errors(
+        v-else-if='$v.information.creator.$each[1].value.$dirty && $v.information.creator.$each[1].value.$invalid'
+        style='text-align: center')
+        .error-message Please, fill in Email
+      .input-errors(
+        v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[2].value.$invalid'
+        style='text-align: center')
+        .error-message Please, fill in Name
+      .input-errors(
+        v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[3].value.$invalid'
+        style='text-align: center')
+        .error-message Please, fill in Phone
 </template>
 
 <script lang="ts">
@@ -82,6 +129,21 @@ const dayjs = require('dayjs')
         $each: {
           value: { required }
         }
+      },
+      warehouse:{
+        $each: {
+          value: { required }
+        }
+      },
+      receiver:{
+        $each: {
+          value: { required }
+        }
+      },
+      creator:{
+        $each: {
+          value: { required }
+        }
       }
     }
   }
@@ -89,6 +151,7 @@ const dayjs = require('dayjs')
 class LabelCreate extends Vue {
   @Prop() readonly title!: any | undefined
   @Prop() readonly icon!: any | undefined
+  @Prop()  createStockOut: any | undefined
 
   deliveryDate: string | any = 'Fill receiver information'
   estimatedDate: string | any = 'Fill receiver information'
@@ -155,14 +218,16 @@ class LabelCreate extends Vue {
     })
   }
 
-  // abc() {
-  //   // console.log(this.information.seller[0].label === 'Email')
-  //   this.$v.information.seller?.$each?.$touch()
-  //   if (this.$v.$invalid) {
-  //
-  //   }
-  //
-  // }
+  validField() {
+    this.$v.information.seller?.$each?.$touch()
+    this.$v.information.warehouse?.$each?.$touch()
+    this.$v.information.receiver?.$each?.$touch()
+    this.$v.information.creator?.$each?.$touch()
+    if (this.$v.$invalid) {
+      this.$router.push('/stock-out/order/add-items')
+    }
+
+  }
 }
 
 export default LabelCreate
