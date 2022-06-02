@@ -66,7 +66,6 @@ class DeliveryOrderPacking extends Vue {
   autoActiveTabOut: boolean = false
   listOriginalBox: any = []
   noteText: string = ''
-  valueCapacity: any = 0
   listOutGoingBox: any = [
     {
       boxCode: 'EX1',
@@ -116,6 +115,8 @@ class DeliveryOrderPacking extends Vue {
         const obj = _.cloneDeep(x)
         return {
           ...obj,
+          usedCapacity: obj.usedCapacity * 100,
+          suggestCapacity: obj.suggestCapacity * 100,
           items: obj.items.map((item) => ({
             ...item,
             initialQuantity: item.quantity,
@@ -234,12 +235,12 @@ class DeliveryOrderPacking extends Vue {
   async handleSubmit() {
     const data: any = {}
     data.originalBox = _.map(this.listOriginalBox, 'boxCode')
-    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items, airtag, usedCapacity }) => ({
+    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items, airtag }) => ({
       boxSize,
       listStockWithAmount: this.getStocks(items),
-      airtag,
-      usedCapacity
+      airtag
     }))
+    
     data.note = this.noteText
     const { id } = this.$route.params
     const result = await this.actSavePackingDetail({ data, id })

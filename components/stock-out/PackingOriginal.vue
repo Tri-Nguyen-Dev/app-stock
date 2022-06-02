@@ -79,7 +79,7 @@
       p Do you want to report the quantity discrepancy  in the box ?
     template(v-slot:content)
       h3.text-left.text-900 NOTE:
-      Textarea.text-left.w-full(rows="4" placeholder="Please note here for your report if necessary")
+      Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace, Watch } from 'nuxt-property-decorator'
@@ -101,6 +101,7 @@ class PackingOriginal extends Vue {
   isPackingDetail: boolean = false
   isShowModalReport: boolean = false
   loadingSubmit: boolean = false
+  valueReportNote: string = ''
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -317,7 +318,7 @@ class PackingOriginal extends Vue {
   }
 
   handleReportBox() {
-
+ 
   }
 }
 
