@@ -107,11 +107,10 @@
               Column(selectionMode='multiple'   )
               Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
                 template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-              Column(field='driverPhone' header='Driver Phone' :sortable='true' sortField='_stock.barCode')
-              Column(field='driverEmail' header='Driver Email' :sortable='true' sortField='_sku')
-              Column(field='driverName' header='Driver Name' :sortable='true' bodyClass='font-semibold' sortField='_box.id')
-              Column(field='totalDelivered' header='Total Delivered D/0' :sortable='true' className="text-right" sortField='_box.request.id')
-              Column(field='totalDelivering' header='Total Delivering D/0' :sortable='true' className="text-right" sortField='_stock.createdAt')
+              Column(field='driverPhone' header='D/O ID' :sortable='true' sortField='_stock.barCode')
+              Column(field='driverEmail' header='Seller Email' :sortable='true' sortField='_sku')
+              Column(field='driverName' header='Receiver Address' :sortable='true' bodyClass='font-semibold' sortField='_box.id')
+              Column(field='totalDelivered' header='Complete time' :sortable='true' className="text-right" sortField='_box.request.id')
               Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_box.request.id')
                 template(#body='{data}')
                   span.text-primary {{data.warehouse.name}}

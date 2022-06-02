@@ -15,7 +15,7 @@ private static readonly STATE_URL = {
 }
 
 public driverList: [] = []
-public totalList: string
+public totalList: number = 0
 public driverDetail: [] = []
 
 @Mutation
