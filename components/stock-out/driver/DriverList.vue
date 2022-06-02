@@ -1,19 +1,5 @@
 <template lang='pug'>
   .inventory
-    .inventory__header
-      div
-        h1.text-heading Driver list
-        span.text-subheading {{ total }} results found
-      .inventory__header--action
-        .btn__filter
-          .btn-toggle(@click="isShowFilter = !isShowFilter")
-            .icon.icon-filter(v-if="!isShowFilter")
-            .icon.icon-chevron-up.bg-primary(v-else)
-            span Filter
-          .btn-refresh(@click="refreshFilter")
-            .icon.icon-rotate-left.bg-white
-        .btn.bg-white(@click='$router.go(-1)') Back
-        Button.btn.btn-primary.border-0(@click='handleAssign' :disabled='selectedDriver.length > 0 ? null : "disabled"') Assign Delivery
     .inventory__filter.grid(v-if='isShowFilter')
       .col
         FilterTable(
@@ -55,7 +41,7 @@
     .inventory__content
       DataTable(
         :value='driverList'
-        dataKey='driverPhone'
+        dataKey='id'
         responsiveLayout="scroll"
         :resizableColumns="true"
         :class="{ 'table-wrapper-empty': !driverList || driverList.length <= 0 }"
@@ -63,9 +49,8 @@
         @row-select="rowSelect"
         :selection="selectedDriver"
         @row-unselect="rowUnselect"
-        @row-dblclick="onRowClick($event)"
       )
-        Column(selectionMode='multiple')
+        Column(selectionMode='single')
         Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
           template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
         Column(field='driverPhone' header='Driver Phone' :sortable='true' sortField='_stock.barCode')
@@ -122,6 +107,7 @@ class DriverList extends Vue {
     total: 16,
     items: [
       {
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4ff',
         'driverPhone': '0326132131',
         'driverEmail': 'sellerhuan1@gmail.com',
         'driverName': 'Seller Huân1',
@@ -140,7 +126,188 @@ class DriverList extends Vue {
 
       },
       {
-        'driverPhone': '0326132132',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f1',
+        'driverPhone': '03261321321',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f2',
+        'driverPhone': '03261321322',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'driverPhone': '03261321323',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f3',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'driverPhone': '03261321324',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f4',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'driverPhone': '03261321325',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f5',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'driverPhone': '03261321326',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f6',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'driverPhone': '03261321327',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f7',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'driverPhone': '03261321328',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f8',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'driverPhone': '03261321329',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f9',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'driverPhone': '032613213210',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f10',
+        'driverEmail': 'sellerhuan@gmail.com',
+        'driverName': 'Seller Huân',
+        'totalDelivered': 20,
+        'totalDelivering': 2,
+        'warehouse': {
+          'id': '1',
+          'name': 'Zappos',
+          'icon': null,
+          'address': '011 Pawling Junction',
+          'description': 'description1',
+          'phone': '3811835987',
+          'email': 'warehouse1@gmail.com',
+          'maxNumberRack': null
+        }
+      },
+      {
+        'driverPhone': '032613213211',
+        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f11',
         'driverEmail': 'sellerhuan@gmail.com',
         'driverName': 'Seller Huân',
         'totalDelivered': 20,
@@ -197,12 +364,6 @@ class DriverList extends Vue {
     refreshAllFilter(this.filter)
   }
 
-  onRowClick({ data }) {
-    this.$router.push({
-      path: `/stock-out/order/${this.$route.params.id}/driver/${data.id}`
-    })
-  }
-
   sortData(e: any) {
     const { sortField, sortOrder } = e
     if (sortOrder) {
@@ -220,20 +381,16 @@ class DriverList extends Vue {
       this.selectedDriver = []
       this.selectedDriver.push(data)
     }
+    this.$emit('selectDriver',this.selectedDriver)
   }
 
   rowUnselect() {
     this.selectedDriver = []
+    this.$emit('selectDriver',this.selectedDriver)
   }
 
   handleAssign() {
     this.$router.push('/stock-out/order-list')
-    this.$toast.add({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: 'Successfully Assign Driver',
-      life: 3000
-    })
   }
 }
 export default DriverList
@@ -248,7 +405,7 @@ export default DriverList
     .p-button
       background: none
       border: none
-  height: calc(100vh - 32px)
+  min-height: 60vh
   .p-inputtext
     box-shadow: none
   &__header
@@ -270,7 +427,7 @@ export default DriverList
         font-weight: $font-weight-medium
       .p-datatable-tbody
         & > tr
-          background: $text-color-100
+          //background: $text-color-100
           .text-bold
             color: $text-color-700
             .p-inputnumber-input
@@ -292,4 +449,6 @@ export default DriverList
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
+::v-deep.bg-white
+  background: $text-color-100 !important
 </style>

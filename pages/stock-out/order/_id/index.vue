@@ -1,14 +1,14 @@
 <template lang="pug">
 .grid.grid-nogutter.packing__detail--container
   .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-    PackingInformationDetail(
+    PackingInformationDetail#packingInfo(
       :deliveryOrderDetail='orderDetail',
       :type='typeTitle'
     )
   .col-9.packing__detail--left.pl-4.pr-1.flex-1
     .grid
       .col-4
-        h1.text-heading {{textHeading}}
+        h1.text-heading {{ textHeading }}
         span.text-subheading {{ total }} items found
       .col-8.btn-right
         ThemeButtonExport.w-25(:click='handleExportReceipt', v-if='!isPack')
@@ -22,7 +22,7 @@
           type='button',
           label='Pick Items',
           @click='pickItem',
-          v-if='!isPack  && !isReady'
+          v-if='!isPack && !isReady'
         )
         Button.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
@@ -43,12 +43,12 @@
           v-if='isReady',
           @click='setDelivery()'
         )
-         Button.p-button-outlined.p-button-primary.bg-white.w-25(
-          type='button',
-          label='Reset Delivery',
-          v-if='isDelevering',
-          @click='resetDelivery()'
-        )
+          Button.p-button-outlined.p-button-primary.bg-white.w-25(
+            type='button',
+            label='Reset Delivery',
+            v-if='isDelevering',
+            @click='resetDelivery()'
+          )
     ItemList(
       :isDetail='true',
       :action='action',
@@ -57,9 +57,11 @@
       :listItems='item',
       v-if='item'
     )
-    Dialog(:visible.sync='isModalDriverList', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "1500px"}' )
-      DriverList
-
+    DriverDialog(
+      :isModalDriverList='isModalDriverList',
+      @hideDialog='hideDialog($event)',
+      @assigned='assignedDriver($event)'
+    )
 </template>
 
 <script lang="ts">
@@ -69,7 +71,7 @@ import PackingInformationDetail from '~/components/stock-out/PackingInformationD
 import { STOCK_OUT_ACTION, ORDER_STATUS } from '~/utils/constants/stock-out'
 import { OrderDetail } from '~/models/OrderDetail'
 import { exportFileTypePdf } from '~/utils'
-import DriverList from '~/components/stock-out/driver/DriverList.vue'
+import DriverDialog from '~/components/stock-out/driver/DriverDialog.vue'
 const nsStoreOrder = namespace('stock-out/order-detail')
 const nsStoreExportOrder = namespace('stock-out/order-export')
 const nsUser = namespace('user-auth/store-user')
@@ -77,7 +79,7 @@ const nsUser = namespace('user-auth/store-user')
   components: {
     ItemList,
     PackingInformationDetail,
-    DriverList
+    DriverDialog
   }
 })
 class DeliveryOrder extends Vue {
@@ -132,10 +134,10 @@ class DeliveryOrder extends Vue {
     }
     await this.actPostUpdateProgressOrder(dataUpdate)
     this.typeTitle = 'PICK_ITEM'
-    this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM 
+    this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
     this.isPack = true
     this.enablePack = false
-    this.textHeading= 'Picking list'
+    this.textHeading = 'Picking list'
     this.$router.push(`/stock-out/order/${this.id}?isPick=false`)
   }
 
@@ -173,34 +175,60 @@ class DeliveryOrder extends Vue {
     if (this.orderDetail.status === ORDER_STATUS.READY) {
       this.isReady = true
     }
-    if(this.$route.query.isPick === 'false'){
+    if (this.$route.query.isPick === 'false') {
       this.initialValue(STOCK_OUT_ACTION.ORDER_PICK_ITEM)
     } else {
       this.initialValue(STOCK_OUT_ACTION.ORDER_DETAIL)
     }
   }
 
-  initialValue(action){
-    this.isPack = action===STOCK_OUT_ACTION.ORDER_PICK_ITEM
-    this.typeTitle = action===STOCK_OUT_ACTION.ORDER_PICK_ITEM?'PICK_ITEM' : 'DO_DETAIL'
+  initialValue(action) {
+    this.isPack = action === STOCK_OUT_ACTION.ORDER_PICK_ITEM
+    this.typeTitle =
+      action === STOCK_OUT_ACTION.ORDER_PICK_ITEM ? 'PICK_ITEM' : 'DO_DETAIL'
     this.action = action
     this.enablePack = false
-    this.textHeading= action===STOCK_OUT_ACTION.ORDER_PICK_ITEM?'Picking list' : 'Delivery order detail'
+    this.textHeading =
+      action === STOCK_OUT_ACTION.ORDER_PICK_ITEM
+        ? 'Picking list'
+        : 'Delivery order detail'
     this.total = this.orderDetail.deliveryItemList!.length
     this.isDelevering = this.orderDetail.status === ORDER_STATUS.IN_PROGRESS
   }
 
   @Watch('$route')
   checkQuery() {
-    if(this.$route.query.isPick === 'true'){
+    if (this.$route.query.isPick === 'true') {
       this.initialValue(STOCK_OUT_ACTION.ORDER_DETAIL)
     } else {
       this.initialValue(STOCK_OUT_ACTION.ORDER_PICK_ITEM)
     }
   }
 
-  setDelivery(){
+  setDelivery() {
     this.isModalDriverList = true
+  }
+
+  hideDialog(event) {
+    this.isModalDriverList = !event
+  }
+
+  assignedDriver(event) {
+    if (event) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully set Delivery',
+        life: 3000
+      })
+      this.orderDetail.driver = event.driver
+      const packingInfo = this.$el.querySelector('.packing__detail--left')
+      if (packingInfo) {
+        const scrollHeight = packingInfo.scrollHeight
+        packingInfo.scrollTop = scrollHeight
+      }
+    }
+    
   }
 }
 
