@@ -68,11 +68,10 @@
         Column(selectionMode='multiple' class="selected-header")
         Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
           template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-        Column(field='driverPhone' header='Driver Phone' :sortable='true' sortField='_driver.phoneNumber')
-        Column(field='driverEmail' header='Driver Email' :sortable='true' sortField='_driver.email')
-        Column(field='driverName' header='Driver Name' :sortable='true' bodyClass='font-semibold' sortField='_driver.displayName')
-        Column(field='totalDelivered' header='Total Delivered D/0' :sortable='true' className="text-right" sortField='_totalDelivered')
-        Column(field='totalDelivering' header='Total Delivering D/0' :sortable='true' className="text-right" sortField='_totalDelivering')
+        Column(field='driverPhone' header='D/O ID' :sortable='true' sortField='_driver.phoneNumber')
+        Column(field='driverEmail' header='Seller Email' :sortable='true' sortField='_driver.email')
+        Column(field='driverName' header='Receiver Address' :sortable='true' bodyClass='font-semibold' sortField='_driver.displayName')
+        Column(field='totalDelivered' header='Complete time' :sortable='true' className="text-right" sortField='_totalDelivered')
         Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_warehouse.name')
           template(#body='{data}')
             span.text-primary {{data.warehouse.name}}
@@ -197,7 +196,7 @@ class DriverList extends Vue {
       this.isDescending = null
       this.sortByColumn = ''
     }
-    await this.actGetBoxList(this.getParamAPi())
+    await this.getDriverList(this.getParamAPi())
   }
 
   rowSelect({ data }) {
