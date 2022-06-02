@@ -19,7 +19,7 @@
           .icon.icon-add-items
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      .col
+      .div(class="col-12 md:col-4")
         FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(
@@ -30,7 +30,7 @@
               placeholder='Select'
               :filter='true'
             )
-      .col
+      .div(class="col-12 md:col-4")
         FilterTable(
           title="Barcode"
           placeholder="Search barcode"
@@ -39,7 +39,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col
+      .div(class="col-12 md:col-4")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .stock__table
         DataTable(
@@ -255,6 +255,10 @@ class Stock extends Vue {
 
   handleChangeFilter() {
     this.getProductList()
+    if(this.filter.categories.length === 0) {
+      this.filter.categories = ''
+      this.getProductList()
+    }
   }
 
   onPage(event: any) {
@@ -359,13 +363,24 @@ export default Stock
 <style lang="sass" scoped>
 .stock
   @include flex-column
-  height: 100%
+  height: 100vh
   &__header
-    @include flex-center-space-between
+    flex-direction: column
+    flex-wrap: wrap
     margin-bottom: 24px
+    @include desktop
+      flex-direction: row
+      @include flex-center-space-between
   .header__action
+    display: flex
+    margin-top: 12px
+    @include flex-column
+    flex-wrap:  wrap
+    gap: 10px 16px
+    @include desktop
       @include flex-center
-      gap: 0 16px
+      flex-direction: row
+      margin-top: 0
 .stock__table
   border-radius: 4px
   flex: 1

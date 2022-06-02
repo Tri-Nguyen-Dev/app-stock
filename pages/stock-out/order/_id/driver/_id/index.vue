@@ -104,7 +104,7 @@
               :selection="selectedDriver"
               @row-unselect="rowUnselect"
             )
-              Column(selectionMode='multiple')
+              Column(selectionMode='multiple'   )
               Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
                 template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
               Column(field='driverPhone' header='Driver Phone' :sortable='true' sortField='_stock.barCode')
@@ -259,13 +259,7 @@ export default DriverDetail
 </script>
 
 <style lang="sass" scoped>
-.box-page
-  display: flex
-  flex-direction: column
-  height: calc( 100vh - 32px )
-.box__table
-  flex: 1
-  overflow : hidden
+
 @media (max-width: 1024px)
   .tabview-left
     top: -4rem !important
@@ -352,6 +346,9 @@ export default DriverDetail
               color: $text-color-900 !important
       .p-datatable-thead > tr > th
         white-space: unset
+        .p-column-header-content
+          .p-checkbox
+            display: none
   .text-right
     text-align: right !important
     .p-column-header-content
@@ -359,4 +356,5 @@ export default DriverDetail
   .filter__dropdown, .filter__multiselect
     @include size(100%, 40px)
     border: none
+
 </style>

@@ -1,6 +1,6 @@
 <template lang="pug">
   .menu-item.flex-row.pt-1(v-show="isShow" @click="select(item)")
-    nuxt-link(v-if="!!item.to" :to="item.to")
+    nuxt-link(v-if="!!item.to" :to="item.to" @click.native="toggleMenu")
       SidebarItemValue(:item="item")
     div(v-if="!item.to")
       SidebarItemValue(:item="item")
@@ -23,6 +23,10 @@ class SidebarItem extends Vue {
   @Emit()
   select(item) {
     return item
+  }
+  
+  toggleMenu() {
+    this.$emit('toggleMenu')
   }
 
   // -- [ Getters ] -------------------------------------------------------------
