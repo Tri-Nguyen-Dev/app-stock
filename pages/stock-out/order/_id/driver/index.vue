@@ -196,7 +196,7 @@ class DriverList extends Vue {
       this.isDescending = null
       this.sortByColumn = ''
     }
-    await this.getDriverList(this.getParamAPi())
+    await this.getDriverList(this.getDriverList())
   }
 
   rowSelect({ data }) {
