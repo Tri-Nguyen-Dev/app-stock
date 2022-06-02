@@ -126,32 +126,32 @@
                   span Filter
                 .btn-refresh(@click="refreshFilter")
                   .icon.icon-rotate-left.bg-white
-            .grid.my-2(v-if="isFilter")
-                div(class="col-12 md:col")
-                  .bg-white.border-round
-                    div.pt-2.pl-1.pb-1
-                      span.text-600.text-sm.pl-2 SKU
-                    span.p-input-icon-right.w-full
-                      .icon.icon--right.icon-search.surface-900
-                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="filterParams.sku")
-                div(class="col-12 md:col")
-                  .bg-white.border-round
-                    div.pt-2.pl-1.pb-1
-                      span.text-600.text-sm.pl-2 Barcode
-                    span.p-input-icon-right.w-full
-                      .icon.icon--right.icon-search.surface-900
-                      InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="filterParams.barCode")
-                div(class="col-12 md:col")
-                  .bg-white.border-round
-                    div.pt-2.pl-1.pb-1
-                      span.text-600.text-sm.pl-2 Category
-                      MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(
-                        v-model="filterParams.category" 
-                        :options='categoryList' 
-                        optionLabel="name" 
-                        optionValue="id" 
-                        placeholder="Select" 
-                        :filter='true')   
+          .grid.my-2.w-full(v-if="isFilter")
+              div(class="col-12 md:col")
+                .bg-white.border-round
+                  div.pt-2.pl-1.pb-1
+                    span.text-600.text-sm.pl-2 SKU
+                  span.p-input-icon-right.w-full
+                    .icon.icon--right.icon-search.surface-900
+                    InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="filterParams.sku")
+              div(class="col-12 md:col")
+                .bg-white.border-round
+                  div.pt-2.pl-1.pb-1
+                    span.text-600.text-sm.pl-2 Barcode
+                  span.p-input-icon-right.w-full
+                    .icon.icon--right.icon-search.surface-900
+                    InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="filterParams.barCode")
+              div(class="col-12 md:col")
+                .bg-white.border-round
+                  div.pt-2.pl-1.pb-1
+                    span.text-600.text-sm.pl-2 Category
+                    MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(
+                      v-model="filterParams.category" 
+                      :options='categoryList' 
+                      optionLabel="name" 
+                      optionValue="id" 
+                      placeholder="Select" 
+                      :filter='true')   
         .box__table.flex.mt-2(v-if='activeTab ==  0')       
           BoxDetailTable.flex-1(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
         .box__table.mt-2(v-if='activeTab ==  1' )
