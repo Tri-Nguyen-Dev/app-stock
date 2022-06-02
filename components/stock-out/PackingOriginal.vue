@@ -29,7 +29,7 @@
         .col.py-3
           span.mr-2 Capacity:
           .p-input-icon-right
-            InputNumber(id="percent" prefix="%" v-model="tab.usedCapacity" :max="100" :disabled="isDisabledCapcity")
+            InputNumber(id="percent" suffix="%" v-model="tab.usedCapacity" :max="100" :disabled="isDisabledCapcity")
         .col.py-3.flex.justify-content-end
           Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
@@ -67,30 +67,12 @@
       StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )
-  ConfirmDialogCustom(
-      title="Report Confirm"
-      image="confirm-delete"
-      :isShow="isShowModalReport"
-      :onOk="handleReportBox"
-      :onCancel="cancelReportBox"
-      :loading="loadingSubmit"
-  )
-    template(v-slot:message)
-      p Do you want to report the quantity discrepancy  in the box ?
-    template(v-slot:content)
-      h3.text-left.text-900 NOTE:
-      Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace, Watch } from 'nuxt-property-decorator'
-import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
-@Component({
-  components: {
-    ConfirmDialogCustom
-  }
-})
+@Component
 class PackingOriginal extends Vue {
   activeIndex: number = 0
   tabs: any = []
@@ -99,9 +81,6 @@ class PackingOriginal extends Vue {
   boxCodeText: string = ''
   tagCodeText: string = ''
   isPackingDetail: boolean = false
-  isShowModalReport: boolean = false
-  loadingSubmit: boolean = false
-  valueReportNote: string = ''
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -310,15 +289,7 @@ class PackingOriginal extends Vue {
   }
 
   showFormReport() {
-    this.isShowModalReport = true
-  }
-
-  cancelReportBox(){
-    this.isShowModalReport = false
-  }
-
-  handleReportBox() {
- 
+    this.$emit('showFormReportBox')
   }
 }
 

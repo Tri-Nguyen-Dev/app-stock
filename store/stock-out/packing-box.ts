@@ -15,7 +15,7 @@ export default class StorePackingBox extends VuexModule {
     SAVE_PACKING_ORDER: '/delivery-order/:id/packing',
     SCAN_AIRTAG: '/airtag/scan-barcode/:barcode',
     GET_PACKING_DETAIL_BY_ID: '/delivery-order/:id/packing-detail',
-    CREATE_REPORT: 'report/create'
+    CREATE_REPORT: '/report/create'
   }
 
   public totalOriginalList?: number = 0

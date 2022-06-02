@@ -1,6 +1,19 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     Toast
+    ConfirmDialogCustom(
+      title="Report Confirm"
+      image="confirm-delete"
+      :isShow="isShowModalReport"
+      :onOk="handleReportBox"
+      :onCancel="cancelReportBox"
+      :loading="loadingSubmit"
+    )
+      template(v-slot:message)
+        p Do you want to report the quantity discrepancy  in the box ?
+      template(v-slot:content)
+        h3.text-left.text-900 NOTE:
+        Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
       StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-x-hidden.flex-1.relative.flex.flex-column.packing-wapper
@@ -12,6 +25,7 @@
           :listBox="listOriginalBox"
           type='originalBox'
           @selectedTab='selectedOriginalBox'
+          @showFormReportBox="showFormReportBox"
           :isNextBox="isNextBox"
         )
         StockOutPackingOriginal.mb-2.flex-1(
@@ -55,17 +69,25 @@
 
 <script lang="ts">
 import { Component, Vue, namespace, ProvideReactive, Watch } from 'nuxt-property-decorator'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { PackingDetail } from '~/models/PackingDetail'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 const nsStoreBox = namespace('box/box-size-list')
 
-@Component
+@Component({
+  components: {
+    ConfirmDialogCustom
+  }
+})
 class DeliveryOrderPacking extends Vue {
   outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
   indexScanBoxCode: number = 0
   autoActiveTabOut: boolean = false
   listOriginalBox: any = []
   noteText: string = ''
+  isShowModalReport: boolean = false
+  loadingSubmit: boolean = false
+  valueReportNote: string = ''
   listOutGoingBox: any = [
     {
       boxCode: 'EX1',
@@ -102,6 +124,9 @@ class DeliveryOrderPacking extends Vue {
 
   @nsStorePackingDetail.Action
   actSavePackingDetail!:(data: any) => Promise<any>
+
+  @nsStorePackingDetail.Action
+  actCreateReport!:(data: any) => Promise<any>
 
   async mounted() {
     const { id } = this.$route.params
@@ -234,7 +259,11 @@ class DeliveryOrderPacking extends Vue {
 
   async handleSubmit() {
     const data: any = {}
-    data.originalBox = _.map(this.listOriginalBox, 'boxCode')
+    data.originalBox = _.map(this.listOriginalBox, ({ boxCode, usedCapacity }) => ({
+      id: boxCode,
+      usedCapacity: usedCapacity / 100
+    }))
+
     data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items, airtag }) => ({
       boxSize,
       listStockWithAmount: this.getStocks(items),
@@ -291,6 +320,42 @@ class DeliveryOrderPacking extends Vue {
 
   handelDeteleBoxEmpty(index) {
     this.listOutGoingBox.splice(index, 1)
+  }
+
+  showFormReportBox() {
+    this.isShowModalReport = true
+  }
+
+  cancelReportBox(){
+    this.isShowModalReport = false
+  }
+
+  async handleReportBox() {
+    if(this.originalBoxActive) {
+      const result = await this.actCreateReport({
+        box: {
+          id: this.originalBoxActive.boxCode
+        },
+        note: this.valueReportNote
+      })
+      if(result) {
+        this.isShowModalReport = false
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Add report successfully!',
+          life: 3000
+        })
+      }
+      else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Report is duplicated for box (B000000000322)!',
+          life: 3000
+        })
+      }
+    }
   }
 }
 
