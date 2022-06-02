@@ -15,7 +15,7 @@
             span Filter
           .btn-refresh(@click="handleRefreshFilter")
             .icon.icon-rotate-left.bg-white
-        .btn.btn-primary(@click="handleAddStock")
+        Button.btn.btn-primary(@click="handleAddStock")
           .icon.icon-add-items
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
