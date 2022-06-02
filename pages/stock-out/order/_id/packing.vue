@@ -5,7 +5,7 @@
       StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
       .flex.flex-column.h-full
-        StockOutPackingOriginal.h-full.mb-2(
+        StockOutPackingOriginal.mb-2(
           title='original box'
           icon='icon-info'
           :isOriginal='true'
@@ -13,7 +13,7 @@
           type='originalBox'
           @selectedTab='selectedOriginalBox'
         )
-        StockOutPackingOriginal.h-full.mb-2(
+        StockOutPackingOriginal.mb-2(
           title='outgoing box'
           icon='icon-arrow-circle-up-right'
           :isOutgoing='true'

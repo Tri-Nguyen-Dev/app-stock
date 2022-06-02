@@ -184,7 +184,7 @@ export default PackingTableList
 </script>
 <style lang="sass">
 .packing__detail--table
-  height: 166px !important
+  height: 100% !important
   .row-outgoing
     background-color: $text-color-100 !important
 </style>

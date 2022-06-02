@@ -17,7 +17,7 @@
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    TabPanel(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
+    TabPanel.h-full(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -57,7 +57,7 @@
           span.ml-1.font-semibold (cm)
         .col.ml-2.py-3.flex.justify-content-end
           span.font-semibold Box Code: {{tab.newBoxCode}}
-      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
+      StockOutPackingTableList.flex-1.overflow-hidden(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )
 </template>
@@ -280,11 +280,16 @@ export default PackingOriginal
 <style lang="sass" scoped>
 ::v-deep.packing__common--table
   position: relative
+  height: 50%
   .delete-box
     position: relative
     z-index: 1000
     font-size: 10px !important
     color: red !important
+  .originalTable, .outGoingTable
+    height: 100%
+    display: flex
+    flex-direction: column
   .originalTable
     .p-tabview-nav-container
       width: calc(100% - 200px)
@@ -326,8 +331,12 @@ export default PackingOriginal
     .icon
       background: $primary-dark
     .p-tabview-panels
+      flex: 1
       min-height: 166px
       padding: 0
+      .p-tabview-panel
+        display: flex
+        flex-direction: column
       .p-dropdown,
       .p-inputtext
         background: $text-color-300
