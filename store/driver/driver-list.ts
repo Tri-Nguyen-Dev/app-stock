@@ -9,13 +9,13 @@ import { $api } from '~/utils'
 
 export default class Driver extends VuexModule {
 private static readonly STATE_URL = {
-  GET_DRIVER: 'staff/list-driver',
+  GET_DRIVER: '/staff/list-driver',
   GET_DRIVER_DETAIL: '/warehouse/list/by-seller-email',
   POST_DRIVER: ''
 }
 
 public driverList: [] = []
-public totalList: number
+public totalList: string
 public driverDetail: [] = []
 
 @Mutation
@@ -35,14 +35,15 @@ setAssignDriver(data: any) {
 }
 
 @Action({ commit: 'setDriverList', rawError: true })
-async actDriverList( ): Promise<string | undefined> {
+async actDriverList(params: any): Promise<string | undefined> {
   try {
     const url = PathBind.transform(
       this.context,
       Driver.STATE_URL.GET_DRIVER
     )
-    const response = await $api.get(url)
+    const response = await $api.get(url, { params })
     return response.data
+
   } catch (error) {}
 }
 
