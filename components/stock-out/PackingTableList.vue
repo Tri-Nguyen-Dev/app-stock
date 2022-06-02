@@ -1,6 +1,6 @@
 <template lang="pug">
-div
-  DataTable.packing__detail--table(
+div.relative.flex-1
+  DataTable.table-packing(
     :class="{ 'table-wrapper-empty': !value || value.length <= 0 }"
     responsiveLayout="scroll"
     dataKey='id'
@@ -85,11 +85,13 @@ div
     )
       template(v-slot:message)
         p {{ deleteMessage }}
+  //- span.absolute.buttonShow(v-if="value.length > 2 && isShowMore" @click='showMoreItem') Show more
+  //- span.absolute.buttonShow(v-if="!isShowMore" @click='showLessItem') Show less
 
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, InjectReactive } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT,calculateIndex, getDeleteMessage } from '~/utils'
+import { PAGINATE_DEFAULT, calculateIndex, getDeleteMessage } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 
@@ -104,6 +106,7 @@ class PackingTableList extends Vue {
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
   componentKey: number = 0
+  // isShowMore: boolean = true
   @Prop() value!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly boxCode!: string | undefined
@@ -112,11 +115,7 @@ class PackingTableList extends Vue {
   originalList: {} = {}
 
   getIndexPaginate(index: number) {
-    return calculateIndex(
-      index,
-      this.paging.pageNumber,
-      this.paging.pageSize
-    )
+    return calculateIndex(index, this.paging.pageNumber, this.paging.pageSize)
   }
 
   rowClass(data: any) {
@@ -154,8 +153,8 @@ class PackingTableList extends Vue {
   }
 
   handleQuantity(data, event) {
-    if(!_.isNil(event)) {
-      if(!event) {
+    if (!_.isNil(event)) {
+      if (!event) {
         this.onEventDeleteList = [data]
         this.isModalDelete = true
       } else {

@@ -11,7 +11,7 @@
       placeholder='Please enter box code!'
       ref="inputScanBoxCode"
     )
-  TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
+  TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
@@ -25,6 +25,13 @@
         span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
         .ml-1.px-1(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
+      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if="isOriginal")
+        .col.py-3
+          span.mr-2 Capacity:
+          .p-input-icon-right
+            InputNumber(id="percent" suffix="%" v-model="tab.usedCapacity" :max="100" :disabled="isDisabledCapcity")
+        .col.py-3.flex.justify-content-end
+          Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
           span.mr-1 Size:
@@ -83,6 +90,7 @@ class PackingOriginal extends Vue {
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly autoActiveTabOut!: boolean | false
+  @Prop() readonly isNextBox!: any
 
   @nsStorePackingDetail.Action
   actScanAirtag!: (params: any) => Promise<any>
@@ -213,6 +221,12 @@ class PackingOriginal extends Vue {
     return sum
   }
 
+  get isDisabledCapcity() {
+    if(!this.isNextBox) {
+      return 'disabled' 
+    }
+  }
+
   mounted() {
     if(this.$refs.inputScanBoxCode) {
       const inputRef = this.$refs.inputScanBoxCode as any
@@ -273,6 +287,10 @@ class PackingOriginal extends Vue {
       }
     }
   }
+
+  showFormReport() {
+    this.$emit('showFormReportBox')
+  }
 }
 
 export default PackingOriginal
@@ -286,10 +304,6 @@ export default PackingOriginal
     z-index: 1000
     font-size: 10px !important
     color: red !important
-  .originalTable, .outGoingTable
-    height: 100%
-    display: flex
-    flex-direction: column
   .originalTable
     .p-tabview-nav-container
       width: calc(100% - 200px)
@@ -330,9 +344,13 @@ export default PackingOriginal
       border: 1px solid #dee2e6
     .icon
       background: $primary-dark
+    .icon-capacity
+      background-color: unset !important
     .p-tabview-panels
       flex: 1
-      min-height: 166px
+      display: flex
+      flex-direction: column
+      overflow: hidden
       padding: 0
       .p-tabview-panel
         display: flex
@@ -342,6 +360,10 @@ export default PackingOriginal
         background: $text-color-300
       .p-datatable .p-datatable-thead > tr > th
         background: #fff !important
+    .p-tabview-panel
+      flex: 1
+      display: flex
+      flex-direction: column
     ul.p-tabview-nav
       height: 42px !important
     .p-tabview-nav-container
