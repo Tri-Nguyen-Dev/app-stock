@@ -351,7 +351,7 @@ class DeliveryOrderPacking extends Vue {
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
-          detail: `Report is duplicated for box ${this.originalBoxActive.boxCode}!`,
+          detail: 'This box has been reported!',
           life: 3000
         })
       }
