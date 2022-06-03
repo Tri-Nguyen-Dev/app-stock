@@ -47,6 +47,7 @@
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(
               v-model='filter.warehouseId'
+              @change="handleChangeFilter"
               :options='warehouseList'
               optionLabel="name"
               placeholder='Select'
@@ -153,6 +154,14 @@ class DriverList extends Vue {
   handleFilter(e: any, name: string){
     this.filter[name] = e
     this.getDriverList()
+  }
+
+  handleChangeFilter() {
+    this.getDriverList()
+    if(this.filter.warehouseId.length === 0) {
+      this.filter.warehouseId = ''
+      this.getDriverList()
+    }
   }
 
   async onPage(event: any) {
