@@ -43,3 +43,8 @@ Vue.filter('getThumbnailUrl', (imagePath) => {
 Vue.filter('checkHasTag', (value) => {
   return value ? 'Yes' : 'No'
 })
+
+// -- [ Format date time 24hour type] ------------------------------------------------
+Vue.filter('dateTimeHour12', (value) => {
+  return dayjs(new Date(value)).format('DD-MM-YYYY HH:mm')
+})

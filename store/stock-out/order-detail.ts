@@ -33,6 +33,8 @@ export default class StoreOrderDetail extends VuexModule {
   @Mutation
   assignDriver(data: any) {
     this.dataAssignDriver = data.data
+    this.orderDetail.driver = data.data.driver
+    this.orderDetail.status = data.data.status
   }
 
   @Action({ commit: 'setOrderDetail', rawError: true })
@@ -48,8 +50,13 @@ export default class StoreOrderDetail extends VuexModule {
   }
 
   @Action({ commit: 'assignDriver', rawError: true })
-  async actPostAssignDriver(data: any): Promise<string | undefined> {
+  async actPostAssignDriver(data: any): Promise<any | undefined> {
     const url = PathBind.transform(this.context, StoreOrderDetail.STATE_URL.ASSIGN_DRIVER, { id: data.idOrder })
     return await $api.post(url, data)
+  }
+
+  @Action({ commit: 'setOrderDetail', rawError: true })
+  updateDriverInOrderDetail(data){
+    return data
   }
 }

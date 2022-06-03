@@ -50,7 +50,7 @@
         :selection="selectedDriver"
         @row-unselect="rowUnselect"
       )
-        Column(selectionMode='single')
+        Column(selectionMode='multiple')
         Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
           template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
         Column(field='driverPhone' header='Driver Phone' :sortable='true' sortField='_stock.barCode')
@@ -69,12 +69,10 @@
           )
         template(#empty)
           div.flex.align-items-center.justify-content-center.flex-column
-            img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
-            img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-            p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
+            img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
+            p.text-900.font-bold.mt-3 List is empty!, Click
               span.text-primary.underline.cursor-pointer &nbsp;here
               span &nbsp;to add item.
-            p.text-900.font-bold.mt-3(v-else) Item not found!
 </template>
 
 <script lang='ts'>
@@ -84,7 +82,7 @@ import { PAGINATE_DEFAULT, refreshAllFilter } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreOrder = namespace('stock-out/create-order')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
-
+const nsStoreDriver = namespace('driver/driver-list')
 @Component({
   components: {
     Pagination
@@ -104,239 +102,19 @@ class DriverList extends Vue {
   }
 
   data: any = {
-    total: 16,
-    items: [
-      {
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4ff',
-        'driverPhone': '0326132131',
-        'driverEmail': 'sellerhuan1@gmail.com',
-        'driverName': 'Seller Huân1',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Amazone',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-
-      },
-      {
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f1',
-        'driverPhone': '03261321321',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f2',
-        'driverPhone': '03261321322',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'driverPhone': '03261321323',
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f3',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'driverPhone': '03261321324',
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f4',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'driverPhone': '03261321325',
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f5',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'driverPhone': '03261321326',
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f6',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'driverPhone': '03261321327',
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f7',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'driverPhone': '03261321328',
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f8',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'driverPhone': '03261321329',
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f9',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'driverPhone': '032613213210',
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f10',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      },
-      {
-        'driverPhone': '032613213211',
-        'id':'af17a3a0-e548-4d65-9bf7-bf46a4bdd4f11',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      }
-    ]
+    total: 16
   }
 
   get total() {
     return this.data.total
   }
 
-  get driverList(){
-    return this.data.items
-  }
-
   // -- [ State ] ------------------------------------------------------------
   @nsStoreOrder.State
   inventoryStore!: any
+
+  @nsStoreDriver.State
+  driverList!: any
 
   @nsStoreWarehouse.State
   warehouseList!: any
@@ -346,9 +124,13 @@ class DriverList extends Vue {
   @nsStoreWarehouse.Action
   actWarehouseList!: any
 
+  @nsStoreDriver.Action
+  actDriverList!: (params: any) => Promise<string>
+
   // -- [ Functions ] ------------------------------------------------------------
   async mounted() {
     await this.actWarehouseList()
+    await this.getDriverList()
   }
 
   handleFilter(e: any, name: string){
@@ -392,6 +174,19 @@ class DriverList extends Vue {
   handleAssign() {
     this.$router.push('/stock-out/order-list')
   }
+
+  async getDriverList(){
+    const warehouseId = this.filter.warehouseId
+      ? this.filter.warehouseId.map((item: any) => item?.id).toString()
+      : null
+    await this.actDriverList({
+      ...this.filter,
+      warehouseId,
+      pageSize: this.paging.pageSize,
+      pageNumber: this.paging.pageNumber
+    })
+  }
+
 }
 export default DriverList
 </script>
@@ -440,6 +235,11 @@ export default DriverList
             .p-inputnumber-input
               font-weight: $font-weight-bold
               color: $text-color-900 !important
+      .p-datatable-thead > tr > th
+        white-space: unset
+        .p-column-header-content
+          .p-checkbox
+            display: none
       .p-datatable-thead > tr > th
         white-space: unset
   .text-right

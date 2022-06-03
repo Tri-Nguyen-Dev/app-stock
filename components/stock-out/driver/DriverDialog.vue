@@ -11,7 +11,8 @@
 
 <script lang="ts">
 import { Component, namespace, Prop, Vue, Watch } from 'nuxt-property-decorator'
-import DriverList from '~/components/stock-out/driver/DriverList.vue'const nsStoreOrder = namespace('stock-out/order-detail')
+import DriverList from '~/components/stock-out/driver/DriverList.vue'
+const nsStoreOrder = namespace('stock-out/order-detail')
 @Component({
   components: {
     DriverList
@@ -49,7 +50,7 @@ class DriverDialog extends Vue {
   async assignDriver(){
     const data= {
       id: this.idDriver,
-      idOrder:  this.$route.params.id
+      idOrder: this.$route.params.id
     }
     await this.actPostAssignDriver(data)
     this.$emit('assigned',this.dataAssignDriver)

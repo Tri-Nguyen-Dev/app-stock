@@ -1,5 +1,5 @@
 <template lang="pug">
-.packingTimeDelivery.grid(v-if="timeDelivery")
+.packingTimeDelivery.grid(v-if="driverInfo")
   .icon.icon-calendar-infor.mr-2.bg-blue-700.inline-block
   span.uppercase.font-bold.mb-4 driver information
   .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
