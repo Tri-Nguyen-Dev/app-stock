@@ -3,7 +3,10 @@
 
 // global
 .m-h-700 
-  min-height: 700px
+  @include tablet 
+    min-height: 700px
+  @include mobile
+    min-height: 500px
 .p-sidebar-header 
   z-index: 11111111
 .text-heading

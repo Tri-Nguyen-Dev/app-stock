@@ -18,34 +18,36 @@
         .icon.icon-add-items
         span Add box
   .grid(v-if="isShowFilter")
-    div(class="col-12 md:col")
-      FilterTable(
-        title="Warehouse"
-        :value="filter.warehouse"
-        :options="warehouseList"
-        name="warehouse"
-        @updateFilter="handleFilterBox"
-      )
-    div(class="col-12 md:col")
-      FilterTable(
-        title="Location"
-        :value="filter.location"
-        placeholder="Enter location"
-        name="location"
-        :searchText="true"
-        @updateFilter="handleFilterBox"
-      )
-    div(class="col-12 md:col")
-      FilterTable(
-        title="Box Code"
-        :value="filter.barCode"
-        placeholder="Enter code"
-        name="barCode"
-        :searchText="true"
-        @updateFilter="handleFilterBox"
-      )
-    div(class="col-12 md:col-4")
-      .grid.grid-nogutter
+    div(class="md:col-12 lg:col-8 col-12")
+      .grid
+        div(class="col-12 md:col-4")
+          FilterTable(
+            title="Warehouse"
+            :value="filter.warehouse"
+            :options="warehouseList"
+            name="warehouse"
+            @updateFilter="handleFilterBox"
+          )
+        div(class="col-12 md:col-4")
+          FilterTable(
+            title="Location"
+            :value="filter.location"
+            placeholder="Enter location"
+            name="location"
+            :searchText="true"
+            @updateFilter="handleFilterBox"
+          )
+        div(class="col-12 md:col-4")
+          FilterTable(
+            title="Box Code"
+            :value="filter.barCode"
+            placeholder="Enter code"
+            name="barCode"
+            :searchText="true"
+            @updateFilter="handleFilterBox"
+          )
+    div(class="col-12 lg:col-4")
+      .grid
         .col
           FilterCalendar(
             title="From"
@@ -56,7 +58,7 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-        .col.ml-1
+        .col
           FilterCalendar(
             title="To"
             border="right"
@@ -67,7 +69,7 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-  .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700 
+  .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll"
       :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"
@@ -347,7 +349,12 @@ export default BoxList
 
 <style lang="sass" scoped>
 .box-page-container
-  min-height: calc(100vh - 32px)
+  @include mobile
+    min-height: calc(100vh - 32px)
+  @include tablet
+    min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 32px)
   ::v-deep.p-component
     font-family: $font-family-primary
   ::v-deep.pi-calendar:before

@@ -33,9 +33,9 @@
               .icon-download.icon--large.bg-primary
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      div(class='col-12 md:col-4 lg:col-3 xl:col-2')
-        FilterTable(title="ID" placeholder="Search ID" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
-      div(class='col-12 md:col-8 lg:col-9 xl:col-5')
+      div(class='col-12 md:col-4 lg:col-4 xl:col-1')
+        FilterTable(title="ID" placeholder="Search" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
+      div(class='col-12 md:col-8 lg:col-8 xl:col-3')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -48,18 +48,18 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-          .col.ml-3
+          .col.ml-1
             FilterCalendar(
               title="To"
               border="createTimeTo"
               :value="filter.createTimeTo"
-              name="dateTo"
+              name="createTimeTo"
               inputClass="border-0"
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      div(class='col-12 md:col-8 lg:col-9 xl:col-5')
+      div(class='col-12 md:col-8 lg:col-8 xl:col-3')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -72,7 +72,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-          .col.ml-3
+          .col.ml-1
             FilterCalendar(
               title="To"
               border="right"
@@ -83,31 +83,33 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-4 xl:col')
         FilterTable(
           title="Warehouse"
-          :value="filter.warehouse"
+          :value="filter.warehouseId"
           :options="warehouseList"
-          name="warehouse"
+          name="warehouseId"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-4 xl:col')
         FilterTable(
           title="Seller email"
+          placeholder="Search"
           :value="filter.sellerEmail"
           :searchText="true"
           name="sellerEmail"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-4 xl:col')
         FilterTable(
           title="Assignee"
-          :value="filter.assignee"
+          placeholder="Search"
+          :value="filter.assigneeId"
           :searchText="true"
-          name="assignee"
+          name="assigneeId"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-4 xl:col')
         FilterTable(
           title="Status"
           :value="filter.status"
@@ -202,7 +204,6 @@
               span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
         template(#footer)
           Pagination(
-            v-if="activeTab == 0"
             title="Cancel"
             :paging="paging"
             :total="total"
@@ -318,7 +319,7 @@ class DeliveryOrderList extends Vue {
     })
     this.getDeliveryList({
       ...this.filter,
-      warehouseId: this.filter.warehouse?.id,
+      warehouseId: this.filter.warehouseId?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       status: this.activeStatus
@@ -380,7 +381,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? 'row-disable' :''
+    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
   mounted() {
@@ -396,7 +397,7 @@ class DeliveryOrderList extends Vue {
   async getProductList() {
     await this.getDeliveryList({
       ...this.filter,
-      warehouseId: this.filter.warehouse?.id,
+      warehouseId: this.filter.warehouseId?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       status: this.activeStatus?.includes(this.filter.status?.value) ? this.filter.status?.value : this.activeStatus
@@ -463,10 +464,19 @@ class DeliveryOrderList extends Vue {
   }
 
   handleRefreshFilter() {
-    this.filter.name = null
-    this.filter.barCode = null
-    this.filter.categories = null
-    this.filter.status = null
+    this.filter = {
+      id: null,
+      assigneeId: null,
+      createTimeFrom: null,
+      createTimeTo: null,
+      dueDeliveryDateFrom: null,
+      dueDeliveryDateTo: null,
+      status: null,
+      sortBy: null,
+      desc: null,
+      sellerEmail: null,
+      warehouseId: null
+    }
     this.getProductList()
   }
 
@@ -513,7 +523,12 @@ export default DeliveryOrderList
 
 .stock
   @include flex-column
-  height: 100vh
+  @include mobile
+    min-height: calc(100vh - 32px)
+  @include tablet
+    min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 32px)
 
   ::v-deep.pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
