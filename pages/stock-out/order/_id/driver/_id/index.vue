@@ -8,8 +8,7 @@
       .border-bottom-1.border-gray-300.grid-nogutter
       div.flex.justify-content-center
         .col.my-3.px-3
-          img(:src="link ").border-round.w-full
-          // | getImageUrl
+          img(:src=" avatarImg | getImageUrl ").border-round.w-full
       div.sub--scroll.col-12
         div.wrap-unit.px-3
           .col.border-bottom-1.border-gray-300
@@ -42,7 +41,7 @@
         .inventory__header
           div
             h1.text-heading Driver Information
-            span.text-subheading {{ total }} results found
+            span.text-subheading {{ totalDetailList }} results found
           .inventory__header--action.flex
             .btn__filter
               .btn-toggle(@click="isShowFilter = !isShowFilter")
@@ -56,36 +55,36 @@
         .inventory__filter.grid(v-if='isShowFilter')
           .col
             FilterTable(
-              title="Driver Phone"
-              :value="filter.phone"
-              placeholder="Enter Phone"
-              name="phone"
+              title="D/O ID"
+              :value="filter.id"
+              placeholder="Enter D/O ID"
+              name="id"
               :searchText="true"
               @updateFilter="handleFilter"
             )
           .col
             FilterTable(
               title="Driver Email"
-              :value="filter.email"
+              :value="filter.driverEmail"
               placeholder="Enter Email"
-              name="email"
+              name="driverEmail"
               :searchText="true"
               @updateFilter="handleFilter"
             )
           .col
             FilterTable(
               title="Driver Name"
-              :value="filter.name"
+              :value="filter.driverName"
               placeholder="Enter Name"
-              name="name"
+              name="driverName"
               :searchText="true"
               @updateFilter="handleFilter"
             )
           .col
-            FilterTable(title="Warehouse" name="Warehouse" :value="filter.warehouse"  @updateFilter="handleFilter")
+            FilterTable(title="Warehouse" name="warehouseId" :value="filter.warehouseId"  @updateFilter="handleFilter")
               template(v-slot:multi-select)
                 MultiSelect.filter__multiselect(
-                  v-model='filter.warehouse'
+                  v-model='filter.warehouseId'
                   :options='warehouseList'
                   optionLabel="name"
                   placeholder='Select'
@@ -93,12 +92,12 @@
                 )
         .inventory__content
           DataTable(
-              :value='driverList'
-              dataKey='driverPhone'
+              :value='driverDetail'
+              dataKey='id'
               :rows='10'
               responsiveLayout="scroll"
               :resizableColumns="true"
-              :class="{ 'table-wrapper-empty': !driverList || driverList.length <= 0 }"
+              :class="{ 'table-wrapper-empty': !driverDetail || driverDetail.length <= 0 }"
               @sort="sortData($event)"
               @row-select="rowSelect"
               :selection="selectedDriver"
@@ -107,17 +106,17 @@
               Column(selectionMode='multiple'   )
               Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
                 template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-              Column(field='driverPhone' header='D/O ID' :sortable='true' sortField='_stock.barCode')
-              Column(field='driverEmail' header='Seller Email' :sortable='true' sortField='_sku')
-              Column(field='driverName' header='Receiver Address' :sortable='true' bodyClass='font-semibold' sortField='_box.id')
-              Column(field='totalDelivered' header='Complete time' :sortable='true' className="text-right" sortField='_box.request.id')
+              Column(field='deliveryOrderId' header='D/O ID' :sortable='true' sortField='_stock.barCode')
+              Column(field='sellerEmail' header='Seller Email' :sortable='true' sortField='_sku')
+              Column(field='receiverAddress' header='Receiver Address' :sortable='true' bodyClass='font-semibold' sortField='_box.id')
+              Column(field='completeTime' header='Complete time' :sortable='true' className="text-right" sortField='_box.request.id')
               Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_box.request.id')
                 template(#body='{data}')
                   span.text-primary {{data.warehouse.name}}
               template(#footer)
                 Pagination(
                   :paging="paging"
-                  :total="total"
+                  :total="totalDetailList"
                   @onPage="onPage"
                 )
               template(#empty)
@@ -136,6 +135,7 @@ import { Paging } from '~/models/common/Paging'
 import { PAGINATE_DEFAULT, refreshAllFilter } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreDriver = namespace('driver/driver-list')
 
 @Component({
   components: {
@@ -146,64 +146,22 @@ class DriverDetail extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   selectedDriver: any = []
   isShowFilter: boolean = false
-  link = 'https://img.cand.com.vn/resize/800x800/NewFiles/Images/2022/02/21/1645405385021-1645411783261.jpg'
   filter: any = {
-    phone: null,
+    id: null,
     email: null,
     warehouse: null,
-    name: null
-  }
-
-  data: any = {
-    total: 16,
-    items: [
-      {
-        'driverPhone': '0326132131',
-        'driverEmail': 'sellerhuan1@gmail.com',
-        'driverName': 'Seller Huân1',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Amazone',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-
-      },
-      {
-        'driverPhone': '0326132132',
-        'driverEmail': 'sellerhuan@gmail.com',
-        'driverName': 'Seller Huân',
-        'totalDelivered': 20,
-        'totalDelivering': 2,
-        'warehouse': {
-          'id': '1',
-          'name': 'Zappos',
-          'icon': null,
-          'address': '011 Pawling Junction',
-          'description': 'description1',
-          'phone': '3811835987',
-          'email': 'warehouse1@gmail.com',
-          'maxNumberRack': null
-        }
-      }
-    ]
-  }
-
-  get total() {
-    return this.data.total
-  }
-
-  get driverList(){
-    return this.data.items
+    name: null,
+    pageSize: 20,
+    pageNumber: 0
   }
 
   // -- [ State ] ------------------------------------------------------------
+
+  @nsStoreDriver.State
+  driverDetail!: any
+
+  @nsStoreDriver.State
+  totalDetailList!: any
 
   @nsStoreWarehouse.State
   warehouseList!: any
@@ -213,43 +171,92 @@ class DriverDetail extends Vue {
   @nsStoreWarehouse.Action
   actWarehouseList!: any
 
-  refreshFilter(){
-    refreshAllFilter(this.filter)
-  }
+  @nsStoreDriver.Action
+  actDriverDetail!: any
 
   async mounted() {
     await this.actWarehouseList()
-  }
-
-  handleAssign() {
-    this.$router.push('/stock-out/order-list')
-    this.$toast.add({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: 'Successfully Assign Driver',
-      life: 3000
-    })
-  }
-
-  onPage(event: any) {
-    this.paging.pageSize = event.rows
-    this.paging.pageNumber = event.page
-  }
-
-  rowSelect({ data }) {
-    this.selectedDriver.push(data)
-    if (this.selectedDriver.length > 1 ) {
-      this.selectedDriver = []
-      this.selectedDriver.push(data)
-    }
-  }
-
-  rowUnselect() {
-    this.selectedDriver = []
+    await this.getDriverList()
   }
 
   handleFilter(e: any, name: string){
     this.filter[name] = e
+    this.getDriverList()
+  }
+
+  async onPage(event: any) {
+    this.paging.pageSize = event.rows
+    this.paging.pageNumber = event.page
+    await this.getDriverList()
+  }
+
+  get checkIsFilter() {
+    const params = _.omit(this.filter, ['pageNumber', 'pageSize'])
+    return Object.values(params).some((item) => item)
+  }
+
+  async refreshFilter() {
+    refreshAllFilter(this.filter)
+    await this.getDriverList()
+  }
+
+  async getDriverList(){
+    const warehouseId = this.filter.warehouseId
+      ? this.filter.warehouseId.map((item: any) => item?.id).toString()
+      : null
+    await this.actDriverDetail({
+      ...this.filter,
+      id: this.$route.params?.id,
+      warehouseId: warehouseId || null,
+      pageSize: this.paging.pageSize,
+      pageNumber: this.paging.pageNumber
+    })
+  }
+
+  async sortData(e: any) {
+    const { sortField, sortOrder } = e
+    if(sortOrder){
+      this.isDescending = sortOrder !== 1
+      this.sortByColumn = sortField.replace('_', '')
+    }else{
+      this.isDescending = null
+      this.sortByColumn = ''
+    }
+    await this.getDriverList()
+  }
+
+  rowSelect({ data }) {
+    this.isIdSelected = data.id
+    const selected = this.selectedDriver
+    selected.push(data)
+    if (selected.length > 1 ) {
+      selected.splice(0)
+      selected.push(data)
+    }
+  }
+
+  rowUnselect() {
+    this.selectedDriver.splice(0)
+  }
+
+  handleAssign() {
+    const result = this.actSetAssignDriver({ id : this.$route.params.id  } )
+    if(result) {
+      this.$router.push('/stock-out/order-list')
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully Assign Driver',
+        life: 3000
+      })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error  Message',
+        detail: 'Error Assign Driver',
+        life: 3000
+      })
+    }
   }
 
 }

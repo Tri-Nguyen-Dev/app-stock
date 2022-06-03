@@ -106,7 +106,7 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
   }
 })
 class DriverList extends Vue {
-  selectedDriver: Array = []
+  selectedDriver: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   isShowFilter: boolean = false
   isIdSelected: string
@@ -216,7 +216,7 @@ class DriverList extends Vue {
   }
 
   handleAssign() {
-    const result = this.actSetAssignDriver({ id : this.isIdSelected  } )
+    const result = this.actSetAssignDriver({ idDelivery: this.$route.params.id, id: this.isIdSelected })
     if(result) {
       this.$router.push('/stock-out/order-list')
       this.$toast.add({
