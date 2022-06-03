@@ -62,7 +62,7 @@
               img(src='~/assets/icons/total-items-border.svg')
             .col
               span.font-semibold.text-base.mr-1 Total items:
-              .font-semibold.text-primary {{totalItem}}
+              .font-semibold.text-primary {{ totalItem }}
         .col-2.flex.justify-content-end.p-1
           Button.btn.btn-primary.ml-3(@click="handleSubmit" :disabled="isDisabled") Save
 </template>

@@ -1,7 +1,7 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
   Toast
-  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab") + Add
+  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal && !isPackingDetail' @click="handleAddTab") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.w-full.inputSearchCode(
@@ -11,6 +11,7 @@
       placeholder='Please enter box code!'
       ref="inputScanBoxCode"
     )
+  Button.btn-print.font-semibold(label="Print" v-if='isPackingDetail' @click="handleAddTab")
   TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
       template(#header)
@@ -24,13 +25,15 @@
         span.uppercase.text-700 {{tab.boxCode}}
         span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
-        .ml-1.px-1(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
+        .aritag-text(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
+        .aritag-text(v-if='tab.airtag && isPackingDetail') {{ tab.airtag.barCode }}
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if="isOriginal")
         .col.py-3
           span.mr-2 Capacity:
-          .p-input-icon-right
+          .p-input-icon-right(v-if="!isPackingDetail")
             InputNumber(id="percent" suffix="%" v-model="tab.usedCapacity" :max="100" :disabled="isDisabledCapcity")
-        .col.py-3.flex.justify-content-end
+          span(v-else) {{ tab.usedCapacity | capacityPercent}}
+        .col.py-3.flex.justify-content-end(v-if="!isPackingDetail")
           Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
@@ -59,7 +62,7 @@
               ref="inputScanBarCode"
             )
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && isPackingDetail')
-        .col-3.py-3.border-right-1.border-gray-300
+        .col-fixed.pr-3.py-3.border-right-1.border-gray-300
           span.mr-1.font-semibold Size: {{tab.boxSize.name}} {{tab.boxSize.height}}*{{tab.boxSize.width}}*{{tab.boxSize.length}}
           span.ml-1.font-semibold (cm)
         .col.ml-2.py-3.flex.justify-content-end
@@ -322,7 +325,15 @@ export default PackingOriginal
       margin: 0 !important
     .p-inputtext:enabled:focus
       box-shadow: none !important
-
+  .btn-print
+    width: 65px
+    height: 42px
+    position: absolute
+    right: 0
+    top: 21px
+    transform: translateY(-50%)
+    z-index: 1
+    box-shadow: none
   .btn-add-tab
     position: absolute
     right: 0
@@ -360,6 +371,9 @@ export default PackingOriginal
         background: $text-color-300
       .p-datatable .p-datatable-thead > tr > th
         background: #fff !important
+    .aritag-text
+      margin-left: 8px
+      color: $text-color-700
     .p-tabview-panel
       flex: 1
       display: flex
@@ -429,10 +443,7 @@ export default PackingOriginal
           display: inline-block !important
           background: $primary
 ::v-deep.packing__common--table.packing-detail
-  .originalTable
+  .originalTable, .outGoingTable
     .p-tabview-nav-container
-      width: 100% !important
-  .outGoingTable
-    .p-tabview-nav-container
-      width: 100% !important
+      width: calc(100% - 65px) !important
 </style>

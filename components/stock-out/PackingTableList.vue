@@ -85,8 +85,6 @@ div.relative.flex-1
     )
       template(v-slot:message)
         p {{ deleteMessage }}
-  //- span.absolute.buttonShow(v-if="value.length > 2 && isShowMore" @click='showMoreItem') Show more
-  //- span.absolute.buttonShow(v-if="!isShowMore" @click='showLessItem') Show less
 
 </template>
 <script lang="ts">
@@ -106,7 +104,6 @@ class PackingTableList extends Vue {
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
   componentKey: number = 0
-  // isShowMore: boolean = true
   @Prop() value!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly boxCode!: string | undefined
