@@ -5,9 +5,11 @@ export namespace DeliveryConstants {
       IN_PROGRESS = 1,
       CANCELLED = 2,
       READY = 3,
-      DELIVERING = 4,
-      DELIVERED = 5,
-      RETURNED = 6
+      SETTED = 4,
+      ACCEPTED = 5,
+      DELIVERING = 6,
+      DELIVERED = 7,
+      RETURNED = 8
     }
     export enum TabDelivery {
       NEW = 0,
@@ -25,7 +27,7 @@ export namespace DeliveryConstants {
     ]
     export const MapDeliveryTab = new Map<number, string>([
       [TabDelivery.NEW, `${StatusDelivery.NEW},${StatusDelivery.IN_PROGRESS},${StatusDelivery.CANCELLED}`],
-      [TabDelivery.DELIVERY_SETTING, `${StatusDelivery.READY},${StatusDelivery.DELIVERING}`],
+      [TabDelivery.DELIVERY_SETTING, `${StatusDelivery.READY}, ${StatusDelivery.ACCEPTED},${StatusDelivery.SETTED}, ${StatusDelivery.DELIVERING}`],
       [TabDelivery.DELIVERED, `${StatusDelivery.DELIVERED},${StatusDelivery.RETURNED}`]
     ])
     

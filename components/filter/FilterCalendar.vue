@@ -2,6 +2,8 @@
   .bg-white.wrapper-filter(:class="`border-round-${border}`")
     div.pt-2.pb-1.title
       span.text-600.font-sm {{title}}
+    span.p-input-icon-right.w-full
+      i(v-if="value" class="pi pi-times clear" @click.stop="clearValue")
     Calendar.w-full.pl-2.mb-1(
       @date-select="handleFilter"
       :value="value"
@@ -16,7 +18,6 @@ import { Component, Prop, Vue } from 'nuxt-property-decorator'
 
 @Component
 class FilterTable extends Vue {
-
   @Prop() value!: any | undefined
   @Prop() readonly title!: any | undefined
   @Prop() readonly searchText!: boolean | false
@@ -31,6 +32,10 @@ class FilterTable extends Vue {
   handleFilter(e :any){
     this.$emit('updateFilter', e, this.name)
   }
+  
+  clearValue() {
+    this.$emit('updateFilter', null, this.name)
+  }
 
 }
 
@@ -40,6 +45,7 @@ export default FilterTable
   ::placeholder
     color: $text-color-700
   .wrapper-filter
+    position: relative
     @include flex-column
     height: 82px
     justify-content: center
@@ -56,6 +62,7 @@ export default FilterTable
         color: $text-color-700
     .pi-times.clear
       z-index: 1
+      top: 18px !important
       right: 2.5rem  !important
       cursor: pointer
     ::v-deep.p-input-icon-right .p-inputtext

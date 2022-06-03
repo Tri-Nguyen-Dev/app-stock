@@ -48,10 +48,14 @@ export default Dashboard
 <style lang="sass">
 .main-container
   background-color: $bg-body-base
-  min-height: 100vh
   padding: $space-size-16
-  @incluce desktop
+  @include mobile
+    min-height: 100vh
+  @include tablet
+    min-height: 100vh
+  @include desktop
     padding: $space-size-32
+    height: 100vh
 .layout-static
   ::v-deep.p-sidebar-header 
     z-index: 1111
