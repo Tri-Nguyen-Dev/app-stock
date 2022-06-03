@@ -1,30 +1,26 @@
 <template lang="pug">
 .box-page-container.flex.flex-column
-  .grid.justify-content-between
-    .col-fixed
+  .box__header
+    div
       h1.text-heading Box list
       span.text-subheading(v-if="boxList") {{ totalBoxRecords }} products found
-    .col-fixed
-      .grid
-        .col-fixed
-          .header__search
-            .icon.icon--left.icon-search
-            InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
-        .col-fixed
-          .btn__filter
-            .btn-toggle(@click="isShowFilter = !isShowFilter")
-              .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
-              span Filter
-            .btn-refresh(@click="handleRefeshFilter")
-              .icon.icon-rotate-left.bg-white
-        .col-fixed
-          .btn.btn-primary(@click='routeLinkAddBox')
-            .icon.icon-add-items
-            span Add box
+    .header__action
+      .header__search
+        .icon.icon--left.icon-search
+        InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
+      .btn__filter
+        .btn-toggle(@click="isShowFilter = !isShowFilter")
+          .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
+          span Filter
+        .btn-refresh(@click="handleRefeshFilter")
+          .icon.icon-rotate-left.bg-white
+      .btn.btn-primary(@click='routeLinkAddBox')
+        .icon.icon-add-items
+        span Add box
   .grid(v-if="isShowFilter")
-    .col-8
+    div(class="md:col-12 lg:col-8 col-12")
       .grid
-        .col
+        div(class="col-12 md:col-4")
           FilterTable(
             title="Warehouse"
             :value="filter.warehouse"
@@ -32,7 +28,7 @@
             name="warehouse"
             @updateFilter="handleFilterBox"
           )
-        .col
+        div(class="col-12 md:col-4")
           FilterTable(
             title="Location"
             :value="filter.location"
@@ -41,7 +37,7 @@
             :searchText="true"
             @updateFilter="handleFilterBox"
           )
-        .col
+        div(class="col-12 md:col-4")
           FilterTable(
             title="Box Code"
             :value="filter.barCode"
@@ -50,8 +46,8 @@
             :searchText="true"
             @updateFilter="handleFilterBox"
           )
-    .col-4
-      .grid.grid-nogutter
+    div(class="col-12 lg:col-4")
+      .grid
         .col
           FilterCalendar(
             title="From"
@@ -62,7 +58,7 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-        .col.ml-1
+        .col
           FilterCalendar(
             title="To"
             border="right"
@@ -73,7 +69,7 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-  .grid.grid-nogutter.flex-1.relative.overflow-hidden
+  .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll"
       :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"
@@ -353,7 +349,12 @@ export default BoxList
 
 <style lang="sass" scoped>
 .box-page-container
-  height: calc(100vh - 32px)
+  @include mobile
+    min-height: calc(100vh - 32px)
+  @include tablet
+    min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 32px)
   ::v-deep.p-component
     font-family: $font-family-primary
   ::v-deep.pi-calendar:before
@@ -371,4 +372,21 @@ export default BoxList
     background-color: $text-color-300
     .icon
       background-color: $text-color-500
+.box__header
+  flex-direction: column
+  flex-wrap: wrap
+  margin-bottom: 24px
+  @include desktop
+    flex-direction: row
+    @include flex-center-space-between
+.header__action
+    margin-top: 12px
+    display: flex
+    @include flex-column
+    flex-wrap:  wrap
+    gap: 10px 16px
+    @include desktop
+      @include flex-center
+      flex-direction: row
+      margin-top: 0
 </style>
