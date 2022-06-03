@@ -30,7 +30,7 @@
           span.mr-2 Capacity:
           .p-input-icon-right
             InputNumber(id="percent" suffix="%" v-model="tab.usedCapacity" :max="100" :disabled="isDisabledCapcity")
-        .col.py-3.flex.justify-content-end
+        .col.py-3.flex.justify-content-end(v-if="!isMergeBox")
           Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
@@ -48,6 +48,14 @@
                 v-model="tagCodeText"
                 ref="inputScanTag"
               )
+        .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
+          div.flex.align-items-center
+            div
+              div Estimated
+              div Inventory Fee:
+            div.ml-2
+              InputText.w-4.inputSearchCode(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
+              span.ml-1 / day
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:
           span.ml-1.p-input-icon-right
@@ -69,7 +77,7 @@
       )
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, namespace, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, namespace, Watch, InjectReactive } from 'nuxt-property-decorator'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
@@ -86,11 +94,15 @@ class PackingOriginal extends Vue {
   @Prop() readonly icon!: string | undefined
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
+  @Prop() readonly isTranffering!: boolean | false
   @Prop() listBox!: Array<any>
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly autoActiveTabOut!: boolean | false
   @Prop() readonly isNextBox!: any
+
+  @InjectReactive() readonly packingStep!: any
+  @InjectReactive() readonly isMergeBox!: boolean | false
 
   @nsStorePackingDetail.Action
   actScanAirtag!: (params: any) => Promise<any>
@@ -291,6 +303,14 @@ class PackingOriginal extends Vue {
   showFormReport() {
     this.$emit('showFormReportBox')
   }
+
+  get disableEditQty() {
+    if(this.packingStep === 2) {
+      return 'disabled'
+    }
+    else return null
+  }
+
 }
 
 export default PackingOriginal
