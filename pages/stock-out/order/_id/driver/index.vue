@@ -106,7 +106,7 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
   }
 })
 class DriverList extends Vue {
-  selectedDriver: Array = []
+  selectedDriver: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   isShowFilter: boolean = false
   isIdSelected: string
@@ -147,6 +147,7 @@ class DriverList extends Vue {
   async mounted() {
     await this.actWarehouseList()
     await this.getDriverList()
+
   }
 
   handleFilter(e: any, name: string){
@@ -176,7 +177,7 @@ class DriverList extends Vue {
       : null
     await this.actDriverList({
       ...this.filter,
-      warehouseId,
+      warehouseId: warehouseId || null,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber
     })
@@ -197,7 +198,7 @@ class DriverList extends Vue {
       this.isDescending = null
       this.sortByColumn = ''
     }
-    await this.actGetBoxList(this.getParamAPi())
+    await this.getDriverList()
   }
 
   rowSelect({ data }) {
@@ -215,7 +216,7 @@ class DriverList extends Vue {
   }
 
   handleAssign() {
-    const result = this.actSetAssignDriver({ id : this.isIdSelected  } )
+    const result = this.actSetAssignDriver({ idDelivery: this.$route.params.id, id: this.isIdSelected })
     if(result) {
       this.$router.push('/stock-out/order-list')
       this.$toast.add({
