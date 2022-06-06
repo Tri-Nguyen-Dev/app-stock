@@ -1,64 +1,65 @@
 <template lang="pug">
-  .grid.grid-nogutter.stock__information-detail
-    .p-0.border-round.surface-0.sub-tab(class="lg:col-3 col-12" v-if='model.data')
-      .grid.border-bottom-1.border-gray-300
-        .col.flex.align-items-center.breadcrumb-section
-          Button(@click='backToStockList').p-button-link
-            .icon.icon-btn-back.bg-blue-700
-          Breadcrumb(:home="homeItem" :model="breadcrumbItem")
-      .stock__information--gerenal.border-bottom-1.border-gray-300
-        .grid.mb-3.align-items-center.p-4
-          .pl-0.flex.col-9
-            .icon.icon-box-info.mr-1.bg-blue-700(class='xl:inline lg:hidden md:hidden sm:hidden xs:hidden')
-            span.uppercase.font-bold.text-sm general information
-          .flex.justify-content-end.col-3
-            .surface-hover.border-round.cursor-pointer.p-2.edit__detail--button(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
-              .icon.icon-btn-edit
-        .grid.mb-3.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          img(:src="model.data.imagePath | getImageUrl").border-round.w-full
-        .grid.my-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          Tag(severity="success" v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"').uppercase Available
-          Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DISABLE"').uppercase.surface-200 Disable
-          Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DRAFT"').uppercase Draft
-        .grid.mb-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-          h3.font-bold.my-2 {{model.data.name}}
-        .grid.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
-          p.uppercase.inline.font-semibold.text-400.mr-2 code:
-          span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
-        .grid.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
-          p.uppercase.inline.font-semibold.text-400.mr-2 unit:
-          span.uppercase.font-semibold.text-blue-700
-        div.sub--scroll
-          .wrap-unit.px-4
-            StockUnit(title="Total inventory quantity" :value="model.data.totalInventoryQuantity" icon="icon-total-inventory" :isEdit="isEditStockDetail")
-          .wrap-unit.px-4
-            StockUnit(title="Size (L*W*H)" icon="icon-size")
-              template(v-slot:size)
-                .grid.mt-1(v-if='isEditStockDetail')
-                  div(class="col-4 p-0 pl-2 pt-1")
-                    InputNumber.w-full(:disabled='!isEditStockDetail', v-model='lengthBox')
-                  .col-4.pl-2.p-0.pt-1
-                    InputNumber.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
-                  .col-4.pl-2.p-0.pt-1
-                    InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
-                span.font-bold.text-small.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
-          .wrap-unit.px-4
-            StockUnit(
-              title="Weight"
-              name="weightBox"
-              :model="weightBox"
-              :isEdit="isEditStockDetail"
-              icon="icon-weight"
-              @updateUnit='handleUpdateUnit'
-            )
-        div
-        .grid.mb-4.px-4(:class='isEditStockDetail ? null : "hidden"')
-          div(class='lg:col-6 col-3')
-            .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
-              span.uppercase.font-semibold cancel
-          div(class='lg:col-6 col-3')
-            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditStockDetail')
-              span.uppercase save
+  .grid.grid-nogutter.w-full
+    div(class="sm:col-12 lg:col-3 xl:col-3" v-if='model.data')
+      .sub-tab.bg-white.border-round-top
+        .grid.border-bottom-1.border-gray-300
+          .col.flex.align-items-center.breadcrumb-section
+            Button(@click='backToStockList').p-button-link
+              .icon.icon-btn-back.bg-blue-700
+            Breadcrumb(:home="homeItem" :model="breadcrumbItem")
+        .stock__information--gerenal.border-bottom-1.border-gray-300
+          .grid.mb-3.align-items-center.p-4
+            .pl-0.flex.col-9
+              .icon.icon-box-info.mr-1.bg-blue-700(class='xl:inline lg:hidden md:hidden sm:hidden xs:hidden')
+              span.uppercase.font-bold.text-sm general information
+            .flex.justify-content-end.col-3
+              .surface-hover.border-round.cursor-pointer.p-2.edit__detail--button(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
+                .icon.icon-btn-edit
+          .grid.mb-3.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+            img(:src="model.data.imagePath | getImageUrl").border-round.w-full
+          .grid.my-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+            Tag(severity="success" v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"').uppercase Available
+            Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DISABLE"').uppercase.surface-200 Disable
+            Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DRAFT"').uppercase Draft
+          .grid.mb-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
+            h3.font-bold.my-2 {{model.data.name}}
+          .grid.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
+            p.uppercase.inline.font-semibold.text-400.mr-2 code:
+            span.uppercase.font-semibold.text-blue-700 {{model.data.barCode}}
+          .grid.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"').align-items-center
+            p.uppercase.inline.font-semibold.text-400.mr-2 unit:
+            span.uppercase.font-semibold.text-blue-700
+          div.sub--scroll
+            .wrap-unit.px-4
+              StockUnit(title="Total inventory quantity" :value="model.data.totalInventoryQuantity" icon="icon-total-inventory" :isEdit="isEditStockDetail")
+            .wrap-unit.px-4
+              StockUnit(title="Size (L*W*H)" icon="icon-size")
+                template(v-slot:size)
+                  .grid.mt-1(v-if='isEditStockDetail')
+                    div(class="col-4 p-0 pl-2 pt-1")
+                      InputNumber.w-full(:disabled='!isEditStockDetail', v-model='lengthBox')
+                    .col-4.pl-2.p-0.pt-1
+                      InputNumber.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
+                    .col-4.pl-2.p-0.pt-1
+                      InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
+                  span.font-bold.text-small.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
+            .wrap-unit.px-4
+              StockUnit(
+                title="Weight"
+                name="weightBox"
+                :model="weightBox"
+                :isEdit="isEditStockDetail"
+                icon="icon-weight"
+                @updateUnit='handleUpdateUnit'
+              )
+          div
+          .grid.mb-4.px-4(:class='isEditStockDetail ? null : "hidden"')
+            div(class='lg:col-6 col-3')
+              .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
+                span.uppercase.font-semibold cancel
+            div(class='lg:col-6 col-3')
+              .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditStockDetail')
+                span.uppercase save
     .py-0(class="xl:pl-5 lg:pl-2 col-12 lg:col-9 md:col-12")
       StockDetailTable
 </template>
@@ -214,7 +215,7 @@ export default StockDetail
   margin-bottom: 16px
 .sub-tab
   @include desktop 
-    max-width: 21.5rem
+    max-width: 100%
     height: calc(100vh - 32px)
     overflow: hidden
     overflow-y: auto !important
@@ -222,7 +223,7 @@ export default StockDetail
 .sub--scroll
   width: 100%
   @include desktop 
-    max-width: 21.5rem
+    max-width: 100%
     overflow: auto
 
 .edit__detail--button
