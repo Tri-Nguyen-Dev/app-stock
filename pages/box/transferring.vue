@@ -11,7 +11,7 @@
           type='originalBox'
           @selectedTab='selectedOriginalBox'
         )
-        .flex.flex-1.flex-column.mb-2
+        .flex.flex-1.flex-column.mb-2.overflow-hidden
           card.box-transferr
             template(#content='')
               h3.tranffer-title.border-bottom-1.border-gray-300.my-0.py-3.px-3.flex.align-items-center
