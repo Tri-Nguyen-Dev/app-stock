@@ -193,8 +193,9 @@ class DriverList extends Vue {
   }
 
   onRowClick({ data }) {
+    const idDelivery = this.$route.params.id
     this.$router.push({
-      path: `/stock-out/order/${this.$route.params.id}/driver/${data.id}`
+      path: `/stock-out/order/${idDelivery}/driver/${data.id}`
     })
   }
 
@@ -225,7 +226,9 @@ class DriverList extends Vue {
   }
 
   handleAssign() {
-    const result = this.actSetAssignDriver({ idDelivery: this.$route.params.id, id: this.isIdSelected })
+    const result = this.actSetAssignDriver({
+      idDelivery: this.$route.params.id,
+      id: this.isIdSelected })
     if(result) {
       this.$router.push('/stock-out/order-list')
       this.$toast.add({
