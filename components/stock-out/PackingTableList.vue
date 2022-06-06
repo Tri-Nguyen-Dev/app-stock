@@ -1,13 +1,12 @@
 <template lang="pug">
 div.relative.flex-1
   DataTable.table-packing(
-    :class="{ 'table-wrapper-empty': !value || value.length <= 0, 'full-table': !isShowMore }"
+    :class="{ 'table-wrapper-empty': !value || value.length <= 0 }"
     responsiveLayout="scroll"
     dataKey='id'
     :rowHover='true'
     :value='value'
     :rowClass="rowClass"
-    scrollHeight="300px"
   )
     Column(field='no' header='NO' :styles="{'width': '1%'}" )
       template(#body='{ index }')
@@ -86,8 +85,6 @@ div.relative.flex-1
     )
       template(v-slot:message)
         p {{ deleteMessage }}
-  span.absolute.buttonShow(v-if="value.length > 2 && isShowMore" @click='showMoreItem') Show more
-  span.absolute.buttonShow(v-if="!isShowMore" @click='showLessItem') Show less
 
 </template>
 <script lang="ts">
@@ -107,7 +104,6 @@ class PackingTableList extends Vue {
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
   componentKey: number = 0
-  isShowMore: boolean = true
   @Prop() value!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly boxCode!: string | undefined
@@ -206,23 +202,8 @@ class PackingTableList extends Vue {
 export default PackingTableList
 </script>
 <style lang="sass">
-.table-packing
-  position: relative
-  overflow: hidden
 .packing__detail--table
+  height: 100% !important
   .row-outgoing
     background-color: $text-color-100 !important
-.buttonShow
-  font-size: 12px
-  left: calc(50% - 40px)
-  bottom: -15px
-  background-color: #fff
-  padding: 3px
-  border-radius: 12px
-  border: 1px solid #486ae2
-  cursor: pointer
-  min-width: 80px
-  text-align: center
-.full-table
-  height: 100% !important
 </style>

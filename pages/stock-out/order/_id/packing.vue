@@ -10,15 +10,15 @@
       :loading="loadingSubmit"
     )
       template(v-slot:message)
-        p Do you want to report the quantity discrepancy  in the box ?
+        p Do you want to report the quantity discrepancy  in the box {{ originalBoxActive.boxCode }}?
       template(v-slot:content)
         h3.text-left.text-900 NOTE:
         Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
       StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
-    .col-9.ml-5.py-0.h-full.overflow-x-hidden.flex-1.relative.flex.flex-column.packing-wapper
-      .flex.flex-column.h-full.flex-1
-        StockOutPackingOriginal.mb-2.flex-1(
+    .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
+      .flex.flex-column.flex-1.overflow-hidden
+        StockOutPackingOriginal.mb-2(
           title='original box'
           icon='icon-info'
           :isOriginal='true'
@@ -28,7 +28,7 @@
           @showFormReportBox="showFormReportBox"
           :isNextBox="isNextBox"
         )
-        StockOutPackingOriginal.mb-2.flex-1(
+        StockOutPackingOriginal.mb-2(
           title='outgoing box'
           icon='icon-arrow-circle-up-right'
           :isOutgoing='true'
@@ -62,7 +62,7 @@
               img(src='~/assets/icons/total-items-border.svg')
             .col
               span.font-semibold.text-base.mr-1 Total items:
-              .font-semibold.text-primary {{totalItem}}
+              .font-semibold.text-primary {{ totalItem }}
         .col-2.flex.justify-content-end.p-1
           Button.btn.btn-primary.ml-3(@click="handleSubmit" :disabled="isDisabled") Save
 </template>
@@ -258,19 +258,18 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleSubmit() {
-    const data: any = {}
-    data.originalBox = _.map(this.listOriginalBox, ({ boxCode, usedCapacity }) => ({
-      id: boxCode,
-      usedCapacity: usedCapacity / 100
-    }))
-
-    data.outGoingBox = _.map(this.listOutGoingBox, ({ boxSize, items, airtag }) => ({
-      boxSize,
-      listStockWithAmount: this.getStocks(items),
-      airtag
-    }))
-    
-    data.note = this.noteText
+    const data: any = {
+      originalBox: _.map(this.listOriginalBox, ({ boxCode, usedCapacity }) => ({
+        id: boxCode,
+        usedCapacity: usedCapacity / 100
+      })),
+      outGoingBox: _.map(this.listOutGoingBox, ({ boxSize, items, airtag }) => ({
+        boxSize,
+        listStockWithAmount: this.getStocks(items),
+        airtag
+      })),
+      note: this.noteText
+    }
     const { id } = this.$route.params
     const result = await this.actSavePackingDetail({ data, id })
     if(result) {

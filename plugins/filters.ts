@@ -44,7 +44,8 @@ Vue.filter('checkHasTag', (value) => {
   return value ? 'Yes' : 'No'
 })
 
-// --  [ convert percent ] -------------------------------------------------
-Vue.filter('convertPercent', (value) => {
-  return (value * 100)
+// --  [ Format capacity ] -------------------------------------------------
+Vue.filter('capacityPercent', (value) => {
+  const percent = value * 100
+  return `${_.isInteger(percent) ? percent : (value * 100).toFixed(2)}%`
 })

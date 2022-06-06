@@ -1,30 +1,28 @@
 <template lang="pug">
 .box-page-container.flex.flex-column
-  .grid.justify-content-between
-    .col-fixed
+  .box__header
+    div
       h1.text-heading Box list
       span.text-subheading(v-if="boxList") {{ totalBoxRecords }} products found
-    .col-fixed
-      .grid
-        .col-fixed
-          .header__search
-            .icon.icon--left.icon-search
-            InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
-        .col-fixed
-          .btn__filter
-            .btn-toggle(@click="isShowFilter = !isShowFilter")
-              .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
-              span Filter
-            .btn-refresh(@click="handleRefeshFilter")
-              .icon.icon-rotate-left.bg-white
-        .col-fixed
-          .btn.btn-primary(@click='routeLinkAddBox')
-            .icon.icon-add-items
-            span Add box
+    .header__action
+      .header__search
+        .icon.icon--left.icon-search
+        InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
+      .btn__filter
+        .btn-toggle(@click="isShowFilter = !isShowFilter")
+          .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
+          span Filter
+        .btn-refresh(@click="handleRefeshFilter")
+          .icon.icon-rotate-left.bg-white
+      .btn.btn-primary(@click='routeLinkAddBox')
+        .icon.icon-add-items
+        span Add box
+      .btn.btn-primary(@click='handleTransferBox')
+        span Transfer box
   .grid(v-if="isShowFilter")
-    .col-8
+    div(class="md:col-12 lg:col-8 col-12")
       .grid
-        .col
+        div(class="col-12 md:col-4")
           FilterTable(
             title="Warehouse"
             :value="filter.warehouse"
@@ -32,7 +30,7 @@
             name="warehouse"
             @updateFilter="handleFilterBox"
           )
-        .col
+        div(class="col-12 md:col-4")
           FilterTable(
             title="Location"
             :value="filter.location"
@@ -41,7 +39,7 @@
             :searchText="true"
             @updateFilter="handleFilterBox"
           )
-        .col
+        div(class="col-12 md:col-4")
           FilterTable(
             title="Box Code"
             :value="filter.barCode"
@@ -50,8 +48,8 @@
             :searchText="true"
             @updateFilter="handleFilterBox"
           )
-    .col-4
-      .grid.grid-nogutter
+    div(class="col-12 lg:col-4")
+      .grid
         .col
           FilterCalendar(
             title="From"
@@ -62,7 +60,7 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-        .col.ml-1
+        .col
           FilterCalendar(
             title="To"
             border="right"
@@ -73,7 +71,7 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-  .grid.grid-nogutter.flex-1.relative.overflow-hidden
+  .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll"
       :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"
@@ -91,6 +89,8 @@
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
+        Column(field="usedCapacity" header="USED CAPACITY" className="text-right")
+          template(#body="{data}") {{ data.usedCapacity | capacityPercent}}
         Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold" )
           template(#body="{data}") 
             div(v-if='data.boxSize') {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
@@ -214,6 +214,9 @@ class BoxList extends Vue {
   @nsStoreBox.Action
   actDeleteBoxById!: (params: {ids: string[]}) => Promise<any>
 
+  @nsStoreBox.Action
+  actAddTransferBox!: (params: {ids: string[]}) => Promise<any>
+
   async mounted() {
     await this.actGetBoxList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
     await this.actWarehouseList()
@@ -226,8 +229,8 @@ class BoxList extends Vue {
   }
 
   get selectedBoxFilter() {
-    return  _.filter(this.selectedBoxes, (box: any) => {
-      return box.status !== 'BOX_STATUS_DISABLE'
+    return  _.filter(this.selectedBoxes, ({ status }) => {
+      return status !== 'BOX_STATUS_DISABLE' && status !== 'BOX_STATUS_OUTGOING'
     })
   }
 
@@ -289,8 +292,10 @@ class BoxList extends Vue {
     this.isModalDelete = true
   }
 
-  rowClass(data: any) {
-    return data.status === 'BOX_STATUS_DISABLE' && 'row-disable'
+  rowClass({ status }) {
+    if(status === 'BOX_STATUS_DISABLE' || status === 'BOX_STATUS_OUTGOING') {
+      return 'row-disable'
+    }
   }
 
   validateText =  _.debounce(this.handleFilter, 500);
@@ -327,7 +332,7 @@ class BoxList extends Vue {
   }
 
   rowSelectAll({ data }) {
-    this.selectedBoxes = _.union(this.selectedBoxes, data)
+    this.selectedBoxes = _.unionWith(this.selectedBoxes, data, _.isEqual)
   }
 
   rowUnSelectAll() {
@@ -347,13 +352,37 @@ class BoxList extends Vue {
     this.$router.push({ path: '/stock-in/create-receipt' })
   }
 
+  handleTransferBox() {
+    const selectedBox = [...this.selectedBoxFilter]
+    if(!_.size(selectedBox)) return
+    const firstSelect = selectedBox[0]
+    const satisfyBox =_.filter(selectedBox, ({ status, sellerEmail  }) => {
+      return sellerEmail && status === 'BOX_STATUS_AVAILABLE' && sellerEmail === firstSelect.sellerEmail
+    })
+    if(_.size(selectedBox) === _.size(satisfyBox)) {
+      this.actAddTransferBox(_.map(satisfyBox, 'id'))
+      this.$router.push({ path: '/box/transferring' })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Boxes of diffrent sellers can not be transferred',
+        life: 3000
+      })
+    }
+  }
 }
 export default BoxList
 </script>
 
 <style lang="sass" scoped>
 .box-page-container
-  height: calc(100vh - 32px)
+  @include mobile
+    min-height: calc(100vh - 32px)
+  @include tablet
+    min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 32px)
   ::v-deep.p-component
     font-family: $font-family-primary
   ::v-deep.pi-calendar:before
@@ -371,4 +400,21 @@ export default BoxList
     background-color: $text-color-300
     .icon
       background-color: $text-color-500
+.box__header
+  flex-direction: column
+  flex-wrap: wrap
+  margin-bottom: 24px
+  @include desktop
+    flex-direction: row
+    @include flex-center-space-between
+.header__action
+    margin-top: 12px
+    display: flex
+    @include flex-column
+    flex-wrap:  wrap
+    gap: 10px 16px
+    @include desktop
+      @include flex-center
+      flex-direction: row
+      margin-top: 0
 </style>

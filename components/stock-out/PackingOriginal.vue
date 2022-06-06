@@ -12,13 +12,14 @@
       ref="inputScanBoxCode"
       :disabled="disableEditQty"
     )
+  Button.btn-print.font-semibold(label="Print" v-if='isPackingDetail' @click="handleAddTab")
   TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    TabPanel(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
+    TabPanel.h-full(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
@@ -39,12 +40,15 @@
             .grid.align-items-center.grid-nogutter
               span.font-bold.text-small {{ slotProps.item.name }}
               .icon-arrow-up-right.icon.ml-2
+        .aritag-text(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
+        .aritag-text(v-if='tab.airtag && isPackingDetail') {{ tab.airtag.barCode }}
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if="isOriginal")
         .col.py-3
           span.mr-2 Capacity:
-          .p-input-icon-right
+          .p-input-icon-right(v-if="!isPackingDetail")
             InputNumber(id="percent" suffix="%" v-model="tab.usedCapacity" :max="100" :disabled="isDisabledCapcity")
-        .col.py-3.flex.justify-content-end(v-if="!isMergeBox")
+          span(v-else) {{ tab.usedCapacity | capacityPercent}}
+        .col.py-3.flex.justify-content-end(v-if="!isMergeBox && !isPackingDetail")
           Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
@@ -82,12 +86,12 @@
               :disabled="disableEditQty"
             )
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && isPackingDetail')
-        .col-3.py-3.border-right-1.border-gray-300
+        .col-fixed.pr-3.py-3.border-right-1.border-gray-300
           span.mr-1.font-semibold Size: {{tab.boxSize.name}} {{tab.boxSize.height}}*{{tab.boxSize.width}}*{{tab.boxSize.length}}
           span.ml-1.font-semibold (cm)
         .col.ml-2.py-3.flex.justify-content-end
           span.font-semibold Box Code: {{tab.newBoxCode}}
-      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
+      StockOutPackingTableList.flex-1.overflow-hidden(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )
 </template>
@@ -353,6 +357,7 @@ export default PackingOriginal
 <style lang="sass" scoped>
 ::v-deep.packing__common--table
   position: relative
+  height: 50%
   .delete-box
     position: relative
     z-index: 1000
@@ -376,7 +381,15 @@ export default PackingOriginal
       margin: 0 !important
     .p-inputtext:enabled:focus
       box-shadow: none !important
-
+  .btn-print
+    width: 65px
+    height: 42px
+    position: absolute
+    right: 0
+    top: 21px
+    transform: translateY(-50%)
+    z-index: 1
+    box-shadow: none
   .btn-add-tab
     position: absolute
     right: 0
@@ -404,12 +417,19 @@ export default PackingOriginal
       flex: 1
       display: flex
       flex-direction: column
+      overflow: hidden
       padding: 0
+      .p-tabview-panel
+        display: flex
+        flex-direction: column
       .p-dropdown,
       .p-inputtext
         background: $text-color-300
       .p-datatable .p-datatable-thead > tr > th
         background: #fff !important
+    .aritag-text
+      margin-left: 8px
+      color: $text-color-700
     .p-tabview-panel
       flex: 1
       display: flex
@@ -488,10 +508,7 @@ export default PackingOriginal
           display: inline-block !important
           background: $primary
 ::v-deep.packing__common--table.packing-detail
-  .originalTable
+  .originalTable, .outGoingTable
     .p-tabview-nav-container
-      width: 100% !important
-  .outGoingTable
-    .p-tabview-nav-container
-      width: 100% !important
+      width: calc(100% - 65px) !important
 </style>

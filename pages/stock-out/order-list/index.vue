@@ -2,7 +2,7 @@
   .stock
     h1.text-heading Delivery order list
     .stock__header.grid.mt-3
-      div.col-12(class="xl:col-6")
+      div.col-12(class="lg:col-6")
         TabView(@tab-click="handleTab($event)")
           TabPanel
             template(#header)
@@ -16,7 +16,7 @@
             template(#header)
               .icon.icon-check-circle.mr-2.surface-600
               span Delivered
-      div.col-12(class="xl:col-6")
+      div.col-12(class="lg:col-6")
         .header__action
           .btn__filter(:class="{'active': isShowFilter}")
             .btn-toggle(@click.stop="isShowFilter = !isShowFilter")
@@ -33,9 +33,9 @@
               .icon-download.icon--large.bg-primary
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      .col-1
-        FilterTable(title="ID" placeholder="Search ID" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
-      .col-3
+      div(class='col-12 md:col-4 lg:col-4 xl:col-1')
+        FilterTable(title="ID" placeholder="Search" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
+      div(class='col-12 md:col-8 lg:col-8 xl:col-3')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -53,13 +53,13 @@
               title="To"
               border="createTimeTo"
               :value="filter.createTimeTo"
-              name="dateTo"
+              name="createTimeTo"
               inputClass="border-0"
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      .col-3
+      div(class='col-12 md:col-8 lg:col-8 xl:col-3')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -83,31 +83,33 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      .col
+      div(class='col-12 md:col-4 xl:col')
         FilterTable(
           title="Warehouse"
-          :value="filter.warehouse"
+          :value="filter.warehouseId"
           :options="warehouseList"
-          name="warehouse"
+          name="warehouseId"
           @updateFilter="handleFilter"
         )
-      .col
+      div(class='col-12 md:col-4 xl:col')
         FilterTable(
           title="Seller email"
+          placeholder="Search"
           :value="filter.sellerEmail"
           :searchText="true"
           name="sellerEmail"
           @updateFilter="handleFilter"
         )
-      .col
+      div(class='col-12 md:col-4 xl:col')
         FilterTable(
           title="Assignee"
-          :value="filter.assignee"
+          placeholder="Search"
+          :value="filter.assigneeId"
           :searchText="true"
-          name="assignee"
+          name="assigneeId"
           @updateFilter="handleFilter"
         )
-      .col
+      div(class='col-12 md:col-4 xl:col')
         FilterTable(
           title="Status"
           :value="filter.status"
@@ -144,9 +146,9 @@
         Column(header='Creator ID' field='creatorId' sortable sortField="_assignee.id")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
-        Column(header='Create time' field='createTime' sortable  sortField="_createdAt" headerClass="grid-header-right")
+        Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
-            div.grid-cell-right {{ data.createTime | dateTimeHour12 }}
+            div {{ data.createTime | dateTimeHour12 }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.sellerEmail }}
@@ -174,15 +176,15 @@
               div.text-end Latest
               div update time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour12 }}
+            div {{ data.lastedUpdateTime | dateTimeHour12 }}
         Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
           template(#body='{ data }')
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(header='PIC' sortable field='assigneeId' sortField="_assignee.id" headerClass="grid-header-right")
+        Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.assigneeId }}
+            div.grid-cell-right {{ data.creatorId }}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -190,7 +192,7 @@
         Column(v-if="activeTab == 2"
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')
-        Column(field='status' header="Status" sortField="_status" headerClass="grid-header-right")
+        Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
               span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_NEW'") NEW
@@ -202,7 +204,6 @@
               span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
         template(#footer)
           Pagination(
-            v-if="activeTab == 0"
             title="Cancel"
             :paging="paging"
             :total="total"
@@ -314,17 +315,17 @@ class DeliveryOrderList extends Vue {
     this.paging.pageNumber = 0
     this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS
     this.statusList = this.statusList.filter((item: any) => {
-      return this.activeStatus?.split(',').includes(item.value.toString()) 
+      return this.activeStatus?.split(',').includes(item.value.toString())
     })
     this.getDeliveryList({
       ...this.filter,
-      warehouseId: this.filter.warehouse?.id,
+      warehouseId: this.filter.warehouseId?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       status: this.activeStatus
     })
   }
-  
+
   get activeStatus() {
     return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
   }
@@ -336,7 +337,7 @@ class DeliveryOrderList extends Vue {
       }else return delivery
     })
   }
- 
+
   get classHeaderMuti() {
     return !this.deliveryList ||
       this.deliveryList.length <= 0 ||
@@ -380,7 +381,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? 'row-disable' :''
+    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
   mounted() {
@@ -396,7 +397,7 @@ class DeliveryOrderList extends Vue {
   async getProductList() {
     await this.getDeliveryList({
       ...this.filter,
-      warehouseId: this.filter.warehouse?.id,
+      warehouseId: this.filter.warehouseId?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       status: this.activeStatus?.includes(this.filter.status?.value) ? this.filter.status?.value : this.activeStatus
@@ -445,7 +446,9 @@ class DeliveryOrderList extends Vue {
   }
 
   rowdbClick({ data }) {
-    this.$router.push(`/stock-out/order/${data.id}`)
+    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
+      this.$router.push(`/stock-out/order/${data.id}`)
+    }
   }
 
   sortData(e: any) {
@@ -461,10 +464,19 @@ class DeliveryOrderList extends Vue {
   }
 
   handleRefreshFilter() {
-    this.filter.name = null
-    this.filter.barCode = null
-    this.filter.categories = null
-    this.filter.status = null
+    this.filter = {
+      id: null,
+      assigneeId: null,
+      createTimeFrom: null,
+      createTimeTo: null,
+      dueDeliveryDateFrom: null,
+      dueDeliveryDateTo: null,
+      status: null,
+      sortBy: null,
+      desc: null,
+      sellerEmail: null,
+      warehouseId: null
+    }
     this.getProductList()
   }
 
@@ -511,7 +523,12 @@ export default DeliveryOrderList
 
 .stock
   @include flex-column
-  height: 100%
+  @include mobile
+    min-height: calc(100vh - 32px)
+  @include tablet
+    min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 32px)
 
   ::v-deep.pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
@@ -552,6 +569,7 @@ export default DeliveryOrderList
         background: var(--bg-body-bas)
         border: none
         box-shadow: none !important
+        color: $text-color-700
 
     ::v-deep.p-tabview .p-tabview-panels
       background: var(--bg-body-bas)
@@ -566,9 +584,15 @@ export default DeliveryOrderList
         background-color: var(--primary-color) !important
 
   .header__action
-    @include flex-center-vert
-    justify-content: flex-end
-    gap: 0 16px
+    margin-top: 12px
+    display: flex
+    @include flex-column
+    gap: 10px 16px
+    @include desktop
+      justify-content: flex-end
+      flex-direction: row
+      // flex-wrap:  wrap
+      margin-top: 0
 
 .stock__table
   border-radius: 4px
@@ -592,4 +616,8 @@ export default DeliveryOrderList
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
+.btn__filter 
+  width: 100%
+  @include desktop
+    width: 166px
 </style>
