@@ -33,7 +33,7 @@
               .icon-download.icon--large.bg-primary
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      div(class='col-12 md:col-4 lg:col-4 xl:col-1')
+      div(class='col-12 md:col-4 lg:col-4 xl:col-2')
         FilterTable(title="ID" placeholder="Search" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
       div(class='col-12 md:col-8 lg:col-8 xl:col-3')
         .grid.grid-nogutter
@@ -63,7 +63,7 @@
         .grid.grid-nogutter
           .col
             FilterCalendar(
-              title="Due Delivery Date from"
+              title="Due Date from"
               border="left"
               :value="filter.dueDeliveryDateFrom"
               name="dueDeliveryDateFrom"
@@ -184,7 +184,7 @@
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.creatorId }}
+            div.grid-cell-right {{ data.assigneeId || 'N/A' }}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -214,6 +214,7 @@
           div.table__empty
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+            p.notfound__text Item not found!           
     ConfirmDialogCustom(
       title="Confirm delete"
       image="confirm-delete"
