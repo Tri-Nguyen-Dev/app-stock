@@ -172,6 +172,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
       color: $text-color-500 !important
       font-weight: bold
       border: none !important
+      font-family: $font-family-primary !important
 
       &.p-highlight
         color: $primary !important
@@ -189,12 +190,13 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
     .p-dropdown
       @include flex-center-vert
+      font-family: $font-family-primary !important
 
 .table__action
   @include flex-center-vert
   gap: 0 8px
 
-  span
+  .action-item
     @include flex-center
     width: 34px
     height: 34px
@@ -203,12 +205,10 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     cursor: pointer
 
   &.action-disabled
-    span
+    .action-item
       pointer-events: none
-
     .icon
       background-color: $text-color-500
-
 .table__status
   background-color: $bg-table-status
   border-radius: 3px

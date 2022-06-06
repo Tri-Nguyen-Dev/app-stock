@@ -127,9 +127,9 @@
         Column(:exportable="false" header="ACTION" className="text-right")
           template(#body="{data}")
             .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
-              span(@click="handleEditBox(data.id)")
+              span.action-item(@click="handleEditBox(data.id)")
                 .icon.icon-edit-btn
-              span(:class="{'disable-button': selectedBoxFilter.length > 0}" @click="showModalDelete([data])")
+              span.action-item(:class="{'disable-button': selectedBoxFilter.length > 0}" @click="showModalDelete([data])")
                 .icon.icon-btn-delete
         template(#footer)
           Pagination(
