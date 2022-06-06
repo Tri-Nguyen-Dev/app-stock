@@ -43,3 +43,9 @@ Vue.filter('getThumbnailUrl', (imagePath) => {
 Vue.filter('checkHasTag', (value) => {
   return value ? 'Yes' : 'No'
 })
+
+// --  [ Format capacity ] -------------------------------------------------
+Vue.filter('capacityPercent', (value) => {
+  const percent = value * 100
+  return `${_.isInteger(percent) ? percent : (value * 100).toFixed(2)}%`
+})
