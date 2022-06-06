@@ -9,7 +9,8 @@ import { OrderDetail } from '~/models/OrderDetail'
 export default class StoreOrderDetail extends VuexModule {
   private static readonly STATE_URL = {
     GET_DETAIL_ORDER: '/delivery-order/:id/detail',
-    UPDATE_ORDER: '/delivery-order/:id/update'
+    UPDATE_ORDER: '/delivery-order/:id/update',
+    ASSIGN_DRIVER: '/delivery-order/:id/set-delivery'
   }
 
   public total?: number = 0
@@ -17,6 +18,7 @@ export default class StoreOrderDetail extends VuexModule {
   public boxLocation: any[] = [];
   public newReceipt: any = {};
   public orderUpdate: any = {};
+  public dataAssignDriver: any = {};
 
   @Mutation
   setOrderDetail(data: any) {
@@ -26,6 +28,13 @@ export default class StoreOrderDetail extends VuexModule {
   @Mutation
   updateProgressOrder(data: any) {
     this.orderUpdate = data
+  }
+
+  @Mutation
+  assignDriver(data: any) {
+    this.dataAssignDriver = data.data
+    this.orderDetail.driver = data.data.driver
+    this.orderDetail.status = data.data.status
   }
 
   @Action({ commit: 'setOrderDetail', rawError: true })
@@ -38,5 +47,16 @@ export default class StoreOrderDetail extends VuexModule {
   async actPostUpdateProgressOrder(data: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreOrderDetail.STATE_URL.UPDATE_ORDER, { id: data.id })
     return await $api.post(url, data)
+  }
+
+  @Action({ commit: 'assignDriver', rawError: true })
+  async actPostAssignDriver(data: any): Promise<any | undefined> {
+    const url = PathBind.transform(this.context, StoreOrderDetail.STATE_URL.ASSIGN_DRIVER, { id: data.idOrder })
+    return await $api.post(url, data)
+  }
+
+  @Action({ commit: 'setOrderDetail', rawError: true })
+  updateDriverInOrderDetail(data){
+    return data
   }
 }

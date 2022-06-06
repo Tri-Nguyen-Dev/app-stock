@@ -1,31 +1,34 @@
 <template lang="pug">
-  .receipt
-    .receipt__header
-      div
+  .receipt__header
+    .grid.justify-content-between
+      .col-fixed
         h1.text-heading Receipt note list
         span.text-subheading {{ total }} products found
-      .header__action
-        .btn__filter(:class="{'active': isShowFilter}")
-          .btn-toggle(@click="isShowFilter = !isShowFilter")
-            .icon.icon-filter(v-if="!isShowFilter")
-            .icon.icon-chevron-up.bg-primary(v-else)
-            span Filter
-          .btn-refresh(@click="refreshFilter")
-            .icon.icon-rotate-left.bg-white
-          
-        .btn.btn-primary(@click='createStockIn')
-            .icon.icon-add-items.surface-900.bg-white
-            span.text-900.text-white.mr-3 Add recepit note
-        .btn__filter(class='active' @click="handleExportReceipt")
-          .btn.btn-toggle.bg-white
-            .icon-download.icon--large.bg-primary
-            span.text-900.text-primary Export file
-    .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
-      div(class="col-12 lg:col-12 xl:col-4")
+      .col-fixed
         .grid
-          div(class="col-12 md:col-3")
+          .col-fixed
+            .btn__filter(:class="{'active': isShowFilter}")
+              .btn-toggle(@click="isShowFilter = !isShowFilter")
+                .icon.icon-filter(v-if="!isShowFilter")
+                .icon.icon-chevron-up.bg-primary(v-else)
+                span Filter
+              .btn-refresh(@click="refreshFilter")
+                .icon.icon-rotate-left.bg-white
+          .col-fixed
+            .btn.btn-primary(@click='createStockIn')
+                .icon.icon-add-items.surface-900.bg-white
+                span.text-900.text-white.mr-3 Add receipt note
+          .col-fixed
+            .btn__filter(class='active' @click="handleExportReceipt")
+              .btn.btn-toggle.bg-white
+                .icon-download.icon--large.bg-primary
+                span.text-900.text-primary Export file
+    .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
+      .col-4
+        .grid
+          .col-3
             FilterTable(title="ID" :value="filter.id" placeholder="Enter ID" name="id" :searchText="true" @updateFilter="handleFilter")
-          div(class="col-12 md:col-9")
+          .col-9
             .grid.grid-nogutter
               .col
                   FilterCalendar(
@@ -47,14 +50,14 @@
                   dateFormat="dd-mm-yy"
                   :showIcon="true"
                   @updateFilter="handleFilter")
-      div(class="col-12 lg:col-3 xl:col-2")
+      .col-2
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
           :options="warehouseList"
           name="warehouse"
           @updateFilter="handleFilter")
-      div(class="col-12 lg:col-3 xl:col-2")
+      .col-2
         FilterTable(
           title="Seller Email"
           placeholder="Enter Seller Email"
@@ -62,7 +65,7 @@
           :value="filter.sellerEmail"
           :searchText="true"
           @updateFilter="handleFilter")
-      div(class="col-12 lg:col-3 xl:col-2")
+      .col-2
         FilterTable(
           title="Creator ID"
           placeholder="Enter ID"
@@ -70,9 +73,9 @@
           :value="filter.creatorId"
           :searchText="true"
           @updateFilter="handleFilter")
-      div(class="col-12 lg:col-3 xl:col-2")
+      .col-2
         FilterTable(title="Status" :value="filter.status" :options="statusRequest" name="status" @updateFilter="handleFilter")
-    .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700 
+    .grid.grid-nogutter.flex-1.relative.overflow-hidden
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
           v-if="stockIn" :value="stockIn"
@@ -93,10 +96,10 @@
               span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
-              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'" 
-              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }} 
-              NuxtLink.text-white-active.text-900.font-bold(v-else 
-              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }} 
+              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'"
+              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }}
+              NuxtLink.text-white-active.text-900.font-bold(v-else
+              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }}
           Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
@@ -113,10 +116,10 @@
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorId }}
           Column(
-          header='CREATOR NAME' 
-          field='data.creatorName' 
-          :sortable="true" 
-          sortField="_createdBy.displayName" 
+          header='CREATOR NAME'
+          field='data.creatorName'
+          :sortable="true"
+          sortField="_createdBy.displayName"
           className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorName }}
@@ -149,7 +152,7 @@
         :loading="loadingSubmit"
       )
         template(v-slot:message)
-          p {{ deleteMessage }}  
+          p {{ deleteMessage }}
     Toast
 
 </template>
@@ -360,9 +363,9 @@ export default StockIn
 </script>
 
 <style lang="sass" scoped>
-.receipt
+.receipt__header
   @include flex-column
-  min-height: calc(100vh - 32px)
+  height: calc(100vh - 32px)
   margin-bottom: 24px
   ::v-deep.p-component
     font-family: $font-family-primary
@@ -372,25 +375,5 @@ export default StockIn
     .p-button
       background: none
       border: none
-.receipt__header
-  flex-direction: column
-  flex-wrap: wrap
-  margin-bottom: 24px
-  @include desktop
-    flex-direction: row
-    @include flex-center-space-between
-.header__action
-    margin-top: 12px
-    display: flex
-    @include flex-column
-    flex-wrap:  wrap
-    gap: 10px 16px
-    @include desktop
-      @include flex-center
-      flex-direction: row
-      margin-top: 0
-.btn__filter 
-  width: 100%
-  @include desktop
-    width: 166px
+
 </style>
