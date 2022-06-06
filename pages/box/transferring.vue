@@ -2,16 +2,15 @@
   .grid.grid-nogutter.packing__detail--container
     Toast
     .col-9.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
-      .flex.flex-column.h-full.flex-1
-        .grid.grid-nogutter.mb-2.flex-1
-          StockOutPackingOriginal(
-            title='original box'
-            icon='icon-info'
-            :isOriginal='true'
-            :listBox="listOriginalBox"
-            type='originalBox'
-            @selectedTab='selectedOriginalBox'
-          )
+      .flex.flex-column.flex-1.overflow-hidden
+        StockOutPackingOriginal.mb-2(
+          title='original box'
+          icon='icon-info'
+          :isOriginal='true'
+          :listBox="listOriginalBox"
+          type='originalBox'
+          @selectedTab='selectedOriginalBox'
+        )
         .flex.flex-1.flex-column.mb-2
           card.box-transferr
             template(#content='')
@@ -72,6 +71,7 @@ const nsStoreBox = namespace('box/box-size-list')
 const nsStoreLocationList = namespace('location/location-list')
 const nsBoxTransfer = namespace('box/box-transffer')
 const nsStoreUser = namespace('user-auth/store-user')
+const nsStoreBoxList = namespace('box/box-list')
 
 @Component({
   components: {
@@ -113,6 +113,9 @@ class DeliveryOrderPacking extends Vue {
   @nsBoxTransfer.State
   listBoxTransfer!: any
 
+  @nsStoreBoxList.State
+  boxTransfer!: any
+
   @nsStoreUser.State
   user: User.Model | undefined
 
@@ -144,28 +147,34 @@ class DeliveryOrderPacking extends Vue {
     await Promise.all ([
       this.actGetBoxSizeList()
     ])
-    const response = await this.actGetBoxListTranfer({
-      ids: 'B000000000310,B000000000308'
-    })
-
-    if(response) {
-      this.listOriginalBox = this.listBoxTransfer.map((x: any) => {
-        const obj = _.cloneDeep(x)
-        return {
-          ...obj,
-          boxCode: obj.id,
-          usedCapacity: obj.usedCapacity * 100,
-          items: obj.listStockWithAmount.map((item) => ({
-            ...item,
-            barCode: item.stock.barCode,
-            name: item.stock.name,
-            quantity: item.amount,
-            initialQuantity: item.amount,
-            actualTranffering: 0,
-            imagePath: item.stock.imagePath
-          }))
-        }
+    if(this.boxTransfer && this.boxTransfer.length > 0) {
+      const listIdTranfer = this.boxTransfer.toString()
+      const response = await this.actGetBoxListTranfer({
+        ids: listIdTranfer
       })
+
+      if(response) {
+        this.listOriginalBox = this.listBoxTransfer.map((x: any) => {
+          const obj = _.cloneDeep(x)
+          return {
+            ...obj,
+            boxCode: obj.id,
+            usedCapacity: obj.usedCapacity * 100,
+            items: obj.listStockWithAmount.map((item) => ({
+              ...item,
+              barCode: item.stock.barCode,
+              name: item.stock.name,
+              quantity: item.amount,
+              initialQuantity: item.amount,
+              actualTranffering: 0,
+              imagePath: item.stock.imagePath
+            }))
+          }
+        })
+      }
+    }
+    else { 
+      this.$router.push('/box')
     }
   }
 

@@ -6,20 +6,12 @@
     div.general-content.grid
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
-          p.my-0.info-title.text-sm ID receipt note
-          p.info-content.text-900.font-semibold.text-sm 030133333
-      .col
-        .info-item.border-1.border-gray-300.p-2.border-round
           p.my-0.info-title.text-sm ID Creator
           p.info-content.text-900.font-semibold.text-sm {{ user.email }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           p.my-0.info-title.text-sm Creator name
           p.info-content.text-900.font-semibold.text-sm {{ user.displayName }}
-      .col
-        .info-item.border-1.border-gray-300.p-2.border-round
-          p.my-0.info-title.text-sm Create time
-          p.info-content.text-900.font-semibold.text-sm 19-09-2022 9:24AM
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           p.my-0.info-title.text-sm Warehouse
