@@ -99,7 +99,7 @@
               template(#empty)
                 div.flex.align-items-center.justify-content-center.flex-column
                   img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
-                  p.text-900.font-bold.mt-3 Information not found!`
+                  p.text-900.font-bold.mt-3 Information not found!
 </template>
 
 <script lang='ts'>

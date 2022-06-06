@@ -47,6 +47,7 @@
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(
               v-model='filter.warehouseId'
+              @change="handleChangeFilter"
               :options='warehouseList'
               optionLabel="name"
               placeholder='Select'
@@ -155,6 +156,14 @@ class DriverList extends Vue {
     this.getDriverList()
   }
 
+  handleChangeFilter() {
+    this.getDriverList()
+    if(this.filter.warehouseId.length === 0) {
+      this.filter.warehouseId = ''
+      this.getDriverList()
+    }
+  }
+
   async onPage(event: any) {
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
@@ -184,8 +193,9 @@ class DriverList extends Vue {
   }
 
   onRowClick({ data }) {
+    const idDelivery = this.$route.params.id
     this.$router.push({
-      path: `/stock-out/order/${this.$route.params.id}/driver/${data.id}`
+      path: `/stock-out/order/${idDelivery}/driver/${data.id}`
     })
   }
 
@@ -216,7 +226,9 @@ class DriverList extends Vue {
   }
 
   handleAssign() {
-    const result = this.actSetAssignDriver({ idDelivery: this.$route.params.id, id: this.isIdSelected })
+    const result = this.actSetAssignDriver({
+      idDelivery: this.$route.params.id,
+      id: this.isIdSelected })
     if(result) {
       this.$router.push('/stock-out/order-list')
       this.$toast.add({

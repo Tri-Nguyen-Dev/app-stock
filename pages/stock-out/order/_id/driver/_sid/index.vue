@@ -8,22 +8,22 @@
       .border-bottom-1.border-gray-300.grid-nogutter
       div.flex.justify-content-center
         .col.my-3.px-3
-          img(:src=" avatarImg | getImageUrl ").border-round.w-full
+          img(:src=" driverDetail.avatarUrl | getImageUrl ").border-round.w-full
       div.sub--scroll.col-12
         div.wrap-unit.px-3
           .col.border-bottom-1.border-gray-300
           .col.flex.my-3.mx-1
             .col.flex.align-items-center
               .icon-sender-info.icon.bg-primary.mr-2
-              span.font-bold.text-800.uppercase Contact Information
+              span.font-bold.text-800.uppercase ID Information
         div.wrap-unit.px-4
-          StockUnit(title="Citizen ID Number"  :value="receiptNoteId" icon="icon-receipt-note")
+          StockUnit(title="Citizen ID Number"  :value="driverDetail.citizenNumber" icon="icon-receipt-note")
         div.wrap-unit.px-4
-          StockUnit(title="DOB" :value="receiptNoteId"  icon="icon-tag-user")
+          StockUnit(title="DOB" :value="driverDetail.dateOfBirth | dateMonthYear"  icon="icon-tag-user")
         div.wrap-unit.px-4
-          StockUnit(title="Native Place"  :value="boxWarehouse" icon="icon-warehouse")
+          StockUnit(title="Native Place"  :value="driverDetail.driverEmail" icon="icon-warehouse")
         div.wrap-unit.px-4
-          StockUnit(title="Place of Permanent"  :value="boxWarehouse" icon="icon-warehouse")
+          StockUnit(title="Place of Permanent"  :value="driverDetail.placeOfPermanent" icon="icon-warehouse")
         div.col-12
           .col.border-bottom-1.border-gray-300
           .col.flex.my-3.mx-1
@@ -31,11 +31,11 @@
               .icon-sender-info.icon.bg-primary.mr-2
               span.font-bold.text-800.uppercase Contact Information
         .wrap-unit.px-4
-          StockUnit(title="Name" :value="receiptNoteId" icon="icon-sender-name")
+          StockUnit(title="Name" :value="driverDetail.driverName" icon="icon-sender-name")
         .wrap-unit.px-4
-          StockUnit(title="Email" :value="receiptNoteId" icon="icon-sender-email")
+          StockUnit(title="Email" :value="driverDetail.driverEmail" icon="icon-sender-email")
         .wrap-unit.px-4
-          StockUnit(title="Phone" :value="receiptNoteId" icon="icon-sender-phone")
+          StockUnit(title="Phone" :value="driverDetail.driverPhone" icon="icon-sender-phone")
     div.ml-5.flex-1( class=' col-9  md:col-8  lg:col-9 xl:col-9' )
       .inventory.flex.flex-column
         .inventory__header
@@ -51,7 +51,7 @@
               .btn-refresh(@click="refreshFilter")
                 .icon.icon-rotate-left.bg-white
             .btn.bg-white(@click='$router.go(-1)') Back
-            Button.btn.btn-primary.border-0(@click='handleAssign' :disabled='selectedDriver.length > 0 ? null : "disabled"') Assign Delivery
+            Button.btn.btn-primary.border-0(@click='handleAssign') Assign Delivery
         .inventory__filter.grid(v-if='isShowFilter')
           .col
             FilterTable(
@@ -64,10 +64,10 @@
             )
           .col
             FilterTable(
-              title="Driver Email"
-              :value="filter.driverEmail"
+              title="Seller Email"
+              :value="filter.sellerEmail"
               placeholder="Enter Email"
-              name="driverEmail"
+              name="sellerEmail"
               :searchText="true"
               @updateFilter="handleFilter"
             )
@@ -85,6 +85,7 @@
               template(v-slot:multi-select)
                 MultiSelect.filter__multiselect(
                   v-model='filter.warehouseId'
+                  @change="handleChangeFilter"
                   :options='warehouseList'
                   optionLabel="name"
                   placeholder='Select'
@@ -92,24 +93,22 @@
                 )
         .inventory__content
           DataTable(
-              :value='driverDetail'
-              dataKey='id'
+              :value='driverHistory'
+              dataKey='deliveryOrderId'
               :rows='10'
               responsiveLayout="scroll"
               :resizableColumns="true"
               :class="{ 'table-wrapper-empty': !driverDetail || driverDetail.length <= 0 }"
               @sort="sortData($event)"
-              @row-select="rowSelect"
-              :selection="selectedDriver"
-              @row-unselect="rowUnselect"
             )
-              Column(selectionMode='multiple'   )
               Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
                 template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
               Column(field='deliveryOrderId' header='D/O ID' :sortable='true' sortField='_stock.barCode')
               Column(field='sellerEmail' header='Seller Email' :sortable='true' sortField='_sku')
               Column(field='receiverAddress' header='Receiver Address' :sortable='true' bodyClass='font-semibold' sortField='_box.id')
               Column(field='completeTime' header='Complete time' :sortable='true' className="text-right" sortField='_box.request.id')
+                template(#body='{data}')
+                  span {{data.completeTime | dateTimeHour12 }}
               Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_box.request.id')
                 template(#body='{data}')
                   span.text-primary {{data.warehouse.name}}
@@ -126,7 +125,7 @@
                   p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
                     span.text-primary.underline.cursor-pointer &nbsp;here
                     span &nbsp;to add item.
-                  p.text-900.font-bold.mt-3(v-else) Item not found!`
+                  p.text-900.font-bold.mt-3(v-else) Item not found!
 </template>
 
 <script lang="ts">
@@ -144,12 +143,13 @@ const nsStoreDriver = namespace('driver/driver-list')
 })
 class DriverDetail extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
-  selectedDriver: any = []
   isShowFilter: boolean = false
+  sortByColumn: string = ''
+  isDescending: boolean | null = null
   filter: any = {
     id: null,
-    email: null,
-    warehouse: null,
+    sellerEmail: null,
+    warehouseId: null,
     name: null,
     pageSize: 20,
     pageNumber: 0
@@ -159,6 +159,9 @@ class DriverDetail extends Vue {
 
   @nsStoreDriver.State
   driverDetail!: any
+
+  @nsStoreDriver.State
+  driverHistory!: any
 
   @nsStoreDriver.State
   totalDetailList!: any
@@ -172,11 +175,22 @@ class DriverDetail extends Vue {
   actWarehouseList!: any
 
   @nsStoreDriver.Action
-  actDriverDetail!: any
+  actDriverDetail!: (params: any) => Promise<string>
+
+  @nsStoreDriver.Action
+  actDriverHistory!: (params: any) => Promise<string>
+
+  @nsStoreDriver.Action
+  actSetAssignDriver!: (params: any) => Promise<string>
 
   async mounted() {
-    await this.actWarehouseList()
-    await this.getDriverList()
+    await Promise.all([
+      this.getDriverList(),
+      this.actDriverDetail({
+        id: this.$route.params.sid
+      }),
+      this.actWarehouseList()
+    ])
   }
 
   handleFilter(e: any, name: string){
@@ -204,13 +218,24 @@ class DriverDetail extends Vue {
     const warehouseId = this.filter.warehouseId
       ? this.filter.warehouseId.map((item: any) => item?.id).toString()
       : null
-    await this.actDriverDetail({
+    const filter = {
       ...this.filter,
-      id: this.$route.params?.id,
-      warehouseId: warehouseId || null,
       pageSize: this.paging.pageSize,
-      pageNumber: this.paging.pageNumber
+      pageNumber: this.paging.pageNumber,
+      warehouseId: warehouseId || null
+    }
+    await this.actDriverHistory({
+      filter,
+      id: this.$route.params.sid
     })
+  }
+
+  handleChangeFilter() {
+    this.getDriverList()
+    if(this.filter.warehouseId.length === 0) {
+      this.filter.warehouseId = ''
+      this.getDriverList()
+    }
   }
 
   async sortData(e: any) {
@@ -225,22 +250,25 @@ class DriverDetail extends Vue {
     await this.getDriverList()
   }
 
-  rowSelect({ data }) {
-    this.isIdSelected = data.id
-    const selected = this.selectedDriver
-    selected.push(data)
-    if (selected.length > 1 ) {
-      selected.splice(0)
-      selected.push(data)
-    }
+  get homeItem() {
+    return { label: 'D/O List', to: '/stock-out/order-list' }
   }
 
-  rowUnselect() {
-    this.selectedDriver.splice(0)
+  get breadcrumbItem() {
+    return [
+      { label: 'Driver',
+        to: `/stock-out/order/${this.$route.params.id}/driver` },
+      { label: 'Information',
+        to: `/stock-out/order/${this.$route.params.id}/driver/${this.$route.params.sid}`
+      }
+    ]
   }
 
   handleAssign() {
-    const result = this.actSetAssignDriver({ id : this.$route.params.id  } )
+    const result = this.actSetAssignDriver({
+      id : this.$route.params.sid,
+      idDelivery: this.$route.params.id
+    } )
     if(result) {
       this.$router.push('/stock-out/order-list')
       this.$toast.add({
@@ -288,7 +316,7 @@ export default DriverDetail
 .grid
   ::v-deep.sub-tab
     height: calc(100vh - 32px)
-    max-width: 22rem
+    max-width: 23rem
     overflow: hidden
 .sub--scroll
   height: calc(100vh - 280px)
