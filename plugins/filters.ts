@@ -45,6 +45,6 @@ Vue.filter('checkHasTag', (value) => {
 })
 
 // -- [ Format date time 24hour type] ------------------------------------------------
-Vue.filter('dateTimeHour12', (value) => {
+Vue.filter('dateTimeHour24', (value) => {
   return dayjs(new Date(value)).format('DD-MM-YYYY HH:mm')
 })

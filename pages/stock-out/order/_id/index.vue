@@ -47,7 +47,7 @@
           type='button',
           label='Reset Delivery',
           v-if='checkStatus("RESET_DELIVERY")',
-          @click='resetDelivery()'
+          @click='setDelivery()'
         )
     ItemList(
       :isDetail='true',
@@ -183,7 +183,7 @@ class DeliveryOrder extends Vue {
       }
       break
     case 'PACKING_DETAIL':
-      if(this.orderDetail.status === ORDER_STATUS.READY) {
+      if(this.orderDetail.status !== ORDER_STATUS.NEW) {
         show = true
       }
       break
