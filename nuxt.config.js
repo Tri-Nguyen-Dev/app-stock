@@ -72,7 +72,8 @@ export default {
       'InputNumber',
       'FileUpload',
       'Breadcrumb',
-      'Toast'
+      'Toast',
+      'Textarea'
     ],
     directives: ['Tooltip', 'Badge']
   },
