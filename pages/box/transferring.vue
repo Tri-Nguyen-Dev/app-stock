@@ -18,8 +18,8 @@
               h3.tranffer-title.border-bottom-1.border-gray-300.my-0.py-3.px-3.flex.align-items-center
                 .icon.inline-block.mr-2.bg-primary(class='icon-repeat')
                 span.text-sm TRANFFERING BOX
-              div.tranffer-content
-                GeneralInformation
+              div.tranffer-content.border-bottom-1.border-gray-300
+                GeneralInformation(:user="user" :listOriginalBox="listOriginalBox")
           StockOutPackingOriginal.flex-1(
             title='Box list'
             icon='icon-info'
@@ -58,7 +58,7 @@
         .col-2.flex.justify-content-end.p-1
           Button.btn.btn-primary.justify-content-center.flex(@click="handleClick" v-if='packingStep === 1' :disabled="isDisabled") Next
           div.flex
-            Button.btn.btn-outline.ml-2(@click="handleBack" v-if="ishowSave && packingStep === 2") Back
+            Button.btn.btn-outline.ml-2(@click="handleBack" v-if="packingStep === 2") Back
             Button.btn.btn-primary.ml-3(@click="handleSubmit" v-if="ishowSave && packingStep === 2") Save
 </template>
 
@@ -66,10 +66,12 @@
 import { Component, Vue, namespace, ProvideReactive, Watch } from 'nuxt-property-decorator'
 import GeneralInformation from '~/components/box/GeneralInformation.vue'
 import { PackingDetail } from '~/models/PackingDetail'
+import { User } from '~/models/User'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 const nsStoreBox = namespace('box/box-size-list')
 const nsStoreLocationList = namespace('location/location-list')
 const nsBoxTransfer = namespace('box/box-transffer')
+const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: {
@@ -111,6 +113,9 @@ class DeliveryOrderPacking extends Vue {
   @nsBoxTransfer.State
   listBoxTransfer!: any
 
+  @nsStoreUser.State
+  user: User.Model | undefined
+
   @nsStorePackingDetail.Action
   actGetListOriginal!: (id: any) => Promise<any>
 
@@ -131,6 +136,9 @@ class DeliveryOrderPacking extends Vue {
 
   @nsBoxTransfer.Action
   actGetBoxListTranfer!:(data: any) => Promise<any>
+
+  @nsBoxTransfer.Action
+  actCombineBox!:(data: any) => Promise<any>
 
   async mounted() {
     await Promise.all ([
@@ -218,16 +226,22 @@ class DeliveryOrderPacking extends Vue {
 
   addNewBoxTranferring() {
     this.listTranfferingBox.push({
+      icon: this.originalBoxActive?.icon,
+      qrCode: this.originalBoxActive?.qrCode,
       boxCode: this.genearateBoxCode(this.listTranfferingBox, 'IN'),
       items: [],
-      airtag: null,
+      airtag:  this.originalBoxActive.airtag,
       checked: true,
       boxSize: null,
       inventoryFee: 0,
-      request:{
-        id: this.originalBoxActive.requestId
-      },
-      location: null
+      location: null,
+      weight: this.originalBoxActive?.weight,
+      height: this.originalBoxActive?.boxSize?.height,
+      length: this.originalBoxActive?.boxSize?.length,
+      width: this.originalBoxActive?.boxSize?.width,
+      locationStatus: this.originalBoxActive?.locationStatus,
+      status: this.originalBoxActive?.status,
+      usedCapacity: this.originalBoxActive?.usedCapacity / 100
     })
     if(_.size(this.listTranfferingBox) === 1)
       this.tranfferingBoxActive = this.listTranfferingBox[0]
@@ -241,8 +255,7 @@ class DeliveryOrderPacking extends Vue {
       })
       const { quantity } =
         stockOriginal
-      const isFullQuantityStock =
-        quantity >= 0
+      const isFullQuantityStock = quantity > 0
       this.addStock(
         this.tranfferingBoxActive,
         stockOriginal,
@@ -278,8 +291,8 @@ class DeliveryOrderPacking extends Vue {
   }
 
   getStocks(stocks) {
-    const result =  _.map(stocks, ({ stockId, originalBox, originalLocation, initialQuantity, quantity, sku }) => ({
-      stock: { id: stockId },
+    const result =  _.map(stocks, ({ stock, originalBox, originalLocation, initialQuantity, quantity, sku }) => ({
+      stock: { id: stock.id },
       originalBox,
       sku,
       originalLocation,
@@ -292,15 +305,20 @@ class DeliveryOrderPacking extends Vue {
   async handleSubmit() {
     const data: any = {}
     data.originalBox = _.map(this.listOriginalBox, 'boxCode')
-    data.transferringBox = _.map(this.listTranfferingBox, ({ boxSize, items, inventoryFee, location, request }) => ({
+    data.transferringBox = _.map(this.listTranfferingBox, ({ boxSize, items, inventoryFee, location, ...rest }) => ({
+      ...rest,
       boxSize,
       inventoryFee,
       rackLocation: location,
-      request,
       listStockWithAmount: this.getStocks(items)
     }))
-    const { id } = this.$route.params
-    await this.actSavePackingDetail({ data, id })
+    data.seller = {
+      id: this.listOriginalBox[0]?.request?.seller?.id
+    }
+    data.warehouse = {
+      id: this.listOriginalBox[0]?.request?.warehouse?.id
+    } 
+    await this.actCombineBox(data)
   }
 
   get tranferringOutGoing() {

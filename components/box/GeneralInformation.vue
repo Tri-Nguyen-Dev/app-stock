@@ -6,42 +6,51 @@
     div.general-content.grid
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
-          p.info-title ID receipt note
-          p.info-content.text-900.font-semibold 030133333
+          p.my-0.info-title.text-sm ID receipt note
+          p.info-content.text-900.font-semibold.text-sm 030133333
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
-          p.info-title ID Creator
-          p.info-content.text-900.font-semibold NVN030133
+          p.my-0.info-title.text-sm ID Creator
+          p.info-content.text-900.font-semibold.text-sm {{ user.email }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
-          p.info-title Creator name
-          p.info-content.text-900.font-semibold Nguyen Khanh Hung
+          p.my-0.info-title.text-sm Creator name
+          p.info-content.text-900.font-semibold.text-sm {{ user.displayName }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
-          p.info-title Create time
-          p.info-content.text-900.font-semibold 19-09-2022 9:24AM
+          p.my-0.info-title.text-sm Create time
+          p.info-content.text-900.font-semibold.text-sm 19-09-2022 9:24AM
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
-          p.info-title Warehouse
-          p.info-content.text-900.font-semibold NTN001
+          p.my-0.info-title.text-sm Warehouse
+          p.info-content.text-900.font-semibold.text-sm NTN001
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
-          p.info-title Seller email
-          p.info-content.text-900.font-semibold minhtri1314@gmail.com 
+          p.my-0.info-title.text-sm Seller email
+          p.info-content.text-900.font-semibold.text-sm(v-if="this.listOriginalBox.length > 0") {{ infoSeller.email }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
-          p.info-title Seller phone
-          p.info-content.text-900.font-semibold (+84) 333 666 888
+          .my-0p.info-title.text-sm Seller phone
+          p.info-content.text-900.font-semibold.text-sm(v-if="this.listOriginalBox.length > 0") {{ infoSeller.phoneNumber }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
-          p.info-title Seller name
-          p.info-content.text-900.font-semibold Apple Inc 
+          p.my-0.info-title.text-sm Seller name
+          p.info-content.text-900.font-semibold.text-sm(v-if="this.listOriginalBox.length > 0") {{ infoSeller.displayName }} 
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { User } from '~/models/User'
+
 @Component
 class GeneralInformation extends Vue {
-  
+  @Prop() readonly user!: User.Model | undefined
+  @Prop() readonly listOriginalBox!: any
+
+  get infoSeller() {
+    if(this.listOriginalBox && this.listOriginalBox.length > 0) {
+      return this.listOriginalBox[0]?.request?.seller
+    }
+  }
 }
 
 export default GeneralInformation

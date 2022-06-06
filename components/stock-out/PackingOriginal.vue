@@ -1,7 +1,7 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
   Toast
-  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab") + Add
+  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab" :disabled="disableEditQty") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.w-full.inputSearchCode(
@@ -10,6 +10,7 @@
       v-model="boxCodeText"
       placeholder='Please enter box code!'
       ref="inputScanBoxCode"
+      :disabled="disableEditQty"
     )
   TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
@@ -25,6 +26,19 @@
         span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
         .ml-1.px-1(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
+        AutoComplete.edit-location.ml-1(
+          v-if="isShowLocation(tab)"
+          v-model='tab.location',
+          field='name',
+          :suggestions='locationList',
+          @complete='searchLocation($event)'
+          :dropdown='true'
+          forceSelection
+        )
+          template(#item='slotProps')
+            .grid.align-items-center.grid-nogutter
+              span.font-bold.text-small {{ slotProps.item.name }}
+              .icon-arrow-up-right.icon.ml-2
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if="isOriginal")
         .col.py-3
           span.mr-2 Capacity:
@@ -35,7 +49,7 @@
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
           span.mr-1 Size:
-          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name")
+          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
           span.ml-1 (cm)
         .col.py-3.border-right-1.border-left-1.border-gray-300.flex.align-items-center.px-3(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock(tab)' @change="handleChangeTag(tab)")
@@ -65,6 +79,7 @@
               @change='addStockByBarcode($event)'
               v-model="barCodeText"
               ref="inputScanBarCode"
+              :disabled="disableEditQty"
             )
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && isPackingDetail')
         .col-3.py-3.border-right-1.border-gray-300
@@ -78,6 +93,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace, Watch, InjectReactive } from 'nuxt-property-decorator'
+const nsStoreLocationList = namespace('location/location-list')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
@@ -104,8 +120,14 @@ class PackingOriginal extends Vue {
   @InjectReactive() readonly packingStep!: any
   @InjectReactive() readonly isMergeBox!: boolean | false
 
+  @nsStoreLocationList.State
+  locationList: {}
+
   @nsStorePackingDetail.Action
   actScanAirtag!: (params: any) => Promise<any>
+
+  @nsStoreLocationList.Action
+  actLocationList!: (params: any) => Promise<void>
 
   @Watch('activeIndex')
   async inputChange(index) {
@@ -157,10 +179,14 @@ class PackingOriginal extends Vue {
       const index = _.findIndex(this.listBox, { boxCode })
       if(index >= 0){
         const itemsBox = _.get(this.listBox[this.activeIndex - 1], 'items')
-        if(!_.size(_.partition(itemsBox, ({ outGoingQuantity, actualOutGoing }) => outGoingQuantity === actualOutGoing)[1]) || !itemsBox) {
+        if((!_.size(_.partition(itemsBox, ({ outGoingQuantity, actualOutGoing }) => outGoingQuantity === actualOutGoing)[1]) || !itemsBox) && !this.isMergeBox) {
           this.activeIndex = index + 1
           this.$emit('selectedTab', index)
-        } else {
+        } else if((!_.size(_.partition(itemsBox, ['quantity', 0])[1]) || !itemsBox) && this.isMergeBox) {
+          this.activeIndex = index + 1
+          this.$emit('selectedTab', index)
+        }
+        else {
           this.$toast.add({
             severity: 'error',
             summary: 'Error Message',
@@ -239,6 +265,10 @@ class PackingOriginal extends Vue {
     }
   }
 
+  isShowLocation(obj) {
+    return obj?.location && this.type === 'tranferringBox'
+  }
+
   mounted() {
     if(this.$refs.inputScanBoxCode) {
       const inputRef = this.$refs.inputScanBoxCode as any
@@ -311,6 +341,11 @@ class PackingOriginal extends Vue {
     else return null
   }
 
+  async searchLocation(e) {
+    await this.actLocationList({
+      location: e.query
+    })
+  }
 }
 
 export default PackingOriginal
@@ -390,28 +425,37 @@ export default PackingOriginal
         border: none
     .p-tabview-nav-content
       overflow: unset !important
+      position: relative 
+      z-index: 1000
       .edit-location
         font-size: 14px !important
         position: relative !important
         z-index: 1000
+        width: 120px !important
         .p-autocomplete-panel
           font-size: 12px !important
+          width: 200px
+          &::-webkit-scrollbar
+            width: 6px
+            height: 6px
+          &::-webkit-scrollbar-thumb
+            border-radius: 10px
+            background-color: $text-color-700
         input
-          width: 140px !important
+          padding: 0
+          text-align: center
           font-size: $font-size-small
           color: $text-color-800
           box-shadow: none !important
           border: none !important
           background-color: unset !important
         .p-button
+          padding: 0
+          width: 16px
           background-color: unset !important
           border: none !important
-          position: absolute
-          right: 0
-          top: 50%
-          transform: translateY(-50%)
           span
-            font-size: 12px !important
+            font-size: 10px !important
         .p-button:enabled:hover
           box-shadow: none !important
       .p-tabview-nav
