@@ -3,15 +3,15 @@
   .col-2.flex.align-items-center.justify-content-center
     .icon--large.bg-blue-700(:class='icon')
   .col-10.flex.flex-column.justify-content-center
-    div.font-normal.text-700.text-small {{ title }}
+    div.font-normal.text-700.text-base {{ title }}
       slot(name='button-size')
     a(v-if="link" :href="link" target="_blank").text-link
-      span.font-bold.text-small {{value}}
+      span.font-bold.text-base {{value}}
       .icon.icon-arrow-up-right.inline-block
-    span.font-bold.text-small.mr-1.uppercase(v-else) {{ value }}
+    span.font-bold.text-lg.mr-1.uppercase(v-else) {{ value }}
     template(v-if="model")
-      InputNumber(v-if='isEdit' :value='model' @input="handleUpdateUnit")
-      span.font-bold.text-small.mr-1.uppercase(v-else) {{ model }}
+      InputNumber.text-lg(v-if='isEdit' :value='model' @input="handleUpdateUnit")
+      span.font-bold.text-lg.mr-1.uppercase(v-else) {{ model }}
     slot(name='size')
     slot(name='auto-complete')
 </template>
