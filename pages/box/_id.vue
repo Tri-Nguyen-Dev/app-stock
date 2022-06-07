@@ -127,21 +127,21 @@
                 .btn-refresh(@click="refreshFilter")
                   .icon.icon-rotate-left.bg-white
           .grid.my-2.w-full(v-if="isFilter")
-              div(class="col-12 md:col")
+              div(class="col-12 md:col-4")
                 .bg-white.border-round
                   div.pt-2.pl-1.pb-1
                     span.text-600.text-sm.pl-2 SKU
                   span.p-input-icon-right.w-full
                     .icon.icon--right.icon-search.surface-900
                     InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="SKU" v-model="filterParams.sku")
-              div(class="col-12 md:col")
+              div(class="col-12 md:col-4")
                 .bg-white.border-round
                   div.pt-2.pl-1.pb-1
                     span.text-600.text-sm.pl-2 Barcode
                   span.p-input-icon-right.w-full
                     .icon.icon--right.icon-search.surface-900
                     InputText.border-0.w-full.mb-1.text-900.font-bold(type="text" placeholder="Barcode" v-model="filterParams.barCode")
-              div(class="col-12 md:col")
+              div(class="col-12 md:col-4")
                 .bg-white.border-round
                   div.pt-2.pl-1.pb-1
                     span.text-600.text-sm.pl-2 Category
@@ -365,8 +365,7 @@ export default BoxDetail
   @include desktop 
     max-width: 100%
     height: calc(100vh - 32px)
-    overflow: hidden
-    // overflow-y: auto !important
+    overflow: auto!important
 .sub--scroll
   width: 100%
   @include desktop 

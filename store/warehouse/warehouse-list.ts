@@ -43,9 +43,9 @@ export default class Warehouse extends VuexModule {
     try {
       const url = PathBind.transform(
         this.context,
-        Warehouse.STATE_URL.GET_WAREHOUSE, params
+        Warehouse.STATE_URL.GET_WAREHOUSE_SELLER
       )
-      const response = await $api.get(url)
+      const response = await $api.get(url, { params })
       return response.data
     } catch (error) {}
   }
