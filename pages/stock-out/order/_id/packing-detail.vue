@@ -3,33 +3,23 @@
     Toast
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
       StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
-    .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative
-      div.flex.flex-column
-        .grid.grid-nogutter.mb-3
-          StockOutPackingOriginal(
-            title='original box'
-            icon='icon-info'
-            :isOriginal='true'
-            :listBox="listOriginalBox"
-            type='originalBox'
-          )
-        .grid.grid-nogutter.my-3
-          StockOutPackingOriginal(
-            title='outgoing box'
-            icon='icon-arrow-circle-up-right'
-            :isOutgoing='true'
-            :listBox="listOutGoingBox"
-            type='outGoingBox'
-          )
-        .grid.grid-nogutter.my-3
-          StockOutPackingOriginal(
-            title='tranferring box'
-            icon='icon-repeat'
-            :isTranffering='true'
-            :listBox="listTranfferingBox"
-            type='tranferringBox'
-          )
-      .packing__detail--footer.grid.grid-nogutter.bg-white.p-3.border-round.fixed.align-items-center.absolute.right-0.left-0.bottom-0
+    .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
+      .flex.flex-column.flex-1.overflow-hidden
+        StockOutPackingOriginal.mb-2(
+          title='original box'
+          icon='icon-info'
+          :isOriginal='true'
+          :listBox="listOriginalBox"
+          type='originalBox'
+        )
+        StockOutPackingOriginal.mb-2(
+          title='outgoing box'
+          icon='icon-arrow-circle-up-right'
+          :isOutgoing='true'
+          :listBox="listOutGoingBox"
+          type='outGoingBox'
+        )
+      .packing__detail--footer.grid.grid-nogutter.bg-white.border-round.align-items-center
         .col.p-1
           .grid.align-items-center
             .col-1
@@ -38,22 +28,19 @@
               div Note:
               span {{packingDetail.note || 'Note is empty'}}
         .col-2.border-right-1.border-gray-300.p-1
-          .grid.align-items-center
-            .col-3
+          .grid.justify-content-center
+            .col-3.flex
               img(src='~/assets/icons/box-border.svg')
-            .col
-              span.font-semibold.text-base.mr-1 Total boxs:
-              .font-semibold.text-primary {{this.listTranfferingBox.length + this.listOutGoingBox.length }}
-        .col-2.border-right-1.border-gray-300.p-1
-          .grid.align-items-center
-            .col-3
+            .col-fixed
+              span.text-base.mr-1 Total boxs:
+              .font-semibold.text-primary {{ this.listOutGoingBox.length }}
+        .col-2.p-1
+          .grid.justify-content-center
+            .col-3.flex
               img(src='~/assets/icons/total-items-border.svg')
-            .col
-              span.font-semibold.text-base.mr-1 Total items:
-              .font-semibold.text-primary {{tranferringOutGoing}}
-        .col-3.flex.p-1.justify-content-evenly
-          Button.p-button-outlined(label='Export file' icon="pi pi-download")
-          Button Set delivery
+            .col-fixed
+              span.text-base.mr-1 Total items:
+              .font-semibold.text-primary {{ totalItem }}
 </template>
 
 <script lang="ts">
@@ -64,7 +51,6 @@ const nsStorePackingDetail = namespace('stock-out/packing-box')
 class DeliveryOrderPackingDetail extends Vue {
   listOriginalBox: any = []
   listOutGoingBox: any = []
-  listTranfferingBox: any = []
 
   @ProvideReactive()
   originalBoxActive: any = {}
@@ -86,22 +72,8 @@ class DeliveryOrderPackingDetail extends Vue {
       this.actGetDeliveryOrderDetail(this.$route.params.id),
       this.actGetPackingDetailById(this.$route.params.id)
     ])
-
-    this.listOriginalBox = _.map(this.packingDetail?.originalBox, ({ id, inventoryFee, listStockWithAmount }) => ({
-      boxCode: id,
-      locationId: listStockWithAmount.id,
-      inventoryFee,
-      items: _.map(listStockWithAmount, ({ stock, amount, initialQuantity, sku }) => ({
-        barCode: stock.barCode,
-        sku,
-        name: stock.name,
-        quantity: initialQuantity,
-        outGoingQuantity: amount,
-        imagePath: stock.imagePath
-      }))
-    }))
-
-    this.listOutGoingBox = _.map(this.packingDetail.outGoingBox, ({ id, inventoryFee, listStockWithAmount, boxSize }) => ({
+    this.listOriginalBox = this.packingDetail?.originalBox
+    this.listOutGoingBox = _.map(this.packingDetail.outGoingBox, ({ id, inventoryFee, listStockWithAmount, boxSize, airtag }) => ({
       boxCode: this.genearateBoxCode(this.listOutGoingBox, 'EX'),
       newBoxCode: id,
       locationId: listStockWithAmount.id,
@@ -114,29 +86,14 @@ class DeliveryOrderPackingDetail extends Vue {
         originalBox,
         imagePath: stock.imagePath
       })),
-      boxSize
-    }))
-
-    this.listTranfferingBox =  _.map(this.packingDetail.transferringBox, ({ id, inventoryFee, listStockWithAmount, boxSize }) => ({
-      boxCode: this.genearateBoxCode(this.listTranfferingBox, 'IN'),
-      newBoxCode: id,
-      locationId: listStockWithAmount.id,
-      inventoryFee,
-      items: _.map(listStockWithAmount, ({ stock, originalBox, amount, sku }) => ({
-        barCode: stock.barCode,
-        sku,
-        name: stock.name,
-        quantity: amount,
-        originalBox,
-        imagePath: stock.imagePath
-      })),
-      boxSize
+      boxSize,
+      airtag
     }))
   }
 
-  get tranferringOutGoing() {
-    const tranferringOutGoing = [...this.listOutGoingBox,...this.listTranfferingBox]
-    return tranferringOutGoing.reduce((accumulator:any, object:any) => {
+  get totalItem() {
+    const totalItem = [...this.listOutGoingBox]
+    return totalItem.reduce((accumulator:any, object:any) => {
       return accumulator + object.items.length
     },0)
   }
@@ -157,12 +114,19 @@ export default DeliveryOrderPackingDetail
 <style lang="sass" scoped>
 .packing__detail--container
   height: calc(100vh - 32px)
+  .packing-wapper
+    overflow-y: hidden
   .packing__detail--left
     height: calc( 100% - 32px) !important
   .sub-tab
     height: calc(100vh - 32px)
     max-width: 21.5rem
     overflow: hidden
+  .packing__detail--footer
+    height: 82px
+    padding: 0 12px
+    margin-top: auto
+    overflow: auto
 ::-webkit-scrollbar
   width: 7px
   height: 7px

@@ -14,7 +14,8 @@ export default class StorePackingBox extends VuexModule {
     GET_BOX_LOCATION: '/location/suggest',
     SAVE_PACKING_ORDER: '/delivery-order/:id/packing',
     SCAN_AIRTAG: '/airtag/scan-barcode/:barcode',
-    GET_PACKING_DETAIL_BY_ID: '/delivery-order/:id/packing-detail'
+    GET_PACKING_DETAIL_BY_ID: '/delivery-order/:id/packing-detail',
+    CREATE_REPORT: '/report/create'
   }
 
   public totalOriginalList?: number = 0
@@ -25,6 +26,7 @@ export default class StorePackingBox extends VuexModule {
   public infoTag: any = null
   public packingDetail: any = {}
   public tagCode: any = {}
+  public reportPacking: any = {}
 
   @Mutation
   setListOriginal(data: any) {
@@ -50,6 +52,11 @@ export default class StorePackingBox extends VuexModule {
   @Mutation
   setInfoTag(data: any) {
     this.tagCode = data
+  }
+
+  @Mutation
+  setReportPacking(data: any) {
+    this.reportPacking = data
   }
 
   @Action({ commit: 'setListOriginal', rawError: true })
@@ -83,13 +90,15 @@ export default class StorePackingBox extends VuexModule {
     } catch (error) {}
   }
 
-  @Action({ commit: 'setIdPackingDetail', rawError: true })
-  async actSavePackingDetail(data: any): Promise<string | undefined> {
+  @Action({ rawError: true })
+  async actSavePackingDetail(data: any): Promise<boolean> {
     try{
       const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.SAVE_PACKING_ORDER, { id: data.id })
       const response = await $api.post(url, { ...data.data })
-      return response.data
-    } catch (error) {}
+      return !!response.data
+    } catch (error) {
+      return false
+    }
   }
 
   @Action({ commit: 'setInfoTag', rawError: true })
@@ -107,6 +116,17 @@ export default class StorePackingBox extends VuexModule {
     try {
       const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.GET_PACKING_DETAIL_BY_ID, { id })
       const response = await $api.get(url)
+      return response.data
+    } catch (error) {
+
+    }
+  }
+
+  @Action({ commit: 'setReportPacking', rawError: true })
+  async actCreateReport(data: any ): Promise<any | undefined> {
+    try {
+      const url = PathBind.transform(this.context, StorePackingBox.STATE_URL.CREATE_REPORT)
+      const response = await $api.post(url, data)
       return response.data
     } catch (error) {
 

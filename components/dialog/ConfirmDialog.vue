@@ -6,6 +6,7 @@
                 h3.confirm-dialog__title  {{ title }}
                 p.confirm-dialog__des
                     slot(name="message")
+                    slot(name="content")
                 div.confirm-dialog__footer
                     Button.confirm-dialog__btn.btn--discard(@click="onCancel()") No
                     Button.confirm-dialog__btn.btn--agree(@click="onOk()" :disabled="loadingBtn")

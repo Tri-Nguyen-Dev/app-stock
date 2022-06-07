@@ -1,7 +1,7 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
   Toast
-  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab" :disabled="disableEditQty") + Add
+  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal && !isPackingDetail' @click="handleAddTab") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.w-full.inputSearchCode(
@@ -10,35 +10,35 @@
       v-model="boxCodeText"
       placeholder='Please enter box code!'
       ref="inputScanBoxCode"
-      :disabled="disableEditQty"
     )
-  TabView(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
+  Button.btn-print.font-semibold(label="Print" v-if='isPackingDetail' @click="handleAddTab")
+  TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
         .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
-    TabPanel(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
+    TabPanel.h-full(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
         .icon.icon-box-packing.hidden.mr-2
         span.uppercase.text-700 {{tab.boxCode}}
         span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
-        .ml-1.px-1(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
-        AutoComplete.edit-location.ml-1(
-          v-if="isShowLocation(tab)"
-          v-model='tab.location',
-          field='name',
-          :suggestions='locationList',
-          @complete='searchLocation($event)'
-          :dropdown='true'
-          forceSelection
-        )
+        .aritag-text(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
+        .aritag-text(v-if='tab.airtag && isPackingDetail') {{ tab.airtag.barCode }}
+      .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if="isOriginal")
+        .col.py-3
+          span.mr-2 Capacity:
+          .p-input-icon-right(v-if="!isPackingDetail")
+            InputNumber(id="percent" suffix="%" v-model="tab.usedCapacity" :max="100" :disabled="isDisabledCapcity")
+          span(v-else) {{ tab.usedCapacity | capacityPercent}}
+        .col.py-3.flex.justify-content-end(v-if="!isPackingDetail")
+          Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
           span.mr-1 Size:
-          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
+          Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name")
           span.ml-1 (cm)
         .col.py-3.border-right-1.border-left-1.border-gray-300.flex.align-items-center.px-3(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock(tab)' @change="handleChangeTag(tab)")
@@ -51,14 +51,6 @@
                 v-model="tagCodeText"
                 ref="inputScanTag"
               )
-        .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
-          div.flex.align-items-center
-            div
-              div Estimated
-              div Inventory Fee:
-            div.ml-2
-              InputText.w-4.inputSearchCode(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
-              span.ml-1 / day
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:
           span.ml-1.p-input-icon-right
@@ -68,25 +60,19 @@
               @change='addStockByBarcode($event)'
               v-model="barCodeText"
               ref="inputScanBarCode"
-              :disabled="disableEditQty"
             )
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && isPackingDetail')
-        .col-3.py-3.border-right-1.border-gray-300
+        .col-fixed.pr-3.py-3.border-right-1.border-gray-300
           span.mr-1.font-semibold Size: {{tab.boxSize.name}} {{tab.boxSize.height}}*{{tab.boxSize.width}}*{{tab.boxSize.length}}
           span.ml-1.font-semibold (cm)
-        .col-3.ml-2.py-3.border-right-1.border-gray-300(v-if='isTranffering')
-          .grid.align-items-center.pl-3
-              div.font-semibold Estimated Inventory Fee: {{tab.inventoryFee}} $
-              span.ml-1.font-semibold / day
         .col.ml-2.py-3.flex.justify-content-end
           span.font-semibold Box Code: {{tab.newBoxCode}}
-      StockOutPackingTableList(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
+      StockOutPackingTableList.flex-1.overflow-hidden(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, namespace, Watch, InjectReactive } from 'nuxt-property-decorator'
-const nsStoreLocationList = namespace('location/location-list')
+import { Component, Vue, Prop, namespace, Watch } from 'nuxt-property-decorator'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component
@@ -97,25 +83,17 @@ class PackingOriginal extends Vue {
   barCodeText: string = ''
   boxCodeText: string = ''
   tagCodeText: string = ''
-  locationBox: any = []
   isPackingDetail: boolean = false
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
   @Prop() readonly isOriginal!: boolean | false
   @Prop() readonly isOutgoing!: boolean | false
-  @Prop() readonly isTranffering!: boolean | false
   @Prop() listBox!: Array<any>
   @Prop() boxSizeList!: Array<any>
   @Prop() readonly type!: string | undefined
   @Prop() readonly autoActiveTabOut!: boolean | false
-  @InjectReactive() readonly packingStep!: any
-
-  @nsStoreLocationList.State
-  locationList: {}
-
-  @nsStoreLocationList.Action
-  actLocationList!: (params: any) => Promise<void>
+  @Prop() readonly isNextBox!: any
 
   @nsStorePackingDetail.Action
   actScanAirtag!: (params: any) => Promise<any>
@@ -170,7 +148,7 @@ class PackingOriginal extends Vue {
       const index = _.findIndex(this.listBox, { boxCode })
       if(index >= 0){
         const itemsBox = _.get(this.listBox[this.activeIndex - 1], 'items')
-        if(!_.size(_.partition(itemsBox, ['quantity', 0])[1]) || !itemsBox) {
+        if(!_.size(_.partition(itemsBox, ({ outGoingQuantity, actualOutGoing }) => outGoingQuantity === actualOutGoing)[1]) || !itemsBox) {
           this.activeIndex = index + 1
           this.$emit('selectedTab', index)
         } else {
@@ -246,21 +224,10 @@ class PackingOriginal extends Vue {
     return sum
   }
 
-  get disableEditQty() {
-    if(this.packingStep === 2) {
-      return 'disabled'
+  get isDisabledCapcity() {
+    if(!this.isNextBox) {
+      return 'disabled' 
     }
-    else return null
-  }
-
-  async searchLocation (e) {
-    await this.actLocationList({
-      location: e.query
-    })
-  }
-
-  isShowLocation(obj) {
-    return obj?.location && this.type === 'tranferringBox'
   }
 
   mounted() {
@@ -296,7 +263,7 @@ class PackingOriginal extends Vue {
   }
 
   handleDeleteBox(index) {
-    this.$emit('handelDeteleBoxEmpty', this.type, index)
+    this.$emit('handelDeteleBoxEmpty', index)
     if(index < this.activeIndex - 1) {
       this.$nextTick(() => (this.activeIndex = this.activeIndex - 1))
     } else if(index === this.activeIndex - 1) {
@@ -323,6 +290,10 @@ class PackingOriginal extends Vue {
       }
     }
   }
+
+  showFormReport() {
+    this.$emit('showFormReportBox')
+  }
 }
 
 export default PackingOriginal
@@ -330,6 +301,7 @@ export default PackingOriginal
 <style lang="sass" scoped>
 ::v-deep.packing__common--table
   position: relative
+  height: 50%
   .delete-box
     position: relative
     z-index: 1000
@@ -353,7 +325,15 @@ export default PackingOriginal
       margin: 0 !important
     .p-inputtext:enabled:focus
       box-shadow: none !important
-
+  .btn-print
+    width: 65px
+    height: 42px
+    position: absolute
+    right: 0
+    top: 21px
+    transform: translateY(-50%)
+    z-index: 1
+    box-shadow: none
   .btn-add-tab
     position: absolute
     right: 0
@@ -375,14 +355,29 @@ export default PackingOriginal
       border: 1px solid #dee2e6
     .icon
       background: $primary-dark
+    .icon-capacity
+      background-color: unset !important
     .p-tabview-panels
-      min-height: 166px
+      flex: 1
+      display: flex
+      flex-direction: column
+      overflow: hidden
       padding: 0
+      .p-tabview-panel
+        display: flex
+        flex-direction: column
       .p-dropdown,
       .p-inputtext
         background: $text-color-300
       .p-datatable .p-datatable-thead > tr > th
         background: #fff !important
+    .aritag-text
+      margin-left: 8px
+      color: $text-color-700
+    .p-tabview-panel
+      flex: 1
+      display: flex
+      flex-direction: column
     ul.p-tabview-nav
       height: 42px !important
     .p-tabview-nav-container
@@ -448,10 +443,7 @@ export default PackingOriginal
           display: inline-block !important
           background: $primary
 ::v-deep.packing__common--table.packing-detail
-  .originalTable
+  .originalTable, .outGoingTable
     .p-tabview-nav-container
-      width: 100% !important
-  .outGoingTable
-    .p-tabview-nav-container
-      width: 100% !important
+      width: calc(100% - 65px) !important
 </style>

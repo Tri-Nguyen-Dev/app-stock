@@ -1,52 +1,67 @@
 <template lang="pug">
 .grid.grid-nogutter.packing__detail--container
-	.packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-		PackingInformationDetail(
-			:deliveryOrderDetail='orderDetail',
-			:type='typeTitle'
-		)
-	.col-9.packing__detail--left.pl-4.pr-1.flex-1
-		.grid
-			.col-8
-				h1.text-heading {{textHeading}}
-				span.text-subheading {{ total }} items found
-			.col-2.btn-center
-				ThemeButtonExport.w-full(:click='handleExportReceipt', v-if='!isPack')
-				Button.p-button-outlined.p-button-primary.bg-white.w-full(
-					type='button',
-					label='Map',
-					@click='packItem',
-					v-if='isPack'
-				)
-			.col-2.btn-center
-				Button.p-button-outlined.p-button-primary.bg-white.w-full(
-					type='button',
-					label='Pick Items',
-					@click='pickItem',
-					v-if='!isPack  && !isReady'
-				)
-				Button.p-button-outlined.p-button-primary.bg-white.w-full(
-					type='button',
-					label='Pack Items',
-					@click='packItem',
-					v-if='isPack && !isReady',
-					:disabled='!enablePack'
-				)
-				Button.p-button-outlined.p-button-primary.bg-white.w-full(
-					type='button',
-					label='Packing detail',
-					v-if='isReady',
-					@click='packDetail()'
-				)
-		ItemList(
-			:isDetail='true',
-			:action='action',
-			@selectRow='selectItem($event)',
-			@enablePack='checkEnablePack($event)',
-			:listItems='item',
-			v-if='item'
-			:isReady ='isReady'
-		)
+  .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
+    PackingInformationDetail#packingInfo(
+      :deliveryOrderDetail='orderDetail',
+      :type='typeTitle'
+    )
+  .col-9.packing__detail--left.pl-4.pr-1.flex-1
+    .grid
+      .col-4
+        h1.text-heading {{ textHeading }}
+        span.text-subheading {{ total }} items found
+      .col-8.btn-right(v-if='orderDetail')
+        ThemeButtonExport.w-25(:click='handleExportReceipt')
+        //- Button.p-button-outlined.p-button-primary.bg-white.w-25(
+        //-   type='button',
+        //-   label='Map',
+        //-   @click='packItem',
+        //-   v-if='isPack'
+        //- )
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Pick Items',
+          @click='pickItem',
+          v-if='checkStatus("PICK_ITEM") || isPick'
+        )
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Pack Items',
+          @click='packItem',
+          v-if='!isPick && checkStatus("PACK_ITEM")',
+          :disabled='!enablePack'
+        )
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Packing detail',
+          v-if='checkStatus("PACKING_DETAIL")',
+          @click='packDetail()'
+        )
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Set Delivery',
+          v-if='checkStatus("SET_DELIVERY")',
+          @click='setDelivery()'
+        )
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Reset Delivery',
+          v-if='checkStatus("RESET_DELIVERY")',
+          @click='setDelivery()'
+        )
+    ItemList(
+      :isDetail='true',
+      :action='action',
+      @selectRow='selectItem($event)',
+      @enablePack='checkEnablePack($event)',
+      :listItems='item',
+      v-if='item'
+    )
+    DriverDialog(
+      :isModalDriverList='isModalDriverList',
+      @hideDialog='hideDialog($event)',
+      @assigned='assignedDriver($event)'
+    )
 </template>
 
 <script lang="ts">
@@ -56,24 +71,26 @@ import PackingInformationDetail from '~/components/stock-out/PackingInformationD
 import { STOCK_OUT_ACTION, ORDER_STATUS } from '~/utils/constants/stock-out'
 import { OrderDetail } from '~/models/OrderDetail'
 import { exportFileTypePdf } from '~/utils'
+import DriverDialog from '~/components/stock-out/driver/DriverDialog.vue'
 const nsStoreOrder = namespace('stock-out/order-detail')
 const nsStoreExportOrder = namespace('stock-out/order-export')
 const nsUser = namespace('user-auth/store-user')
 @Component({
   components: {
     ItemList,
-    PackingInformationDetail
+    PackingInformationDetail,
+    DriverDialog
   }
 })
 class DeliveryOrder extends Vue {
   total = 100
   action = STOCK_OUT_ACTION.ORDER_DETAIL
-  isPack = false
   selectedItem: any[] = []
   enablePack = false
   typeTitle = 'DO_DETAIL'
-  isReady = false
   textHeading = 'Item list'
+  isModalDriverList = false
+  isPick = false
   @nsStoreOrder.State
   orderDetail!: OrderDetail.Model
 
@@ -88,6 +105,9 @@ class DeliveryOrder extends Vue {
 
   @nsStoreExportOrder.Action
   actGetOrderPdf
+
+  @nsStoreOrder.Action
+  updateDriverInOrderDetail
 
   @nsUser.State
   user!: any
@@ -115,10 +135,9 @@ class DeliveryOrder extends Vue {
     }
     await this.actPostUpdateProgressOrder(dataUpdate)
     this.typeTitle = 'PICK_ITEM'
-    this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM 
-    this.isPack = true
+    this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
     this.enablePack = false
-    this.textHeading= 'Picking list'
+    this.textHeading = 'Picking list'
     this.$router.push(`/stock-out/order/${this.id}?isPick=false`)
   }
 
@@ -147,48 +166,100 @@ class DeliveryOrder extends Vue {
 
   async mounted() {
     await this.actGetOrderDetail({ id: this.id })
-    if (this.orderDetail.status === ORDER_STATUS.IN_PROGRESS) {
-      // this.typeTitle = 'PACK_ITEM'
-      // this.isPack = true
-      // this.enablePack = false
-      // this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
-    }
-    if (this.orderDetail.status === ORDER_STATUS.READY) {
-      this.isReady = true
-    }
-    if(this.$route.query.isPick === 'false'){
-      this.initialValue(STOCK_OUT_ACTION.ORDER_PICK_ITEM)
-    } else {
-      this.initialValue(STOCK_OUT_ACTION.ORDER_DETAIL)
-    }
+    this.initialValue()
   }
 
-  initialValue(action){
-    this.isPack = action===STOCK_OUT_ACTION.ORDER_PICK_ITEM
-    this.typeTitle = action===STOCK_OUT_ACTION.ORDER_PICK_ITEM?'PICK_ITEM' : 'DO_DETAIL'
-    this.action = action
+  checkStatus(action){
+    let show = false
+    switch(action){
+    case 'PICK_ITEM':
+      if(this.orderDetail.status === ORDER_STATUS.NEW) {
+        show = true
+      }
+      break       
+    case 'PACK_ITEM':
+      if(this.orderDetail.status === ORDER_STATUS.IN_PROGRESS) {
+        show = true
+      }
+      break
+    case 'PACKING_DETAIL':
+      if(this.orderDetail.status !== ORDER_STATUS.NEW) {
+        show = true
+      }
+      break
+    case 'SET_DELIVERY':
+      if(this.orderDetail.status === ORDER_STATUS.READY) {
+        show = true
+      }
+      break
+    case 'RESET_DELIVERY':
+      if(this.orderDetail.status === ORDER_STATUS.SETTED) {
+        show = true
+      }
+      break
+    }
+    return show
+  }
+
+  initialValue() {
+    if (this.$route.query.isPick === 'false'  &&  this.orderDetail.status === ORDER_STATUS.IN_PROGRESS){
+      this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
+    } else {
+      this.action = STOCK_OUT_ACTION.ORDER_DETAIL
+    }
+    this.typeTitle =
+      this.action === STOCK_OUT_ACTION.ORDER_PICK_ITEM ? 'PICK_ITEM' : 'DO_DETAIL'
     this.enablePack = false
-    this.textHeading= action===STOCK_OUT_ACTION.ORDER_PICK_ITEM?'Picking list' : 'Delivery order detail'
+    this.textHeading =
+      this.action === STOCK_OUT_ACTION.ORDER_PICK_ITEM
+        ? 'Picking list'
+        : 'Delivery order detail'
+    this.total = this.orderDetail.deliveryItemList!.length
   }
 
   @Watch('$route')
   checkQuery() {
-    if(this.$route.query.isPick === 'true'){
-      this.initialValue(STOCK_OUT_ACTION.ORDER_DETAIL)
-    } else {
-      this.initialValue(STOCK_OUT_ACTION.ORDER_PICK_ITEM)
+    this.isPick = this.$route.query.isPick ==='true'
+    this.initialValue()
+  }
+
+  setDelivery() {
+    this.isModalDriverList = true
+  }
+
+  hideDialog(event) {
+    this.isModalDriverList = !event
+  }
+
+  assignedDriver(event) {
+    if (event) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully set Delivery',
+        life: 3000
+      })
+      const packingInfo = this.$el.querySelector('.packing__detail--left')
+      if (packingInfo) {
+        const scrollHeight = packingInfo.scrollHeight
+        packingInfo.scrollTop = scrollHeight
+      }
     }
+    
   }
 }
 
 export default DeliveryOrder
 </script>
 <style lang="sass" scoped>
-.btn-center
-	height: 70%
-	align-self: center
+.btn-right
+  height: 70%
+  text-align: right
 .packing__detail--container
-	height: calc(100vh - 32px)
+  height: calc(100vh - 32px)
 .packing__detail--left
-	height: calc( 100% - 32px) !important
+  height: calc( 100% - 32px) !important
+.w-25
+  width: 25%
+  margin-left: 7px
 </style>

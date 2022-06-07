@@ -48,3 +48,14 @@ Vue.filter('getThumbnailUrl', (imagePath) => {
 Vue.filter('checkHasTag', (value) => {
   return value ? 'Yes' : 'No'
 })
+
+// -- [ Format date time 24hour type] ------------------------------------------------
+Vue.filter('dateTimeHour24', (value) => {
+  return dayjs(new Date(value)).format('DD-MM-YYYY HH:mm')
+})
+
+// --  [ Format capacity ] -------------------------------------------------
+Vue.filter('capacityPercent', (value) => {
+  const percent = value * 100
+  return `${_.isInteger(percent) ? percent : (value * 100).toFixed(2)}%`
+})
