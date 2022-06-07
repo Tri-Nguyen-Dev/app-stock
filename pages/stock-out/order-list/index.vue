@@ -151,10 +151,10 @@
             div {{ data.createTime | dateTimeHour12 }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" )
           template(#body='{ data }')
-            div.grid-cell {{ data.sellerEmail }}
+            div.grid-cell-fix-width {{ data.sellerEmail }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress")
           template(#body='{ data }')
-            div.grid-cell {{ data.receiverAddress }}
+            div.grid-cell-fix-width {{ data.receiverAddress }}
         Column( sortable field='dueDeliveryDate' sortField="_dueDeliveryDate" headerClass="grid-header-right")
           template(#header)
             div
