@@ -71,6 +71,7 @@
         dataKey='id'
         :rows='10'
         :rowHover='true'
+        @row-click='rowClick'
       )
         Column(field='no' header='NO' :styles="{'width': '1%'}" )
           template(#body='{ index }')
@@ -87,12 +88,12 @@
             div.grid-cell-right {{ data.receiptDate }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" headerClass="grid-header-right")
           template(#body='{ data }')
-            div {{ data.receiverAddress }}
-        Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
-          template(#body='{ data }')
-            .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
-              .icon.icon-arrow-up-right.bg-primary.bg-white-active
+            div.grid-cell-fix-width {{ data.receiverAddress }}
+        //- Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
+        //-   template(#body='{ data }')
+        //-     .flex.align-items-center.cursor-pointer.justify-content-end
+        //-       span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
+        //-       .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.creatorId }}   
@@ -247,7 +248,7 @@ class PackingNoteList extends Vue {
     this.getProductList()
   }
 
-  rowdbClick({ data }) {
+  rowClick({ data }) {
     if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
       this.$router.push(`/stock-out/order/${data.id}`)
     }
