@@ -183,7 +183,7 @@ class DeliveryOrder extends Vue {
       }
       break
     case 'PACKING_DETAIL':
-      if(this.orderDetail.status !== ORDER_STATUS.NEW) {
+      if(this.orderDetail.status !== ORDER_STATUS.NEW && this.orderDetail.status !== ORDER_STATUS.IN_PROGRESS ) {
         show = true
       }
       break
@@ -202,7 +202,7 @@ class DeliveryOrder extends Vue {
   }
 
   initialValue() {
-    if (this.$route.query.isPick === 'false'  &&  this.orderDetail.status === ORDER_STATUS.IN_PROGRESS){
+    if (this.$route.query.isPick === 'false'  ||  this.orderDetail.status === ORDER_STATUS.IN_PROGRESS){
       this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
     } else {
       this.action = STOCK_OUT_ACTION.ORDER_DETAIL
