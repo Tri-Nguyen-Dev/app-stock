@@ -1,33 +1,55 @@
 <template lang="pug">
 .order__packing--detail
-	.packing__detail--header.border-bottom-1.border-gray-300
-		Breadcrumb(:home='homeItem', :model='breadcrumbItem')
-	.packing__detail--content.p-3
-		.my-3.font-bold.flex.align-items-center
-			.icon.icon-info.inline-block
-			span.uppercase.ml-1 order detail
-		h3.uppercase.m-1 id: {{ deliveryOrderDetail.id }}
-		h5.uppercase.inline-block.text-400 Create time:&nbsp;
-		span.uppercase.font-bold 13rd April 2022 12:22AM
-		TabView
-			TabPanel.p-3(header='Delivery')
-				StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4(:sellerInfo='deliveryOrderDetail')
-				StockOutPackingReceiverInfo.border-bottom-1.border-gray-300.pb-4.mt-4(:receiverInfro='deliveryOrderDetail')
-				StockOutPackingTimeDelivery.mt-4(:timeDelivery='deliveryOrderDetail')
-			TabPanel.p-3(header='Warehouse')
-				StockOutPackingWarehouseInfo(:warehouseInfo='deliveryOrderDetail')
-			TabPanel.p-3(header='Creator')
-				StockOutPackingCreatorInfo(:creatorInfo='deliveryOrderDetail')
+  .packing__detail--header.border-bottom-1.border-gray-300
+    Breadcrumb(:home='homeItem', :model='breadcrumbItem')
+  .packing__detail--content.p-3
+    .my-3.font-bold.flex.align-items-center
+      .icon.icon-info.inline-block
+      span.uppercase.ml-1 order detail
+    h3.uppercase.m-1 id: {{ deliveryOrderDetail.id }}
+    span.uppercase.font-bold(style='background-color: #00A469; color: #FFFFFF') {{status}} &nbsp;
+    h5.uppercase.inline-block.text-400 Create time:&nbsp;
+    span.uppercase.font-bold 2022 12:22AM
+    TabView
+      TabPanel.p-3(header='Delivery')
+        StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4(:sellerInfo='deliveryOrderDetail')
+        StockOutPackingReceiverInfo.border-bottom-1.border-gray-300.pb-4.mt-4(:receiverInfro='deliveryOrderDetail')
+        StockOutPackingTimeDelivery.mt-4(:timeDelivery='deliveryOrderDetail')
+        DeliveryDriverInfo.mt-4(v-if='deliveryOrderDetail.driver' :driverInfo='deliveryOrderDetail.driver')
+      TabPanel.p-3(header='Warehouse')
+        StockOutPackingWarehouseInfo(:warehouseInfo='deliveryOrderDetail')
+      TabPanel.p-3(header='Creator')
+        StockOutPackingCreatorInfo(:creatorInfo='deliveryOrderDetail')
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
-
-@Component
+import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
+import DeliveryDriverInfo from '~/components/stock-out/driver/DriverInfor.vue'
+@Component({
+  components: {
+    DeliveryDriverInfo
+  }
+})
 class PackingInformationDetail extends Vue {
   @Prop() deliveryOrderDetail!: any
   @Prop() type!: string
+  @Prop() driverInfo!: any
+  status = ''
   get homeItem() {
     return { label: '', to: '/stock-out/order-list', icon: 'pi pi-list' }
+  }
+
+  @Watch('deliveryOrderDetail')
+  setStatus(){
+    const statusArr = this.deliveryOrderDetail!.status.split('_')
+    statusArr.forEach((element,index) => {
+      if(index>2){
+        this.status += element+' '
+      }
+    })
+  }
+
+  mounted()  {
+    
   }
 
   get breadcrumbItem() {

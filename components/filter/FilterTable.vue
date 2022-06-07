@@ -7,7 +7,7 @@
       .icon--small.icon--right.icon-search.surface-900.icon--absolute
       InputText.border-0.w-full.mb-1(
         v-if="searchText" type="text"
-        :placeholder="placeholder || 'Select'"
+       
         :value="value"
         @input="validateText"
       )
