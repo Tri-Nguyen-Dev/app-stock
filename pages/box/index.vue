@@ -17,6 +17,8 @@
       .btn.btn-primary(@click='routeLinkAddBox')
         .icon.icon-add-items
         span Add box
+      .btn.btn-primary(@click='handleTransferBox')
+        span Transfer box
   .grid(v-if="isShowFilter")
     div(class="md:col-12 lg:col-8 col-12")
       .grid
@@ -87,6 +89,8 @@
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
+        Column(field="usedCapacity" header="USED CAPACITY" className="text-right")
+          template(#body="{data}") {{ data.usedCapacity | capacityPercent}}
         Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold" )
           template(#body="{data}") 
             div(v-if='data.boxSize') {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
@@ -210,6 +214,9 @@ class BoxList extends Vue {
   @nsStoreBox.Action
   actDeleteBoxById!: (params: {ids: string[]}) => Promise<any>
 
+  @nsStoreBox.Action
+  actAddTransferBox!: (params: {ids: string[]}) => Promise<any>
+
   async mounted() {
     await this.actGetBoxList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
     await this.actWarehouseList()
@@ -222,8 +229,8 @@ class BoxList extends Vue {
   }
 
   get selectedBoxFilter() {
-    return  _.filter(this.selectedBoxes, (box: any) => {
-      return box.status !== 'BOX_STATUS_DISABLE'
+    return  _.filter(this.selectedBoxes, ({ status }) => {
+      return status !== 'BOX_STATUS_DISABLE' && status !== 'BOX_STATUS_OUTGOING'
     })
   }
 
@@ -285,8 +292,10 @@ class BoxList extends Vue {
     this.isModalDelete = true
   }
 
-  rowClass(data: any) {
-    return data.status === 'BOX_STATUS_DISABLE' && 'row-disable'
+  rowClass({ status }) {
+    if(status === 'BOX_STATUS_DISABLE' || status === 'BOX_STATUS_OUTGOING') {
+      return 'row-disable'
+    }
   }
 
   validateText =  _.debounce(this.handleFilter, 500);
@@ -323,7 +332,7 @@ class BoxList extends Vue {
   }
 
   rowSelectAll({ data }) {
-    this.selectedBoxes = _.union(this.selectedBoxes, data)
+    this.selectedBoxes = _.unionWith(this.selectedBoxes, data, _.isEqual)
   }
 
   rowUnSelectAll() {
@@ -343,6 +352,25 @@ class BoxList extends Vue {
     this.$router.push({ path: '/stock-in/create-receipt' })
   }
 
+  handleTransferBox() {
+    const selectedBox = [...this.selectedBoxFilter]
+    if(!_.size(selectedBox)) return
+    const firstSelect = selectedBox[0]
+    const satisfyBox =_.filter(selectedBox, ({ status, sellerEmail  }) => {
+      return sellerEmail && status === 'BOX_STATUS_AVAILABLE' && sellerEmail === firstSelect.sellerEmail
+    })
+    if(_.size(selectedBox) === _.size(satisfyBox)) {
+      this.actAddTransferBox(_.map(satisfyBox, 'id'))
+      this.$router.push({ path: '/box/transferring' })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Boxes of diffrent sellers can not be transferred',
+        life: 3000
+      })
+    }
+  }
 }
 export default BoxList
 </script>

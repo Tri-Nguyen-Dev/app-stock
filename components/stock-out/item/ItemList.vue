@@ -1,78 +1,80 @@
 <template lang="pug">
 DataTable#custom-table.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
-	:resizableColumns='true',
-	:value='dataRenderItems',
-	dataKey='id',
-	:row-hover='true',
-	responsiveLayout='scroll',
-	columnResizeMode='fit',
-	v-if='dataRenderItems',
-	:selection.sync='selectedItem',
-	@row-select='selectRow()',
-	@row-unselect='unSelectRow'
+  :resizableColumns='true',
+  :value='dataRenderItems',
+  dataKey='id',
+  :row-hover='true',
+  responsiveLayout='scroll',
+  columnResizeMode='fit',
+  v-if='dataRenderItems',
+  :selection.sync='selectedItem',
+  @row-select='selectRow()',
+  @row-unselect='unSelectRow'
 )
-	template(#empty)
-		.flex.align-items-center.justify-content-center.flex-column
-			img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
-			p.text-900.font-bold.mt-3 List is empty!
-	column(field='no', header='NO')
-		template(#body='slotProps')
-			span.font-bold {{ slotProps.index + 1 }}
-	column(
-		field='picked',
-		header='PICKED',
-		selectionMode='multiple',
-		styles='width: 3rem',
-		:hidden='!isPack',
-		headerClass='grid-header-center'
-		:v-if='!isReady'
-	)
-	column(
-		field='stock.imagePath',
-		header='IMAGE',
-		:sortable='true',
-		filter-match-mode='contains'
-	)
-		template(#body='slotProps')
-			img(:src='slotProps.data.stockBox.stock.imagePath | getThumbnailUrl')
-	column.text-overflow-ellipsis(
-		field='stock.barCode',
-		header='BARCODE',
-		:sortable='true',
-		:show-filter-match-modes='false'
-	)
-		template(#body='{ data }')
-			span.text-primary.font-bold {{ data.stockBox.stock.barCode }}
-	column(field='sku', header='SKU', sortable='', data-type='numeric')
-		template(#body='{ data }')
-			span.uppercase {{ data.stockBox.sku }}
-	column(field='stock.name', header='NAME', :sortable='true')
-		template(#body='{ data }')
-			span.font-bold.text-right {{ data.stockBox.stock.name }}
-	column(
-		field='location.name',
-		:header='isPack ? "LOCATION" : ""',
-		:sortable='isPack',
-		:rendered='false',
-		:hidden='!isPack'
-	)
-		template(#body='{ data }')
-			span.font-bold.text-primary.text-right(v-if='data.stockBox.box.rackLocation') {{ data.stockBox.box.rackLocation.name }}
-	column(field='stockBox.box.id', header='BOXCODE', :sortable='true')
-		template(#body='{ data }')
-			span.font-bold.text-right {{ data.stockBox.box.id }}
-	column(
-		field='amount',
-		header='QUANTITY',
-		:sortable='true',
-		headerClass='grid-header-right'
-	)
-		template(#body='{ data }')
-			.font-bold.grid-cell-right {{ data.stockBox.amount }}
-	column(field='airtag', header='TAG', headerClass='grid-header-center')
-		template(#body='{ data }')
-			.grid-cell-center
-				Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='isDetail')
+  template(#empty)
+    .flex.align-items-center.justify-content-center.flex-column
+      img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
+      p.text-900.font-bold.mt-3 List is empty!
+  column(field='no', header='NO')
+    template(#body='slotProps')
+      span.font-bold {{ slotProps.index + 1 }}
+  column(
+    field='picked',
+    header='PICKED',
+    selectionMode='multiple',
+    styles='width: 3rem',
+    :hidden='!isPack',
+    headerClass='grid-header-center',
+    :v-if='!isReady'
+  )
+  column(
+    field='stock.imagePath',
+    header='IMAGE',
+    :sortable='true',
+    filter-match-mode='contains'
+  )
+    template(#body='slotProps')
+      img(:src='slotProps.data.stockBox.stock.imagePath | getThumbnailUrl')
+  column.text-overflow-ellipsis(
+    field='stock.barCode',
+    header='BARCODE',
+    :sortable='true',
+    :show-filter-match-modes='false'
+  )
+    template(#body='{ data }')
+      span.text-primary.font-bold {{ data.stockBox.stock.barCode }}
+  column(field='sku', header='SKU', sortable='', data-type='numeric')
+    template(#body='{ data }')
+      span.uppercase {{ data.stockBox.sku }}
+  column(field='stock.name', header='NAME', :sortable='true')
+    template(#body='{ data }')
+      span.font-bold.text-right {{ data.stockBox.stock.name }}
+  column(
+    field='location.name',
+    :header='isPack ? "LOCATION" : ""',
+    :sortable='isPack',
+    :rendered='false',
+    :hidden='!isPack'
+  )
+    template(#body='{ data }')
+      span.font-bold.text-primary.text-right(
+        v-if='data.stockBox.box.rackLocation'
+      ) {{ data.stockBox.box.rackLocation.name }}
+  column(field='stockBox.box.id', header='BOXCODE', :sortable='true')
+    template(#body='{ data }')
+      span.font-bold.text-right {{ data.stockBox.box.id }}
+  column(
+    field='amount',
+    header='QUANTITY',
+    :sortable='true',
+    headerClass='grid-header-right'
+  )
+    template(#body='{ data }')
+      .font-bold.grid-cell-right {{ data.stockBox.amount }}
+  column(field='airtag', header='TAG', headerClass='grid-header-center')
+    template(#body='{ data }')
+      .grid-cell-center
+        Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='isDetail')
 </template>
 
 <script lang="ts">
@@ -95,15 +97,14 @@ class ItemList extends Vue {
 
   @Watch('action')
   changePack() {
-    if(this.action===STOCK_OUT_ACTION.ORDER_DETAIL) {
+    if (this.action === STOCK_OUT_ACTION.ORDER_DETAIL) {
       this.isPack = false
       this.selectedItem = []
     } else {
       this.isPack = true
     }
-   
   }
-	
+
   editItemDetail() {}
 
   showModalDelete() {}
@@ -125,14 +126,14 @@ export default ItemList
 
 <style lang="sass" scoped>
 .box-page-container
-	height: calc(100vh - 18rem)
+  height: calc(100vh - 18rem)
 ::v-deep.p-datatable .p-column-header-content .p-checkbox-box.p-component
-	display: none !important
+  display: none !important
 ::v-deep.p-datatable .p-datatable-tbody > tr.p-highlight
-	background-color: $color-white !important
-	color: var(--surface-900) !important
+  background-color: $color-white !important
+  color: var(--surface-900) !important
 ::v-deep.p-datatable
-	height: 92% !important
+  height: 92% !important
 ::v-deep.p-checkbox-disabled:hover
-	cursor: default !important
+  cursor: default !important
 </style>
