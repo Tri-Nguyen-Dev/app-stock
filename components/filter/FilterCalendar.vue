@@ -9,7 +9,6 @@
       :value="value"
       :showIcon="showIcon"
       :inputClass="inputClass"
-      :placeholder="placeholder || 'Select'"
       :dateFormat="dateFormat || 'dd-mm-yy'"
     )
 </template>

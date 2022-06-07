@@ -29,6 +29,11 @@ Vue.filter('dateMonthYear', (value) => {
   return dayjs(new Date(value)).format('DD, MMMM, YYYY')
 })
 
+// -- [ Format date  type] ------------------------------------------------
+Vue.filter('dateMonthYear', (value) => {
+  return dayjs(new Date(value)).format('DD/MM/YYYY')
+})
+
 // -- [ AWS ] ------------------------------------------------
 Vue.filter('getImageUrl', (imagePath) => {
   if (!imagePath) return null
@@ -42,6 +47,11 @@ Vue.filter('getThumbnailUrl', (imagePath) => {
 // --  [ has tag check ] -------------------------------------------------
 Vue.filter('checkHasTag', (value) => {
   return value ? 'Yes' : 'No'
+})
+
+// -- [ Format date time 24hour type] ------------------------------------------------
+Vue.filter('dateTimeHour24', (value) => {
+  return dayjs(new Date(value)).format('DD-MM-YYYY HH:mm')
 })
 
 // --  [ Format capacity ] -------------------------------------------------
