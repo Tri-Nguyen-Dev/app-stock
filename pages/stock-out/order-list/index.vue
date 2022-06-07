@@ -35,7 +35,7 @@
     .grid.header__filter(:class='{ "active": isShowFilter }')
       div(class='col-12 md:col-4 lg:col-4 xl:col-2')
         FilterTable(title="ID" placeholder="Search" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
-      div(class='col-12 md:col-8 lg:col-8 xl:col-3')
+      div(class='col-12 md:col-8 lg:col-8 xl:col-5')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -59,11 +59,11 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      div(class='col-12 md:col-8 lg:col-8 xl:col-3')
+      div(class='col-12 md:col-8 lg:col-8 xl:col-5')
         .grid.grid-nogutter
           .col
             FilterCalendar(
-              title="Due Date from"
+              title="Due Date From"
               border="left"
               :value="filter.dueDeliveryDateFrom"
               name="dueDeliveryDateFrom"
@@ -83,7 +83,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      div(class='col-12 md:col-4 xl:col')
+      div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
           title="Warehouse"
           :value="filter.warehouseId"
@@ -91,7 +91,7 @@
           name="warehouseId"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 xl:col')
+      div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
           title="Seller email"
           placeholder="Search"
@@ -100,7 +100,7 @@
           name="sellerEmail"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 xl:col')
+      div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
           title="Assignee"
           placeholder="Search"
@@ -109,7 +109,7 @@
           name="assigneeId"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 xl:col')
+      div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
           title="Status"
           :value="filter.status"
@@ -149,27 +149,26 @@
         Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
             div {{ data.createTime | dateTimeHour12 }}
-        Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")
+        Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" )
           template(#body='{ data }')
-            div.grid-cell-right {{ data.sellerEmail }}
-            div.grid-cell-right {{ data.receiptDate }}
-        Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" headerClass="grid-header-right")
+            div.grid-cell {{ data.sellerEmail }}
+        Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.receiverAddress }}
+            div.grid-cell {{ data.receiverAddress }}
         Column( sortable field='dueDeliveryDate' sortField="_dueDeliveryDate" headerClass="grid-header-right")
           template(#header)
             div
               div.text-end Due
               div Delivery Date
           template(#body='{ data }')
-            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour12 }}
+            div.grid-cell-right {{ data.dueDeliveryDate }}
         Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#header)
             div
               div.text-end Estimated
               div Delivery Time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.estimatedDeliveryTime | dateTimeHour12 }}
+            div.grid-cell-right {{ data.estimatedDeliveryTime }}
         Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
           template(#header)
             div
@@ -184,7 +183,7 @@
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.assigneeId || 'N/A' }}
+            div.grid-cell-right {{ data.creatorId }}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -195,13 +194,14 @@
         Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
-              span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_NEW'") NEW
-              span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS'") In Progress
-              span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_CANCELLED'") Cancelled
-              span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_READY'") Ready
-              span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERING'") Delivering
-              span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERED' ") Delivered
-              span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
+              span.table__status.table__status--available {{ nameStatus(data.status) }}
+              //- span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_NEW'") NEW
+              //- span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS'") In Progress
+              //- span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_CANCELLED'") Cancelled
+              //- span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_READY'") Ready
+              //- span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERING'") Delivering
+              //- span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERED' ") Delivered
+              //- span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
         template(#footer)
           Pagination(
             title="Cancel"
@@ -214,7 +214,6 @@
           div.table__empty
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-            p.notfound__text Item not found!           
     ConfirmDialogCustom(
       title="Confirm delete"
       image="confirm-delete"
@@ -314,8 +313,7 @@ class DeliveryOrderList extends Vue {
     this.selectedDelivery = []
     this.paging.pageSize = 20
     this.paging.pageNumber = 0
-    this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS
-    this.statusList = this.statusList.filter((item: any) => {
+    this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS.filter((item: any) => {
       return this.activeStatus?.split(',').includes(item.value.toString())
     })
     this.getDeliveryList({
@@ -329,6 +327,10 @@ class DeliveryOrderList extends Vue {
 
   get activeStatus() {
     return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
+  }
+  
+  nameStatus(status) {
+    return DeliveryConstants.MapStatusDelivery.get(status)
   }
 
   get selectedDeliveryFilter() {

@@ -126,6 +126,7 @@ export default DeliveryOrderPackingDetail
     height: 82px
     padding: 0 12px
     margin-top: auto
+    overflow: auto
 ::-webkit-scrollbar
   width: 7px
   height: 7px
