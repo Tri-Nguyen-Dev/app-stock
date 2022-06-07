@@ -134,13 +134,14 @@ class PackingTableList extends Vue {
   maxQuantity({ barCode, quantity: qty }) {
     const stockInOriginal = this.getStockInOriginal({ barCode })
     if(stockInOriginal) {
-      const { outGoingQuantity, actualOutGoing, initialQuantity } = stockInOriginal
+      const { outGoingQuantity, actualOutGoing, actualTranffering, initialQuantity } = stockInOriginal
       if(!this.isMergeBox) {
         const sum = this.getSumQuantityOtherBox(actualOutGoing, qty)
         return outGoingQuantity - sum
       }
       else {
-        return initialQuantity
+        const sum = this.getSumQuantityOtherBox(actualTranffering, qty)
+        return initialQuantity - sum
       }
     }
   }
@@ -148,7 +149,7 @@ class PackingTableList extends Vue {
   changeQuantity(stock, textValue) {
     const stockInOriginal = this.getStockInOriginal(stock)
     if(stockInOriginal) {
-      const { initialQuantity, outGoingQuantity, actualOutGoing } = stockInOriginal
+      const { initialQuantity, outGoingQuantity, actualOutGoing, actualTranffering } = stockInOriginal
       const sum = this.getSumQuantityOtherBox(actualOutGoing, stock.quantity)
       if(outGoingQuantity - sum - textValue >= 0 && this.type === 'outGoingBox') {
         _.set(stock, 'quantity', textValue)
@@ -156,11 +157,12 @@ class PackingTableList extends Vue {
         _.set(stockInOriginal, 'quantity', initialQuantity - sum - textValue)
       }
       if (initialQuantity - textValue >= 0 && this.type === 'tranferringBox') {
+        const sum = this.getSumQuantityOtherBox(actualTranffering, stock.quantity)
         _.set(stock, 'quantity', textValue)
+        _.set(stockInOriginal, 'actualTranffering', textValue + sum)
         _.set(
           stockInOriginal,
-          'quantity',
-          initialQuantity - textValue
+          'quantity', initialQuantity - sum - textValue
         )
       }
     }
