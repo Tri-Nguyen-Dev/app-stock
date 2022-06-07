@@ -1,5 +1,5 @@
 <template lang="pug">
-.packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : ""')
+.packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : isMergeBox ? "transfer" : ""')
   Toast
   Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab" :disabled="disableEditQty") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
@@ -511,4 +511,6 @@ export default PackingOriginal
   .originalTable, .outGoingTable
     .p-tabview-nav-container
       width: calc(100% - 65px) !important
+::v-deep.packing__common--table.transfer
+  height: 40%
 </style>
