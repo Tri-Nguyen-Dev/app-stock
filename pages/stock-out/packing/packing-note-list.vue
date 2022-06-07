@@ -86,7 +86,7 @@
           template(#body='{ data }')
             div.grid-cell-right {{ data.sellerEmail }}
             div.grid-cell-right {{ data.receiptDate }}
-        Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" headerClass="grid-header-right")
+        Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" )
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.receiverAddress }}
         //- Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
