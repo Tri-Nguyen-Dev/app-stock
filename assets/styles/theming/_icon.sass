@@ -5,6 +5,7 @@ $icon-size-small:  16px !default
 $icon-size-base:   18px !default
 $icon-size-medium: 20px !default
 $icon-size-large:  24px !default
+$icon-size-llarge: 36px !default
 $icon-size-xlarge: 48px !default
 
 $icon-padding-base: 16px
@@ -33,6 +34,8 @@ $icon-padding-base: 16px
   &--xlarge
     @include size($icon-size-xlarge)
 
+  &--llarge
+    @include size($icon-size-llarge)
 @each $i in $icons
   .icon-#{$i}
     background-color: $text-color-base

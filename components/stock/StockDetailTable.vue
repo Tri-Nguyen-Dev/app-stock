@@ -3,7 +3,7 @@
     .grid.justify-content-between(class="mt-2 lg:mt-0")
       .col-fixed
         h1.text-heading Stock detail
-        span.text-600.font-sm(v-if="itemsList.data") {{itemsList.data.total}} results found
+        span.text-subheading(v-if="itemsList.data") {{itemsList.data.total}} results found
       .col-fixed
         .grid
           .col-fixed.flex.btn-filter

@@ -148,7 +148,8 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
   &__total
     font-size: $font-size-small
-    color: $text-color-500
+    color: $text-color-700
+    font-weight: $font-weight-regular
     line-height: calc(24 / 12)
 
   &__delete
@@ -166,16 +167,21 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
   .p-paginator
     padding: 0 !important
+    font-weight: $font-weight-regular
 
     .p-paginator-page
       background-color: $color-white !important
       color: $text-color-500 !important
-      font-weight: bold
+      font-weight: $font-weight-regular
       border: none !important
       font-family: $font-family-primary !important
 
       &.p-highlight
         color: $primary !important
+    
+    .p-paginator-icon
+      color: $text-color-700
+      font-weight: $font-weight-regular
 
     .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
       color: $text-color-900
