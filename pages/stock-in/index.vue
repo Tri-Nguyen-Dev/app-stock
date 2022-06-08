@@ -363,7 +363,7 @@ class StockIn extends Vue {
     _.forEach(this.selectedStockIn, async({ id }) => {
       const result = await this.actGetReceiptLable({ id })
       if(result) {
-        exportFileTypePdf(result, `receipt-${id}`)
+        exportFileTypePdf(result, `receipt-${ id }`)
       }
     })
   }
