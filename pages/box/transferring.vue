@@ -286,21 +286,60 @@ class DeliveryOrderPacking extends Vue {
   }
 
   async handleClick() {
-    this.packingStep = 2
-    let listBoxLocation = [ ...this.listTranfferingBox ]
-    listBoxLocation = listBoxLocation.map((item) => {
-      return item.boxSize?.id.toString()
-    })
-    const locationList = await this.actLocationSuggestion(listBoxLocation)
-    if(locationList) {
-      _.forEach(this.listTranfferingBox, function (obj, index) {
-        _.set(obj, 'location', locationList[index])
+    const listStockOK: any = []
+    const listStockCancle: any = []
+    const listStockNotMatch: any = []
+    _.forEach(this.listTranfferingBox, function (obj) {
+      _.forEach(obj.items, function ({ quantity, amount, validAmount, stock }) {
+        const maxDo = amount - validAmount
+        if(quantity >= maxDo) {
+          listStockOK.push({
+            barCode: stock.barCode,
+            maxDo
+          })
+        }
+        else {
+          listStockCancle.push({
+            barCode: stock.barCode,
+            maxDo
+          })
+        }
       })
+    })
+    _.forEach(listStockCancle, function (item) { 
+      if(!_.find(listStockOK, {
+        'barCode': item.barCode
+      })) {
+        listStockNotMatch.push(item)
+      }
+    })
+
+    if(listStockNotMatch.length > 0) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: `The Item ${listStockNotMatch[0].barCode} could not be transferred. Its quantity in one box must be at least ${listStockNotMatch[0]?.maxDo}!`,
+        life: 3000
+      })
+    }
+    else {
+      this.packingStep = 2
+      let listBoxLocation = [ ...this.listTranfferingBox ]
+      listBoxLocation = listBoxLocation.map((item) => {
+        return item.boxSize?.id.toString()
+      })
+      const locationList = await this.actLocationSuggestion(listBoxLocation)
+      if(locationList) {
+        _.forEach(this.listTranfferingBox, function (obj, index) {
+          _.set(obj, 'location', locationList[index])
+        })
+      }
     }
   }
 
   getStocks(stocks) {
-    const result =  _.map(stocks, ({ stock, originalBox, originalLocation, initialQuantity, quantity, sku }) => ({
+    const result =  _.map(stocks, ({ stock, originalBox, originalLocation, initialQuantity, quantity, sku, id }) => ({
+      id,
       stock: { id: stock.id },
       originalBox,
       sku,
@@ -390,6 +429,8 @@ export default DeliveryOrderPacking
 <style lang="sass" scoped>
 .packing__detail--container
   height: calc(100vh - 32px)
+  .tranffer-title
+    height: 42px
   .box-transferr
     ::v-deep.p-datatable
       height: 55vh
