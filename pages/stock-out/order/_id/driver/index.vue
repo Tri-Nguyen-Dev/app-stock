@@ -1,7 +1,7 @@
 <template lang='pug'>
   .inventory
     .inventory__header
-      div
+      div(class="col-12 md:col-4")
         h1.text-heading Driver list
         span.text-subheading {{ totalList }} results found
       .inventory__header--action
@@ -12,10 +12,14 @@
             span Filter
           .btn-refresh(@click="refreshFilter")
             .icon.icon-rotate-left.bg-white
-        .btn.bg-white(@click='$router.go(-1)') Back
-        Button.btn.btn-primary.border-0(@click='handleAssign' :disabled='selectedDriver.length > 0 ? null : "disabled"') Assign Delivery
+        .btn.bg-white(@click='$router.go(-1)' ) Back
+        Button.btn.btn-primary.border-0(
+          @click='handleAssign'
+          :disabled='selectedDriver.length > 0 ? null : "disabled"'
+
+        ) Assign Delivery
     .inventory__filter.grid(v-if='isShowFilter')
-      .col
+      .col(class="col-12 md:col-6 xl:col-3 " )
         FilterTable(
           title="Driver Phone"
           :value="filter.driverPhone"
@@ -24,7 +28,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col
+      .col(class="col-12 md:col-6 xl:col-3")
         FilterTable(
           title="Driver Email"
           :value="filter.driverEmail"
@@ -33,7 +37,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col
+      .col(class="col-12 md:col-6 xl:col-3")
         FilterTable(
           title="Driver Name"
           :value="filter.driverName"
@@ -42,7 +46,7 @@
           :searchText="true"
           @updateFilter="handleFilter"
         )
-      .col
+      .col(class="col-12 md:col-6 xl:col-3")
         FilterTable(title="Warehouse" name="warehouseId" :value="filter.warehouseId"  @updateFilter="handleFilter")
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(
@@ -65,7 +69,7 @@
         :selection="selectedDriver"
         @row-unselect="rowUnselect"
         @row-dblclick="onRowClick($event)"
-      )
+      ).m-h-700
         Column(selectionMode='multiple' class="selected-header")
         Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
           template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
@@ -111,8 +115,6 @@ class DriverList extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   isShowFilter: boolean = false
   isIdSelected: string
-  sortByColumn: string = ''
-  isDescending: boolean | null = null
   filter: any = {
     driverPhone: null,
     driverName: null,
@@ -202,11 +204,11 @@ class DriverList extends Vue {
   async sortData(e: any) {
     const { sortField, sortOrder } = e
     if(sortOrder){
-      this.isDescending = sortOrder !== 1
-      this.sortByColumn = sortField.replace('_', '')
+      this.filter.desc = sortOrder !== 1
+      this.filter.sortBy = sortField.replace('_', '')
     }else{
-      this.isDescending = null
-      this.sortByColumn = ''
+      this.filter.desc = null
+      this.filter.sortBy = null
     }
     await this.getDriverList()
   }
@@ -225,10 +227,11 @@ class DriverList extends Vue {
     this.selectedDriver.splice(0)
   }
 
-  handleAssign() {
-    const result = this.actSetAssignDriver({
+  async handleAssign() {
+    const result = await this.actSetAssignDriver({
       idDelivery: this.$route.params.id,
-      id: this.isIdSelected })
+      id: this.isIdSelected
+    })
     if(result) {
       this.$router.push('/stock-out/order-list')
       this.$toast.add({
@@ -253,21 +256,35 @@ export default DriverList
 <style lang='sass' scoped>
 ::v-deep.inventory
   @include flex-column
+  min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 32px)
   .pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
   .p-calendar-w-btn
     .p-button
       background: none
       border: none
-  height: calc(100vh - 32px)
   .p-inputtext
     box-shadow: none
+
   &__header
-    @include flex-center-space-between
-    margin-bottom: $space-size-24
+    flex-direction: column
+    flex-wrap: wrap
+    margin-bottom: 24px
+    @include desktop
+      flex-direction: row
+      @include flex-center-space-between
     &--action
-      @include flex-center
-      gap: 0 16px
+      margin-top: 12px
+      display: flex
+      @include flex-column
+      flex-wrap:  wrap
+      gap: 10px 16px
+      @include desktop
+        @include flex-center
+        flex-direction: row
+        margin-top: 0
   &__filter
     margin-bottom: $space-size-24
   &__content
