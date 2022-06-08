@@ -143,7 +143,7 @@
         Column(field='id' header='ID' sortable headerClass="grid-header-center")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.font-bold {{ data.id }}
-        Column(header='Creator ID' field='creatorId' sortable sortField="_assignee.id")
+        Column(header='Creator ID' field='creatorId' sortable sortField="_createdBy.staffId")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
         Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
@@ -183,7 +183,7 @@
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.pic }}
+            div.grid-cell-right {{ data.pic }} {{data.pic === null ? 'N/A' : ''}}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -215,6 +215,7 @@
           div.table__empty
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+            p.text-900.font-bold.mt-3 Order not found!
     ConfirmDialogCustom(
       title="Confirm delete"
       image="confirm-delete"
