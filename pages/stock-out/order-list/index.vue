@@ -161,14 +161,14 @@
               div.text-end Due
               div Delivery Date
           template(#body='{ data }')
-            div.grid-cell-right {{ data.dueDeliveryDate }}
+            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour12 }}
         Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#header)
             div
               div.text-end Estimated
               div Delivery Time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.estimatedDeliveryTime }}
+            div.grid-cell-right {{ data.estimatedDeliveryTime }} {{data.estimatedDeliveryTime > 1 ? 'days' : 'day'}}
         Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
           template(#header)
             div
