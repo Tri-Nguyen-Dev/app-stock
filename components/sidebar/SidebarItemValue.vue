@@ -4,7 +4,7 @@
       li(v-for="parent in parentItems" :key="parent.id" @click.stop="handleSelect")
         nuxt-link.item-collapsed__children.py-3.pl-4(:to="parent.to") {{parent.label}}
     .item__icon(v-if="!!item.icon")
-      .icon.icon--large(:class="`icon-${item.icon} ${iconMenuCssClasses}`")
+      .icon(:class="`icon-${item.icon} ${iconMenuCssClasses} ${collapsed ? 'icon--llarge' : 'icon--large'}`")
     transition(name="fade")
       .item__label(v-if="!collapsed" :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast }")
         div.item__children(v-if="item.parentId")

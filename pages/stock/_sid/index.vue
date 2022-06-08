@@ -18,7 +18,7 @@
           .grid.mb-3.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
             img(:src="model.data.imagePath | getImageUrl").border-round.w-full
           .grid.my-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-            Tag(severity="success" v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"').uppercase Available
+            Tag.table__status.table__status--available(severity="success" v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"').uppercase Available
             Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DISABLE"').uppercase.surface-200 Disable
             Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DRAFT"').uppercase Draft
           .grid.mb-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
@@ -37,12 +37,12 @@
                 template(v-slot:size)
                   .grid.mt-1(v-if='isEditStockDetail')
                     div(class="col-4 p-0 pl-2 pt-1")
-                      InputNumber.w-full(:disabled='!isEditStockDetail', v-model='lengthBox')
+                      InputNumber.text-lg.w-full(:disabled='!isEditStockDetail', v-model='lengthBox')
                     .col-4.pl-2.p-0.pt-1
-                      InputNumber.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
+                      InputNumber.text-lg.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
                     .col-4.pl-2.p-0.pt-1
-                      InputNumber.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
-                  span.font-bold.text-small.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
+                      InputNumber.text-lg.w-full(:disabled='!isEditStockDetail', v-model='heightBox')
+                  span.font-bold.text-lg.mr-1.uppercase(v-else) {{ lengthBox }}*{{ widthBox }}*{{ heightBox }}
             .wrap-unit.px-4
               StockUnit(
                 title="Weight"
@@ -55,10 +55,10 @@
           div
           .grid.mb-4.px-4(:class='isEditStockDetail ? null : "hidden"')
             div(class='lg:col-6 col-3')
-              .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditStockDetail')
-                span.uppercase.font-semibold cancel
+              Button.btn.btn-outline.h-3rem.w-full(@click='cancelEditStockDetail')
+                span.uppercase cancel
             div(class='lg:col-6 col-3')
-              .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditStockDetail')
+              Button.btn.btn-primary.h-3rem.w-full(@click='saveEditStockDetail')
                 span.uppercase save
     .py-0(class="xl:pl-5 lg:pl-2 col-12 lg:col-9 md:col-12")
       StockDetailTable

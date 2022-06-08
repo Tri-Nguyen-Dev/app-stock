@@ -9,7 +9,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   .grid-cell-center
     @include flex-center
   .grid-cell-fix-width
-    width: 13rem
+    //width: 13rem
     white-space: normal !important
     word-break: break-word
     justify-content: flex-start
@@ -152,7 +152,8 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
   &__total
     font-size: $font-size-small
-    color: $text-color-500
+    color: $text-color-700
+    font-weight: $font-weight-regular
     line-height: calc(24 / 12)
 
   &__delete
@@ -170,15 +171,21 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
   .p-paginator
     padding: 0 !important
+    font-weight: $font-weight-regular
 
     .p-paginator-page
       background-color: $color-white !important
       color: $text-color-500 !important
-      font-weight: bold
+      font-weight: $font-weight-regular
       border: none !important
+      font-family: $font-family-primary !important
 
       &.p-highlight
         color: $primary !important
+    
+    .p-paginator-icon
+      color: $text-color-700
+      font-weight: $font-weight-regular
 
     .p-paginator-prev, .p-paginator-next, .p-paginator-first, .p-paginator-last
       color: $text-color-900
@@ -190,15 +197,21 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
     .p-link:focus
       box-shadow: none
+    
+    .p-inputtext
+      color: $text-color-700
+      font-weight: $font-weight-regular
 
     .p-dropdown
       @include flex-center-vert
+      font-family: $font-family-primary !important
+    
 
 .table__action
   @include flex-center-vert
   gap: 0 8px
 
-  span
+  .action-item
     @include flex-center
     width: 34px
     height: 34px
@@ -207,12 +220,10 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     cursor: pointer
 
   &.action-disabled
-    span
+    .action-item
       pointer-events: none
-
     .icon
       background-color: $text-color-500
-
 .table__status
   background-color: $bg-table-status
   border-radius: 3px
