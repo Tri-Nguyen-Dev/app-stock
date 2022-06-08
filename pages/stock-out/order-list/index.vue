@@ -175,15 +175,15 @@
               div.text-end Latest
               div update time
           template(#body='{ data }')
-            div {{ data.lastedUpdateTime | dateTimeHour12 }}
-        Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
+            div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour12 }}
+        Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.name" headerClass="grid-header-right")
           template(#body='{ data }')
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
+        Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.creatorId }}
+            div.grid-cell-right {{ data.pic }}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -205,6 +205,7 @@
         template(#footer)
           Pagination(
             title="Cancel"
+            type="orders selected"
             :paging="paging"
             :total="total"
             @onDelete="showModalDelete"
@@ -328,7 +329,7 @@ class DeliveryOrderList extends Vue {
   get activeStatus() {
     return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
   }
-  
+
   nameStatus(status) {
     return DeliveryConstants.MapStatusDelivery.get(status)
   }
@@ -619,7 +620,7 @@ export default DeliveryOrderList
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
-.btn__filter 
+.btn__filter
   width: 100%
   @include desktop
     width: 166px
