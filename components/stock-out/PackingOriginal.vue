@@ -474,7 +474,7 @@ export default PackingOriginal
       &:hover
         border: none
     .p-tabview-nav-content
-      overflow-y: unset !important
+      overflow-y: inherit !important
       overflow-x: auto !important
       position: relative
       .edit-location
@@ -509,7 +509,6 @@ export default PackingOriginal
         .p-button:enabled:hover
           box-shadow: none !important
       .p-tabview-nav
-        overflow: unset !important
         .p-disabled:first-child
           min-width: 265px !important
         .p-disabled
