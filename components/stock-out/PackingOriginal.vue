@@ -474,9 +474,9 @@ export default PackingOriginal
       &:hover
         border: none
     .p-tabview-nav-content
-      overflow: unset !important
+      overflow-y: unset !important
+      overflow-x: auto !important
       position: relative
-      z-index: 1000
       .edit-location
         font-size: 14px !important
         position: relative !important
