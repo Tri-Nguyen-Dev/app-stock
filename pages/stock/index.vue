@@ -58,8 +58,7 @@
         )
           Column(
             selectionMode='multiple'
-            :styles="{'width': '1%'}"
-            :headerClass="classHeaderMuti")
+            :styles="{'width': '1%'}")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -184,14 +183,6 @@ class Stock extends Vue {
     return  _.filter(this.selectedStock, (stock: StockModel.Model) => {
       return stock.stockStatus !== 'STOCK_STATUS_DISABLE'
     })
-  }
-
-  get classHeaderMuti() {
-    return !this.stockList ||
-      this.stockList.length <= 0 ||
-      this.checkStockDisable
-      ? 'checkbox-disable'
-      : ''
   }
 
   get checkStockDisable() {
