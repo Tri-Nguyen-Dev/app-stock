@@ -12,7 +12,6 @@
             span Filter
           .btn-refresh(@click="refreshFilter")
             .icon.icon-rotate-left.bg-white
-
         .btn.btn-primary(@click='createStockIn')
             .icon.icon-add-items.surface-900.bg-white
             span.text-900.text-white.mr-3 Add recepit note
@@ -20,6 +19,16 @@
           .btn.btn-toggle.bg-white
             .icon-download.icon--large.bg-primary
             span.text-900.text-primary Export file
+      div.col-12(class="lg:col-6")
+        TabView(@tab-click="handleTab($event)")
+          TabPanel
+            template(#header)
+              .icon.icon-truck.mr-2.surface-600
+              span Incoming
+          TabPanel
+            template(#header)
+              .icon.icon-horiz.mr-2.surface-600
+              span Transferring
     .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
       div(class="col-12 lg:col-12 xl:col-4")
         .grid
@@ -185,6 +194,7 @@ class StockIn extends Vue {
   isDescending: boolean | null = null
   boxCodeDelete: string = ''
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  activeTab: number = 0
   filter: any = {
     id: null,
     dateFrom: null,
@@ -221,16 +231,19 @@ class StockIn extends Vue {
 
   getParamApi() {
     return {
-      pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
-      'id': this.filter.id || null,
-      'sellerEmail': this.filter.sellerEmail || null,
-      'creatorId': this.filter.creatorId || null ,
-      'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
-      'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
-      'sortBy': this.sortByColumn || null,
-      'desc': this.isDescending,
-      'status': this.filter.status?.value,
-      'warehouseId': this.filter.warehouse?.id
+      params: {
+        pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
+        'id': this.filter.id || null,
+        'sellerEmail': this.filter.sellerEmail || null,
+        'creatorId': this.filter.creatorId || null ,
+        'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
+        'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
+        'sortBy': this.sortByColumn || null,
+        'desc': this.isDescending,
+        'status': this.filter.status?.value,
+        'warehouseId': this.filter.warehouse?.id
+      },
+      type: this.activeTab
     }
   }
 
@@ -280,7 +293,7 @@ class StockIn extends Vue {
 
   async mounted() {
     await this.actGetStockIn({
-      pageNumber: this.paging.pageNumber,pageSize: this.paging.pageSize
+      params: { pageNumber: this.paging.pageNumber,pageSize: this.paging.pageSize }
     })
     this.actWarehouseList()
   }
@@ -340,20 +353,31 @@ class StockIn extends Vue {
   }
 
   createStockIn() {
-    this.$router.push('stock-in/create-receipt')
+    if(this.activeTab) {
+      this.$router.push('box')
+    } else {
+      this.$router.push('stock-in/create-receipt')
+    }
   }
 
   handleExportReceipt() {
     _.forEach(this.selectedStockIn, async({ id }) => {
       const result = await this.actGetReceiptLable({ id })
       if(result) {
-        exportFileTypePdf(result, `receipt-${id}`)
+        exportFileTypePdf(result, `receipt-${ id }`)
       }
     })
   }
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'receipt note')
+  }
+
+  async handleTab({ index }: any) {
+    this.activeTab = index
+    refreshAllFilter(this.filter)
+    this.selectedStockIn = []
+    await this.actGetStockIn(this.getParamApi())
   }
 }
 
@@ -380,6 +404,28 @@ export default StockIn
   @include desktop
     flex-direction: row
     @include flex-center-space-between
+  ::v-deep.p-tabview .p-tabview-nav li:not(.p-highlight):not(.p-disabled)
+    &:hover
+      .p-tabview-nav-link
+        background-color: transparent !important
+        color: #000 !important
+      .icon
+        background-color: var(--primary-color) !important
+  ::v-deep.p-tabview .p-tabview-nav li
+    .p-tabview-nav-link
+      background: var(--bg-body-bas)
+      border: none
+      box-shadow: none !important
+      color: $text-color-700
+  ::v-deep.p-tabview .p-tabview-panels
+    background: var(--bg-body-bas)
+    padding: 1.25rem 0 0 0
+    display: none
+  ::v-deep.p-highlight .p-tabview-nav-link
+    color: #000 !important
+    border-bottom: 2px solid #486AE2 !important
+    .icon
+      background-color: var(--primary-color) !important
 .header__action
     margin-top: 12px
     display: flex
