@@ -51,7 +51,7 @@
                       @complete="searchLocation($event)"  )
                       template(#item="slotProps")
                         .grid.align-items-center.grid-nogutter
-                          span.font-bold.text-small {{ slotProps.item.name }}
+                          span.font-bold.text-lg {{ slotProps.item.name }}
                           .icon-arrow-up-right.icon
             div.wrap-unit.px-4
               StockUnit(title="Create Time" :value="boxDetail.createdAt | dateTimeHour12" :isEdit="isEditBox" icon="icon-calendar")
@@ -68,7 +68,7 @@
                 :width="boxDetail.boxSize.width" 
                 icon="icon-size")
                 template(v-slot:size)
-                  span.font-bold.text-small.mt-1.uppercase 
+                  span.font-bold.text-lg.mt-1.uppercase 
                     | {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
                 template(v-slot:button-size='')
                   span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(
@@ -87,10 +87,10 @@
               StockUnit(title="Phone number" :value="boxSellerInfor.phoneNumber" :isEdit="isEditBox" icon="icon-sender-phone")
             .grid.m-1(v-if='isEditBox')
               div(class='lg:col-6 col-3')
-                .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='btnEdit')
+                Button.btn.btn-outline.h-3rem.w-full(@click='btnEdit')
                   span.uppercase.font-semibold cancel
               div(class='lg:col-6 col-3')
-                .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1( @click='handleUpdateData' )
+                Button.btn.btn-primary.h-3rem.w-full( @click='handleUpdateData' )
                   span.uppercase save
     .py-0(class="xl:pl-5 lg:pl-2 col-12 lg:col-9 md:col-12")
       div(class="box-page mt-4 lg:mt-0")
@@ -403,6 +403,7 @@ export default BoxDetail
     padding: 0
     background-color: var(--surface-100)
     opacity: 1
+    font-size: 1.125rem
   ::-webkit-input-placeholder
     color: var(--surface-900)
 

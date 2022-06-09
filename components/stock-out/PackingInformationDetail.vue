@@ -7,7 +7,7 @@
       .icon.icon-info.inline-block
       span.uppercase.ml-1 order detail
     h3.uppercase.m-1 id: {{ deliveryOrderDetail.id }}
-    span.uppercase.font-bold(style='background-color: #00A469; color: #FFFFFF') {{status}} &nbsp;
+    span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{status}} &nbsp;
     h5.uppercase.inline-block.text-400 Create time:&nbsp;
     span.uppercase.font-bold 2022 12:22AM
     TabView
