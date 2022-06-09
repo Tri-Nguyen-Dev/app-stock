@@ -37,7 +37,7 @@
                 template(v-slot:size)
                   .grid.mt-1(v-if='isEditStockDetail')
                     div(class="col-4 p-0 pl-2 pt-1")
-                      InputNumber.text-lg.w-full(:disabled='!isEditStockDetail', v-model='lengthBox')
+                      InputNumber.text-lg.w-full(:disabled='!isEditStockDetail', v-model='lengthBox' ref='inputSku' autofocus)
                     .col-4.pl-2.p-0.pt-1
                       InputNumber.text-lg.w-full(:disabled='!isEditStockDetail', v-model='widthBox')
                     .col-4.pl-2.p-0.pt-1
@@ -64,7 +64,7 @@
       StockDetailTable
 </template>
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import { Stock as StockModel } from '~/models/Stock'
 const nsStoreStock = namespace('stock/stock-detail')
 
@@ -151,6 +151,15 @@ class StockDetail extends Vue {
     this.model = _.cloneDeep(this.stockDetail)
     this.handleAssignValue(this.model?.data)
   }
+
+  @Watch('isActive')
+  async inputChange() {
+    await this.$nextTick()
+    if(this.$refs.inputSku) {
+      const inputRef = this.$refs.inputSku as any
+      await this.$nextTick(() =>  inputRef?.$el.focus())
+    }
+  }
 }
 export default StockDetail
 </script>
@@ -214,15 +223,15 @@ export default StockDetail
   width: 100%
   margin-bottom: 16px
 .sub-tab
-  @include desktop 
+  @include desktop
     max-width: 100%
     height: calc(100vh - 32px)
     overflow: hidden
     overflow-y: auto !important
-    
+
 .sub--scroll
   width: 100%
-  @include desktop 
+  @include desktop
     max-width: 100%
     overflow: auto
 

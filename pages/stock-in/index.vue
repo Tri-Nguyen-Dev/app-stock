@@ -12,7 +12,7 @@
             span Filter
           .btn-refresh(@click="refreshFilter")
             .icon.icon-rotate-left.bg-white
-          
+
         .btn.btn-primary(@click='createStockIn')
             .icon.icon-add-items.surface-900.bg-white
             span.text-900.text-white.mr-3 Add recepit note
@@ -72,7 +72,7 @@
           @updateFilter="handleFilter")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(title="Status" :value="filter.status" :options="statusRequest" name="status" @updateFilter="handleFilter")
-    .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700 
+    .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
           v-if="stockIn" :value="stockIn"
@@ -93,10 +93,10 @@
               span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
-              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'" 
-              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }} 
-              NuxtLink.text-white-active.text-900.font-bold(v-else 
-              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }} 
+              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'"
+              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }}
+              NuxtLink.text-white-active.text-900.font-bold(v-else
+              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }}
           Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
@@ -113,10 +113,10 @@
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorId }}
           Column(
-          header='CREATOR NAME' 
-          field='data.creatorName' 
-          :sortable="true" 
-          sortField="_createdBy.displayName" 
+          header='CREATOR NAME'
+          field='data.creatorName'
+          :sortable="true"
+          sortField="_createdBy.displayName"
           className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorName }}
@@ -135,6 +135,7 @@
               p.notfound__text(v-else) Item not found!
           template(#footer)
             Pagination(
+              type="note selected"
               :paging="paging"
               :total="total"
               :deleted-list="itemsBoxDelete"
@@ -149,7 +150,7 @@
         :loading="loadingSubmit"
       )
         template(v-slot:message)
-          p {{ deleteMessage }}  
+          p {{ deleteMessage }}
     Toast
 
 </template>
@@ -389,7 +390,7 @@ export default StockIn
       @include flex-center
       flex-direction: row
       margin-top: 0
-.btn__filter 
+.btn__filter
   width: 100%
   @include desktop
     width: 166px

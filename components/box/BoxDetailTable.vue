@@ -1,15 +1,15 @@
 <template lang="pug">
 .stock__table
   DataTable(
-    :resizableColumns='true' 
-    :rows='pagination.rows' 
-    :value='dataRenderItems' 
-    dataKey='id' 
-    :paginator='false' 
-    :row-hover='true' 
-    filterDisplay='menu' 
-    responsiveLayout="scroll" 
-    columnResizeMode="fit" 
+    :resizableColumns='true'
+    :rows='pagination.rows'
+    :value='dataRenderItems'
+    dataKey='id'
+    :paginator='false'
+    :row-hover='true'
+    filterDisplay='menu'
+    responsiveLayout="scroll"
+    columnResizeMode="fit"
     @row-dblclick="onRowClick($event)" )
     template(#empty)
         div.flex.align-items-center.justify-content-center.flex-column
