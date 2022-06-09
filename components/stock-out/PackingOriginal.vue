@@ -226,7 +226,7 @@ class PackingOriginal extends Vue {
 
   get isDisabledCapcity() {
     if(!this.isNextBox) {
-      return 'disabled' 
+      return 'disabled'
     }
   }
 
@@ -388,7 +388,6 @@ export default PackingOriginal
       &:hover
         border: none
     .p-tabview-nav-content
-      overflow: unset !important
       .edit-location
         font-size: 14px !important
         position: relative !important

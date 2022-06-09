@@ -217,7 +217,7 @@
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
             p.text-900.font-bold.mt-3 Order not found!
     ConfirmDialogCustom(
-      title="Confirm delete"
+      title="Cancel Confirm"
       image="confirm-delete"
       :isShow="isModalDelete"
       :onOk="handleDeleteDelivery"
@@ -239,7 +239,7 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   DeliveryConstants,
-  getDeleteMessage,
+  getCancelMessage,
   exportFileTypePdf
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
@@ -363,7 +363,7 @@ class DeliveryOrderList extends Vue {
   }
 
   get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'delivery order')
+    return getCancelMessage(this.onEventDeleteList, 'delivery order')
   }
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -432,6 +432,7 @@ class DeliveryOrderList extends Vue {
           detail: 'Successfully deleted delivery order',
           life: 3000
         })
+        this.selectedDelivery = []
         await this.getProductList()
       }
     } catch (error) {
