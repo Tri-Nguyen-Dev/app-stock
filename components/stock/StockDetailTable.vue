@@ -138,6 +138,7 @@
                   .icon.icon-btn-delete
           template(#footer)
             Pagination(
+              type="items selected"
               :paging="paging"
               :total="total"
               :deleted-list="selectedStockFilter"
