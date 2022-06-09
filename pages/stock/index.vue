@@ -66,7 +66,7 @@
           Column(field='imageUrl' header='Image' headerClass="grid-header-center")
             template(#body='{ data }')
               .stock__table__image.overflow-hidden.grid-cell-center
-                NuxtLink(:to="`/stock/${data.id}`") 
+                NuxtLink(:to="`/stock/${data.id}`")
                   img.h-2rem.w-2rem.border-round(
                     :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
@@ -92,6 +92,7 @@
                   .icon.icon-btn-delete
           template(#footer)
             Pagination(
+              type="items selected"
               :paging="paging"
               :total="total"
               :deleted-list="selectedStockFilter"

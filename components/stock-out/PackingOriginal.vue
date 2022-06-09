@@ -12,7 +12,7 @@
       ref="inputScanBoxCode"
       :disabled="disableEditQty"
     )
-  Button.btn-print.font-semibold(label="Print" v-if='isPackingDetail' @click="handleAddTab")
+  Button.btn-print.font-semibold(label="Print" v-if='isPackingDetail' @click='isShowLabel = true')
   TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
       template(#header)
@@ -94,13 +94,26 @@
       StockOutPackingTableList.flex-1.overflow-hidden(:isOriginal='true' :value="tab.items" :type='type' :boxCode='tab.boxCode'
         :isPackingDetail="isPackingDetail" @handleDeleteStock="handleDeleteStock"
       )
+  PrintLabel(
+    :displayLable='isShowLabel',
+    @setShow='setShowLabel',
+    :DOId='DOId',
+    :boxIds='boxIds'
+    :type='type'
+    v-if='isPackingDetail',
+	)
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, namespace, Watch, InjectReactive } from 'nuxt-property-decorator'
+import PrintLabel from '~/components/pdf/PrintLabel.vue'
 const nsStoreLocationList = namespace('location/location-list')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
-@Component
+@Component({
+  components: {
+    PrintLabel
+  }
+})
 class PackingOriginal extends Vue {
   activeIndex: number = 0
   tabs: any = []
@@ -109,6 +122,7 @@ class PackingOriginal extends Vue {
   boxCodeText: string = ''
   tagCodeText: string = ''
   isPackingDetail: boolean = false
+  isShowLabel: boolean = false
 
   @Prop() readonly title!: string | undefined
   @Prop() readonly icon!: string | undefined
@@ -265,7 +279,7 @@ class PackingOriginal extends Vue {
 
   get isDisabledCapcity() {
     if(!this.isNextBox) {
-      return 'disabled' 
+      return 'disabled'
     }
   }
 
@@ -349,6 +363,22 @@ class PackingOriginal extends Vue {
     await this.actLocationList({
       location: e.query
     })
+  }
+  
+  setShowLabel(value: any) {
+    this.isShowLabel = value
+  }
+
+  get DOId() {
+    return this.$route.params.id || ''
+  }
+
+  get boxIds() {
+    if(this.type === 'originalBox') {
+      return _.map(this.listBox, 'boxCode')
+    } else {
+      return _.map(this.listBox, 'newBoxCode')
+    }
   }
 }
 
@@ -445,7 +475,7 @@ export default PackingOriginal
         border: none
     .p-tabview-nav-content
       overflow: unset !important
-      position: relative 
+      position: relative
       z-index: 1000
       .edit-location
         font-size: 14px !important
@@ -513,4 +543,6 @@ export default PackingOriginal
       width: calc(100% - 65px) !important
 ::v-deep.packing__common--table.transfer
   height: 40%
+  .p-inputtext
+    background: unset !important
 </style>
