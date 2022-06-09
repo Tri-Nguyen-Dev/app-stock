@@ -36,7 +36,7 @@ export default class StoreBox extends VuexModule {
   @Action({ commit: 'setCombineBox', rawError: true })
   async actCombineBox(data: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBox.STATE_URL.COMBINE_BOX)
-    const response: any = await $api.post(url, { data })
+    const response: any = await $api.post(url, { ...data })
     return response.data
   }
 }

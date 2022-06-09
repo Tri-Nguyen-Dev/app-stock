@@ -116,6 +116,9 @@ class DeliveryOrderPacking extends Vue {
   @nsStoreBoxList.State
   boxTransfer!: any
 
+  @nsBoxTransfer.State
+  combineBox!: any
+
   @nsStoreUser.State
   user: User.Model | undefined
 
@@ -366,7 +369,11 @@ class DeliveryOrderPacking extends Vue {
     data.warehouse = {
       id: this.listOriginalBox[0]?.request?.warehouse?.id
     } 
-    await this.actCombineBox(data)
+    const result = await this.actCombineBox(data)
+
+    if(result) {
+      this.$router.push(`/stock-in/${this.combineBox?.id}/detail`)
+    }
   }
 
   get tranferringOutGoing() {
