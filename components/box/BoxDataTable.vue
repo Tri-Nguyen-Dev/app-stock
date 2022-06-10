@@ -254,6 +254,7 @@ class BoxDataTable extends Vue {
 
   rowSelect({ data }) {
     this.selectedBoxes.push(data)
+    this.$emit('selectBox',this.selectedBoxes)
   }
 
   rowUnselect({ originalEvent, data }) {
@@ -302,7 +303,7 @@ export default BoxDataTable
       .p-datatable-tbody
         & > tr
           //background: $text-color-100
-          height: 4rem !important
+          height: 3.5rem !important
           .text-bold
             color: $text-color-700
             .p-inputnumber-input

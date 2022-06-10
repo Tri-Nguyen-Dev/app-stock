@@ -1,11 +1,11 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-      StockTakeNoteInfo
+      StockTakeNoteInfo(:info='stockTakeInfo')
     .col-9.packing__detail--left.pl-4.pr-1.flex-1
       .grid
         .col-4
-          h1.text-heading Create Stock take note
+          h2.text-heading List box
         .col-8.btn-right
           Button.p-button-outlined.p-button-primary.bg-white.w-25(
             type='button',
@@ -75,8 +75,8 @@
           h1.text-heading Select Box
         BoxDataTable(@selectBox='selectBox($event)')
         template(#footer)
-          Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false")
-          Button.p-button-primary(label="Apply" icon="pi pi-check" @click="showModal = false; boxShow = boxSelected; ")
+          Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
+          Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="showModal = false; boxShow = boxSelected; ")
 </template>
 
 <script lang="ts">
@@ -97,11 +97,17 @@ import Pagination from '~/components/common/Pagination.vue'
 class DeliveryOrder extends Vue {
   boxShow : any[] = []
   boxSelected: any
+  disabledApply = true
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
+  stockTakeInfo: {
+    user?: any,
+    totalBox?: number,
+    wareHouse?: any
+  } = { user: undefined,totalBox:0,wareHouse: undefined }
+
   get breadcrumbItem() {
     return [
-      { label: '', to: '/', icon: 'pi pi-info-circle' },
-      { label: '', to: '/', icon: 'pi pi-list' }
+      { label: 'Stock take Box', to: '/stock-take/box/create', icon: 'pi pi-info-circle' }
     ]
   }
 
@@ -114,10 +120,16 @@ class DeliveryOrder extends Vue {
 
   selectBox(event){
     this.boxSelected = event
+    if(this.boxSelected.length>0){
+      this.disabledApply = false
+    } else {
+      this.disabledApply = true
+    }
   }
 
   hideDialog(){
     this.showModal = false
+    this.stockTakeInfo.totalBox = this.boxShow.length
   }
 
   removeBox(data){

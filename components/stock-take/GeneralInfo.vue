@@ -2,33 +2,36 @@
 .order__packing--detail
   .packing__detail--header.border-bottom-1.border-gray-300
     Breadcrumb(:home='homeItem', :model='breadcrumbItem')
-  .packing__detail--content.p-4
+  .packing__detail--content.pl-4.pr-4
     .my-3.font-bold.flex.align-items-center
-      .icon.icon-info.inline-block
       span.uppercase.ml-1 note detail
     span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') new &nbsp;
-  .grid.m-0.p-4
+  .grid.m-0.p-4(v-if='user')
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-      StockUnit(title="Create ID" :value="'Test'" icon="icon-dollar-square-2")
+      StockUnit(title="Create ID" :value="user.displayName" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-      StockUnit(title="Warehouse" :value="'Test'" icon="icon-warehouse-info")
+      StockUnit(title="Warehouse" :value="user.displayName" icon="icon-warehouse-info")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-      StockUnit(title="Total box" :value="100" icon="icon-total-inventory")
+      StockUnit(title="Total box" :value="info.totalBox" icon="icon-total-inventory")
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
-
+import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+import { User } from '~/models/User'
+const nsStoreUser = namespace('user-auth/store-user')
 @Component
 class StockTakeNoteInfo extends Vue {
+  
+  @nsStoreUser.State
+  user: User.Model | undefined
+
   @Prop() info!: any
   get homeItem() {
-    return { label: '', to: '/', icon: 'pi pi-list' }
+    return { label: 'Note list', to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: '', to: '/', icon: 'pi pi-info-circle' },
-      { label: '', to: '/', icon: 'pi pi-list' }
+      { label: 'Add new note', to: '/stock-take/box/create' }
     ]
   }
 
@@ -48,6 +51,7 @@ export default StockTakeNoteInfo
       .p-menuitem-text
         margin-left: 4px
   .packing__detail--content
+
     .p-tabview .p-tabview-nav li
       .p-tabview-nav-link
         background: #fff
