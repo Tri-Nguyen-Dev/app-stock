@@ -1,47 +1,49 @@
 <template lang="pug">
-  .grid.flex.grid-nogutter
-    div.bg-white.border-round-top.sub-tab(class='col-3 md:col-3 lg:col-3 xl:col-3')
+  .grid.flex.grid-nogutter.driver
+    div.bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
       .col.flex.align-items-center.px-3
         Button(@click='$router.go(-1)').p-button-link
           .icon-arrow-left.icon.bg-primary.align-items-center
         Breadcrumb.font-bold(:home="homeItem" :model="breadcrumbItem")
-      .border-bottom-1.border-gray-300.grid-nogutter
+      .border-bottom-1.border-gray-300
       div.flex.justify-content-center
         .col.my-3.px-3
           img(:src=" driverDetail.avatarUrl | getImageUrl ").border-round.w-full
       div.sub--scroll.col-12
-        div.wrap-unit.px-3
-          .col.border-bottom-1.border-gray-300
-          .col.flex.my-3.mx-1
-            .col.flex.align-items-center
-              .icon-sender-info.icon.bg-primary.mr-2
-              span.font-bold.text-800.uppercase ID Information
-        div.wrap-unit.px-4
-          StockUnit(title="Citizen ID Number"  :value="driverDetail.citizenNumber" icon="icon-receipt-note")
-        div.wrap-unit.px-4
-          StockUnit(title="DOB" :value="driverDetail.dateOfBirth | dateMonthYear"  icon="icon-tag-user")
-        div.wrap-unit.px-4
-          StockUnit(title="Native Place"  :value="driverDetail.driverEmail" icon="icon-warehouse")
-        div.wrap-unit.px-4
-          StockUnit(title="Place of Permanent"  :value="driverDetail.placeOfPermanent" icon="icon-warehouse")
-        div.col-12
-          .col.border-bottom-1.border-gray-300
-          .col.flex.my-3.mx-1
-            .col.flex.align-items-center
-              .icon-sender-info.icon.bg-primary.mr-2
-              span.font-bold.text-800.uppercase Contact Information
-        .wrap-unit.px-4
-          StockUnit(title="Name" :value="driverDetail.driverName" icon="icon-sender-name")
-        .wrap-unit.px-4
-          StockUnit(title="Email" :value="driverDetail.driverEmail" icon="icon-sender-email")
-        .wrap-unit.px-4
-          StockUnit(title="Phone" :value="driverDetail.driverPhone" icon="icon-sender-phone")
-    div.ml-5.flex-1( class=' col-9  md:col-8  lg:col-9 xl:col-9' )
+        .driver--info
+          div.wrap-unit.px-3
+            .col.border-bottom-1.border-gray-300
+            .col.flex.my-3.mx-1
+              .col.flex.align-items-center
+                .icon-sender-info.icon.bg-primary.mr-2
+                span.font-bold.text-800.uppercase ID Information
+          div.wrap-unit.px-4
+            StockUnit(title="Citizen ID Number"  :value="driverDetail.citizenNumber" icon="icon-receipt-note")
+          div.wrap-unit.px-4
+            StockUnit(title="DOB" :value="driverDetail.dateOfBirth | dateMonthYear"  icon="icon-tag-user")
+          div.wrap-unit.px-4
+            StockUnit(title="Native Place"  :value="driverDetail.driverEmail" icon="icon-warehouse")
+          div.wrap-unit.px-4
+            StockUnit(title="Place of Permanent"  :value="driverDetail.placeOfPermanent" icon="icon-warehouse")
+        .driver--contact
+          div.wrap-unit.px-3
+            .col.border-bottom-1.border-gray-300
+            .col.flex.my-3
+              .col.flex.align-items-center
+                .icon-sender-info.icon.bg-primary.mr-2
+                span.font-bold.text-800.uppercase Contact Information
+          .wrap-unit.px-4
+            StockUnit(title="Name" :value="driverDetail.driverName" icon="icon-sender-name")
+          .wrap-unit.px-4
+            StockUnit(title="Email" :value="driverDetail.driverEmail" icon="icon-sender-email")
+          .wrap-unit.px-4
+            StockUnit(title="Phone" :value="driverDetail.driverPhone" icon="icon-sender-phone")
+    div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
       .inventory.flex.flex-column
         .inventory__header
           div
-            h1.text-heading Driver Information
-            span.text-subheading {{ totalDetailList }} results found
+            h1.text-heading Delivery History
+            span.text-subheading {{ totalDetailList }} D/O found
           .inventory__header--action.flex
             .btn__filter
               .btn-toggle(@click="isShowFilter = !isShowFilter")
@@ -53,7 +55,7 @@
             .btn.bg-white(@click='$router.go(-1)') Back
             Button.btn.btn-primary.border-0(@click='handleAssign') Assign Delivery
         .inventory__filter.grid(v-if='isShowFilter')
-          .col
+          .col(class="col-12 md:col-6 xl:col-3")
             FilterTable(
               title="D/O ID"
               :value="filter.id"
@@ -62,7 +64,7 @@
               :searchText="true"
               @updateFilter="handleFilter"
             )
-          .col
+          .col(class="col-12 md:col-6 xl:col-3")
             FilterTable(
               title="Seller Email"
               :value="filter.sellerEmail"
@@ -71,16 +73,30 @@
               :searchText="true"
               @updateFilter="handleFilter"
             )
-          .col
-            FilterTable(
-              title="Driver Name"
-              :value="filter.driverName"
-              placeholder="Enter Name"
-              name="driverName"
-              :searchText="true"
-              @updateFilter="handleFilter"
-            )
-          .col
+          .col(class="col-12 md:col-6 xl:col-3")
+            .grid.grid-nogutter
+              .col
+                FilterCalendar(
+                  title="From"
+                  border="left"
+                  :value="filter.from "
+                  name="from"
+                  inputClass="border-0"
+                  dateFormat="dd-mm-yy"
+                  :showIcon="true"
+                  @updateFilter="handleFilter"
+                )
+              .col.ml-1
+                FilterCalendar(
+                  title="To"
+                  border="right"
+                  :value="filter.to"
+                  name="to"
+                  inputClass="border-0"
+                  dateFormat="dd-mm-yy"
+                  :showIcon="true"
+                  @updateFilter="handleFilter")
+          .col(class="col-12 md:col-6 xl:col-3")
             FilterTable(title="Warehouse" name="warehouseId" :value="filter.warehouseId"  @updateFilter="handleFilter")
               template(v-slot:multi-select)
                 MultiSelect.filter__multiselect(
@@ -92,7 +108,7 @@
                   :filter='true'
                 )
         .inventory__content
-          DataTable(
+          DataTable.m-h-700(
               :value='driverHistory'
               dataKey='deliveryOrderId'
               :rows='10'
@@ -103,13 +119,13 @@
             )
               Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
                 template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-              Column(field='deliveryOrderId' header='D/O ID' :sortable='true' sortField='_stock.barCode')
-              Column(field='sellerEmail' header='Seller Email' :sortable='true' sortField='_sku')
-              Column(field='receiverAddress' header='Receiver Address' :sortable='true' bodyClass='font-semibold' sortField='_box.id')
-              Column(field='completeTime' header='Complete time' :sortable='true' className="text-right" sortField='_box.request.id')
+              Column(field='deliveryOrderId' header='D/O ID' :sortable='true' sortField='_id')
+              Column(field='sellerEmail' header='Seller Email' :sortable='true' sortField='_seller.email')
+              Column(field='receiverAddress' header='Receiver Address' :sortable='true' bodyClass='font-semibold' sortField='_receiverAddress')
+              Column(field='completeTime' header='Complete time' :sortable='true' className="text-right" sortField='_receivedDate')
                 template(#body='{data}')
                   span {{data.completeTime | dateTimeHour12 }}
-              Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_box.request.id')
+              Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_warehouse.id')
                 template(#body='{data}')
                   span.text-primary {{data.warehouse.name}}
               template(#footer)
@@ -135,6 +151,7 @@ import { PAGINATE_DEFAULT, refreshAllFilter } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreDriver = namespace('driver/driver-list')
+const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -150,9 +167,12 @@ class DriverDetail extends Vue {
     id: null,
     sellerEmail: null,
     warehouseId: null,
-    name: null,
     pageSize: 20,
-    pageNumber: 0
+    pageNumber: 0,
+    to:null,
+    from: null,
+    desc: null,
+    sortBy: null
   }
 
   // -- [ State ] ------------------------------------------------------------
@@ -182,6 +202,8 @@ class DriverDetail extends Vue {
 
   @nsStoreDriver.Action
   actSetAssignDriver!: (params: any) => Promise<string>
+
+  // -- [ Function ] ------------------------------------------------------------
 
   async mounted() {
     await Promise.all([
@@ -220,6 +242,8 @@ class DriverDetail extends Vue {
       : null
     const filter = {
       ...this.filter,
+      from: this.filter.from? dayjs(new Date(this.filter.from)).format('YYYY-MM-DD'): null,
+      to: this.filter.to? dayjs(new Date(this.filter.to)).format('YYYY-MM-DD'): null,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       warehouseId: warehouseId || null
@@ -241,11 +265,11 @@ class DriverDetail extends Vue {
   async sortData(e: any) {
     const { sortField, sortOrder } = e
     if(sortOrder){
-      this.isDescending = sortOrder !== 1
-      this.sortByColumn = sortField.replace('_', '')
+      this.filter.desc = sortOrder !== 1
+      this.filter.sortBy = sortField.replace('_', '')
     }else{
-      this.isDescending = null
-      this.sortByColumn = ''
+      this.filter.desc = null
+      this.filter.sortBy = null
     }
     await this.getDriverList()
   }
@@ -264,11 +288,11 @@ class DriverDetail extends Vue {
     ]
   }
 
-  handleAssign() {
-    const result = this.actSetAssignDriver({
-      id : this.$route.params.sid,
+  async handleAssign() {
+    const result = await this.actSetAssignDriver({
+      id: this.$route.params.sid,
       idDelivery: this.$route.params.id
-    } )
+    })
     if(result) {
       this.$router.push('/stock-out/order-list')
       this.$toast.add({
@@ -286,41 +310,36 @@ class DriverDetail extends Vue {
       })
     }
   }
-
 }
 
 export default DriverDetail
 </script>
 
 <style lang="sass" scoped>
-
-@media (max-width: 1024px)
-  .tabview-left
-    top: -4rem !important
-    .input-absolute
-      width: 15rem !important
-@media (max-width: 768px)
-  .tabview-left
-    top: -3rem !important
-    .input-absolute
-      width: 15rem !important
-  .tabview-relative
-    margin-top: 3rem
-.tabview-relative
-  position: relative
-  .tabview-left
-    position: absolute
-    top: -0.5rem
-    right: 0
-
-.grid
+.driver
+  @include tablet
+    margin: 30px
   ::v-deep.sub-tab
     height: calc(100vh - 32px)
-    max-width: 23rem
     overflow: hidden
-.sub--scroll
-  height: calc(100vh - 280px)
-  overflow: auto
+    @include desktop
+      height: calc(100vh - 32px)
+      max-width: 23rem
+      overflow: hidden
+    .sub--scroll
+      display: flex
+      align-items: center
+      flex-direction: column
+      height: calc(100vh - 280px)
+      overflow: auto
+      @include desktop
+        height: calc(100vh - 280px)
+        overflow: auto
+      @include tablet
+        flex-direction: row
+        justify-content: center
+        align-items: baseline
+        overflow: hidden
 
 ::-webkit-input-placeholder
   font-weight: normal
@@ -345,13 +364,29 @@ export default DriverDetail
   margin-bottom: 16px
 
 ::v-deep.inventory
-  height: calc(100vh - 32px)
+  min-height: calc(100vh - 32px)
+  margin-top: 3rem
+  @include desktop
+    margin-top: 0px
+    margin-left: 3rem
+    height: calc(100vh - 32px)
   &__header
-    @include flex-center-space-between
-    margin-bottom: $space-size-24
+    flex-direction: column
+    flex-wrap: wrap
+    margin-bottom: 24px
+    @include desktop
+      flex-direction: row
+      @include flex-center-space-between
     &--action
-      @include flex-center
-      gap: 0 16px
+      margin-top: 12px
+      display: flex
+      @include flex-column
+      flex-wrap:  wrap
+      gap: 10px 16px
+      @include desktop
+        @include flex-center
+        flex-direction: row
+        margin-top: 0
   &__filter
     margin-bottom: $space-size-24
   &__content
@@ -390,5 +425,10 @@ export default DriverDetail
   .filter__dropdown, .filter__multiselect
     @include size(100%, 40px)
     border: none
-
+  .pi-calendar:before
+    content: url('~/assets/icons/calendar.svg')
+  .p-calendar-w-btn
+    .p-button
+      background: none
+      border: none
 </style>
