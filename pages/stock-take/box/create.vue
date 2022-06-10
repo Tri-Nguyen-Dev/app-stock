@@ -76,7 +76,7 @@
         BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
         template(#footer)
           Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
-          Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="showModal = false; boxShow = [...boxSelected]; ")
+          Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()")
 </template>
 
 <script lang="ts">
@@ -134,6 +134,12 @@ class DeliveryOrder extends Vue {
 
   removeBox(data){
     this.boxShow.splice(this.boxShow.indexOf(data),1)
+  }
+
+  applyBox(){
+    this.showModal = false
+    this.boxShow = [...this.boxSelected]
+    this.$forceUpdate()
   }
 }
 
