@@ -77,6 +77,7 @@
       Column(
         selectionMode='multiple',
         :styles='{ width: "3rem" }',
+        :selection='selectedBoxes'
       )
       Column(field='no', header='NO')
         template(#body='slotProps')
@@ -125,7 +126,7 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
@@ -139,6 +140,8 @@ const dayjs = require('dayjs')
   }
 })
 class BoxDataTable extends Vue {
+  
+  @Prop({ default: [] }) box
   selectedBoxes: Box.Model[] = []
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
   sortByColumn: string = ''
@@ -174,8 +177,12 @@ class BoxDataTable extends Vue {
       pageSize: this.paging.pageSize
     })
     await this.actWarehouseList()
+    this.selectedBoxes = this.box
   }
+  // @Watch('box')
+  // rerenderView(){
 
+  // }
   // -- [ Getters ] -------------------------------------------------------------
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -263,6 +270,7 @@ class BoxDataTable extends Vue {
       this.selectedBoxes,
       (box: Box.Model) => box.id !== data.id
     )
+    this.$emit('selectBox',this.selectedBoxes)
   }
 
 } 

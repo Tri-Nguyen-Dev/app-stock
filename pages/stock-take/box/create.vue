@@ -73,10 +73,10 @@
     Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw"}' @hide='hideDialog()')
         template(#header)
           h1.text-heading Select Box
-        BoxDataTable(@selectBox='selectBox($event)')
+        BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
         template(#footer)
           Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
-          Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="showModal = false; boxShow = boxSelected; ")
+          Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="showModal = false; boxShow = [...boxSelected]; ")
 </template>
 
 <script lang="ts">
