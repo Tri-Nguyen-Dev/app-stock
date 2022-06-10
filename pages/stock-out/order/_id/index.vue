@@ -202,7 +202,8 @@ class DeliveryOrder extends Vue {
   }
 
   initialValue() {
-    if (this.$route.query.isPick === 'false'  &&  this.orderDetail.status === ORDER_STATUS.IN_PROGRESS){
+    if ((this.$route.query.isPick === 'false'  &&  this.orderDetail.status === ORDER_STATUS.IN_PROGRESS) 
+      || (this.$route.query.isPick === undefined && this.orderDetail.status === ORDER_STATUS.IN_PROGRESS)){
       this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
     } else {
       this.action = STOCK_OUT_ACTION.ORDER_DETAIL
