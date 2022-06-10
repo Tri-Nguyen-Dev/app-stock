@@ -33,7 +33,7 @@
       div(class="col-12 lg:col-12 xl:col-4")
         .grid
           div(class="col-12 md:col-3")
-            FilterTable(title="ID" :value="filter.id" placeholder="Enter ID" name="id" :searchText="true" @updateFilter="handleFilter")
+            FilterTable(title="ID" :value="filter.id" placeholder="Enter ID" name="id" :searchText="true" @updateFilter="handleFilter" :isShowFilter="isShowFilter")
           div(class="col-12 md:col-9")
             .grid.grid-nogutter
               .col

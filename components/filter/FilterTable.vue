@@ -7,9 +7,9 @@
       .icon--small.icon--right.icon-search.surface-900.icon--absolute
       InputText.border-0.w-full.mb-1(
         v-if="searchText" type="text"
-       
         :value="value"
         @input="validateText"
+        ref="inputFilter"
       )
       Dropdown.w-full.border-0(
         v-else-if="options"
@@ -22,7 +22,7 @@
       slot(name="multi-select")
 </template>
 <script lang='ts'>
-import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Vue, Watch } from 'nuxt-property-decorator'
 @Component
 class FilterTable extends Vue {
   @Prop() value!: any | undefined
@@ -31,6 +31,7 @@ class FilterTable extends Vue {
   @Prop() readonly options!:any | undefined
   @Prop() readonly placeholder!:string
   @Prop() readonly name!: any | undefined
+  @Prop() readonly isShowFilter!: boolean | false
 
   validateText =  _.debounce(this.handleFilter, 500);
 
@@ -40,6 +41,14 @@ class FilterTable extends Vue {
 
   clearValue() {
     this.$emit('updateFilter', '', this.name)
+  }
+
+  @Watch('isShowFilter')
+  autofocusInput() {
+    if(this.$refs.inputFilter && this.isShowFilter) {
+      const inputRef = this.$refs.inputFilter as any
+      this.$nextTick(() =>  inputRef?.$el.focus())
+    }
   }
 }
 

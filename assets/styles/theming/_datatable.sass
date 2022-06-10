@@ -282,12 +282,10 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   @include text-ellipsis(2)
 
 .header__filter
-  visibility: hidden
-  max-height: 0
+  display: none
   transition: all 0.25s ease-in
 
   &.active
-    visibility: visible
-    max-height: 500px
+    display: flex
     margin-bottom: 24px
 
