@@ -22,8 +22,10 @@
         :value='boxShow',
         responsiveLayout='scroll',
         dataKey='id',
-        :rows='10',
         @sort='sortData($event)',
+        paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+        :rowsPerPageOptions="[10,20,50]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
       )
           Column(field='no', header='NO'  :styles="{'width': '6%'}")
             template(#body='slotProps')
@@ -61,16 +63,16 @@
               .table__action.justify-content-center
                 span.action-item(@click.stop="removeBox(data)")
                   .icon.icon-btn-delete
-          template(#footer)
-            Pagination(
-              :paging='paging',
-              :total='boxShow.length',
-            )
+          //- template(#footer)
+          //-   Pagination(
+          //-     :paging='paging',
+          //-     :total='boxShow.length',
+          //-   )
           //- template(#empty)
           //-   .flex.align-items-center.justify-content-center.flex-column
           //-     img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
           //-     p.text-900.font-bold.mt-3 Add box!
-    Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw"}' @hide='hideDialog()')
+    Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
         template(#header)
           h1.text-heading Select Box
         BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
@@ -134,6 +136,7 @@ class DeliveryOrder extends Vue {
 
   removeBox(data){
     this.boxShow.splice(this.boxShow.indexOf(data),1)
+    this.stockTakeInfo.totalBox = this.boxShow.length
   }
 
   applyBox(){
