@@ -250,7 +250,7 @@ class PackingNoteList extends Vue {
 
   rowClick({ data }) {
     if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
-      this.$router.push(`/stock-out/order/${data.id}`)
+      this.$router.push(`/stock-out/order/${data.id}/packing-detail`)
     }
   }
 
