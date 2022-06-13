@@ -241,8 +241,6 @@ class DriverDetail extends Vue {
       ? this.filter.warehouseId.map((item: any) => item?.id).toString()
       : null
     const filter = {
-      ...this.filter,
-
       id: this.filter.id || null,
       sellerEmail: this.filter.sellerEmail || null,
       desc: this.filter.desc || null,
