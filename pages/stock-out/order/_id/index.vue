@@ -178,7 +178,7 @@ class DeliveryOrder extends Vue {
       if(this.orderDetail.status === ORDER_STATUS.NEW ||this.$route.query.isPick === 'true') {
         show = true
       }
-      break       
+      break
     case 'PACK_ITEM':
       if(this.orderDetail.status === ORDER_STATUS.IN_PROGRESS && this.$route.query.isPick !== 'true') {
         show = true
@@ -204,7 +204,8 @@ class DeliveryOrder extends Vue {
   }
 
   initialValue() {
-    if (this.$route.query.isPick !== 'true'  &&  this.orderDetail.status === ORDER_STATUS.IN_PROGRESS){
+    if ((this.$route.query.isPick === 'false'  &&  this.orderDetail.status === ORDER_STATUS.IN_PROGRESS)
+      || (this.$route.query.isPick === undefined && this.orderDetail.status === ORDER_STATUS.IN_PROGRESS)){
       this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
     } else {
       this.action = STOCK_OUT_ACTION.ORDER_DETAIL
@@ -247,7 +248,7 @@ class DeliveryOrder extends Vue {
         packingInfo.scrollTop = scrollHeight
       }
     }
-    
+
   }
 }
 

@@ -17,9 +17,9 @@
       .btn.btn-primary(@click='routeLinkAddBox')
         .icon.icon-add-items
         span Add box
-      .btn.btn-primary(@click='handleTransferBox')
+      Button.btn.btn-primary(@click='handleTransferBox')
         span Transfer box
-  .grid(v-if="isShowFilter")
+  .grid.header__filter(:class='{ "active": isShowFilter }')
     div(class="md:col-12 lg:col-8 col-12")
       .grid
         div(class="col-12 md:col-4")
@@ -47,6 +47,7 @@
             name="barCode"
             :searchText="true"
             @updateFilter="handleFilterBox"
+            :isShowFilter="isShowFilter"
           )
     div(class="col-12 lg:col-4")
       .grid

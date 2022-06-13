@@ -42,7 +42,7 @@ div.relative.flex-1
       field='hasAirtag'
       :sortable="true"
       :styles="{'width': '1%'}"
-      v-if='type === "originalBox"'
+      v-if='type === "originalBox" && !isMergeBox' 
     )
       template(#body='{ data }')
         .text-right {{ data.hasAirtag | checkHasTag }}
@@ -61,7 +61,7 @@ div.relative.flex-1
     )
       template(#body='{ data }')
         InputNumber.w-7rem(:value="data.quantity" mode="decimal" :min="0"
-          :max="maxQuantity(data)" inputClass="w-full" :disabled='data.originalBox !== originalBoxActive.boxCode'
+          :max="maxQuantity(data)" inputClass="w-full" :disabled='data.originalBox !== originalBoxActive.boxCode || disableEditQty'
           v-if='type !== "originalBox" && !isPackingDetail' @input='handleQuantity(data, $event)'
         )
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right(v-else) {{ data.quantity }}
@@ -70,7 +70,7 @@ div.relative.flex-1
       field='outGoingQuantity'
       :sortable="true"
       :styles="{'width': '1%'}"
-      v-if='type === "originalBox"'
+      v-if='type === "originalBox" && !isMergeBox'
     )
       template(#body='{ data }')
         .text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.text-right {{ data.outGoingQuantity }}
@@ -108,8 +108,12 @@ class PackingTableList extends Vue {
   @Prop() readonly type!: string | undefined
   @Prop() readonly boxCode!: string | undefined
   @Prop() readonly isPackingDetail!: boolean | false
+
   @InjectReactive() readonly originalBoxActive!: any
   originalList: {} = {}
+
+  @InjectReactive() readonly isMergeBox!: boolean | false
+  @InjectReactive() readonly packingStep!: any
 
   getIndexPaginate(index: number) {
     return calculateIndex(index, this.paging.pageNumber, this.paging.pageSize)
@@ -127,24 +131,39 @@ class PackingTableList extends Vue {
     return actualOutGoing - quantity
   }
 
-  maxQuantity({ barCode, quantity }) {
+  maxQuantity({ barCode, quantity: qty }) {
     const stockInOriginal = this.getStockInOriginal({ barCode })
     if(stockInOriginal) {
-      const { outGoingQuantity, actualOutGoing } = stockInOriginal
-      const sum = this.getSumQuantityOtherBox(actualOutGoing, quantity)
-      return outGoingQuantity - sum
+      const { outGoingQuantity, actualOutGoing, actualTranffering, initialQuantity } = stockInOriginal
+      if(!this.isMergeBox) {
+        const sum = this.getSumQuantityOtherBox(actualOutGoing, qty)
+        return outGoingQuantity - sum
+      }
+      else {
+        const sum = this.getSumQuantityOtherBox(actualTranffering, qty)
+        return initialQuantity - sum
+      }
     }
   }
 
   changeQuantity(stock, textValue) {
     const stockInOriginal = this.getStockInOriginal(stock)
     if(stockInOriginal) {
-      const { initialQuantity, outGoingQuantity, actualOutGoing } = stockInOriginal
+      const { initialQuantity, outGoingQuantity, actualOutGoing, actualTranffering } = stockInOriginal
       const sum = this.getSumQuantityOtherBox(actualOutGoing, stock.quantity)
-      if(outGoingQuantity - sum - textValue >= 0) {
+      if(outGoingQuantity - sum - textValue >= 0 && this.type === 'outGoingBox') {
         _.set(stock, 'quantity', textValue)
         _.set(stockInOriginal, 'actualOutGoing', textValue + sum)
         _.set(stockInOriginal, 'quantity', initialQuantity - sum - textValue)
+      }
+      if (initialQuantity - textValue >= 0 && this.type === 'tranferringBox') {
+        const sum = this.getSumQuantityOtherBox(actualTranffering, stock.quantity)
+        _.set(stock, 'quantity', textValue)
+        _.set(stockInOriginal, 'actualTranffering', textValue + sum)
+        _.set(
+          stockInOriginal,
+          'quantity', initialQuantity - sum - textValue
+        )
       }
     }
   }
@@ -173,6 +192,12 @@ class PackingTableList extends Vue {
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'box')
+  }
+
+  get disableEditQty() {
+    if (this.packingStep === 2) {
+      return 'disabled'
+    } else return null
   }
 }
 
