@@ -54,24 +54,24 @@
             Button.btn.btn-primary.border-0(@click='handleSubmit') Submit
         .inventory__content
           DataTable.m-h-700(
-            :value='[]'
-            dataKey='id'
-            :rows='10'
+            :value='items'
+            dataKey='uhigytg'
+            :rows='20'
             responsiveLayout="scroll"
             :resizableColumns="true"
-            :class="{ 'table-wrapper-empty': !driverDetail || driverDetail.length <= 0 }"
+            :class="{ 'table-wrapper-empty': !items || items.length <= 0 }"
             @sort="sortData($event)"
           )
             Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
               template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-            Column(field='deliveryOrderId' header='BARCODE' :sortable='true' sortField='_id')
-            Column(field='sellerEmail' header='ITEM NAME' :sortable='true' sortField='_seller.email')
-            Column(field='receiverAddress' header='BOX CODE' :sortable='true' bodyClass='font-semibold' sortField='_receiverAddress')
-            Column(field='completeTime' header='INVENTORY Q.TY' :sortable='true' className="text-right" sortField='_receivedDate')
-            Column(field='completeTime' header='COUNTED Q.TY' :sortable='true' className="text-right" sortField='_receivedDate')
-            Column(field='completeTime' header='DISCREPANCY ' :sortable='true' className="text-right" sortField='_receivedDate')
-            Column(field='completeTime' header='STATUS' :sortable='true' className="text-right" sortField='_receivedDate')
-            Column(field='completeTime' header='REPORT BOX ' :sortable='true' className="text-right" sortField='_receivedDate')
+            Column(field='barCode' header='BARCODE' :sortable='true' sortField='_id')
+            Column(field='itemName' header='ITEM NAME' :sortable='true' sortField='_seller.email')
+            Column( v-if="handleSubmit2" field='boxCode' header='BOX CODE' :sortable='true' bodyClass='font-semibold' sortField='_receiverAddress')
+            Column(field='location' header='INVENTORY Q.TY' :sortable='true' className="text-right" sortField='_receivedDate')
+            Column(field='inventory' header='COUNTED Q.TY' :sortable='true' className="text-right" sortField='_receivedDate')
+            Column(v-if="handleSubmit2"  field='completeTime' header='DISCREPANCY ' :sortable='true' className="text-right" sortField='_receivedDate')
+            Column( v-if="handleSubmit2" field='completeTime' header='STATUS' :sortable='true' className="text-right" sortField='_receivedDate')
+            Column(  v-if="handleSubmit2" field='completeTime' header='REPORT BOX ' :sortable='true' className="text-right" sortField='_receivedDate')
             template(#footer)
               Pagination(
                 :paging="paging"
@@ -104,32 +104,42 @@ class stockTakeItemsDetail extends Vue {
     sortBy: null
   }
 
-  data1 : any = {
-    'data': {
-      'total': 61,
-      'items': [
-        {
-          'id': 'DO000000000391',
-          'barcode': 'AD000002',
-          'itemName': 'Admin',
-          'boxCode': '2022-06-03T07:13:59.215+00:00',
-          'location': 'SL000003',
-          'iventory': 'Seller Huân',
-          'counted': 'sellerhuan@gmail.com',
-          'discrepancy': 'vu',
-          'status': '2022-06-11T09:28:10.975+00:00'
-        }
-      ]
+  handleSubmit2 : boolean = false
+
+  items: any = [
+    {
+      'id': 'DO000000000391',
+      'barcode': 'AD000002',
+      'itemName': 'Admin',
+      'boxCode': '2022-06-03T07:13:59.215+00:00',
+      'location': 'SL000003',
+      'inventory': '10',
+      'counted': 'sellerhuan@gmail.com',
+      'discrepancy': 'vu',
+      'status': '2022-06-11T09:28:10.975+00:00'
     },
-    'time': '2022-06-10T09:28:10.975+00:00'
+    {
+      'id': 'DO000000000394',
+      'barcode': 'AD000002',
+      'itemName': 'Admin',
+      'boxCode': '2022-06-03T07:13:59.215+00:00',
+      'location': 'SL000003',
+      'inventory': '10',
+      'counted': 'sellerhuan@gmail.com',
+      'discrepancy': 'vu',
+      'status': '2022-06-11T09:28:10.975+00:00'
+    }
+  ]
+
+  get data() {
+    return this.items
   }
 
   handleSaveDraft() {
-
   }
 
   handleSubmit(){
-
+    this.handleSubmit2 = !this.handleSubmit2
   }
 
   onPage(event: any) {
@@ -147,7 +157,7 @@ class stockTakeItemsDetail extends Vue {
       this.filter.desc = null
       this.filter.sortBy = null
     }
-  // await this.getDriverList()
+    // await this.getDriverList()
   }
 
   get homeItem() {
@@ -173,7 +183,7 @@ export default stockTakeItemsDetail
   @include tablet
     margin: 50px
   ::v-deep.sub-tab
-    height: calc(100vh - 150px)
+    height: calc(100vh - 100px)
     overflow: hidden
     @include desktop
       height: calc(100vh - 32px)
@@ -186,10 +196,10 @@ export default stockTakeItemsDetail
       height: calc(100vh - 32px)
       overflow: auto
       @include desktop
-        height: calc(100vh - 280px)
+        height: calc(100vh - 250px)
         overflow: auto
       @include tablet
-        height: calc(100vh - 280px)
+        height: calc(100vh - 300px)
         flex-direction: row
         justify-content: center
         align-items: baseline
