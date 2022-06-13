@@ -237,6 +237,7 @@ class Stock extends Vue {
   handleFilter(e: any, name: string){
     this.filter[name] = e
     this.getProductList()
+    this.selectedStock = []
   }
 
   async getProductList() {
@@ -253,6 +254,7 @@ class Stock extends Vue {
       this.filter.categories = ''
       this.getProductList()
     }
+    this.selectedStock = []
   }
 
   onPage(event: any) {
@@ -280,6 +282,7 @@ class Stock extends Vue {
           life: 3000
         })
         await this.getProductList()
+        this.selectedStock = []
       }
     } catch (error) {
       this.loadingSubmit = false
