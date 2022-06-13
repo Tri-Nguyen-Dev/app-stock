@@ -34,7 +34,7 @@
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
       div(class='col-12 md:col-4 lg:col-4 xl:col-2')
-        FilterTable(title="ID" placeholder="Search" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
+        FilterTable(title="ID" placeholder="Search" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter" :isShowFilter="isShowFilter")
       div(class='col-12 md:col-8 lg:col-8 xl:col-5')
         .grid.grid-nogutter
           .col
@@ -143,7 +143,7 @@
         Column(field='id' header='ID' sortable headerClass="grid-header-center")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.font-bold {{ data.id }}
-        Column(header='Creator ID' field='creatorId' sortable sortField="_assignee.id")
+        Column(header='Creator ID' field='creatorId' sortable sortField="_createdBy.staffId")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
         Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
@@ -161,29 +161,29 @@
               div.text-end Due
               div Delivery Date
           template(#body='{ data }')
-            div.grid-cell-right {{ data.dueDeliveryDate }}
+            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour12 }}
         Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#header)
             div
               div.text-end Estimated
               div Delivery Time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.estimatedDeliveryTime }}
+            div.grid-cell-right {{ data.estimatedDeliveryTime }} {{data.estimatedDeliveryTime > 1 ? 'days' : 'day'}}
         Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
           template(#header)
             div
               div.text-end Latest
               div update time
           template(#body='{ data }')
-            div {{ data.lastedUpdateTime | dateTimeHour12 }}
-        Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
+            div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour12 }}
+        Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.name" headerClass="grid-header-right")
           template(#body='{ data }')
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
               .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
+        Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.creatorId }}
+            div.grid-cell-right {{ data.pic }} {{data.pic === null ? 'N/A' : ''}}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -205,6 +205,7 @@
         template(#footer)
           Pagination(
             title="Cancel"
+            type="orders selected"
             :paging="paging"
             :total="total"
             @onDelete="showModalDelete"
@@ -214,8 +215,9 @@
           div.table__empty
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+            p.text-900.font-bold.mt-3 Order not found!
     ConfirmDialogCustom(
-      title="Confirm delete"
+      title="Cancel Confirm"
       image="confirm-delete"
       :isShow="isModalDelete"
       :onOk="handleDeleteDelivery"
@@ -237,7 +239,7 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   DeliveryConstants,
-  getDeleteMessage,
+  getCancelMessage,
   exportFileTypePdf
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
@@ -328,7 +330,7 @@ class DeliveryOrderList extends Vue {
   get activeStatus() {
     return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
   }
-  
+
   nameStatus(status) {
     return DeliveryConstants.MapStatusDelivery.get(status)
   }
@@ -361,7 +363,7 @@ class DeliveryOrderList extends Vue {
   }
 
   get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'delivery order')
+    return getCancelMessage(this.onEventDeleteList, 'delivery order')
   }
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -430,6 +432,7 @@ class DeliveryOrderList extends Vue {
           detail: 'Successfully deleted delivery order',
           life: 3000
         })
+        this.selectedDelivery = []
         await this.getProductList()
       }
     } catch (error) {
@@ -619,7 +622,7 @@ export default DeliveryOrderList
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
-.btn__filter 
+.btn__filter
   width: 100%
   @include desktop
     width: 166px

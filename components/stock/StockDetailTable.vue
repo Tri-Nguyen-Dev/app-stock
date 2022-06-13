@@ -3,7 +3,7 @@
     .grid.justify-content-between(class="mt-2 lg:mt-0")
       .col-fixed
         h1.text-heading Stock detail
-        span.text-600.font-sm(v-if="itemsList.data") {{itemsList.data.total}} results found
+        span.text-subheading(v-if="itemsList.data") {{itemsList.data.total}} results found
       .col-fixed
         .grid
           .col-fixed.flex.btn-filter
@@ -83,7 +83,7 @@
           Column(field="sku" header="SKU" sortable className="p-text-right")
           Column(
             field="amount"
-            header="INVENTORY QUANTITY"
+            header="QUANTITY"
             sortable className="p-text-right"
             bodyClass="font-semibold"
             :styles="{'width': '5%'}"
@@ -131,18 +131,14 @@
                   span.font-bold.text-green-400.font-sm AVAILABLE
           Column(:exportable="false" header="ACTION" className="p-text-right")
             template(#body="{data}")
-              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200(
-                :disabled="data.itemStatus == 'ITEM_STATUS_DISABLE'"
-                 @click='editItemDetail(data.box.id)'
-                )
-                .icon--small.icon-btn-edit
-              Button.border-0.p-0.ml-1.h-2rem.w-2rem.justify-content-center.surface-200(
-                @click="showModalDelete(data.id)"
-                :disabled="data.itemStatus === 'ITEM_STATUS_DISABLE'"
-              )
-                .icon--small.icon-btn-delete
+              .table__action(:class="{'action-disabled': data.itemStatus === 'ITEM_STATUS_DISABLE'}")
+                span.action-item(@click='editItemDetail(data.box.id)')
+                  .icon.icon-btn-edit
+                span.action-item(@click="showModalDelete(data.id)")
+                  .icon.icon-btn-delete
           template(#footer)
             Pagination(
+              type="items selected"
               :paging="paging"
               :total="total"
               :deleted-list="selectedStockFilter"

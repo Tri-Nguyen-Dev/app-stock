@@ -1,18 +1,18 @@
 <template lang="pug">
   Dialog.print-label(:visible.sync="visibleVue" :modal="true")
-    div(v-if='labelUrl')
+    div(v-if='labelUrlLabel')
       pdf.pdf-viewer-container(
         v-if="!isAllPage"
-        :src='labelUrl',
+        :src='labelUrlLabel',
         :page="page"
         :style="btnStyles"
         ref="pdfOnePage"
       )
-      pdf.pdf-viewer-container(
+      pdf.pdf-viewer-container.mb-2(
         v-else
         v-for="(page, index) in pageCount"
         :key="index"
-        :src="labelUrl"
+        :src="labelUrlLabel"
         :page="index + 1"
         :style="btnStyles"
         ref="pdfAllPage"
@@ -44,6 +44,7 @@ import { Component, Vue, Prop, namespace, Ref, Watch } from 'nuxt-property-decor
 import pdf from 'vue-pdf'
 import { exportFileTypePdf } from '~/utils'
 const nsStoreLabel = namespace('stock-in/request-label')
+const nsStoreOrder = namespace('stock-out/order-detail')
 
 @Component({
   components: {
@@ -57,7 +58,9 @@ class PrintLabel extends Vue {
   zoom = 80
   @Prop({ default: false }) displayLable!: boolean
   @Prop({ default: '' }) requestId!: string
-  @Prop({ default: '' }) boxId!: string
+  @Prop({ default: '' }) DOId!: string
+  @Prop({ default: '' }) boxIds!: any
+  @Prop({ default: '' }) type!: any
   @Ref('pdfOnePage') readonly pdfOnePage!: any
   @Ref('pdfAllPage') readonly pdfAllPage!: any
 
@@ -65,8 +68,7 @@ class PrintLabel extends Vue {
   getLabelBox() {
     if(this.displayLable) {
       this.callApiLabel({
-        requestId: this.requestId || null,
-        boxId: this.boxId || null
+        id: this.requestId || this.DOId
       })
     }
   }
@@ -92,11 +94,25 @@ class PrintLabel extends Vue {
   @nsStoreLabel.State
   labelUrl!: any
 
+  @nsStoreOrder.State
+  packingLabelUrl!: any
+
   @nsStoreLabel.Action
   actGetLabel!: (params: any) => Promise<void>
 
-  async callApiLabel({ requestId, boxId }) {
-    const result: any = await this.actGetLabel({ id: requestId || null, boxId: boxId || null })
+  @nsStoreOrder.Action
+  actGetPackingLabel!: (params: any) => Promise<void>
+
+  async callApiLabel({ id }) {
+    let result: any = null
+    if(this.requestId && !this.type) {
+      result = await this.actGetLabel({ id })
+    } else {
+      result = await this.actGetPackingLabel({
+        params: { id, boxIds: this.boxIds },
+        type: this.type
+      })
+    }
     if(result) {
       const src = pdf.createLoadingTask(result)
       if(src){
@@ -140,7 +156,15 @@ class PrintLabel extends Vue {
 
   handleDownload() {
     if(this.labelUrl) {
-      exportFileTypePdf(this.labelUrl, `${this.requestId}-label-${this.boxId}`)
+      exportFileTypePdf(this.labelUrl, `${this.requestId}`)
+    }
+  }
+
+  get labelUrlLabel() {
+    if(this.requestId) {
+      return this.labelUrl
+    } else {
+      return this.packingLabelUrl
     }
   }
 }
@@ -157,7 +181,7 @@ export default PrintLabel
     padding: $space-size-24
     width: 600px
   .p-dialog-content
-    min-height: 60vh
+    height: 70vh
   &__buttons
     .p-button
       color: $text-color-900
@@ -175,7 +199,7 @@ export default PrintLabel
   &__page
     border-radius: 2rem
     height: 48px
-    min-width: 115px
+    width: 117px
     padding-left: $space-size-10
     padding-right: $space-size-10
     .p-dropdown-label

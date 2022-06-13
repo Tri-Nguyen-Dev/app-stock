@@ -1,10 +1,10 @@
 <template lang="pug">
 DataTable(
   responsiveLayout="scroll"
-  :value='locationHistory'  
+  :value='locationHistory'
   dataKey="id"
   :resizableColumns="true"
-  :paginator="false" 
+  :paginator="false"
   :rows="20"
   )
   Column(field="no" header="NO" sortable)

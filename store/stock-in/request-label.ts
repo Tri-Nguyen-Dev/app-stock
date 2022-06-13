@@ -19,8 +19,8 @@ export default class StoreRequestLabel extends VuexModule {
   }
 
   @Action({ commit: 'setLabel', rawError: true })
-  async actGetLabel(params: {id: number, boxId: number}): Promise<string | undefined> {
-    if(!params.id || !params.boxId) return ''
+  async actGetLabel(params: { id: number }): Promise<string | undefined> {
+    if(!params.id) return ''
     try {
       const url = PathBind.transform(this.context, StoreRequestLabel.STATE_URL.GET_LABEL, params)
       const response: any =  await $api.get(url, { responseType: 'blob' })

@@ -51,7 +51,6 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(
               title="Warehouse"
-              link="https://rikkei.vn"
               :isEdit="isEditItemDetail"
               :value="model.data.box.request.warehouse.name"
               icon="icon-warehouse"
@@ -59,7 +58,6 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(
               title="Location"
-              link="https://rikkei.vn"
               :isEdit="isEditItemDetail"
               :value="model.data.box.rackLocation.name"
               icon="icon-location-2"
@@ -67,7 +65,7 @@
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3' :class='isEditItemDetail ? "opacity-40" : "opacity-100"')
             StockUnit(title="Size (L*W*H)" icon="icon-size")
               template(v-slot:size)
-                span.font-semibold.mr-1.uppercase
+                span.font-semibold.mr-1.uppercase.text-lg
                 | {{ model.data.stock.length }}*{{ model.data.stock.width }}*{{ model.data.stock.height }}
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(title="Weight (Kg)" :value="model.data.stock.weight" :isEdit="isEditItemDetail" icon="icon-weight")
@@ -84,10 +82,10 @@
             )
         .grid.mt-1(:class='isEditItemDetail ? " " : "hidden"')
           .col
-            .text-center.surface-hover.cursor-pointer.border-round.p-1(@click='cancelEditItemDetail')
+            Button.btn.btn-outline.h-3rem.w-full(@click='cancelEditItemDetail')
               span.uppercase.font-semibold cancel
           .col
-            .text-center.bg-blue-500.cursor-pointer.border-round.text-white.p-1(@click='saveEditItemDetail')
+            Button.btn.btn-primary.h-3rem.w-full(@click='saveEditItemDetail')
               span.uppercase save
       .sender__information.p-4(:class='isEditItemDetail ? "opacity-40" : "opacity-100"')
         .grid.mb-3

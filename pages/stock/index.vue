@@ -15,7 +15,7 @@
             span Filter
           .btn-refresh(@click="handleRefreshFilter")
             .icon.icon-rotate-left.bg-white
-        .btn.btn-primary(@click="handleAddStock")
+        Button.btn.btn-primary(@click="handleAddStock")
           .icon.icon-add-items
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
@@ -38,6 +38,7 @@
           :value="filter.barCode"
           :searchText="true"
           @updateFilter="handleFilter"
+          :isShowFilter="isShowFilter"
         )
       .div(class="col-12 md:col-4")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
@@ -58,15 +59,14 @@
         )
           Column(
             selectionMode='multiple'
-            :styles="{'width': '1%'}"
-            :headerClass="classHeaderMuti")
+            :styles="{'width': '1%'}")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(field='imageUrl' header='Image' headerClass="grid-header-center")
             template(#body='{ data }')
               .stock__table__image.overflow-hidden.grid-cell-center
-                NuxtLink(:to="`/stock/${data.id}`") 
+                NuxtLink(:to="`/stock/${data.id}`")
                   img.h-2rem.w-2rem.border-round(
                     :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
@@ -86,12 +86,13 @@
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
-                span(@click.stop="handleEditStock(data.id)" :class="{'disable-button': selectedStockFilter.length > 0}")
+                span.action-item(@click.stop="handleEditStock(data.id)" :class="{'disable-button': selectedStockFilter.length > 0}")
                   .icon.icon-edit-btn
-                span(@click.stop="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
+                span.action-item(@click.stop="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
                   .icon.icon-btn-delete
           template(#footer)
             Pagination(
+              type="items selected"
               :paging="paging"
               :total="total"
               :deleted-list="selectedStockFilter"
@@ -183,14 +184,6 @@ class Stock extends Vue {
     return  _.filter(this.selectedStock, (stock: StockModel.Model) => {
       return stock.stockStatus !== 'STOCK_STATUS_DISABLE'
     })
-  }
-
-  get classHeaderMuti() {
-    return !this.stockList ||
-      this.stockList.length <= 0 ||
-      this.checkStockDisable
-      ? 'checkbox-disable'
-      : ''
   }
 
   get checkStockDisable() {
