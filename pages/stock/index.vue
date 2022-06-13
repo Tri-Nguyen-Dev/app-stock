@@ -38,6 +38,7 @@
           :value="filter.barCode"
           :searchText="true"
           @updateFilter="handleFilter"
+          :isShowFilter="isShowFilter"
         )
       .div(class="col-12 md:col-4")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
