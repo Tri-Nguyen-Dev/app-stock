@@ -11,13 +11,13 @@
         h1.text-heading {{ textHeading }}
         span.text-subheading {{ total }} items found
       .col-8.btn-right(v-if='orderDetail')
-        ThemeButtonExport.w-25(:click='handleExportReceipt')
-        //- Button.p-button-outlined.p-button-primary.bg-white.w-25(
-        //-   type='button',
-        //-   label='Map',
-        //-   @click='packItem',
-        //-   v-if='isPack'
-        //- )
+        ThemeButtonExport.w-25(:click='handleExportReceipt' v-if='checkStatus("PICK_ITEM") || isPick')
+        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          label='Map',
+          @click='packItem',
+          v-if='checkStatus("PACK_ITEM") && !isPick'
+        )
         Button.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
           label='Pick Items',
@@ -26,7 +26,7 @@
         )
         Button.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
-          label='Pack Items',
+          label='Pack',
           @click='packItem',
           v-if='!isPick && checkStatus("PACK_ITEM")',
           :disabled='!enablePack'
