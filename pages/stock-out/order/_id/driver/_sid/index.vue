@@ -242,6 +242,11 @@ class DriverDetail extends Vue {
       : null
     const filter = {
       ...this.filter,
+
+      id: this.filter.id || null,
+      sellerEmail: this.filter.sellerEmail || null,
+      desc: this.filter.desc || null,
+      sortBy: this.filter.sortBy || null,
       from: this.filter.from? dayjs(new Date(this.filter.from)).format('YYYY-MM-DD'): null,
       to: this.filter.to? dayjs(new Date(this.filter.to)).format('YYYY-MM-DD'): null,
       pageSize: this.paging.pageSize,
