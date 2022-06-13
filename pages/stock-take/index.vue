@@ -99,26 +99,38 @@
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
-          Column(field='imageUrl' header='Image' headerClass="grid-header-center")
+          Column(field='imageUrl' header='NOTE ID' headerClass="grid-header-center")
             template(#body='{ data }')
               .stock__table__image.overflow-hidden.grid-cell-center
                 NuxtLink(:to="`/stock/${data.id}`")
                   img.h-2rem.w-2rem.border-round(
                     :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
-          Column(header='Name' field='name' :sortable="true" sortField="_name")
+          Column(header='cREATE tIME' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
               NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/stock/${data.id}`" class="no-underline hover:underline") {{ data.name }}
-          Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
+          Column(header='UPDATE time' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
             template(#body='{ data }')
               .stock__table-barcode.grid-cell-right {{ data.barCode }}
-          Column(header='Category' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
+          Column(header='cREATor ID' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.categoryName }}
-          Column(field='status' header="Status" headerClass="grid-header-right")
+          Column(header='PIC ID' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.categoryName }}
+          Column(header='Result' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.categoryName }}
+          Column(header='nOTE' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
+              template(#body='{ data }')
+                div.grid-cell-right {{ data.categoryName }}
+          Column(field='PIC ID' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
                 span.table__status.table__status--available(v-if="data.stockStatus === 'STOCK_STATUS_AVAILABLE'") Available
                 span.table__status.table__status--disable(v-if="data.stockStatus === 'STOCK_STATUS_DISABLE' ") Disable
+          Column(header='CHECK Type' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
+            template(#body='{ data }')
+              div.grid-cell-right {{ data.categoryName }}
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
