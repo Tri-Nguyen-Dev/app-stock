@@ -133,12 +133,14 @@ class DeliveryOrder extends Vue {
         }
       }
     }
-    await this.actPostUpdateProgressOrder(dataUpdate)
-    this.typeTitle = 'PICK_ITEM'
-    this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
-    this.enablePack = false
-    this.textHeading = 'Picking list'
-    this.$router.push(`/stock-out/order/${this.id}?isPick=false`)
+    const result = await this.actPostUpdateProgressOrder(dataUpdate)
+    if(result) {
+      this.typeTitle = 'PICK_ITEM'
+      this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
+      this.enablePack = false
+      this.textHeading = 'Picking list'
+      this.$router.push(`/stock-out/order/${this.id}?isPick=false`)
+    }
   }
 
   selectItem(event) {
@@ -193,7 +195,7 @@ class DeliveryOrder extends Vue {
       }
       break
     case 'RESET_DELIVERY':
-      if(this.orderDetail.status === ORDER_STATUS.SETTED) {
+      if(this.orderDetail.status === ORDER_STATUS.SETTED || this.orderDetail.status === ORDER_STATUS.ACCEPTED) {
         show = true
       }
       break

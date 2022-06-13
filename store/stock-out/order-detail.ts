@@ -31,6 +31,7 @@ export default class StoreOrderDetail extends VuexModule {
   @Mutation
   updateProgressOrder(data: any) {
     this.orderUpdate = data
+    this.orderDetail.status = data.data.status
   }
 
   @Mutation
