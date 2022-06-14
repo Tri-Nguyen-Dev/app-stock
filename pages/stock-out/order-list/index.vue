@@ -240,7 +240,8 @@ import {
   calculateIndex,
   DeliveryConstants,
   getCancelMessage,
-  exportFileTypePdf
+  exportFileTypePdf,
+  refreshAllFilter
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
@@ -401,7 +402,15 @@ class DeliveryOrderList extends Vue {
 
   async getProductList() {
     await this.getDeliveryList({
-      ...this.filter,
+      id: this.filter.id || null,
+      assigneeId: this.filter.assigneeId || null,
+      createTimeFrom: this.filter.createTimeFrom || null  ,
+      createTimeTo: this.filter.createTimeTo ||null ,
+      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom || null,
+      dueDeliveryDateTo: this.filter.dueDeliveryDateTo || null,
+      sortBy: this.filter.sortBy ||null,
+      desc: this.filter.desc ||null,
+      sellerEmail: this.filter.sellerEmail || null,
       warehouseId: this.filter.warehouseId?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
@@ -470,19 +479,7 @@ class DeliveryOrderList extends Vue {
   }
 
   handleRefreshFilter() {
-    this.filter = {
-      id: null,
-      assigneeId: null,
-      createTimeFrom: null,
-      createTimeTo: null,
-      dueDeliveryDateFrom: null,
-      dueDeliveryDateTo: null,
-      status: null,
-      sortBy: null,
-      desc: null,
-      sellerEmail: null,
-      warehouseId: null
-    }
+    refreshAllFilter(this.filter)
     this.getProductList()
   }
 
