@@ -15,17 +15,15 @@
           Button.p-button-outlined.p-button-primary.bg-white.w-25(
             type='button',
             label='Save',
-            @click='saveStockTake'
+            @click='saveStockTake;'
           )
-      .col-12
+      .col-12(style='height: 90vh')
         DataTable(
         :value='boxShow',
         responsiveLayout='scroll',
         dataKey='id',
         @sort='sortData($event)',
-        paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        :rowsPerPageOptions="[10,20,50]"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        :rows="10"
       )
           Column(field='no', header='NO'  :styles="{'width': '6%'}")
             template(#body='slotProps')
@@ -63,15 +61,10 @@
               .table__action.justify-content-center
                 span.action-item(@click.stop="removeBox(data)")
                   .icon.icon-btn-delete
-          //- template(#footer)
-          //-   Pagination(
-          //-     :paging='paging',
-          //-     :total='boxShow.length',
-          //-   )
-          //- template(#empty)
-          //-   .flex.align-items-center.justify-content-center.flex-column
-          //-     img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
-          //-     p.text-900.font-bold.mt-3 Add box!
+          template(#empty)
+            .flex.align-items-center.justify-content-center.flex-column
+              img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
+              p.text-900.font-bold.mt-3 Add box!
     Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
         template(#header)
           h1.text-heading Select Box
@@ -155,7 +148,7 @@ export default DeliveryOrder
 .packing__detail--container
   height: calc(100vh - 32px)
 .packing__detail--left
-  height: calc( 100% - 32px) !important
+  height: calc( 100vh - 32px) !important
 .w-25
   width: 25%
   margin-left: 7px

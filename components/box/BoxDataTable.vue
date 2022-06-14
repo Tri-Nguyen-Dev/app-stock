@@ -177,7 +177,7 @@ class BoxDataTable extends Vue {
       pageSize: this.paging.pageSize
     })
     await this.actWarehouseList()
-    this.selectedBoxes = this.box
+    this.selectedBoxes = [...this.box]
   }
   // @Watch('box')
   // rerenderView(){
@@ -248,7 +248,7 @@ class BoxDataTable extends Vue {
 
   rowSelectAll({ data }) {
     this.selectedBoxes = _.unionWith(this.selectedBoxes, data, _.isEqual)
-    this.$emit('selectBox',this.selectedBoxes)
+    this.updateSelectedBox()
   }
 
   rowUnSelectAll() {
@@ -257,11 +257,12 @@ class BoxDataTable extends Vue {
       this.boxList,
       _.isEqual
     )
+    this.updateSelectedBox()
   }
 
   rowSelect({ data }) {
     this.selectedBoxes.push(data)
-    this.$emit('selectBox',this.selectedBoxes)
+    this.updateSelectedBox()
   }
 
   rowUnselect({ originalEvent, data }) {
@@ -270,9 +271,12 @@ class BoxDataTable extends Vue {
       this.selectedBoxes,
       (box: Box.Model) => box.id !== data.id
     )
-    this.$emit('selectBox',this.selectedBoxes)
+    this.updateSelectedBox()
   }
 
+  updateSelectedBox(){
+    this.$emit('selectBox',this.selectedBoxes)
+  }
 } 
 export default BoxDataTable
 </script>
