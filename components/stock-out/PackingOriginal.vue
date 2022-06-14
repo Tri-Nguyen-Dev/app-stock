@@ -466,7 +466,10 @@ export default PackingOriginal
       flex-direction: column
     ul.p-tabview-nav
       height: 42px !important
-
+      position: relative
+      z-index: 2
+    .p-tabview-nav-next, .p-tabview-nav-prev
+      z-index: 3
     .p-tabview-nav-container
       overflow: unset !important
     .p-tabview-nav li .p-tabview-nav-link
