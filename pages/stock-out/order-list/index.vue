@@ -136,7 +136,9 @@
         Column(
           selectionMode='multiple'
           :styles="{'width': '1%'}"
-          :exportable="false")
+          :exportable="false"
+          :headerClass="classHeaderMuti"
+        )
         Column(field='no' header='NO' :styles="{'width': '1%'}" )
           template(#body='{ index }')
             span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -341,7 +343,7 @@ class DeliveryOrderList extends Vue {
     return _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
       if(this.activeTab === 0) {
         return delivery.status === 'DELIVERY_ORDER_STATUS_NEW' || delivery.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && (delivery.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && delivery.assigneeId === this.user.id)
-      }else return delivery
+      } else return delivery
     })
   }
 
@@ -399,6 +401,7 @@ class DeliveryOrderList extends Vue {
   handleFilter(e: any, name: string) {
     this.filter[name] = e
     this.getProductList()
+    this.selectedDelivery = []
   }
 
   async getProductList() {

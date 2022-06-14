@@ -59,7 +59,9 @@
         )
           Column(
             selectionMode='multiple'
-            :styles="{'width': '1%'}")
+            :styles="{'width': '1%'}"
+            :headerClass="classHeaderMuti"
+          )
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -202,6 +204,14 @@ class Stock extends Vue {
     return getDeleteMessage(this.onEventDeleteList, 'stock')
   }
 
+  get classHeaderMuti() {
+    return !this.stockList ||
+      this.stockList.length <= 0 ||
+      this.checkStockDisable
+      ? 'checkbox-disable'
+      : ''
+  }
+
   // -- [ Functions ] ------------------------------------------------------------
   getParamApi() {
     const categoryIds = this.filter.categories
@@ -238,6 +248,7 @@ class Stock extends Vue {
   handleFilter(e: any, name: string){
     this.filter[name] = e
     this.getProductList()
+    this.selectedStock = []
   }
 
   async getProductList() {
@@ -254,6 +265,7 @@ class Stock extends Vue {
       this.filter.categories = ''
       this.getProductList()
     }
+    this.selectedStock = []
   }
 
   onPage(event: any) {

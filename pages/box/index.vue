@@ -79,7 +79,7 @@
       :rowClass="rowClass" @sort="sortData($event)"
       :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
       @row-unselect-all="rowUnSelectAll" @row-select="rowSelect" @row-unselect="rowUnselect")
-        Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
+        Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false" :headerClass="classHeaderMuti")
         Column(field="no" header="NO")
           template(#body="slotProps")
             span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
@@ -238,6 +238,13 @@ class BoxList extends Vue {
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'box')
+  }
+
+  get classHeaderMuti() {
+    return !this.boxList ||
+      this.boxList.length <= 0
+      ? 'checkbox-disable'
+      : ''
   }
 
   // -- [ Functions ] ------------------------------------------------------------
