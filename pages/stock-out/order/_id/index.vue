@@ -10,40 +10,41 @@
       .col-4
         h1.text-heading {{ textHeading }}
         span.text-subheading {{ total }} items found
-      .col-8.btn-right(v-if='orderDetail')
-        ThemeButtonExport.w-25(:click='handleExportReceipt' v-if='checkStatus("PICK_ITEM") || isPick')
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+      .col-8.btn-right.flex.justify-content-end(v-if='orderDetail')
+        ThemeButtonExport(:click='handleExportReceipt' v-if='checkStatus("PICK_ITEM") || isPick')
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
-          label='Map',
           @click='packItem',
           v-if='checkStatus("PACK_ITEM") && !isPick'
         )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+          .icon.icon-map-pin.bg-primary
+          span Map
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
           label='Pick Items',
           @click='pickItem',
           v-if='checkStatus("PICK_ITEM") || isPick'
         )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+        Button.btn.btn-primary.w-25(
           type='button',
           label='Pack',
           @click='packItem',
           v-if='!isPick && checkStatus("PACK_ITEM")',
           :disabled='!enablePack'
         )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
           label='Packing detail',
           v-if='checkStatus("PACKING_DETAIL")',
           @click='packDetail()'
         )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
           label='Set Delivery',
           v-if='checkStatus("SET_DELIVERY")',
           @click='setDelivery()'
         )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
           label='Reset Delivery',
           v-if='checkStatus("RESET_DELIVERY")',
@@ -263,6 +264,6 @@ export default DeliveryOrder
 .packing__detail--left
   height: calc( 100% - 32px) !important
 .w-25
-  width: 25%
+  min-width: 95px
   margin-left: 7px
 </style>
