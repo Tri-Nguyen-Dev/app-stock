@@ -467,7 +467,7 @@ export default PackingOriginal
     ul.p-tabview-nav
       height: 42px !important
       position: relative
-      z-index: 1000
+      z-index: 1
     .p-tabview-nav-container
       overflow: unset !important
     .p-tabview-nav li .p-tabview-nav-link
