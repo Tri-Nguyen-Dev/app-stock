@@ -466,8 +466,7 @@ export default PackingOriginal
       flex-direction: column
     ul.p-tabview-nav
       height: 42px !important
-      position: relative
-      z-index: 2
+
     .p-tabview-nav-container
       overflow: unset !important
     .p-tabview-nav li .p-tabview-nav-link
@@ -483,7 +482,7 @@ export default PackingOriginal
       .edit-location
         font-size: 14px !important
         position: relative !important
-        z-index: 1000
+        z-index: 2
         width: 120px !important
         .p-autocomplete-panel
           font-size: 12px !important
