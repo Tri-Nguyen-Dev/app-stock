@@ -1,27 +1,138 @@
 <template lang="pug">
-.h-full.flex
-  .bg-white.sub__tab
-    Breadcrumb(:home="homeItem" :model="breadcrumbItem")
-    div.sub__tab--scroll
-      StockOutLabelCreate
-  .ml-5.flex-1.overflow-hidden
-    .grid.grid-nogutter.h-full.flex.flex-column
-      .col-12.justify-content-between.flex
+  .grid.flex.grid-nogutter.order
+    div.sub__tab(class="col-12 md:col-12 lg:col-3 xl:col-3 ")
+      Breadcrumb(:home="homeItem" :model="breadcrumbItem")
+      div.sub__tab--scroll
+        .border-top-1.border-gray-300.grid-nogutter
+          .col.p-4.border-tab
+            .grid.grid-nogutter.align-items-center.mb-4
+              .icon.bg-primary.surface-900.mr-3.icon-sender-info
+              span.uppercase.text-800.font-bold seller information
+            div
+              StockOutItemInput(
+                :listInfor='information.seller'
+                @sellerInfor='handleSeller'
+                @paramSeller='paramSeller'
+                :sellerList='sellerList'
+              )
+              .input-errors(
+                v-if='$v.information.seller.$each[0].value.$dirty && $v.information.seller.$each[0].value.$invalid '
+                style='text-align: center')
+                .error-message Please, select email
+              .input-errors(
+                v-else-if='$v.information.seller.$each[1].value.$dirty && $v.information.seller.$each[1].value.$invalid '
+                style='text-align: center')
+                .error-message Please, fill in name
+              .input-errors(
+                v-else-if='$v.information.seller.$each[2].value.$dirty && $v.information.seller.$each[2].value.$invalid  '
+                style='text-align: center')
+                .error-message Please, fill in phone
+          .border-top-1.border-gray-300.grid-nogutter
+          .col.p-4
+            .grid.grid-nogutter.align-items-center.mb-4
+              .icon.bg-primary.surface-900.mr-3.icon-warehouse-info
+              span.uppercase.text-800.font-bold warehouse contact
+            div
+              StockOutItemInput(
+                :listInfor='information.warehouse'
+                @fieldWarehouse='handleWarehouse'
+              )
+              .input-errors(
+                v-if='$v.information.warehouse.$each[0].value.$dirty && $v.information.warehouse.$each[0].value.$invalid '
+                style='text-align: center')
+                .error-message Please, select Warehouse
+              .input-errors(
+                v-else-if='$v.information.warehouse.$each[1].value.$dirty && $v.information.warehouse.$each[1].value.$invalid '
+                style='text-align: center')
+                .error-message Please, fill in Email
+              .input-errors(
+                v-else-if='$v.information.warehouse.$each[2].value.$dirty && $v.information.warehouse.$each[2].value.$invalid  '
+                style='text-align: center')
+                .error-message Please, fill in Phone
+
+          .border-top-1.border-gray-300.grid-nogutter
+          .col.p-4
+            .grid.grid-nogutter.align-items-center.mb-4
+              .icon.bg-primary.surface-900.mr-3.icon-receive-square
+              span.uppercase.text-800.font-bold receiver information
+            div
+              StockOutItemInput(
+                :listInfor='information.receiver'
+                @fieldReceiver='handleReceiver'
+              )
+              .input-errors(
+                v-if='$v.information.receiver.$each[0].value.$dirty && $v.information.receiver.$each[0].value.$invalid'
+                style='text-align: center')
+                .error-message Please, fill Address
+              .input-errors(
+                v-else-if='$v.information.receiver.$each[1].value.$dirty && $v.information.receiver.$each[1].value.$invalid'
+                style='text-align: center')
+                .error-message Please, fill in Email
+              .input-errors(
+                v-else-if='$v.information.receiver.$each[2].value.$dirty && $v.information.receiver.$each[2].value.$invalid'
+                style='text-align: center')
+                .error-message Please, fill in Name
+              .input-errors(
+                v-else-if='$v.information.receiver.$each[2].value.$dirty && $v.information.receiver.$each[3].value.$invalid'
+                style='text-align: center')
+                .error-message Please, fill in Phone
+          .border-top-1.border-gray-300.grid-nogutter
+          .col.p-4
+            .grid.grid-nogutter.align-items-center.mb-4
+              .icon.bg-primary.surface-900.mr-3.icon-calendar-infor
+              span.uppercase.text-800.font-bold time information
+            div
+              StockUnit(
+                title="Estimated delivery Time"
+                icon="icon-clock"
+                :value="estimatedDate"
+              )
+              StockUnit.mt-2(
+                title="Due delivery date"
+                icon="icon-calendar"
+                :value="deliveryDate"
+              )
+          .border-top-1.border-gray-300.grid-nogutter
+          .col.p-4
+            .grid.grid-nogutter.align-items-center.mb-4
+              .icon.bg-primary.surface-900.mr-3.icon-profile-circle
+              span.uppercase.text-800.font-bold creator information
+            div
+              StockOutItemInput( :listInfor='information.creator')
+              .input-errors(
+                v-if='$v.information.creator.$each[0].value.$dirty && $v.information.creator.$each[0].value.$invalid'
+                style='text-align: center')
+                .error-message Please, fill ID
+              .input-errors(
+                v-else-if='$v.information.creator.$each[1].value.$dirty && $v.information.creator.$each[1].value.$invalid'
+                style='text-align: center')
+                .error-message Please, fill in Email
+              .input-errors(
+                v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[2].value.$invalid'
+                style='text-align: center')
+                .error-message Please, fill in Name
+              .input-errors(
+                v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[3].value.$invalid'
+                style='text-align: center')
+                .error-message Please, fill in Phone
+    .inventory.flex.flex-column.flex-1(class="lg:col-7 md:col-12 ")
+      .inventory__header
         div
           h1.text-heading Item list
           span.text-subheading {{ listItemsAddSize }} product found
-        div
+        .inventory__header--action.flex
           .btn.btn-primary(@click='createStockOut')
             .icon.icon-add-items.surface-900.bg-white
             span.text-900.text-white.mr-3 Add Items For Delivery
-      .col-12.flex-1
-        DataTable.w-full.flex.flex-column.table__sort-icon.bg-white(
+      .inventory__content
+        DataTable.m-h-700(
           :resizableColumns='true',
           :value='listItemsAdd',
           dataKey='id',
           :row-hover='true',
           responsiveLayout='scroll',
           :scrollable="false"
+          :class="{ 'table-wrapper-empty': !listItemsAdd || listItemsAdd.length <= 0 }"
         )
           template(#empty)
             .flex.align-items-center.justify-content-center.flex-column
@@ -121,36 +232,77 @@
       )
         template(v-slot:message)
           p  Are You Want Cancel Order
-    Toast
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { required } from 'vuelidate/lib/validators'
+import dayjs from 'dayjs'
 import { getDeleteMessage, INFORMATION } from '~/utils'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreCreateOrder = namespace('stock-out/create-order')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreSeller = namespace('seller/seller-list')
+const nsStoreUserDetail = namespace('user-auth/store-user')
 
 @Component({
-  components: { ConfirmDialogCustom }
+  components: { ConfirmDialogCustom },
+  validations: {
+    information: {
+      seller:{
+        $each: {
+          value: { required }
+        }
+      },
+      warehouse:{
+        $each: {
+          value: { required }
+        }
+      },
+      receiver:{
+        $each: {
+          value: { required }
+        }
+      },
+      creator:{
+        $each: {
+          value: { required }
+        }
+      }
+    }
+  }
 })
+
 class createOrder extends Vue {
   listItemsAdd: any = []
   isActive: string = ''
   delivery: string = ''
   noteBox: any = null
-  information = INFORMATION
   oldItem: any = null
   isModalDelete: boolean = false
   isModalCancel : boolean = false
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
   valueDelete: any
+  deliveryDate: string | any = 'Fill receiver information'
+  estimatedDate: string | any = 'Fill receiver information'
+  information = INFORMATION
+
+  // -- [ State ] ------------------------------------------------------------
 
   @nsStoreCreateOrder.State
   listInfo:any
 
   @nsStoreCreateOrder.State
   outGoingListStore:any
+
+  @nsStoreUserDetail.State
+  user!: any
+
+  @nsStoreSeller.State
+  sellerList!: any
+
+  // -- [ Action ] ------------------------------------------------------------
 
   @nsStoreCreateOrder.Action
   actGetCreateOrder!: (obj: any) => Promise<void>
@@ -161,6 +313,14 @@ class createOrder extends Vue {
   @nsStoreCreateOrder.Action
   actDeliveryOrder!: (params: any) => Promise<void>
 
+  @nsStoreWarehouse.Action
+  actWarehouseBySeller!: (params: any) => Promise<void>
+
+  @nsStoreSeller.Action
+  actSellerList!: (params: any) => Promise<void>
+
+  // -- [ Functions ] ------------------------------------------------------------
+
   mounted() {
     this.listItemsAdd = this.outGoingListStore.map((x: any) => (
       { ..._.cloneDeep(x), hasAirtag: false }))
@@ -169,15 +329,23 @@ class createOrder extends Vue {
     }else if (!this.information.seller[0].value ){
       this.disableInput(false)
     }
+    this.handleUser()
   }
 
   createStockOut() {
-    const note = this.noteBox
-    const listInfoAdd = { ...this.information , note }
-    this.$router.push('/stock-out/order/add-items')
-    this.actGetCreateOrder(
-      _.cloneDeep(listInfoAdd)
-    )
+    this.$v.information.seller?.$each?.$touch()
+    this.$v.information.warehouse?.$each?.$touch()
+    this.$v.information.receiver?.$each?.$touch()
+    this.$v.information.creator?.$each?.$touch()
+    if (!this.$v.$invalid) {
+      const note = this.noteBox
+      const listInfoAdd = { ...this.information , note }
+      this.$router.push('/stock-out/order/add-items')
+      this.actGetCreateOrder(
+        _.cloneDeep(listInfoAdd)
+      )
+    }
+    return true
   }
 
   editItem(data: any  ) {
@@ -226,11 +394,13 @@ class createOrder extends Vue {
       })
     }
     if(this.listItemsAdd.length === 0) this.disableInput(false)
+    this.listItemsAdd = result
   }
 
   async handleSubmit(){
     const listReceiver = this.listInfo.receiver
     const deliveryItemList: any = []
+    const note = this.listInfo.note
     _.forEach(this.listItemsAdd, ({ id, delivery, hasAirtag }) =>{
       deliveryItemList.push({
         stockBox:{
@@ -250,6 +420,7 @@ class createOrder extends Vue {
       receiverPhone: listReceiver[3].value,
       dueDeliveryDate: null,
       estimatedDeliveryTime: null,
+      note,
       warehouse: {
         id: this.listInfo.warehouse[0].warehouseId
       },
@@ -300,6 +471,54 @@ class createOrder extends Vue {
     })
   }
 
+  handleWarehouse(event: any) {
+    const InfoWarehouse = this.information.warehouse
+    InfoWarehouse[0].warehouseId = event.id
+    InfoWarehouse[1].value = event.email
+    InfoWarehouse[2].value = event.phone
+  }
+
+  async handleSeller(event: any) {
+    await this.actWarehouseBySeller({ email: event.email })
+    const InfoSeller = this.information.seller
+    InfoSeller[0].value = event.email
+    InfoSeller[0].id = event.id
+    InfoSeller[1].value = event.displayName
+    InfoSeller[2].value = event.phoneNumber
+    this.unSelectedSeller()
+  }
+
+  handleUser() {
+    const InfoCreator = this.information.creator
+    InfoCreator[0].value = this.user.staffId
+    InfoCreator[1].value = this.user.email
+    InfoCreator[2].value = this.user.displayName
+    InfoCreator[3].value = this.user.phoneNumber
+  }
+
+  paramSeller(event: any) {
+    this.actSellerList({ email: event })
+  }
+
+  handleReceiver(event: any) {
+    const d = new Date()
+    const dayFrom = dayjs(d).add(5, 'day').format('DD/MM/YYYY')
+    const dayTo = dayjs(d).add(8, 'day').format('DD/MM/YYYY')
+    const estimate = dayFrom + ' - ' + dayTo
+    if (event) {
+      this.deliveryDate = estimate
+      this.estimatedDate = '1 day'
+    }
+  }
+
+  unSelectedSeller() {
+    _.forEach(this.information.warehouse, (val) => {
+      val.value = null
+    })
+  }
+
+  // -- [ Getter ] ------------------------------------------------------------
+
   get listItemsAddSize() {
     return this.listItemsAdd.length || 0
   }
@@ -328,28 +547,40 @@ export default createOrder
 </script>
 
 <style lang="sass" scoped>
-.sub__tab
-  height: 100%
-  width: 22rem
-  border-radius: var(--border-radius)
-.sub__tab--scroll
-  background-color: #ffffff
-  height: calc(100vh - 110px)
-  overflow: auto
-.btn-action
-  border: none
-  padding: 0
-  height: 2rem
-  width: 2rem
-  justify-content: center
-  background: var(--surface-200)
-::v-deep.p-datatable
-  .p-datatable-footer
-    box-shadow: 0px 10px 45px rgba(0, 10, 24, 0.1)
+::v-deep.order
+  @include tablet
+    margin: 20px
+  .sub__tab
     background-color: #ffffff
+    height: calc(100vh - 32px)
+    overflow: hidden
+    @include desktop
+      height: calc(100vh - 32px)
+      max-width: 23rem
+      overflow: hidden
+      border-radius: var(--border-radius)
+  .sub__tab--scroll
+    display: flex
+    align-items: center
+    flex-direction: column
+    height: calc(100vh - 100px)
+    overflow: auto
+    background-color: #ffffff
+    @include desktop
+      height: calc(100vh - 100px)
+      overflow: auto
+    @include tablet
+      flex-direction: row
+      justify-content: center
+      align-items: baseline
+      overflow: auto
+  .btn-action
     border: none
-    padding: 15px 0px
-    width: 100%
+    padding: 0
+    height: 2rem
+    width: 2rem
+    justify-content: center
+    background: var(--surface-200)
   .btn
     border: none
     padding: 0px 25px
@@ -376,4 +607,71 @@ export default createOrder
   border-radius: 10px
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
   background-color: #979AA4
+
+::v-deep.inventory
+  min-height: calc(100vh - 32px)
+  margin-top: 3rem
+  @include desktop
+    margin-top: 0px
+    margin-left: 3rem
+    height: calc(100vh - 32px)
+  &__header
+    flex-direction: column
+    flex-wrap: wrap
+    margin-bottom: 24px
+    @include desktop
+      flex-direction: row
+      @include flex-center-space-between
+    &--action
+      margin-top: 12px
+      display: flex
+      @include flex-column
+      flex-wrap:  wrap
+      gap: 10px 16px
+      @include desktop
+        @include flex-center
+        flex-direction: row
+        margin-top: 0
+  &__content
+    flex: 1
+    border-radius: 4px
+    position: relative
+    overflow: hidden
+::v-deep.p-datatable
+  .p-datatable-footer
+    box-shadow: 0px 10px 45px rgba(0, 10, 24, 0.1)
+    background-color: #ffffff
+    border: none
+    padding: 15px 0px
+    width: 100%
+  .text-primary
+    color: $primary-dark !important
+    font-weight: $font-weight-medium
+  .p-datatable-tbody
+    & > tr
+      background: $text-color-100
+      .text-bold
+        color: $text-color-700
+        .p-inputnumber-input
+          color: $text-color-700
+    .outgoing__selected
+      background: $color-white
+      > .text-bold
+        font-weight: $font-weight-bold
+        color: $text-color-900
+        .p-inputnumber-input
+          font-weight: $font-weight-bold
+          color: $text-color-900 !important
+  .p-datatable-thead > tr > th
+    white-space: unset
+    .p-column-header-content
+      .p-checkbox
+        display: none
+  .text-right
+    text-align: right !important
+    .p-column-header-content
+      justify-content: end !important
+.error-message
+  color: #ff0000
 </style>
+
