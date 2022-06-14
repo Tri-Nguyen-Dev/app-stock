@@ -34,7 +34,7 @@
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
       div(class='col-12 md:col-4 lg:col-4 xl:col-2')
-        FilterTable(title="ID" placeholder="Search" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter")
+        FilterTable(title="ID" placeholder="Search" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter" :isShowFilter="isShowFilter")
       div(class='col-12 md:col-8 lg:col-8 xl:col-5')
         .grid.grid-nogutter
           .col

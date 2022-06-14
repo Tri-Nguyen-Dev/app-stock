@@ -15,7 +15,7 @@
             span Filter
           .btn-refresh(@click="handleRefreshFilter")
             .icon.icon-rotate-left.bg-white
-        .btn.btn-primary(@click="handleAddStock")
+        Button.btn.btn-primary(@click="handleAddStock")
           .icon.icon-add-items
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
@@ -38,6 +38,7 @@
           :value="filter.barCode"
           :searchText="true"
           @updateFilter="handleFilter"
+          :isShowFilter="isShowFilter"
         )
       .div(class="col-12 md:col-4")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
@@ -58,8 +59,7 @@
         )
           Column(
             selectionMode='multiple'
-            :styles="{'width': '1%'}"
-            :headerClass="classHeaderMuti")
+            :styles="{'width': '1%'}")
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -184,14 +184,6 @@ class Stock extends Vue {
     return  _.filter(this.selectedStock, (stock: StockModel.Model) => {
       return stock.stockStatus !== 'STOCK_STATUS_DISABLE'
     })
-  }
-
-  get classHeaderMuti() {
-    return !this.stockList ||
-      this.stockList.length <= 0 ||
-      this.checkStockDisable
-      ? 'checkbox-disable'
-      : ''
   }
 
   get checkStockDisable() {
