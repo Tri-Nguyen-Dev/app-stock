@@ -1,17 +1,12 @@
 export namespace StockTakeConstants {
   // -- [ Option List ] ------------------------------------------------
-  export enum StatusStockTake {
-    NEW = 2,
-    IN_PROGRESS = 3,
-    CANCELLED = 0,
-    COMPLETED = 1
-  }
-
   export const STATUS_STOCK_TAKE_OPTIONS = [
-    { name: 'Cancelled', value: StatusStockTake.CANCELLED },
-    { name: 'Completed', value: StatusStockTake.COMPLETED },
-    { name: 'New', value: StatusStockTake.NEW },
-    { name: 'In Progress', value: StatusStockTake.IN_PROGRESS }
+    { name: 'Cancelled', value: 'CANCELLED' },
+    { name: 'Completed', value: 'COMPLETED' },
+    { name: 'New', value: 'NEW' },
+    { name: 'In Progress', value: 'IN_PROGRESS' },
+    { name: 'Approving', value: 'APPROVING' },
+    { name: 'Approved', value: 'APPROVED' }
   ]
 
   export const TYPE_STOCK_TAKE_OPTIONS = [

@@ -5,9 +5,6 @@
         h1.text-heading Stock-take note list
         span.text-subheading {{ total }} products found
       .header__action
-        .header__search
-          .icon.icon--left.icon-search
-          InputText(type='text' placeholder='Search')
         .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
             .icon.icon-filter(v-if="!isShowFilter")
