@@ -128,7 +128,8 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   StockConstants,
-  getDeleteMessage
+  getDeleteMessage,
+  resetScrollTable
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
@@ -237,7 +238,6 @@ class Stock extends Vue {
   handleFilter(e: any, name: string){
     this.filter[name] = e
     this.getProductList()
-    this.selectedStock = []
   }
 
   async getProductList() {
@@ -254,10 +254,10 @@ class Stock extends Vue {
       this.filter.categories = ''
       this.getProductList()
     }
-    this.selectedStock = []
   }
 
   onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getProductList()
@@ -282,7 +282,6 @@ class Stock extends Vue {
           life: 3000
         })
         await this.getProductList()
-        this.selectedStock = []
       }
     } catch (error) {
       this.loadingSubmit = false
@@ -298,6 +297,7 @@ class Stock extends Vue {
   }
 
   sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if (sortOrder) {
       this.filter.desc = sortOrder !== 1

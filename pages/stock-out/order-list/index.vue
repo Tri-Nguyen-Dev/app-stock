@@ -241,7 +241,8 @@ import {
   DeliveryConstants,
   getCancelMessage,
   exportFileTypePdf,
-  refreshAllFilter
+  refreshAllFilter,
+  resetScrollTable
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
@@ -419,6 +420,7 @@ class DeliveryOrderList extends Vue {
   }
 
   onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getProductList()
@@ -467,6 +469,7 @@ class DeliveryOrderList extends Vue {
   }
 
   sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if (sortOrder) {
       this.filter.desc = sortOrder !== 1

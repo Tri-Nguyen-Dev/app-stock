@@ -168,7 +168,7 @@ import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-import { getDeleteMessage, PAGINATE_DEFAULT } from '~/utils'
+import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -262,6 +262,7 @@ class BoxList extends Vue {
   }
 
   async onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     await this.actGetBoxList(this.getParamAPi())
@@ -303,6 +304,7 @@ class BoxList extends Vue {
   validateText =  _.debounce(this.handleFilter, 500);
 
   async sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
