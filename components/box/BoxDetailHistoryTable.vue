@@ -1,15 +1,15 @@
 <template lang="pug">
 DataTable(
   responsiveLayout="scroll"
-  :value='locationHistory'  
+  :value='locationHistory'
   dataKey="id"
   :resizableColumns="true"
-  :paginator="false" 
+  :paginator="false"
   :rows="20"
   )
   Column(field="no" header="NO" sortable)
     template(#body='slotProps')
-      span.font-bold  {{ (pageNumber - 1) * pageSize + slotProps.index +1 }}
+      span.font-bold  {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
   Column(field="createdAt" header="TIME" sortable bodyClass="font-semibold"  :styles="{width: '900px'}"  )
     template(#body='{data}')
       span.font-bold {{ data.createdAt | dateTimeHour12 }}
@@ -33,7 +33,7 @@ DataTable(
     Pagination(
       :paging="paging"
       :total="totalHistory"
-      @onPage="onPageHistory")
+      @onPage="onPageHistory($event)")
 
 </template>
 <script lang="ts">
@@ -51,15 +51,11 @@ const nsStoreBoxDetail = namespace('box/box-detail')
 class BoxDetailHistory extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
 
-  pageSize: number = 20
-  pageNumber: number = 1
-
-  // getParamApi(){
-  //   return {
-  //     pageNumber: this.pageNumber,
-  //     pageSize: this.pageSize
-  //   }
-  // }
+  getParamApi(){
+    return {
+      id: this.$route.params.id
+    }
+  }
 
   @nsStoreBoxDetail.State
   locationHistory: []
@@ -71,12 +67,13 @@ class BoxDetailHistory extends Vue {
   actLocationHistory!: (params: any) => Promise<void>
 
   async mounted() {
-    await this.actLocationHistory({ id: this.$route.params.id })
+    await this.actLocationHistory(this.getParamApi())
   }
 
   async onPageHistory(event: any) {
-    this.pageNumber = event.page + 1
-    await this.actLocationHistory({ id: this.$route.params.id })
+    this.paging.pageNumber = event.page
+    this.paging.pageSize = event.rows
+    await this.actLocationHistory({ pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize, ...this.getParamApi() })
   }
 
 }

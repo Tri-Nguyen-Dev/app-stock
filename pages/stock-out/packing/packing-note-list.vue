@@ -128,7 +128,8 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   DeliveryConstants,
-  exportFileTypePdf
+  exportFileTypePdf,
+  resetScrollTable
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
@@ -243,6 +244,7 @@ class PackingNoteList extends Vue {
   }
 
   onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getProductList()
@@ -250,11 +252,12 @@ class PackingNoteList extends Vue {
 
   rowClick({ data }) {
     if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
-      this.$router.push(`/stock-out/order/${data.id}`)
+      this.$router.push(`/stock-out/order/${data.id}/packing-detail`)
     }
   }
 
   sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if (sortOrder) {
       this.filter.desc = sortOrder !== 1

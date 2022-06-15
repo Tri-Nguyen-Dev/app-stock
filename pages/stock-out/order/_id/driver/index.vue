@@ -187,7 +187,9 @@ class DriverList extends Vue {
       ? this.filter.warehouseId.map((item: any) => item?.id).toString()
       : null
     await this.actDriverList({
-      ...this.filter,
+      driverPhone: this.filter.driverPhone ||null,
+      driverName: this.filter.driverName || null,
+      driverEmail: this.filter.driverEmail || null,
       warehouseId: warehouseId || null,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber

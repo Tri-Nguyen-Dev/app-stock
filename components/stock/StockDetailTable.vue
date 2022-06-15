@@ -75,7 +75,7 @@
           :class="{ 'table-wrapper-empty': !itemsList.data.items || itemsList.data.items.length <= 0 }"
           @sort="sortData($event)"
         )
-          Column(selectionMode="multiple" :styles="{'width': '1%'}" :exportable="false")
+          Column(selectionMode="multiple" :styles="{'width': '1%'}" :exportable="false" :headerClass="classHeaderMuti")
           Column(field="no" header="NO" :styles="{'width': '1%'}")
             template(#body="{ index }")
               span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
@@ -138,6 +138,7 @@
                   .icon.icon-btn-delete
           template(#footer)
             Pagination(
+              type="items selected"
               :paging="paging"
               :total="total"
               :deleted-list="selectedStockFilter"
@@ -253,6 +254,12 @@ class StockDetailTable extends Vue {
     )
   }
 
+  get classHeaderMuti() {
+    return !this.itemsList.data.items ||
+      this.itemsList.data.items.length <= 0 ? 'checkbox-disable'
+      : ''
+  }
+
   onPage(event: any) {
     this.paginate.pageSize = event.rows
     this.paginate.pageNumber = event.page
@@ -338,6 +345,7 @@ class StockDetailTable extends Vue {
   handleFilter(e: any, name: string) {
     this.filter[name] = e
     this.getItemsList()
+    this.selectedStock = []
   }
 
   handleRefreshFilter() {

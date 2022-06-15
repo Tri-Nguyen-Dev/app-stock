@@ -7,7 +7,8 @@ import { $api, PathBind } from '~/utils'
 })
 export default class StoreStockIn extends VuexModule {
   private static readonly STATE_URL = {
-    GET_STOCK_IN: '/request/list',
+    GET_INCOMING_LIST: '/request/list',
+    GET_TRANSFERING_LIST: '/request/list-transfer',
     DELETE_STOCK_IN: '/request/list/delete'
   }
 
@@ -20,8 +21,9 @@ export default class StoreStockIn extends VuexModule {
   }
 
   @Action({ commit: 'setStockIn', rawError: true })
-  async actGetStockIn(params: any ): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreStockIn.STATE_URL.GET_STOCK_IN,params)
+  async actGetStockIn({ params, type }): Promise<string | undefined> {
+    const path = type ? StoreStockIn.STATE_URL.GET_TRANSFERING_LIST : StoreStockIn.STATE_URL.GET_INCOMING_LIST
+    const url = PathBind.transform(this.context, path, params)
     return await $api.get(url, { params })
   }
 
