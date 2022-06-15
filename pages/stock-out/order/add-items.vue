@@ -97,12 +97,12 @@
     )
       Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
         template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-      Column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold' 
+      Column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold'
         :sortable='true' :styles="{'width': '5%'}" sortField='_amount'
       )
       Column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_')
         template(#body='{data}')
-          InputNumber.w-7rem(v-model="data.delivery" mode="decimal" :min="0" 
+          InputNumber.w-7rem(v-model="data.delivery" mode="decimal" :min="0"
             :max="data.amount" inputClass="w-full" @input='handleDeliveryChange'
           )
       Column(field='image' header='IMAGE')
@@ -114,7 +114,7 @@
         template(#body='{data}')
           span.text-primary {{data.stock.barCode}}
       Column(field='sku' header='SKU' :sortable='true' sortField='_sku')
-      Column(field='box.request.seller.email' header='SELLER EMAIL' :sortable='true' 
+      Column(field='box.request.seller.email' header='SELLER EMAIL' :sortable='true'
         :styles="{'width': '15%'}" sortField='_box.request.seller.email'
       )
       Column(field='box.id' header='BOX CODE' :sortable='true' className="text-right" bodyClass='font-semibold' sortField='_box.id')
@@ -183,7 +183,7 @@ class AddItems extends Vue {
   outGoingListStore!: any
 
   @nsStoreOrder.State
-  listInfor!: any
+  listInfo!: any
 
   // -- [ Action ] ------------------------------------------------------------
   @nsStoreOrder.Action
@@ -194,8 +194,8 @@ class AddItems extends Vue {
 
   // -- [ Functions ] ------------------------------------------------------------
   mounted() {
-    this.sellerEmail = _.get(this.listInfor, 'seller[0].value')
-    this.warehouse = _.get(this.listInfor, 'warehouse[0].warehouseId')
+    this.sellerEmail = _.get(this.listInfo, 'seller[0].value')
+    this.warehouse = _.get(this.listInfo, 'warehouse[0].warehouseId')
     if(!this.sellerEmail || !this.warehouse) {
       this.$router.push({ path: '/stock-out/order' })
       return
@@ -229,7 +229,7 @@ class AddItems extends Vue {
 
   handleFilterBox(e: any, name: string){
     this.filter[name] = e
-    this.getDataList() 
+    this.getDataList()
   }
 
   async getDataList() {
@@ -321,7 +321,7 @@ export default AddItems
       .text-primary
         color: $primary-dark !important
         font-weight: $font-weight-medium
-      .p-datatable-tbody 
+      .p-datatable-tbody
         & > tr
           background: $text-color-100
           .text-bold

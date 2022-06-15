@@ -7,47 +7,53 @@ div
     .col-3
       span.font-bold.text-small.mr-1.text-label {{ item.label }}
     .col-9
-      AutoComplete.justify-content-end.w-full( 
-        v-if='item.autoComplete' 
-        field='email' 
+      AutoComplete.justify-content-end.w-full(
+        v-if='item.type === INPUT_TYPE.AutoComplete'
+        field='email'
         forceSelection
         v-model='selectedSeller'
-        :disabled='item.disabled' 
-        :suggestions='listSeller'
-        @item-select='changeItem($event)' 
-        @complete="searchCountry($event)"
+        :disabled='item.disabled'
+        :suggestions='sellerList'
+        @item-select='changeItem($event)'
+        @complete="searchSeller($event)"
       )
-      InputText.w-full( v-else-if='!item.options' v-model='item.value' :disabled='item.disabled' @change='receiverChange', )
-      Dropdown.w-full( 
-        v-else 
-        :disabled='item.disabled' 
-        :options="warehouseBySeller" 
-        optionLabel="name" 
-        v-model='selectedWarehouse'
-        :placeholder='filedWarehouse'
-        @change='selectedItems($event)' 
+      InputText.w-full(
+        v-else-if='item.type === INPUT_TYPE.Text'
+        v-model='item.value'
+        :disabled='item.disabled'
+        @change='receiverChange',
       )
+
+      Dropdown.w-full(
+        v-else-if='item.type === INPUT_TYPE.Dropdown'
+        :disabled='item.disabled'
+        :options="warehouseBySeller"
+        optionLabel="name"
+        v-model='item.value'
+        @change='selectedItems($event)'
+    )
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
-const nsStoreSeller = namespace('seller/seller-list')
+import { INPUT_TYPE } from '~/utils/constants/stock-out'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
-@Component
+@Component({
+})
+
 class ItemInput extends Vue {
   @Prop() listInfor: any | undefined
-  selectedWarehouse: any = null
+  @Prop() readonly sellerList: any | undefined
+  @Prop() validations :any
+  @Prop() invalid: any | undefined
+  INPUT_TYPE : any  = INPUT_TYPE
   filedWarehouse: any = null
   selectedSeller: any = null
-  name: any | string 
-  listSeller: any = []
+  name: any | string
 
   @nsStoreWarehouse.State
   warehouseBySeller!: any
-
-  @nsStoreSeller.State
-  sellerList!: any
 
   selectedItems( event : any  ) {
     this.$emit('fieldWarehouse', event.value)
@@ -56,26 +62,24 @@ class ItemInput extends Vue {
   receiverChange( event : any  ) {
     this.$emit('fieldReceiver', event.target.value)
   }
-  
+
   mounted() {
-    const inforObj = this.listInfor[0]
-    if(inforObj.label === 'Email' && inforObj.value !== ''  ) {
-      this.selectedSeller = inforObj.value
-    } 
+    const infoObj = this.listInfor[0]
+    if(infoObj.label === 'Email' && infoObj.value !== ''  ) {
+      this.selectedSeller = infoObj.value
+    }
     else if ( this.listInfor[0].label === 'Name'){
-      this.filedWarehouse = inforObj.value
+      this.filedWarehouse = infoObj.value
     }
   }
- 
+
   changeItem( event : any ) {
     this.$emit('sellerInfor' , event.value)
   }
 
-  searchCountry() {
-    this.listSeller = this.sellerList
+  searchSeller() {
     this.$emit('paramSeller' , this.selectedSeller)
   }
-
 }
 
 export default ItemInput
@@ -86,7 +90,6 @@ export default ItemInput
 ::v-deep.p-inputwrapper
   .p-autocomplete-input
     width: 100%
-
 ::v-deep.p-dropdown
   .p-inputtext.p-placeholder
     color: #495057
