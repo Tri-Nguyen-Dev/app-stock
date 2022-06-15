@@ -1,5 +1,5 @@
 <template lang="pug">
-  .grid.flex.grid-nogutter.driver
+  .grid.flex.grid-nogutter.stock
     div.bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
       .grid.flex.align-items-center.p-2.m-0
         .col-12.flex
@@ -17,31 +17,31 @@
           span.font-bold Note ID: ST2222
         .col.border-bottom-1.border-gray-300
       div.sub--scroll
-        .grid.driver--info.p-2.m-0
+        .grid.stock--info.p-2.m-0
           .col-12.flex
             .col.flex.align-items-center
               .icon-sender-info.icon.bg-primary.mr-2
               span.font-bold.text-800.uppercase ID Information
           .col-12
-            StockUnit.m-0(title="Create Time "  :value="driverDetail" icon="icon-receipt-note")
+            StockUnit.m-0(title="Create Time "  :value="stockDetail" icon="icon-receipt-note")
           .col-12
-            StockUnit.m-0(title="Creator ID " :value="driverDetail"  icon="icon-tag-user")
+            StockUnit.m-0(title="Creator ID " :value="stockDetail"  icon="icon-tag-user")
           .col-12
-            StockUnit.m-0(title="Warehouse"  :value="driverDetail" icon="icon-warehouse")
+            StockUnit.m-0(title="Warehouse"  :value="stockDetail" icon="icon-warehouse")
           .col-12
-            StockUnit.m-0(title="Items"  :value="driverDetail" icon="icon-frame")
+            StockUnit.m-0(title="Items"  :value="stockDetail" icon="icon-frame")
           .col.border-bottom-1.border-gray-300
-        .grid.driver--contact.p-2.m-0
+        .grid.stock--contact.p-2.m-0
           .col-12.flex
             .col.flex.align-items-center
               .icon-sender-info.icon.bg-primary.mr-2
               span.font-bold.text-800.uppercase Seller Information
           .col-12
-            StockUnit.m-0(title="Name" :value="driverDetail" icon="icon-sender-name")
+            StockUnit.m-0(title="Name" :value="stockDetail" icon="icon-sender-name")
           .col-12
-            StockUnit.m-0(title="Email" :value="driverDetail" icon="icon-sender-email")
+            StockUnit.m-0(title="Email" :value="stockDetail" icon="icon-sender-email")
           .col-12
-            StockUnit.m-0(title="Phone" :value="driverDetail" icon="icon-sender-phone")
+            StockUnit.m-0(title="Phone" :value="stockDetail" icon="icon-sender-phone")
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
       .stock-take.flex.flex-column
         .stock-take__header
@@ -50,68 +50,99 @@
             span.text-subheading {{ totalItem }} total
           .stock-take__header--action.flex
             Button.btn.btn-primary.border-0(@click='handleAddItems') Add Item
-            Button.btn.btn-primary.border-0(@click='handleSubmit') Save
+            Button.btn.btn-primary.border-0(@click='handleSubmit' :disabled='isDisabledSubmit') Save
         .stock-take__content
-          DataTable.m-h-700(
-            :value='listItemByPage'
+          DataTable(
+            :value='dataRenderItems'
             dataKey='id'
-            :rows='10'
+            :rows='20'
             responsiveLayout="scroll"
             :resizableColumns="true"
-            :class="{ 'table-wrapper-empty': !driverDetail || driverDetail.length <= 0 }"
+            :class="{ 'table-wrapper-empty': !listStockSelected || listStockSelected.length <= 0 }"
+            :selection="selectedStock"
+            @row-select-all="rowSelectAll"
+            @row-unselect-all="rowUnSelectAll"
+            @row-select="rowSelect"
+            @row-unselect="rowUnselect"
           )
+            Column(selectionMode="multiple" :styles="{width: '3rem'}")
             Column(field='no' header='NO' :styles="{'width': '3rem'}")
-              template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-            Column(field='barCode' header='BARCODE' :sortable='true')
-            Column(field='name' header='ITEM NAME' :sortable='true')
-            Column(field='boxCode' header='BOX CODE' :sortable='true')
-            Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right")
+              template(#body='slotProps') {{ pagination.pageSize * pagination.pageNumber + slotProps.index + 1 }}
+            Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode")
+              template(#body='{ data }')
+                span.text-white-active.text-900.font-bold {{ data.stock.barCode }}
+            Column(field='stock.name' header='ITEM NAME' :sortable='true' sortField='_stock.id')
+            Column(field='box.id' header='BOX CODE' :sortable='true' sortField='_box.id')
+            Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right" sortField="_rackLocation.name")
               template(#body="{data}")
-                div(v-if="data.location")
+                div(v-if="data.box.rackLocation")
                   .flex.align-items-center.cursor-pointer.justify-content-end
-                    span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
+                    span.text-primary.font-bold.font-sm.text-white-active {{ data.box.rackLocation.name }}
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
+            Column(:exportable="false" header="ACTION" className="text-right")
+              template(#body="{data}")
+                .table__action
+                  span.action-item(:class="{'disable-button': selectedStock.length > 0}" @click="showModalDelete([data])")
+                    .icon.icon-btn-delete
             template(#footer)
               Pagination(
-                :paging="paging"
+                type="stocks selected"
+                :paging="pagination"
                 :total="totalItem"
+                :deleted-list="selectedStock"
+                @onDelete="showModalDelete"
                 @onPage="onPage"
               )
             template(#empty)
               div.flex.align-items-center.justify-content-center.flex-column
                 img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
                 p.text-900.font-bold.mt-3 List is empty!, Click
-                  span.text-primary.underline.cursor-pointer &nbsp;here
+                  span.text-primary.underline.cursor-pointer(@click='handleAddItems') &nbsp;here
                   span &nbsp;to add item.
     ItemListModel(
       :isShow="isModalAddItem"
       @hideDialog='hideDialog($event)',
       @onApply='handleApplyAddItem($event)',
+      :itemSelected='listStockSelected'
     )
+    ConfirmDialogCustom(
+      title="Confirm delete"
+      image="confirm-delete"
+      :isShow="isModalDelete"
+      :onOk="handleDeleteStock"
+      :onCancel="handleCancel"
+    )
+      template(v-slot:message)
+        p {{ deleteMessage }}
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
-import { PAGINATE_DEFAULT } from '~/utils'
+import { getDeleteMessage } from '~/utils'
 import ItemListModel from '~/components/stock-take/ItemListModel.vue'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 
 @Component({
   components: {
     Pagination,
-    ItemListModel
+    ItemListModel,
+    ConfirmDialogCustom
   }
 })
 class StockTakeItems extends Vue {
   listStockSelected = []
-  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   isModalAddItem: boolean = false
   disabledApply = true
-  driverDetail = 'namlcp'
-  filter: any = {
-    desc: null,
-    sortBy: null
+  stockDetail = 'namlcp'
+  isModalDelete: boolean = false
+  onEventDeleteList: any = []
+  selectedStock: any = []
+  pagination: any = {
+    first: 0,
+    pageNumber: 0,
+    pageCount: 1,
+    pageSize: 20
   }
 
   handleAddItems() {
@@ -119,12 +150,19 @@ class StockTakeItems extends Vue {
   }
 
   handleSubmit(){
-
+    // const body = {
+    //   note: '',
+    //   checkType: 1,
+    //   stockBoxList: _.map(this.listStockSelected, ({ id }) => {
+    //     return { id }
+    //   })
+    // }
+    // console.log(body)
   }
 
   onPage(event: any) {
-    this.paging.pageSize = event.rows
-    this.paging.pageNumber = event.page
+    this.pagination.pageSize = event.rows
+    this.pagination.pageNumber = event.page
   }
 
   get homeItem() {
@@ -133,20 +171,16 @@ class StockTakeItems extends Vue {
 
   get breadcrumbItem() {
     return [
-      { label: 'Driver',
-        to: `/stock-out/order/${this.$route.params.id}/driver` },
+      { label: 'stock',
+        to: `/stock-out/order/${this.$route.params.id}/stock` },
       { label: 'Information',
-        to: `/stock-out/order/${this.$route.params.id}/driver/${this.$route.params.sid}`
+        to: `/stock-out/order/${this.$route.params.id}/stock/${this.$route.params.sid}`
       }
     ]
   }
 
   get totalItem() {
     return _.size(this.listStockSelected)
-  }
-
-  get listItemByPage() {
-    return this.listStockSelected
   }
 
   handleApplyAddItem(selectedStock){
@@ -157,12 +191,66 @@ class StockTakeItems extends Vue {
   hideDialog(isShowModal: boolean){
     this.isModalAddItem = isShowModal
   }
+
+  showModalDelete(data) {
+    this.onEventDeleteList = data || this.selectedStock
+    this.isModalDelete = true
+  }
+
+  handleDeleteStock() {
+    this.listStockSelected = _.filter(
+      this.listStockSelected, ({ id }) => {
+        return !_.find(this.onEventDeleteList, { id })
+      }
+    )
+    this.selectedStock = []
+    this.isModalDelete = false
+    this.pagination.first = 0
+    this.pagination.pageNumber = 0
+    
+  }
+
+  handleCancel() {
+    this.isModalDelete = false
+  }
+
+  rowSelectAll({ data }) {
+    this.selectedStock = _.unionWith(this.selectedStock, data, _.isEqual)
+  }
+
+  rowUnSelectAll() {
+    this.selectedStock = _.differenceWith(this.selectedStock, this.dataRenderItems, _.isEqual)
+  }
+
+  rowSelect({ data }) {
+    this.selectedStock.push(data)
+  }
+
+  rowUnselect({ originalEvent, data }) {    
+    originalEvent.originalEvent.stopPropagation()
+    this.selectedStock = _.filter(this.selectedStock, (box: any) => box.id !== data.id)
+  }
+
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'box')
+  }
+
+  get dataRenderItems() {
+    const lastIndex = this.pagination.first + this.pagination.pageSize
+    return this.listStockSelected.filter(
+      (_, index) => index >= this.pagination.first && index < lastIndex
+    )
+  }
+  
+  get isDisabledSubmit() {
+    return _.size(this.listStockSelected) > 0 ? null : 'disabled'
+  }
 }
 
 export default StockTakeItems
 </script>
 <style lang="sass" scoped>
-.driver
+.stock
   @include tablet
     margin: 50px
   ::v-deep.sub-tab
@@ -241,37 +329,17 @@ export default StockTakeItems
     border-radius: 4px
     position: relative
     overflow: hidden
-    .p-datatable-table
-      .text-primary
-        color: $primary-dark !important
-        font-weight: $font-weight-medium
-      .p-datatable-tbody
-        & > tr
-          background: $text-color-100
-          .text-bold
-            color: $text-color-700
-            .p-inputnumber-input
-              color: $text-color-700
-        .outgoing__selected
-          background: $color-white
-          > .text-bold
-            font-weight: $font-weight-bold
-            color: $text-color-900
-            .p-inputnumber-input
-              font-weight: $font-weight-bold
-              color: $text-color-900 !important
-      .p-datatable-thead > tr > th
-        white-space: unset
-        .p-column-header-content
-          .p-checkbox
-            display: none
   .text-right
     text-align: right !important
     .p-column-header-content
       justify-content: end !important
-  .filter__dropdown, .filter__multiselect
-    @include size(100%, 40px)
-    border: none
+    .table__action
+      float: right
+  .disable-button
+    pointer-events: none
+    background-color: $text-color-300
+    .icon
+      background-color: $text-color-500
   .pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
   .p-calendar-w-btn

@@ -14,18 +14,27 @@
             .btn-refresh(@click="handleRefreshFilter")
               .icon.icon-rotate-left.bg-white
       .grid.header__filter(:class='{ "active": isShowFilter }')
-        .div(class="col-12 md:col-4")
-          FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
-            template(v-slot:multi-select)
-              MultiSelect.filter__multiselect(
-                v-model='filter.categories'
-                @change="handleChangeFilter"
-                :options='categoryList'
-                optionLabel="name"
-                placeholder='Select'
-                :filter='true'
-              )
-        .div(class="col-12 md:col-4")
+        div(class="col-12 md:col-2")
+          FilterTable(
+            title="Warehouse"
+            :value="filter.warehouse"
+            :options="warehouseList"
+            name="warehouse"
+            @updateFilter="handleFilter"
+          )
+        .div(class="col-12 md:col-2")
+          FilterTable(
+            title="Seller"
+            placeholder="Search barcode"
+            name="email"
+            :value="filter.email"
+            :searchText="true"
+            @updateFilter="handleFilter"
+            :isShowFilter="isShowFilter"
+          )
+        .div(class="col-12 md:col-2")
+          FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
+        .div(class="col-12 md:col-2")
           FilterTable(
             title="Barcode"
             placeholder="Search barcode"
@@ -35,14 +44,46 @@
             @updateFilter="handleFilter"
             :isShowFilter="isShowFilter"
           )
-        .div(class="col-12 md:col-4")
-          FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
+        .div(class="col-12 md:col-2")
+          FilterTable(
+            title="Item name"
+            placeholder="Search barcode"
+            name="stockName"
+            :value="filter.stockName"
+            :searchText="true"
+            @updateFilter="handleFilter"
+            :isShowFilter="isShowFilter"
+          )
+        div(class='col-12 md:col-2')
+          .grid.grid-nogutter
+            .col
+              FilterCalendar(
+                title="From"
+                border="left"
+                :value="filter.dateFrom"
+                name="dateFrom"
+                inputClass="border-0"
+                dateFormat="dd-mm-yy"
+                :showIcon="true"
+                @updateFilter="handleFilter"
+              )
+            .col.ml-1
+              FilterCalendar(
+                title="To"
+                border="right"
+                :value="filter.dateTo"
+                name="dateTo"
+                inputClass="border-0"
+                dateFormat="dd-mm-yy"
+                :showIcon="true"
+                @updateFilter="handleFilter"
+              ) 
       .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
         .col.h-full.absolute.top-0.left-0.right-0.bg-white
           DataTable(
             @sort="sortData($event)"
-            :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }"
-            :value='stockList' responsiveLayout="scroll"
+            :class="{ 'table-wrapper-empty': !inventoryStore || inventoryStore.length <= 0 }"
+            :value='inventoryStore' responsiveLayout="scroll"
             :selection='selectedStock'
             dataKey='id'
             :rows='20'
@@ -57,33 +98,36 @@
               :styles="{'width': '1%'}")
             Column(field='no' header='NO' :styles="{'width': '1%'}" )
               template(#body='{ index }')
-                span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
-            Column(field='imageUrl' header='Image' headerClass="grid-header-center")
+                span {{ getIndexPaginate(index) }}
+            Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode")
               template(#body='{ data }')
-                .stock__table__image.overflow-hidden.grid-cell-center
-                  NuxtLink(:to="`/stock/${data.id}`")
-                    img.h-2rem.w-2rem.border-round(
-                      :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
-            Column(header='Name' field='name' :sortable="true" sortField="_name")
-              template(#body='{ data }')
-                NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/stock/${data.id}`" class="no-underline hover:underline") {{ data.name }}
-            Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
-              template(#body='{ data }')
-                .stock__table-barcode.grid-cell-right {{ data.barCode }}
-            Column(header='Category' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
-                template(#body='{ data }')
-                  div.grid-cell-right {{ data.categoryName }}
+                span.text-white-active.text-900.font-bold {{ data.stock.barCode }}
+            Column(field='box.id' header='BOX CODE' :sortable='true' sortField='_box.id')
+            Column(field='stock.name' header='ITEM NAME' :sortable='true' sortField='_stock.id')
+            Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right" sortField="_rackLocation.name")
+              template(#body="{data}")
+                div(v-if="data.box.rackLocation")
+                  .flex.align-items-center.cursor-pointer.justify-content-end
+                    span.text-primary.font-bold.font-sm.text-white-active {{ data.box.rackLocation.name }}
+                    .icon.icon-arrow-up-right.bg-primary.bg-white-active
+            Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
+              template(#body="{data}") {{ data.stock.createdAt | dateTimeHour12 }}
             Column(field='status' header="Status" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right
-                  span.table__status.table__status--available(v-if="data.stockStatus === 'STOCK_STATUS_AVAILABLE'") Available
-                  span.table__status.table__status--disable(v-if="data.stockStatus === 'STOCK_STATUS_DISABLE' ") Disable
+                  span.table__status.table__status--available(v-if="data.stock.stockStatus === 'STOCK_STATUS_AVAILABLE'") Available
+                  span.table__status.table__status--disable(v-if="data.stock.stockStatus === 'STOCK_STATUS_DISABLE' ") Disable
             template(#footer)
               Pagination(
                 type="items selected"
                 :paging="paging"
                 :total="total"
                 @onPage="onPage")
+            template(#empty)
+              div.table__empty
+                img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
+                img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+                p.text-900.font-bold.mt-3 Order not found!
     template(#footer)
       Button.p-button-secondary(label="Close" icon="pi pi-times" @click="handleClose")
       Button.p-button-primary(label="Apply" icon="pi pi-check" @click="handleApply")
@@ -100,8 +144,8 @@ import {
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
-const nsCategoryStock = namespace('category/category-list')
-const nsStoreStock = namespace('stock/stock-list')
+const nsStoreOrder = namespace('stock-out/create-order')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component({
   components: {
@@ -116,39 +160,45 @@ class ItemListModel extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList = StockConstants.STOCK_STATUS_OPTIONS
   filter: any = {
-    name: null,
-    barCode: null,
     warehouse: null,
-    categories: null,
+    email: null,
     status: null,
+    barCode: null,
+    stockName: null,
+    dateFrom: null,
+    dateTo: null,
     sortBy: null,
     desc: null
   }
 
+  // -- [ State ] ------------------------------------------------------------
+  @nsStoreOrder.State
+  inventoryStore!: any
+
+  @nsStoreOrder.State
+  total!: any
+
+  @nsStoreWarehouse.State
+  warehouseList!: any
+
+  // -- [ Action ] ------------------------------------------------------------
+  @nsStoreOrder.Action
+  actGetInventoryList!: (params: any) => Promise<void>
+
+  @nsStoreWarehouse.Action
+  actWarehouseList!: () => Promise<void>
+
   @Prop({ default: false }) isShow!: boolean
+  @Prop({ default: [] }) itemSelected!: any
 
   @Watch('isShow')
   getStockList() {
     if(this.isShow) {
       this.getProductList()
-      this.actCategoryList()
+      this.actWarehouseList()
+      this.selectedStock = _.cloneDeep(this.itemSelected)
     }
   }
-
-  @nsStoreStock.State
-  total!: number
-
-  @nsStoreStock.State
-  stockList!: StockModel.Model[]
-
-  @nsCategoryStock.State
-  categoryList!: any
-
-  @nsStoreStock.Action
-  actGetStockList!: (params?: any) => Promise<void>
-
-  @nsCategoryStock.Action
-  actCategoryList!: () => Promise<void>
 
   // -- [ Getters ] -------------------------------------------------------------
   get checkIsFilter() {
@@ -167,15 +217,14 @@ class ItemListModel extends Vue {
 
   // -- [ Functions ] ------------------------------------------------------------
   getParamApi() {
-    const categoryIds = this.filter.categories
-      ? this.filter.categories.map((item: any) => item?.id).toString()
-      : null
     return {
-      name: this.filter.name || null,
-      barCode: this.filter.barCode || null,
       warehouseId: this.filter.warehouse?.id,
-      categoryIds: categoryIds || null,
+      email: this.filter.email || null,
       stockStatus: this.filter.status?.value,
+      barCode: this.filter.barCode || null,
+      stockName: this.filter.stockName || null,
+      from: this.filter.dateFrom,
+      to: this.filter.dateTo,
       sortBy: this.filter.sortBy || null,
       desc: this.filter.desc
     }
@@ -195,7 +244,7 @@ class ItemListModel extends Vue {
   }
 
   async getProductList() {
-    await this.actGetStockList({
+    await this.actGetInventoryList({
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       ...this.getParamApi()
@@ -229,10 +278,13 @@ class ItemListModel extends Vue {
   }
 
   handleRefreshFilter() {
-    this.filter.name = null
-    this.filter.barCode = null
-    this.filter.categories = null
+    this.filter.warehouse = null
+    this.filter.email = null
     this.filter.status = null
+    this.filter.barCode = null
+    this.filter.stockName = null
+    this.filter.dateFrom = null
+    this.filter.dateTo = null
     this.getProductList()
   }
 
@@ -243,7 +295,7 @@ class ItemListModel extends Vue {
   rowUnSelectAll() {
     this.selectedStock = _.differenceWith(
       this.selectedStock,
-      this.stockList,
+      this.inventoryStore,
       _.isEqual
     )
   }
@@ -278,7 +330,13 @@ export default ItemListModel
     background-color: #E8EAEF
     width: 80vw
     padding-bottom: 5px
-    height: 80vh
+    height: 85vh
+  ::v-deep.pi-calendar:before
+    content: url('~/assets/icons/calendar.svg')
+  ::v-deep.p-calendar-w-btn
+    .p-button
+      background: none
+      border: none
   .stock
     @include flex-column
     @include mobile
@@ -308,4 +366,8 @@ export default ItemListModel
   .filter__dropdown, .filter__multiselect
     @include size(100%, 40px)
     border: none
+  ::v-deep.text-right
+    text-align: right !important
+    .p-column-header-content
+      justify-content: end !important
 </style>
