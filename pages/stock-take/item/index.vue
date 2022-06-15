@@ -23,13 +23,13 @@
               .icon-sender-info.icon.bg-primary.mr-2
               span.font-bold.text-800.uppercase ID Information
           .col-12
-            StockUnit.m-0(title="Create Time "  :value="stockDetail" icon="icon-receipt-note")
+            StockUnit.m-0(title="Create Time "  value="N/A" icon="icon-receipt-note")
           .col-12
-            StockUnit.m-0(title="Creator ID " :value="stockDetail"  icon="icon-tag-user")
+            StockUnit.m-0(title="Creator ID " :value="user.staffId"  icon="icon-tag-user")
           .col-12
-            StockUnit.m-0(title="Warehouse"  :value="stockDetail" icon="icon-warehouse")
+            StockUnit.m-0(title="Warehouse"  :value="user.warehouse.name" icon="icon-warehouse")
           .col-12
-            StockUnit.m-0(title="Items"  :value="stockDetail" icon="icon-frame")
+            StockUnit.m-0(title="Items"  :value="listStockSelected.length" icon="icon-frame")
           .col.border-bottom-1.border-gray-300
         .grid.stock--contact.p-2.m-0
           .col-12.flex
@@ -68,12 +68,12 @@
             Column(selectionMode="multiple" :styles="{width: '3rem'}")
             Column(field='no' header='NO' :styles="{'width': '3rem'}")
               template(#body='slotProps') {{ pagination.pageSize * pagination.pageNumber + slotProps.index + 1 }}
-            Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode")
+            Column(field='stock.barCode' header='Barcode' :sortable="true")
               template(#body='{ data }')
                 span.text-white-active.text-900.font-bold {{ data.stock.barCode }}
-            Column(field='stock.name' header='ITEM NAME' :sortable='true' sortField='_stock.id')
-            Column(field='box.id' header='BOX CODE' :sortable='true' sortField='_box.id')
-            Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right" sortField="_rackLocation.name")
+            Column(field='stock.name' header='ITEM NAME' :sortable='true')
+            Column(field='box.id' header='BOX CODE' :sortable='true')
+            Column(field="box.rackLocation.name" header="LOCATION" :sortable="true" className="text-right")
               template(#body="{data}")
                 div(v-if="data.box.rackLocation")
                   .flex.align-items-center.cursor-pointer.justify-content-end
@@ -117,11 +117,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import Pagination from '~/components/common/Pagination.vue'
 import { getDeleteMessage } from '~/utils'
 import ItemListModel from '~/components/stock-take/ItemListModel.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import { User } from '~/models/User'
+const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
+const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: {
@@ -145,19 +148,34 @@ class StockTakeItems extends Vue {
     pageSize: 20
   }
 
+  @nsStoreUser.State
+  user: User.Model | undefined
+
+  @nsStoreCreateStockTake.State
+  stockTakeCreated!: any
+
+  @nsStoreCreateStockTake.Action
+  actCreateStockTake!: (params?: any) => Promise<void>
+
   handleAddItems() {
     this.isModalAddItem = true
   }
 
-  handleSubmit(){
-    // const body = {
-    //   note: '',
-    //   checkType: 1,
-    //   stockBoxList: _.map(this.listStockSelected, ({ id }) => {
-    //     return { id }
-    //   })
-    // }
-    // console.log(body)
+  async handleSubmit(){
+    const data = {
+      note: 'mac',
+      checkType: 'ITEM',
+      stockBoxList: _.map(this.listStockSelected, ({ id }) => ({ id }))
+    }
+    await this.actCreateStockTake(data)
+    if(this.stockTakeCreated.id){
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully create stock take',
+        life: 3000
+      })
+    }
   }
 
   onPage(event: any) {

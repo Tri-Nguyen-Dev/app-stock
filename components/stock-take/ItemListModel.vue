@@ -99,18 +99,20 @@
             Column(field='no' header='NO' :styles="{'width': '1%'}" )
               template(#body='{ index }')
                 span {{ getIndexPaginate(index) }}
-            Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode")
+            Column(header='Barcode' field='stock.barCode' :sortable="true" sortField="_stock.barCode")
               template(#body='{ data }')
                 span.text-white-active.text-900.font-bold {{ data.stock.barCode }}
             Column(field='box.id' header='BOX CODE' :sortable='true' sortField='_box.id')
-            Column(field='stock.name' header='ITEM NAME' :sortable='true' sortField='_stock.id')
-            Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right" sortField="_rackLocation.name")
+            Column(field='stock.name' header='ITEM NAME' :sortable='true' sortField='_stock.name')
+            Column(field="box.rackLocation.name" header="LOCATION" :sortable="true" className="text-right" 
+              sortField="_box.rackLocation.name"
+            )
               template(#body="{data}")
                 div(v-if="data.box.rackLocation")
                   .flex.align-items-center.cursor-pointer.justify-content-end
                     span.text-primary.font-bold.font-sm.text-white-active {{ data.box.rackLocation.name }}
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
-            Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
+            Column(field="stock.createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_stock.createdAt")
               template(#body="{data}") {{ data.stock.createdAt | dateTimeHour12 }}
             Column(field='status' header="Status" headerClass="grid-header-right")
               template(#body='{ data }')
