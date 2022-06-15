@@ -136,7 +136,9 @@
         Column(
           selectionMode='multiple'
           :styles="{'width': '1%'}"
-          :exportable="false")
+          :exportable="false"
+          :headerClass="classHeaderMuti"
+        )
         Column(field='no' header='NO' :styles="{'width': '1%'}" )
           template(#body='{ index }')
             span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -240,7 +242,9 @@ import {
   calculateIndex,
   DeliveryConstants,
   getCancelMessage,
-  exportFileTypePdf
+  exportFileTypePdf,
+  refreshAllFilter,
+  resetScrollTable
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
@@ -339,7 +343,7 @@ class DeliveryOrderList extends Vue {
     return _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
       if(this.activeTab === 0) {
         return delivery.status === 'DELIVERY_ORDER_STATUS_NEW' || delivery.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && (delivery.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && delivery.assigneeId === this.user.id)
-      }else return delivery
+      } else return delivery
     })
   }
 
@@ -397,11 +401,20 @@ class DeliveryOrderList extends Vue {
   handleFilter(e: any, name: string) {
     this.filter[name] = e
     this.getProductList()
+    this.selectedDelivery = []
   }
 
   async getProductList() {
     await this.getDeliveryList({
-      ...this.filter,
+      id: this.filter.id || null,
+      assigneeId: this.filter.assigneeId || null,
+      createTimeFrom: this.filter.createTimeFrom || null  ,
+      createTimeTo: this.filter.createTimeTo ||null ,
+      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom || null,
+      dueDeliveryDateTo: this.filter.dueDeliveryDateTo || null,
+      sortBy: this.filter.sortBy ||null,
+      desc: this.filter.desc ||null,
+      sellerEmail: this.filter.sellerEmail || null,
       warehouseId: this.filter.warehouseId?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
@@ -410,6 +423,7 @@ class DeliveryOrderList extends Vue {
   }
 
   onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getProductList()
@@ -458,6 +472,7 @@ class DeliveryOrderList extends Vue {
   }
 
   sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if (sortOrder) {
       this.filter.desc = sortOrder !== 1
@@ -470,19 +485,7 @@ class DeliveryOrderList extends Vue {
   }
 
   handleRefreshFilter() {
-    this.filter = {
-      id: null,
-      assigneeId: null,
-      createTimeFrom: null,
-      createTimeTo: null,
-      dueDeliveryDateFrom: null,
-      dueDeliveryDateTo: null,
-      status: null,
-      sortBy: null,
-      desc: null,
-      sellerEmail: null,
-      warehouseId: null
-    }
+    refreshAllFilter(this.filter)
     this.getProductList()
   }
 

@@ -20,3 +20,7 @@ export namespace StockTakeConstants {
     { name: 'Waiting', value: 'WAITING' }
   ]
 }
+
+export enum STOCK_TAKE_STATUS {
+  NEW = 'NEW'
+} 

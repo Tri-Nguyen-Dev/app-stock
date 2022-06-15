@@ -5,7 +5,7 @@
         .col.flex.align-items-center.p-3
           Button(@click='backToBox').p-button-link
             .icon-arrow-left.icon.bg-primary.align-items-center
-          Breadcrumb.font-bold(:home="homeItem" :model="breadcrumbItem")
+          Breadcrumb(:home="homeItem" :model="breadcrumbItem")
         .border-bottom-1.border-gray-300.grid-nogutter
         .grid.flex.my-4.p-3.grid-nogutter
           .col.flex.align-items-center
