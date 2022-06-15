@@ -28,3 +28,11 @@ export function getCancelMessage(selectedList: any[], nameList: string) {
   const name = len > 1 ? len : (selectedList[0].name || selectedList[0].id)
   return _.template(MessageConstants.CANCEL_MESSAGE_TEMPLATE)({ name, nameList })
 }
+
+export function resetScrollTable() {
+  const ele = document.querySelector('.p-datatable-wrapper')
+  if(ele) {
+    ele.scrollTop = 0
+    ele.scrollLeft = 0
+  }
+}

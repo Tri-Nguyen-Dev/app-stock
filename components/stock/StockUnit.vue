@@ -8,10 +8,10 @@
     a(v-if="link" :href="link" target="_blank").text-link
       span.font-bold.text-base {{value}}
       .icon.icon-arrow-up-right.inline-block
-    span.font-bold.text-lg.mr-1.uppercase(v-else) {{ value }}
+    span.font-bold.text-lg.mr-1.uppercase(v-else class="text-wrap") {{ value }}
     template(v-if="model")
       InputNumber.text-lg(v-if='isEdit' :value='model' @input="handleUpdateUnit")
-      span.font-bold.text-lg.mr-1.uppercase(v-else) {{ model }}
+      span.font-bold.text-lg.mr-1.uppercase(v-else class="text-wrap") {{ model }}
     slot(name='size')
     slot(name='auto-complete')
 </template>
@@ -40,6 +40,8 @@ export default StockUnit
   min-height: 72px
   border-radius: 4px
   background-color: $text-color-200
+  .text-wrap
+    word-break: break-all
   ::v-deep.p-inputtext
     border: none
     background: transparent

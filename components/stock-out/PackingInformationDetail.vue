@@ -24,6 +24,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 import DeliveryDriverInfo from '~/components/stock-out/driver/DriverInfor.vue'
+import { ORDER_STATUS } from '~/utils'
 @Component({
   components: {
     DeliveryDriverInfo
@@ -62,10 +63,19 @@ class PackingInformationDetail extends Vue {
         { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=true`, icon: 'pi pi-info-circle' },
         { label: 'Picking list', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-list' }
       ]
-    } else {
+    } else if(this.deliveryOrderDetail.status===ORDER_STATUS.IN_PROGRESS) {
       return [
         { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=true`, icon: 'pi pi-info-circle' },
         { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-list' },
+        {
+          label: 'Packing detail',
+          to: `/stock-out/order/${this.deliveryOrderDetail.id}/packing`,
+          icon: 'pi pi-info-circle'
+        }
+      ]
+    } else {
+      return [
+        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-info-circle' },
         {
           label: 'Packing detail',
           to: `/stock-out/order/${this.deliveryOrderDetail.id}/packing`,

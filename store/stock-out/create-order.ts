@@ -12,15 +12,15 @@ export default class StoreCreateReceipt extends VuexModule {
     POST_DO : '/delivery-order/create'
   }
 
-  public listInfor: any = null;
+  public listInfo: any = null;
   public inventoryStore?: any = []
   public total?: number = 0
   public outGoingListStore?: any = []
   public createDOList?: any = []
-  
+
   @Mutation
   setStockIn(data) {
-    this.listInfor = data
+    this.listInfo = data
   }
 
   @Mutation
