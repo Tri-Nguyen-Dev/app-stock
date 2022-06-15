@@ -9,7 +9,7 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
   )
   Column(field="no" header="NO" sortable)
     template(#body='slotProps')
-      span.font-bold  {{ (pageNumber - 1) * pageSize + slotProps.index +1 }}
+      span.font-bold  {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
   Column(field="createdAt" header="TIME" sortable bodyClass="font-semibold"  :styles="{width: '900px'}"  )
     template(#body='{data}')
       span.font-bold {{ data.createdAt | dateTimeHour12 }}
@@ -61,9 +61,6 @@ const nsStoreBoxHistory = namespace('box/box-detail')
 class BoxDetailHistory extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
 
-  pageSize: number = 20
-  pageNumber: number = 1
-
   @nsStoreBoxHistory.State
   boxHistory!: []
 
@@ -73,13 +70,22 @@ class BoxDetailHistory extends Vue {
   @nsStoreBoxHistory.Action
   actBoxHistory!: (params: any) => Promise<void>
 
+  getParamApi(){
+    return {
+      pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
+      id: this.$route.params.id
+    }
+  }
+
   async mounted() {
-    await this.actBoxHistory({ id:  this.$route.params.id })
+    await this.actBoxHistory(this.getParamApi())
+
   }
 
   async onPageHistory(event: any) {
-    this.pageNumber = event.page + 1
-    await this.actBoxHistory({ id:  this.$route.params.id })
+    this.paging.pageNumber = event.page
+    this.paging.pageSize = event.rows
+    await this.actBoxHistory( this.getParamApi() )
   }
 
 }
