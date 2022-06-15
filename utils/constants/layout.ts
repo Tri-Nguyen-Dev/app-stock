@@ -9,6 +9,7 @@ export const PAGE_MENU = [
   { id: 2, icon: 'activity', label: 'Activities' },
   { id: 21, to: '/stock-in', label: 'Stock In', parentId: 2 },
   { id: 22, to: '/stock-out/order-list', root: '/stock-out', label: 'Stock Out', parentId: 2 },
+  { id: 24, to: '/stock-take', label: 'Stock Take', parentId: 2 },
   { id: 23, to: '/stock-out/packing/packing-note-list', root: '/stock-out', label: 'Packing list', parentId: 2, isLast: true },
   { id: 3, icon: 'location', label: 'Bin', hideToggled: true },
   { id: 4, icon: 'award', label: 'Role', hideToggled: true },
