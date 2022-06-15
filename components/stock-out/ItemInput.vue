@@ -18,16 +18,16 @@ div
         @complete="searchSeller($event)"
       )
       InputText.w-full(
-        v-else-if='item.type === INPUT_TYPE.Text'
+        v-else-if='item.type === INPUT_TYPE.Text || item.type === INPUT_TYPE.Dropdown && checkRole === "staff"'
         v-model='item.value'
         :disabled='item.disabled'
         @change='receiverChange',
       )
 
       Dropdown.w-full(
-        v-else-if='item.type === INPUT_TYPE.Dropdown'
+        v-else-if='item.type === INPUT_TYPE.Dropdown && checkRole === "admin" '
         :disabled='item.disabled'
-        :options="warehouseBySeller"
+        :options="warehouseList"
         optionLabel="name"
         v-model='item.value'
         @change='selectedItems($event)'
@@ -38,6 +38,7 @@ div
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
 import { INPUT_TYPE } from '~/utils/constants/stock-out'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreUserDetail = namespace('user-auth/store-user')
 
 @Component({
 })
@@ -53,7 +54,10 @@ class ItemInput extends Vue {
   name: any | string
 
   @nsStoreWarehouse.State
-  warehouseBySeller!: any
+  warehouseList!: any
+
+  @nsStoreUserDetail.State
+  user!: any
 
   selectedItems( event : any  ) {
     this.$emit('fieldWarehouse', event.value)
@@ -71,6 +75,10 @@ class ItemInput extends Vue {
     else if ( this.listInfor[0].label === 'Name'){
       this.filedWarehouse = infoObj.value
     }
+  }
+
+  get checkRole (){
+    return this.user.role
   }
 
   changeItem( event : any ) {

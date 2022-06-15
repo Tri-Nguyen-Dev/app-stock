@@ -6,30 +6,6 @@
         .border-top-1.border-gray-300.grid-nogutter
           .col.p-4.border-tab
             .grid.grid-nogutter.align-items-center.mb-4
-              .icon.bg-primary.surface-900.mr-3.icon-sender-info
-              span.uppercase.text-800.font-bold seller information
-            div
-              StockOutItemInput(
-                :listInfor='information.seller'
-                @sellerInfor='handleSeller'
-                @paramSeller='paramSeller'
-                :sellerList='sellerList'
-              )
-              .input-errors(
-                v-if='$v.information.seller.$each[0].value.$dirty && $v.information.seller.$each[0].value.$invalid '
-                style='text-align: center')
-                .error-message Please, select email
-              .input-errors(
-                v-else-if='$v.information.seller.$each[1].value.$dirty && $v.information.seller.$each[1].value.$invalid '
-                style='text-align: center')
-                .error-message Please, fill in name
-              .input-errors(
-                v-else-if='$v.information.seller.$each[2].value.$dirty && $v.information.seller.$each[2].value.$invalid  '
-                style='text-align: center')
-                .error-message Please, fill in phone
-          .border-top-1.border-gray-300.grid-nogutter
-          .col.p-4
-            .grid.grid-nogutter.align-items-center.mb-4
               .icon.bg-primary.surface-900.mr-3.icon-warehouse-info
               span.uppercase.text-800.font-bold warehouse contact
             div
@@ -49,7 +25,30 @@
                 v-else-if='$v.information.warehouse.$each[2].value.$dirty && $v.information.warehouse.$each[2].value.$invalid  '
                 style='text-align: center')
                 .error-message Please, fill in Phone
-
+          .border-top-1.border-gray-300.grid-nogutter
+          .col.p-4
+            .grid.grid-nogutter.align-items-center.mb-4
+              .icon.bg-primary.surface-900.mr-3.icon-sender-info
+              span.uppercase.text-800.font-bold seller information
+            div
+              StockOutItemInput(
+                :listInfor='information.seller'
+                @sellerInfor='handleSeller'
+                @paramSeller='paramSeller'
+                :sellerList='sellerList'
+              )
+                .input-errors(
+                  v-if='$v.information.seller.$each[0].value.$dirty && $v.information.seller.$each[0].value.$invalid '
+                  style='text-align: center')
+                  .error-message Please, select email
+                .input-errors(
+                  v-else-if='$v.information.seller.$each[1].value.$dirty && $v.information.seller.$each[1].value.$invalid '
+                  style='text-align: center')
+                  .error-message Please, fill in name
+                .input-errors(
+                  v-else-if='$v.information.seller.$each[2].value.$dirty && $v.information.seller.$each[2].value.$invalid  '
+                  style='text-align: center')
+                  .error-message Please, fill in phone
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
             .grid.grid-nogutter.align-items-center.mb-4
@@ -314,7 +313,7 @@ class createOrder extends Vue {
   actDeliveryOrder!: (params: any) => Promise<void>
 
   @nsStoreWarehouse.Action
-  actWarehouseBySeller!: (params: any) => Promise<void>
+  actWarehouseList!: (params: any) => Promise<void>
 
   @nsStoreSeller.Action
   actSellerList!: (params: any) => Promise<void>
@@ -330,6 +329,12 @@ class createOrder extends Vue {
       this.disableInput(false)
     }
     this.handleUser()
+
+    if(this.user.role === 'staff'){
+      this.warehouseByStaff()
+    }else {
+      this.actWarehouseList()
+    }
   }
 
   createStockOut() {
@@ -471,6 +476,15 @@ class createOrder extends Vue {
     })
   }
 
+  warehouseByStaff(){
+    const warehouseByUser = this.user.warehouse
+    const InfoWarehouse = this.information.warehouse
+    InfoWarehouse[0].warehouseId =  warehouseByUser?.id
+    InfoWarehouse[0].value =  warehouseByUser?.name
+    InfoWarehouse[1].value =  warehouseByUser?.email
+    InfoWarehouse[2].value = warehouseByUser?.phone
+  }
+
   handleWarehouse(event: any) {
     const InfoWarehouse = this.information.warehouse
     InfoWarehouse[0].warehouseId = event.id
@@ -478,8 +492,8 @@ class createOrder extends Vue {
     InfoWarehouse[2].value = event.phone
   }
 
-  async handleSeller(event: any) {
-    await this.actWarehouseBySeller({ email: event.email })
+  handleSeller(event: any) {
+    // await this.actWarehouseBySeller({ email: event.email })
     const InfoSeller = this.information.seller
     InfoSeller[0].value = event.email
     InfoSeller[0].id = event.id
