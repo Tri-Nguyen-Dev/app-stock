@@ -168,7 +168,7 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/RequestList'
-import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage } from '~/utils'
+import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage, resetScrollTable } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
@@ -256,6 +256,7 @@ class StockIn extends Vue {
   }
 
   async onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     await this.actGetStockIn(this.getParamApi())
@@ -341,6 +342,7 @@ class StockIn extends Vue {
   }
 
   async sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
