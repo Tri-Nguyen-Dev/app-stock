@@ -15,7 +15,7 @@
           Button.p-button-outlined.p-button-primary.bg-white.w-25(
             type='button',
             label='Save',
-            @click='saveStockTake;'
+            @click='saveStockTake'
           )
       .col-12(style='height: 90vh')
         DataTable(
@@ -75,12 +75,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import ItemList from '~/components/stock-out/item/ItemList.vue'
 import StockTakeNoteInfo from '~/components/stock-take/GeneralInfo.vue'
 import BoxDataTable from '~/components/box/BoxDataTable.vue'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
+const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 @Component({
   components: {
     ItemList,
@@ -100,6 +101,12 @@ class DeliveryOrder extends Vue {
     wareHouse?: any
   } = { user: undefined,totalBox:0,wareHouse: undefined }
 
+  @nsStoreCreateStockTake.State
+  stockTakeCreated!: any
+
+  @nsStoreCreateStockTake.Action
+  actCreateStockTake!: (params?: any) => Promise<void>
+
   get breadcrumbItem() {
     return [
       { label: 'Stock take Box', to: '/stock-take/box/create', icon: 'pi pi-info-circle' }
@@ -111,7 +118,31 @@ class DeliveryOrder extends Vue {
     this.showModal = true  
   }
 
-  saveStockTake() {}
+  async  saveStockTake() {
+   
+    const listBox = this.boxShow.map(element =>{
+      return {
+        id: element.id
+      }
+    })
+    if(listBox.length===0) {
+      return
+    }
+    const data = {
+      note: 'Note',
+      checkType: 'BOX',
+      boxList: listBox
+    }
+    await this.actCreateStockTake(data)
+    if(this.stockTakeCreated.id){
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully create stock take',
+        life: 3000
+      })
+    }
+  }
 
   selectBox(event){
     this.boxSelected = event
