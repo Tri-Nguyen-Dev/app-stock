@@ -18,7 +18,7 @@
           ul.option-note-list(:class="{'active': isShowOptionAddNote}")
             li.option-item Add Box
             li.option-item Add Item
-        Button.btn.btn-primary()
+        Button.btn.btn-primary(@click="handleExportReceipt")
           span EXPORT FILE
     .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
       div(class="col-12 lg:col-12 xl:col-4")
@@ -82,6 +82,7 @@
           :class="{ 'table-wrapper-empty': !stockTakeList || stockTakeList.length <= 0 }"
           :rowClass="rowClass" :value='stockTakeList' responsiveLayout="scroll"
           :selection='selectedStockTake'
+          @row-click='rowdbClick'
           dataKey='id'
           :rows='10'
           :rowHover='true'
@@ -97,7 +98,7 @@
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
-          Column(field='id' header='NOTE ID' headerClass="grid-header-center")
+          Column(field='id' header='NOTE ID' headerClass="grid-header-center" sortable sortField="_id")
           Column(header='Create Time' field='createdAt' sortable sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
           Column(header='UPDATE time' field='updatedAt' sortable sortField="_updatedAt")
@@ -105,9 +106,9 @@
           Column(header='Creator ID' field='creatorId' sortable sortField="_createdBy.staffId")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.createdBy.staffId }}
-          Column(header='PIC ID' field='pic' sortable sortField="_pic.staffId")
+          Column(header='PIC ID' field='picId' sortable sortField="_assignee.staffId")
             template(#body='{ data }')
-              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.createdBy  .staffId }}
+              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-if="data.assignee") {{ data.assignee.staffId }}
           Column(header='Result' sortable field='result' sortField="_result" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right
@@ -155,11 +156,12 @@
       :loading="loadingSubmit"
     )
       template(v-slot:message)
+        p {{ deleteMessage }}
     Toast
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants } from '~/utils'
+import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getDeleteMessage } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
@@ -211,6 +213,12 @@ class StockTake extends Vue {
   @nsStoreStockTake.Action
   actGetStockTakeList!: (params: any) => Promise<void>
 
+  @nsStoreStockTake.Action
+  actDeleteStockTakeList!: (ids: any) => Promise<any>
+
+  @nsStoreStockTake.Action
+  actGetReceiptLable!: (params: any) => Promise<string>
+
   async handleFilter(e: any, name: string) {
     this.filter[name] = e
     await this.getStockTakeList()
@@ -229,12 +237,41 @@ class StockTake extends Vue {
     return Object.values(params).some((item) => item)
   }
 
+  // -- [ Functions ] ------------------------------------------------------------
   async getStockTakeList() {
     await this.actGetStockTakeList({
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       ...this.getParamApi()
     })
+  }
+
+  rowdbClick({ data }) {
+    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
+      this.$router.push(`/stock-out/order/${data.id}`)
+    }
+  }
+
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'stock')
+  }
+
+  handleExportReceipt() {
+    if(this.selectedStockTake.length > 0) {
+      _.forEach(this.selectedStockTake, async ({ id }) => {
+        const result = await this.actGetReceiptLable({ id })
+        if (result) {
+          exportFileTypePdf(result, `stock-take-${id}`)
+        }
+      })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'No records have been selected yet!',
+        life: 3000
+      })
+    }
   }
 
   onPage(event: any) {
@@ -314,21 +351,22 @@ class StockTake extends Vue {
     this.isModalDelete = false
   }
 
-  handleDeleteStock() {
+  async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      // const data = await this.actDeleteStockByIds(_.map(this.onEventDeleteList, 'id'))
-      // if (data) {
-      //   this.loadingSubmit = false
-      //   this.isModalDelete = false
-      //   this.$toast.add({
-      //     severity: 'success',
-      //     summary: 'Success Message',
-      //     detail: 'Successfully deleted stock',
-      //     life: 3000
-      //   })
-      //   await this.getProductList()
-      // }
+      const stockTakeIds = _.map(this.onEventDeleteList, 'id').toString()
+      const data = await this.actDeleteStockTakeList(stockTakeIds)
+      if (data) {
+        this.loadingSubmit = false
+        this.isModalDelete = false
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Successfully deleted stock take!',
+          life: 3000
+        })
+        await this.getStockTakeList()
+      }
     } catch (error) {
       this.loadingSubmit = false
     }
