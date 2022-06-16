@@ -185,6 +185,7 @@ class ReportList extends Vue {
   showModal = false
   disabledApply = true
   boxSelected: any[] = []
+  boxShow : any[] = []
   statusList: any = [
     { name: 'new', value: REPORT_STATUS.NEW },
     { name: 'In progress', value: REPORT_STATUS.IN_PROGRESS }
@@ -365,12 +366,16 @@ class ReportList extends Vue {
   }
 
   selectBox(event){
-    this.boxSelected = event
+    this.boxSelected = _.cloneDeep(event)
     if(this.boxSelected.length>0){
       this.disabledApply = false
     } else {
       this.disabledApply = true
     }
+  }
+
+  hideDialog(){
+    this.showModal = false
   }
 }
 export default ReportList
