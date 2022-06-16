@@ -16,8 +16,10 @@
           .icon.icon-add-items
           span ADD NOTE
           ul.option-note-list(:class="{'active': isShowOptionAddNote}")
-            li.option-item Add Box
-            li.option-item Add Item
+            li.option-item
+              NuxtLink(to="/stock-take/box/create") Add Box
+            li.option-item
+              NuxtLink(to="/stock-take/item/create") Add Item
         Button.btn.btn-primary(@click="handleExportReceipt")
           span EXPORT FILE
     .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
@@ -94,6 +96,7 @@
           Column(
             selectionMode='multiple'
             :styles="{'width': '1%'}"
+            :headerClass="classHeaderMuti"
           )
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
@@ -161,7 +164,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getDeleteMessage } from '~/utils'
+import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getDeleteMessage, resetScrollTable } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
@@ -246,6 +249,11 @@ class StockTake extends Vue {
     })
   }
 
+  get classHeaderMuti() {
+    return !this.stockTakeList ||
+      this.stockTakeList.length <= 0 ? 'checkbox-disable' : ''
+  }
+
   rowdbClick({ data }) {
     if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
       this.$router.push(`/stock-out/order/${data.id}`)
@@ -275,6 +283,7 @@ class StockTake extends Vue {
   }
 
   onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getStockTakeList()
@@ -336,6 +345,7 @@ class StockTake extends Vue {
   }
 
   async sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if (sortOrder) {
       this.isDescending = sortOrder !== 1
@@ -354,7 +364,7 @@ class StockTake extends Vue {
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      const stockTakeIds = _.map(this.onEventDeleteList, 'id').toString()
+      const stockTakeIds = _.map(this.onEventDeleteList, 'id')
       const data = await this.actDeleteStockTakeList(stockTakeIds)
       if (data) {
         this.loadingSubmit = false
@@ -436,12 +446,17 @@ export default StockTake
         display: block
 
       .option-item
-        padding: 12px 0
         border-bottom: 1px solid #dee2e6
         transition: all 0.25 ease
         &:hover
           background-color: $primary
-          color: $color-white
+          a
+            color: $color-white
+        a
+          padding: 12px 0
+          display: block
+          color: $text-color-base
+          text-decoration: none
   .stock-take-result
     &.result-ng
       color: #F31818
