@@ -1,7 +1,20 @@
-  <template lang="pug">
+<template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-      StockTakeNoteInfo(:info='stockTakeInfo')
+      .order__packing--detail
+      .packing__detail--header.border-bottom-1.border-gray-300
+        Breadcrumb(:home='homeItem', :model='breadcrumbItem')
+      .packing__detail--content.pl-4.pr-4
+        .my-3.font-bold.flex.align-items-center
+          span.uppercase.ml-1 note detail
+        span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') new &nbsp;
+      .grid.m-0.p-4(v-if='user')
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Create ID" :value="user.displayName" icon="icon-user-octagon")
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Warehouse" :value="user.displayName" icon="icon-warehouse-info")
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Total box" :value="100" icon="icon-total-inventory")
     .col-9.packing__detail--left.pl-4.pr-1.flex-1
       .grid
         .col-4
@@ -81,7 +94,9 @@ import StockTakeNoteInfo from '~/components/stock-take/GeneralInfo.vue'
 import BoxDataTable from '~/components/box/BoxDataTable.vue'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
+import { User } from '~/models/User'
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
+const nsStoreUser = namespace('user-auth/store-user')
 @Component({
   components: {
     ItemList,
@@ -106,6 +121,9 @@ class DeliveryOrder extends Vue {
 
   @nsStoreCreateStockTake.Action
   actCreateStockTake!: (params?: any) => Promise<void>
+
+  @nsStoreUser.State
+  user: User.Model | undefined
 
   get breadcrumbItem() {
     return [
@@ -183,4 +201,29 @@ export default DeliveryOrder
 .w-25
   width: 25%
   margin-left: 7px
+::v-deep.order__packing--detail
+  .p-breadcrumb
+    .p-menuitem-link
+      display: flex
+      align-items: center
+      .p-menuitem-icon
+        display: block !important
+        height: 100%
+      .p-menuitem-text
+        margin-left: 4px
+  .packing__detail--content
+
+    .p-tabview .p-tabview-nav li
+      .p-tabview-nav-link
+        background: #fff
+        border: none
+        box-shadow: none !important
+
+    .p-tabview .p-tabview-panels
+      background: #fff
+      padding: 1.25rem 0 0 0
+
+    .p-highlight .p-tabview-nav-link
+      color: #000 !important
+      border-bottom: 2px solid #486AE2 !important
 </style>

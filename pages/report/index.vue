@@ -132,7 +132,14 @@
               span.text-primary.underline.cursor-pointer(@click='routeLinkAddReport') &nbsp;here
               span &nbsp;to add item.
             p.text-900.font-bold.mt-3(v-else) Item not found!
-
+    
+    Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
+        template(#header)
+          h1.text-heading Select Box
+        BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
+        template(#footer)
+          Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
+          Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()")
     ConfirmDialogCustom(
       title="Confirm delete"
       image="confirm-delete"
@@ -143,7 +150,6 @@
     )
       template(v-slot:message)
         p {{ deleteMessage }}
-    Toast
 </template>
 
 <script lang="ts">
@@ -154,6 +160,7 @@ import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
 import { REPORT_STATUS } from '~/utils/constants/report'
+import BoxDataTable from '~/components/box/BoxDataTable.vue'
 const nsStoreReport = namespace('report/report-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -161,7 +168,8 @@ const dayjs = require('dayjs')
 @Component({
   components: {
     ConfirmDialogCustom,
-    Pagination
+    Pagination,
+    BoxDataTable
   }
 })
 class ReportList extends Vue {
@@ -174,6 +182,9 @@ class ReportList extends Vue {
   sortByColumn: string = ''
   isDescending: boolean|null = null
   reportCodeDelete: string = ''
+  showModal = false
+  disabledApply = true
+  boxSelected: any[] = []
   statusList: any = [
     { name: 'new', value: REPORT_STATUS.NEW },
     { name: 'In progress', value: REPORT_STATUS.IN_PROGRESS }
@@ -350,26 +361,15 @@ class ReportList extends Vue {
   }
 
   routeLinkAddReport() {
-    this.$router.push({ path: '/stock-in/create-receipt' })
+    this.showModal = true
   }
 
-  handleTransferReport() {
-    const selectedReport = [...this.selectedReportFilter]
-    if(!_.size(selectedReport)) return
-    const firstSelect = selectedReport[0]
-    const satisfyReport =_.filter(selectedReport, ({ status, sellerEmail  }) => {
-      return sellerEmail && status === 'BOX_STATUS_AVAILABLE' && sellerEmail === firstSelect.sellerEmail
-    })
-    if(_.size(selectedReport) === _.size(satisfyReport)) {
-      this.actAddTransferReport(_.map(satisfyReport, 'id'))
-      this.$router.push({ path: '/report/transferring' })
+  selectBox(event){
+    this.boxSelected = event
+    if(this.boxSelected.length>0){
+      this.disabledApply = false
     } else {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'Reportes of diffrent sellers can not be transferred',
-        life: 3000
-      })
+      this.disabledApply = true
     }
   }
 }
