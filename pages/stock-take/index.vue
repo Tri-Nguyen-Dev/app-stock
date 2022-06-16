@@ -112,12 +112,13 @@
           Column(header='PIC ID' field='picId' sortable sortField="_assignee.staffId")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-if="data.assignee") {{ data.assignee.staffId }}
-          Column(header='Result' sortable field='result' sortField="_result" headerClass="grid-header-right")
+              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-else) N/A
+          Column(header='Result' sortable field='result' sortField="_finalResultStatus" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right
-                  span.stock-take-result.result-ng(v-if="data.result === 'NG'") NG
-                  span.stock-take-result.result-ok(v-if="data.result === 'OK'") OK
-                  span.stock-take-result.result-waiting(v-if="data.result === 'WAITING'") N/A
+                  span.stock-take-result.result-ng(v-if="data.finalResultStatus === 'NG'") NG
+                  span.stock-take-result.result-ok(v-if="data.finalResultStatus === 'OK'") OK
+                  span.stock-take-result.result-waiting(v-if="data.finalResultStatus === 'WAITING'") N/A
           Column(header='nOTE' sortable field='note' sortField="_note" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.note }}
@@ -255,8 +256,11 @@ class StockTake extends Vue {
   }
 
   rowdbClick({ data }) {
-    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
-      this.$router.push(`/stock-out/order/${data.id}`)
+    if(data.checkType === 'BOX') {
+      this.$router.push(`/stock-take/box/${data.id}/note-detail`)
+    }
+    else if(data.checkType === 'ITEM') {
+      this.$router.push(`/stock-take/item/${data.id}/note-detail`)
     }
   }
 
@@ -306,7 +310,7 @@ class StockTake extends Vue {
       status: this.filter.status?.value,
       checkType: this.filter.checkType?.value,
       warehouseId: this.filter.warehouse?.id,
-      result: this.filter.result?.value,
+      finalResultStatus: this.filter.result?.value,
       sortBy: this.sortByColumn || null,
       desc: this.isDescending
     }
