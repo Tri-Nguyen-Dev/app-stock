@@ -8,7 +8,11 @@
     span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') new &nbsp;
   .grid.m-0.p-4(v-if='user')
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+      StockUnit(title="Create time" :value="info.createdAt" icon="icon-calendar")
+    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Create ID" :value="user.displayName" icon="icon-user-octagon")
+    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+      StockUnit(title="PIC ID" :value="info.picId" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Warehouse" :value="user.displayName" icon="icon-warehouse-info")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
@@ -20,7 +24,7 @@ import { User } from '~/models/User'
 const nsStoreUser = namespace('user-auth/store-user')
 @Component
 class StockTakeNoteInfo extends Vue {
-  
+
   @nsStoreUser.State
   user: User.Model | undefined
 
