@@ -1,5 +1,4 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
-import { Report } from '~/models/Report'
 import { $api, PathBind } from '~/utils'
 @Module({
   stateFactory: true,
@@ -12,20 +11,15 @@ export default class StoreReport extends VuexModule {
     DELETE_REPORT: '/report/delete'
   }
 
-  public reportList?: Report.Model[] = []
+  public reportList?: any[] = []
   public totalReportRecords?: number = 0
-  public reportListFilter?: Report.Model[] = undefined
+  public reportListFilter?: any[] = undefined
   public reportTransfer: any = [];
 
   @Mutation
   setReportList(response: any) {
     this.reportList = response?.items
     this.totalReportRecords = response?.total
-  }
-
-  @Mutation
-  setReportTransfer(data: any) {
-    this.reportTransfer = data
   }
 
   @Action({ commit: 'setReportList', rawError: true })
@@ -42,8 +36,4 @@ export default class StoreReport extends VuexModule {
     return response.data
   }
 
-  @Action({ commit: 'setReportTransfer', rawError: true })
-  actAddTransferReport( reportTransfer: any ): Promise<string | undefined> {
-    return reportTransfer
-  }
 }

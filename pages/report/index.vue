@@ -17,144 +17,147 @@
       .btn.btn-primary(@click='routeLinkAddReport')
         .icon.icon-add-items
         span Add Report
+  .grid.header__filter(:class='{ "active": true }')
+    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+        FilterTable(
+          title="Seller email"
+          placeholder="Search"
+          :value="filter.sellerEmail"
+          :searchText="true"
+          name="sellerEmail"
+          @updateFilter="handleFilter"
+        )
+    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+      FilterTable(
+        title="Report Code"
+        :value="filter.barCode"
+        placeholder="Enter code"
+        name="barCode"
+        :searchText="true"
+        @updateFilter="handleFilterReport"
+        :isShowFilter="isShowFilter"
+      )
+    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+      FilterCalendar(
+        title="From"
+        :value="filter.dateFrom"
+        name="dateFrom"
+        inputClass="border-0"
+        dateFormat="dd-mm-yy"
+        :showIcon="true"
+        @updateFilter="handleFilterReport"
+      )
+    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+      FilterCalendar(
+        title="To"
+        border="right"
+        :value="filter.dateTo"
+        name="dateTo"
+        inputClass="border-0"
+        dateFormat="dd-mm-yy"
+        :showIcon="true"
+        @updateFilter="handleFilterReport"
+      )
   .grid.header__filter(:class='{ "active": isShowFilter }')
-    div(class="md:col-12 lg:col-8 col-12")
-      .grid
-        div(class="col-12 md:col-4")
-          FilterTable(
-            title="Report Code"
-            :value="filter.barCode"
-            placeholder="Enter code"
-            name="barCode"
-            :searchText="true"
-            @updateFilter="handleFilterReport"
-            :isShowFilter="isShowFilter"
-          )
-        div(class="col-12 md:col-4")
-          FilterTable(
-            title="Box Code"
-            :value="filter.barCode"
-            placeholder="Enter code"
-            name="barCode"
-            :searchText="true"
-            @updateFilter="handleFilterReport"
-            :isShowFilter="isShowFilter"
-          )
-    div(class="col-12 lg:col-4")
-      .grid
-        .col
-          FilterCalendar(
-            title="From"
-            :value="filter.dateFrom"
-            name="dateFrom"
-            inputClass="border-0"
-            dateFormat="dd-mm-yy"
-            :showIcon="true"
-            @updateFilter="handleFilterReport"
-          )
-        .col
-          FilterCalendar(
-            title="To"
-            border="right"
-            :value="filter.dateTo"
-            name="dateTo"
-            inputClass="border-0"
-            dateFormat="dd-mm-yy"
-            :showIcon="true"
-            @updateFilter="handleFilterReport"
-          )
-        div(class='col-12 md:col-4 xl:col-3')
-          FilterTable(
-            title="Seller email"
-            placeholder="Search"
-            :value="filter.sellerEmail"
-            :searchText="true"
-            name="sellerEmail"
-            @updateFilter="handleFilter"
-          )
-        div(class='col-12 md:col-4 xl:col-3')
-          FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
-  .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
-    .col.h-full.absolute.top-0.left-0.right-0.bg-white
-      DataTable.w-full.table__sort-icon.h-full(v-if="reportList" :value="reportList" responsiveLayout="scroll"
-      :selection="selectedReportes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"
+    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+      FilterTable(
+        title="Box Code"
+        :value="filter.barCode"
+        placeholder="Enter code"
+        name="barCode"
+        :searchText="true"
+        @updateFilter="handleFilterReport"
+        :isShowFilter="isShowFilter"
+      )
+    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+      FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
+  DataTable(:value="data" responsiveLayout="scroll"
+      :selection="selectedReportes" :rows="20" :scrollable="false"
       :rowClass="rowClass" @sort="sortData($event)"
-      :class="{ 'table-wrapper-empty': !reportList || reportList.length <= 0 }" @row-select-all="rowSelectAll"
-      @row-unselect-all="rowUnSelectAll" @row-select="rowSelect" @row-unselect="rowUnselect")
-        Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false" :headerClass="classHeaderMuti")
-        Column(field="no" header="NO")
+      @row-select-all="rowSelectAll"
+      @row-unselect-all="rowUnSelectAll"
+      @row-select="rowSelect"
+      @row-unselect="rowUnselect"
+      groupRowsBy="id"
+      rowGroupMode="rowspan"
+      showGridlines
+      )
+      Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
+      Column(field="id" header="ID"  bodyClass="font-semibold"  className="text-center" headerClass="grid-header-center" sortField="_id")
           template(#body="slotProps")
-            span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-        Column(field="id" header="ID" :sortable="true" bodyClass="font-semibold" sortField="_id")
-        Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
-          template(#body="{data}") {{ data.createdAt | dateTimeHour24 }}
-        Column(field="id" header="BOX CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
-          template(#body="{data}")
-            NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/report/${data.id}`"
-            class="no-underline hover:underline") {{ data.id }}
-        Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
-        Column(field="usedCapacity" header="stock take note id" className="text-right uppercase")
-        Column(field="attributes" header="note" className="text-right uppercase" bodyClass="font-semibold" )
-        Column(field="TYPE" header="create id" className="text-right uppercase" bodyClass="font-semibold" )
-        Column(field="status" header="STATUS" :sortable="true" className="text-right" sortField="_status")
-          template(#body="{data}")
-            .flex.justify-content-end
-              span.table__status.table__status--available(
-                v-if="data.status === 'BOX_STATUS_AVAILABLE'"
-              ) {{ data.status | reportStatus }}
-              span.table__status.table__status--disable(
-                v-else-if="data.status === 'BOX_STATUS_DISABLE'"
-              ) {{ data.status | reportStatus }}
-              span.table__status.table__status--draft(
-                v-else-if="data.status === 'BOX_STATUS_DRAFT'"
-                ) {{ data.status | reportStatus }}
-              span.table__status.table__status--outgoing(v-else) {{ data.status | reportStatus }}
-        Column(:exportable="false" header="ACTION" className="text-center")
-          template(#body="{data}")
-            .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
-              span.action-item(@click="handleEditReport(data.id)")
-                .icon.icon-edit-btn
-              span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
-                .icon.icon-btn-delete
-        template(#footer)
-          Pagination(
-            type="reportes selected"
-            :paging="paging"
-            :total="totalReportRecords"
-            :deleted-list="selectedReportFilter"
-            @onDelete="showModalDelete"
-            @onPage="onPage")
-        template(#empty)
-          div.flex.align-items-center.justify-content-center.flex-column
-            img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
-            img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-            p.text-900.font-bold.mt-3(v-if="!isFilter") List is empty!, Click
-              span.text-primary.underline.cursor-pointer(@click='routeLinkAddReport') &nbsp;here
-              span &nbsp;to add item.
-            p.text-900.font-bold.mt-3(v-else) Item not found!
+            span {{slotProps.data.id}}
+
+      Column(field="createdAt" header="CREATE TIME" :sortable="true"  sortField="_createdAt")
+        template(#body='{ data }')
+          span {{ data.createdAt | dateTimeHour24 }}
+      Column(field="boxNote.id" header="BOX CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
+      Column(field="boxNote.sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
+      Column(field="boxNote.id" header="stock take note id" className="uppercase")
+      Column(field="boxNote.note" header="note" className="uppercase" bodyClass="font-semibold" )
+      Column(field="createId" header="create id" className="uppercase" bodyClass="font-semibold" )
+      Column(field="status" header="STATUS" :sortable="true"  sortField="_status" className="text-center")
+        template(#body='{ data }')
+              span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
+                :class=" data.status === 'REPORT_RESOLVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")
+                | {{ data.status | reportStatus }}
+      Column(:exportable="false" header="ACTION" className="text-center")
+        template(#body="{data}")
+          .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
+            span.action-item(@click="handleEditReport(data.id)")
+              .icon.icon-edit-btn
+            span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
+              .icon.icon-btn-delete
+      template(#footer)
+        Pagination(
+          type="reportes selected"
+          :paging="paging"
+          :total="totalReportRecords"
+          :deleted-list="selectedReportFilter"
+          @onDelete="showModalDelete"
+          @onPage="onPage")
+      template(#empty)
+        div.flex.align-items-center.justify-content-center.flex-column
+          img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
+          img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+          p.text-900.font-bold.mt-3(v-if="!isFilter") List is empty!, Click
+            span.text-primary.underline.cursor-pointer(@click='routeLinkAddReport') &nbsp;here
+            span &nbsp;to add item.
+          p.text-900.font-bold.mt-3(v-else) Item not found!
     
-    Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
-        template(#header)
-          h1.text-heading Select Box
-        BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
-        template(#footer)
-          Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
-          Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()")
-    ConfirmDialogCustom(
-      title="Confirm delete"
-      image="confirm-delete"
-      :isShow="isModalDelete"
-      :onOk="handleDeleteStock"
-      :onCancel="handleCancel"
-      :loading="loadingSubmit"
-    )
-      template(v-slot:message)
-        p {{ deleteMessage }}
+  Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
+    template(#header)
+      h1.text-heading Select Box
+    BoxDataTable(@selectBox='selectBox($event)' :box='boxShow' v-if='!isConfirm')
+    .confirm.grid(v-if='isConfirm')
+      .col-12.text-center
+        h3 Report detail
+      .col-12
+        DataTable.w-full.table__sort-icon.h-full(:value="boxShow" responsiveLayout="scroll")
+          Column(field="id" header="box code" className="uppercase")
+          Column(field="sellerEmail" header="seller email" className="uppercase")
+          Column(field="note" header="note" className="uppercase")
+            template(#body="{ data }")
+              InputText(v-model='data.note' autofocus)
+          Column(header="action" className="uppercase")
+    template(#footer)
+      Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
+      Button.p-button-primary(label="Back" icon="pi pi-arrow-left" @click="isConfirm = false;" v-if='isConfirm')
+      Button.p-button-success(label="Save" icon="pi pi-check" @click="saveReport()" v-if='isConfirm')
+      Button.p-button-success(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()" v-if='!isConfirm')
+  ConfirmDialogCustom(
+    title="Confirm delete"
+    image="confirm-delete"
+    :isShow="isModalDelete"
+    :onOk="handleDeleteStock"
+    :onCancel="handleCancel"
+    :loading="loadingSubmit"
+  )
+    template(v-slot:message)
+      p {{ deleteMessage }}
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { Report } from '~/models/Report'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
@@ -173,7 +176,7 @@ const dayjs = require('dayjs')
   }
 })
 class ReportList extends Vue {
-  selectedReportes: Report.Model[] = []
+  selectedReportes: any[] = []
   isModalDelete: boolean = false
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
@@ -191,18 +194,18 @@ class ReportList extends Vue {
     { name: 'In progress', value: REPORT_STATUS.IN_PROGRESS }
   ]
 
+  isConfirm = false
   filter: any = {
     sellerEmail:  '',
-    warehouse: null,
-    location: '',
     boxCode: '',
     dateFrom: null,
     dateTo: null,
     status:''
   }
 
+  data: any[] = []
   @nsStoreReport.State
-  reportList!: Report.Model[]
+  reportList!: any[]
 
   @nsStoreReport.State
   totalReportRecords!: number
@@ -223,7 +226,18 @@ class ReportList extends Vue {
   actAddTransferReport!: (params: {ids: string[]}) => Promise<any>
 
   async mounted() {
-    // await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
+    await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
+    this.reportList.forEach(report => {
+      report.boxNote.forEach(box => {
+        this.data.push({
+          id: report.id,
+          boxNote: box,
+          createdAt: report.createdAt,
+          createId: report.createdBy.id,
+          status:'REPORT_NEW'
+        })
+      })
+    })
   }
 
   // -- [ Getters ] -------------------------------------------------------------
@@ -233,20 +247,13 @@ class ReportList extends Vue {
   }
 
   get selectedReportFilter() {
-    return  _.filter(this.selectedReportes, ({ status }) => {
+    return  _.filter(this.selectedReportes, ({ status }) => { 
       return status !== 'BOX_STATUS_DISABLE' && status !== 'BOX_STATUS_OUTGOING'
     })
   }
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'report')
-  }
-
-  get classHeaderMuti() {
-    return !this.reportList ||
-      this.reportList.length <= 0
-      ? 'checkreport-disable'
-      : ''
   }
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -358,7 +365,7 @@ class ReportList extends Vue {
 
   rowUnselect({ originalEvent, data }) {
     originalEvent.originalEvent.stopPropagation()
-    this.selectedReportes = _.filter(this.selectedReportes, (report: Report.Model) => report.id !== data.id)
+    this.selectedReportes = _.filter(this.selectedReportes, (report: any) => report.id !== data.id)
   }
 
   routeLinkAddReport() {
@@ -372,9 +379,25 @@ class ReportList extends Vue {
     } else {
       this.disabledApply = true
     }
+
   }
 
   hideDialog(){
+    this.showModal = false
+  }
+
+  applyBox(){
+    this.boxShow = this.boxSelected.map(element=>{
+      return {
+        id : element.id,
+        note:'',
+        sellerEmail: element.sellerEmail
+      }
+    })
+    this.isConfirm = true
+  }
+
+  saveReport(){
     this.showModal = false
   }
 }
@@ -382,6 +405,13 @@ export default ReportList
 </script>
 
 <style lang="sass" scoped>
+.header__filter
+  ::v-deep.p-calendar-w-btn
+    .p-button
+      background: none !important
+      border: none !important
+  ::v-deep.pi-calendar:before
+    content: url('~/assets/icons/calendar.svg')
 .report-page-container
   @include mobile
     min-height: calc(100vh - 32px)
@@ -423,4 +453,9 @@ export default ReportList
       @include flex-center
       flex-direction: row
       margin-top: 0
+::v-deep.confirm
+  .p-datatable-table
+    .p-datatable-tbody
+      & > tr
+        height: 3.5rem !important
 </style>

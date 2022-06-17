@@ -21,4 +21,9 @@ export namespace FilterConstants {
     ['REQUEST_ACTION_TO_TRANSFERRED_BOX', 'TRANSFERRED'  ]
 
   ])
+
+  export const REPORT_STATUS_MAP = new Map<string, string>([
+    ['REPORT_NEW', 'NEW'],
+    ['REPORT_RESOLVED', 'RESOLVED']
+  ])
 }
