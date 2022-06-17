@@ -213,8 +213,12 @@ class ReportList extends Vue {
   }
 
   data: any[] = []
+
   @nsStoreReport.State
   reportList!: any[]
+
+  @nsStoreReport.State
+  listBoxTakeNote!: any[]
 
   @nsStoreReport.State
   totalReportRecords!: number
@@ -234,7 +238,7 @@ class ReportList extends Vue {
   @nsStoreReport.Action
   actDeleteReportById!: (params: {ids: string[]}) => Promise<any>
 
-  @nsStoreReport.Action
+  @nsStoreReport.Mutation
   setListBoxTakeNote!: (data: any) => Promise<any>
 
   @nsStoreReport.Action
