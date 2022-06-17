@@ -10,8 +10,8 @@ export default class StoreBox extends VuexModule {
     GET_BOX_DETAIL: '/box/:id/detail',
     UPDATE_BOX_DETAIL: '/box/:id/update',
     BOX_LOCATION_HISTORY: '/box/:id/location-history',
-    BOX_HISTORY: '/box/:id/history'
-
+    BOX_HISTORY: '/box/:id/history',
+    GET_REPORT_DETAIL: 'report/:ID/detail'
   }
 
   public boxDetail?: {} = {}
@@ -21,6 +21,7 @@ export default class StoreBox extends VuexModule {
   public totalHistory?: number = 0
   public totalBoxHistory?: number = 0
   public updateSuccess?: boolean = false
+  public reportDetail?: any = {}
 
   @Mutation
   setBoxDetail(data: any) {
@@ -75,4 +76,14 @@ export default class StoreBox extends VuexModule {
     return response.data
   }
 
+  @Mutation
+  setReportDetail(data) {
+    this.reportDetail = data
+  }
+
+  @Action({ commit: 'setReportDetail', rawError: true })
+  async actGetReportDetail(params: { id: number }): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreBox.STATE_URL.GET_REPORT_DETAIL, params)
+    return await $api.get(url)
+  }
 }

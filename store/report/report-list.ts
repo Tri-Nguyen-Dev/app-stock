@@ -15,7 +15,8 @@ export default class StoreReport extends VuexModule {
   public reportList?: Report.Model[] = []
   public totalReportRecords?: number = 0
   public reportListFilter?: Report.Model[] = undefined
-  public reportTransfer: any = [];
+  public reportTransfer: any = []
+  public listBoxTakeNote: any = []
 
   @Mutation
   setReportList(response: any) {
@@ -26,6 +27,11 @@ export default class StoreReport extends VuexModule {
   @Mutation
   setReportTransfer(data: any) {
     this.reportTransfer = data
+  }
+
+  @Mutation
+  setListBoxTakeNote(data: any) {
+    this.listBoxTakeNote = data
   }
 
   @Action({ commit: 'setReportList', rawError: true })

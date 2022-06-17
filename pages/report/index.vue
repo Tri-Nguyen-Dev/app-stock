@@ -17,6 +17,9 @@
       .btn.btn-primary(@click='routeLinkAddReport')
         .icon.icon-add-items
         span Add Report
+      .btn.btn-primary(@click='showModalDetail(1)')
+        .icon.icon-add-items
+        span Detail
   .grid.header__filter(:class='{ "active": isShowFilter }')
     div(class="md:col-12 lg:col-8 col-12")
       .grid
@@ -140,6 +143,51 @@
         template(#footer)
           Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
           Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()")
+    Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "60vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
+      div.report-heading
+        span.report-status.table__status.table__status--available SOLVING
+        div.report-title
+          h3 Report Detail
+          h3 ID 0001341
+        span.report-close(@click="hideModalDetail")
+          i.pi.pi-times
+      div.report-content
+        .main-info
+          .info-creator
+            .info-item
+              span.info-title Creator ID:
+              span.info-content 0001341
+            .info-item
+              span.info-title Creator Time:
+              span.info-content 19-09-2022 9:24AM
+            .info-item
+              span.info-title Stock-take Note ID: 
+              span.info-content ST12222222
+            .info-item
+              span.info-title PIC ID: 
+              span.info-content NV66666
+          .info-seller
+            .info-item
+              span.info-title Creator ID:
+              span.info-content 0001341
+            .info-item
+              span.info-title Creator Time:
+              span.info-content 19-09-2022 9:24AM
+            .info-item
+              span.info-title Stock-take Note ID: 
+              span.info-content ST12222222
+            .info-item
+              span.info-title PIC ID: 
+              span.info-content NV66666
+        .info-box
+          .box-code
+            h3 BOX CODE:
+            h3 B12232323233
+          .box-note
+            h3 NOTE:
+            p 5 items in this box have disappeared. The box should be changed into a new one
+      template(#footer)
+        Button.btn.btn-primary.h-3rem Create stock-take note
     ConfirmDialogCustom(
       title="Confirm delete"
       image="confirm-delete"
@@ -183,6 +231,7 @@ class ReportList extends Vue {
   isDescending: boolean|null = null
   reportCodeDelete: string = ''
   showModal = false
+  isShowModalDetail: boolean = false
   disabledApply = true
   boxSelected: any[] = []
   boxShow : any[] = []
@@ -210,6 +259,9 @@ class ReportList extends Vue {
   @nsStoreWarehouse.State
   warehouseList!: any
 
+  @nsStoreReport.State
+  receiptDetail!: any
+
   @nsStoreReport.Action
   actGetReportList!: (params: any) => Promise<void>
 
@@ -221,6 +273,9 @@ class ReportList extends Vue {
 
   @nsStoreReport.Action
   actAddTransferReport!: (params: {ids: string[]}) => Promise<any>
+
+  @nsStoreReport.Action
+  actGetReceiptDetail!: (id: any) => Promise<any>
 
   async mounted() {
     // await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
@@ -318,7 +373,7 @@ class ReportList extends Vue {
     if(sortOrder){
       this.isDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '')
-    }else{
+    } else{
       this.isDescending = null
       this.sortByColumn = ''
     }
@@ -377,6 +432,15 @@ class ReportList extends Vue {
   hideDialog(){
     this.showModal = false
   }
+
+  hideModalDetail() {
+    this.isShowModalDetail = false
+  }
+
+  async showModalDetail(id: any) {
+    this.isShowModalDetail = true
+    await this.actGetReceiptDetail(id)
+  }
 }
 export default ReportList
 </script>
@@ -423,4 +487,48 @@ export default ReportList
       @include flex-center
       flex-direction: row
       margin-top: 0
+::v-deep.report-detail
+  .p-dialog
+    overflow: hidden
+  .p-dialog-header
+    display: none
+  .report-heading
+    display: flex
+    justify-content: space-between
+    align-items: center
+    .report-title
+      display: flex
+      flex-direction: column
+      align-items: center
+    .report-title h3
+      margin: 0
+      font-size: 20px
+    .report-close
+      cursor: pointer
+      &:hover
+        i
+          color: red !important
+      i
+        transition: 0.25s all ease
+        font-size: 1.2rem
+  .p-dialog-footer
+    display: flex
+    justify-content: center
+  .main-info
+    margin: 24px 0
+    display: flex
+    .info-creator
+      width: 50%
+    .info-seller
+      width: 50%
+    .info-item
+      color: $text-color-base
+      margin-top: 10px
+      font-size: 14px
+      font-weight: 400
+    .info-content
+      margin-left: 6px
+  .box-code
+    display: flex
+    gap: 0 6px
 </style>
