@@ -5,7 +5,11 @@
         div
           h1.text-heading Item list
           span.text-subheading {{ total }} product found
-        .header__action
+        .header__action.flex
+          Button.btn.btn-primary.border-0.mr-2(
+            @click='handleApplyFilter'
+            :disabled='checkIsFilter ? null : "disabled"'
+          ) Apply
           .btn__filter(:class="{'active': isShowFilter}")
             .btn-toggle(@click="isShowFilter = !isShowFilter")
               .icon.icon-filter(v-if="!isShowFilter")
@@ -14,70 +18,74 @@
             .btn-refresh(@click="handleRefreshFilter")
               .icon.icon-rotate-left.bg-white
       .grid.header__filter(:class='{ "active": isShowFilter }')
-        div(class="col-12 md:col-2")
-          FilterTable(
-            title="Warehouse"
-            :value="filter.warehouse"
-            :options="warehouseList"
-            name="warehouse"
-            @updateFilter="handleFilter"
-          )
-        .div(class="col-12 md:col-2")
-          FilterTable(
-            title="Seller"
-            placeholder="Search barcode"
-            name="email"
-            :value="filter.email"
-            :searchText="true"
-            @updateFilter="handleFilter"
-            :isShowFilter="isShowFilter"
-          )
-        .div(class="col-12 md:col-2")
-          FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
-        .div(class="col-12 md:col-2")
-          FilterTable(
-            title="Barcode"
-            placeholder="Search barcode"
-            name="barCode"
-            :value="filter.barCode"
-            :searchText="true"
-            @updateFilter="handleFilter"
-            :isShowFilter="isShowFilter"
-          )
-        .div(class="col-12 md:col-2")
-          FilterTable(
-            title="Item name"
-            placeholder="Search barcode"
-            name="stockName"
-            :value="filter.stockName"
-            :searchText="true"
-            @updateFilter="handleFilter"
-            :isShowFilter="isShowFilter"
-          )
-        div(class='col-12 md:col-2')
-          .grid.grid-nogutter
-            .col
-              FilterCalendar(
-                title="From"
-                border="left"
-                :value="filter.dateFrom"
-                name="dateFrom"
-                inputClass="border-0"
-                dateFormat="dd-mm-yy"
-                :showIcon="true"
+        div(class="col-12 md:col-12 xl:col-7")
+          .grid
+            div(class="col-12 md:col-3")
+              FilterTable(
+                title="Warehouse"
+                :value="filter.warehouse"
+                :options="warehouseList"
+                name="warehouse"
                 @updateFilter="handleFilter"
               )
-            .col.ml-1
-              FilterCalendar(
-                title="To"
-                border="right"
-                :value="filter.dateTo"
-                name="dateTo"
-                inputClass="border-0"
-                dateFormat="dd-mm-yy"
-                :showIcon="true"
+            .div(class="col-12 md:col-3")
+              FilterTable(
+                title="Seller"
+                placeholder="Search barcode"
+                name="email"
+                :value="filter.email"
+                :searchText="true"
                 @updateFilter="handleFilter"
-              ) 
+                :isShowFilter="isShowFilter"
+              )
+            .div(class="col-12 md:col-3")
+              FilterTable(
+                title="Barcode"
+                placeholder="Search barcode"
+                name="barCode"
+                :value="filter.barCode"
+                :searchText="true"
+                @updateFilter="handleFilter"
+                :isShowFilter="isShowFilter"
+              )
+            .div(class="col-12 md:col-3")
+              FilterTable(
+                title="Item name"
+                placeholder="Search barcode"
+                name="stockName"
+                :value="filter.stockName"
+                :searchText="true"
+                @updateFilter="handleFilter"
+                :isShowFilter="isShowFilter"
+              )
+        div(class="col-12 md:col-12 xl:col-5")
+          .grid
+            div(class='col-12 md:col-8')
+              .grid.grid-nogutter
+                .col
+                  FilterCalendar(
+                    title="From"
+                    border="left"
+                    :value="filter.dateFrom"
+                    name="dateFrom"
+                    inputClass="border-0"
+                    dateFormat="dd-mm-yy"
+                    :showIcon="true"
+                    @updateFilter="handleFilter"
+                  )
+                .col.ml-1
+                  FilterCalendar(
+                    title="To"
+                    border="right"
+                    :value="filter.dateTo"
+                    name="dateTo"
+                    inputClass="border-0"
+                    dateFormat="dd-mm-yy"
+                    :showIcon="true"
+                    @updateFilter="handleFilter"
+                  ) 
+            .div(class="col-12 md:col-4")
+              FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
       .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
         .col.h-full.absolute.top-0.left-0.right-0.bg-white
           DataTable(
@@ -92,6 +100,7 @@
             @row-unselect-all="rowUnSelectAll"
             @row-select="rowSelect"
             @row-unselect="rowUnselect"
+            :rowClass="rowClass"
           )
             Column(
               selectionMode='multiple'
@@ -117,14 +126,23 @@
             Column(field='status' header="Status" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right
-                  span.table__status.table__status--available(v-if="data.stock.stockStatus === 'STOCK_STATUS_AVAILABLE'") Available
-                  span.table__status.table__status--disable(v-if="data.stock.stockStatus === 'STOCK_STATUS_DISABLE' ") Disable
+                  span.table__status.table__status--available(
+                    v-if="data.itemStatus === 'ITEM_STATUS_AVAILABLE'"
+                  ) {{ data.itemStatus | itemStockStatus }}
+                  span.table__status.table__status--disable(
+                    v-else-if="data.itemStatus === 'ITEM_STATUS_DISABLE'"
+                  ) {{ data.itemStatus | itemStockStatus }}
+                  span.table__status.table__status--draft(
+                    v-else-if="data.itemStatus === 'ITEM_STATUS_DRAFT'"
+                    ) {{ data.itemStatus | itemStockStatus }}
+                  span.table__status.table__status--outgoing(v-else) {{ data.itemStatus | itemStockStatus }}
             template(#footer)
               Pagination(
                 type="items selected"
                 :paging="paging"
                 :total="total"
-                @onPage="onPage")
+                @onPage="onPage"
+              )
             template(#empty)
               div.table__empty
                 img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
@@ -132,7 +150,8 @@
                 p.text-900.font-bold.mt-3 Order not found!
     template(#footer)
       Button.p-button-secondary(label="Close" icon="pi pi-times" @click="handleClose")
-      Button.p-button-primary(label="Apply" icon="pi pi-check" @click="handleApply")
+      Button.px-2.p-button-primary(icon="pi pi-check" @click="handleApply" v-if="lableBtnAddStock.length")
+        span {{ lableBtnAddStock.label }}
 </template>
 
 <script lang="ts">
@@ -142,12 +161,13 @@ import { Stock as StockModel } from '~/models/Stock'
 import {
   PAGINATE_DEFAULT,
   calculateIndex,
-  StockConstants
+  StockTakeConstants
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreOrder = namespace('stock-out/create-order')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -160,7 +180,7 @@ class ItemListModel extends Vue {
   isShowFilter: boolean = false
   isFilter: boolean = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
-  statusList = StockConstants.STOCK_STATUS_OPTIONS
+  statusList = StockTakeConstants.RESULT_ITEM_STOCK_OPTIONS
   filter: any = {
     warehouse: null,
     email: null,
@@ -212,6 +232,26 @@ class ItemListModel extends Vue {
     return this.isShow
   }
 
+  get lableBtnAddStock() {
+    const length = _.size(this.selectedBoxeSsatisfy)
+    let stockQuantity = ''
+    if(length === 1 ) {
+      stockQuantity = length + ' stock'
+    } else if(length > 1) {
+      stockQuantity = length + ' stocks'
+    }
+    return {
+      label: `Add ${stockQuantity || 'stock'} to stock-take note`,
+      length
+    }
+  }
+
+  get selectedBoxeSsatisfy() {
+    return  _.filter(this.selectedStock, ({ itemStatus }) => {
+      return itemStatus !== 'ITEM_STATUS_DRAFT'
+    })
+  }
+
   // -- [ Setters ] -------------------------------------------------------------
   set visibleVue(value) {
     this.$emit('hideDialog', value)
@@ -222,11 +262,11 @@ class ItemListModel extends Vue {
     return {
       warehouseId: this.filter.warehouse?.id,
       email: this.filter.email || null,
-      stockStatus: this.filter.status?.value,
+      itemStatus: this.filter.status?.value,
       barCode: this.filter.barCode || null,
       stockName: this.filter.stockName || null,
-      from: this.filter.dateFrom,
-      to: this.filter.dateTo,
+      from: this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
+      to: this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
       sortBy: this.filter.sortBy || null,
       desc: this.filter.desc
     }
@@ -242,7 +282,6 @@ class ItemListModel extends Vue {
 
   handleFilter(e: any, name: string){
     this.filter[name] = e
-    this.getProductList()
   }
 
   async getProductList() {
@@ -291,7 +330,7 @@ class ItemListModel extends Vue {
   }
 
   rowSelectAll({ data }) {
-    this.selectedStock = _.union(this.selectedStock, data)
+    this.selectedStock = _.unionWith(this.selectedStock, data, _.isEqual)
   }
 
   rowUnSelectAll() {
@@ -315,12 +354,22 @@ class ItemListModel extends Vue {
   }
 
   handleApply() {
-    this.$emit('onApply', this.selectedStock)
+    this.$emit('onApply', this.selectedBoxeSsatisfy)
   }
 
   handleClose() {
     this.$emit('hideDialog', false)
     this.selectedStock = []
+  }
+
+  handleApplyFilter() {
+    this.getProductList()
+  }
+
+  rowClass({ itemStatus }) {
+    if(itemStatus === 'ITEM_STATUS_DRAFT') {
+      return 'row-disable'
+    }
   }
 }
 
@@ -333,6 +382,8 @@ export default ItemListModel
     width: 80vw
     padding-bottom: 5px
     height: 85vh
+    .pagination
+      padding: 8px
   ::v-deep.pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
   ::v-deep.p-calendar-w-btn

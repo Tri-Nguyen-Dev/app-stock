@@ -1,73 +1,66 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
-    div.bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
-      .grid.flex.align-items-center.p-2.m-0
-        .col-12.flex
-          Button(@click='$router.go(-1)').p-button-link.pl-0
-            .icon-arrow-left.icon.bg-primary.align-items-center
-          Breadcrumb.font-bold(:home="homeItem" :model="breadcrumbItem")
-      .border-bottom-1.border-gray-300
-      .grid.flex.flex-column.p-2.m-0
-        .col.flex
-          .icon-box-info.icon.bg-primary.mr-2
-          span.font-bold.text-700 Note Items Detail
-        .col
-          span.p-2.table__status.table__status--available New
-        .col
-          span.font-bold Note ID: ST2222
-        .col.border-bottom-1.border-gray-300
-      div.sub--scroll
-        .grid.stock--info.p-2.m-0
-          .col-12.flex
-            .col.flex.align-items-center
-              .icon-sender-info.icon.bg-primary.mr-2
-              span.font-bold.text-800.uppercase ID Information
-          .col-12
-            StockUnit.m-0(title="Create Time "  value="N/A" icon="icon-receipt-note")
-          .col-12
-            StockUnit.m-0(title="Creator ID " :value="user.staffId"  icon="icon-tag-user")
-          .col-12
-            StockUnit.m-0(title="Warehouse"  :value="user.warehouse.name" icon="icon-warehouse")
-          .col-12
-            StockUnit.m-0(title="Items"  :value="listStockSelected.length" icon="icon-frame")
-          .col.border-bottom-1.border-gray-300
-        .grid.stock--contact.p-2.m-0
-          .col-12.flex
-            .col.flex.align-items-center
-              .icon-sender-info.icon.bg-primary.mr-2
-              span.font-bold.text-800.uppercase Seller Information
-          .col-12
-            StockUnit.m-0(title="Name" :value="stockDetail" icon="icon-sender-name")
-          .col-12
-            StockUnit.m-0(title="Email" :value="stockDetail" icon="icon-sender-email")
-          .col-12
-            StockUnit.m-0(title="Phone" :value="stockDetail" icon="icon-sender-phone")
+    //- div.bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
+    NoteInfo
+      //- .grid.flex.align-items-center.p-2.m-0
+      //-   .col-12.flex
+      //-     Button(@click='$router.go(-1)').p-button-link.pl-0
+      //-       .icon-arrow-left.icon.bg-primary.align-items-center
+      //-     Breadcrumb(:home='homeItem', :model='breadcrumbItem')
+      //- .border-bottom-1.border-gray-300
+      //- .grid.flex.flex-column.p-2.m-0
+      //-   .col.flex
+      //-     .icon-box-info.icon.bg-primary.mr-2
+      //-     span.font-bold.text-700 Note Items Detail
+      //-   .col
+      //-     span.p-2.table__status.table__status--available New
+      //-   .col.border-bottom-1.border-gray-300
+      //- div.sub--scroll
+      //-   .grid.stock--info.p-2.m-0
+      //-     .col-12.flex
+      //-       .col.flex.align-items-center
+      //-         .icon-sender-info.icon.bg-primary.mr-2
+      //-         span.font-bold.text-800.uppercase ID Information
+      //-     .col-12
+      //-       StockUnit.m-0(title="Creator ID " :value="user.staffId"  icon="icon-tag-user")
+      //-     .col-12
+      //-       StockUnit.m-0(title="Warehouse"  :value="user.warehouse.name" icon="icon-warehouse")
+      //-     .col-12
+      //-       StockUnit.m-0(title="Items"  :value="listStockSelected.length" icon="icon-frame")
+      //-     .col.border-bottom-1.border-gray-300
+      //-   .grid.stock--contact.p-2.m-0
+      //-     .col-12.flex
+      //-       .col.flex.align-items-center
+      //-         .icon-sender-info.icon.bg-primary.mr-2
+      //-         span.font-bold.text-800.uppercase Seller Information
+      //-     .col-12
+      //-       StockUnit.m-0(title="Name" :value="sellerInfo.sellerName" icon="icon-sender-name")
+      //-     .col-12
+      //-       StockUnit.m-0(title="Email" :value="sellerInfo.sellerEmail" icon="icon-sender-email")
+      //-     .col-12
+      //-       StockUnit.m-0(title="Phone" :value="sellerInfo.sellerPhone" icon="icon-sender-phone")
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
-      .stock-take.flex.flex-column
-        .stock-take__header
+      .stock-takeItem.flex.flex-column
+        .stock-takeItem__header
           div
             h1.text-heading Stock-take Note
             span.text-subheading {{ totalItem }} total
-          .stock-take__header--action.flex
+          .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='handleAddItems') Add Item
             Button.btn.btn-primary.border-0(@click='handleSubmit' :disabled='isDisabledSubmit') Save
-        .stock-take__content
+        .stock-takeItem__content
           DataTable(
-            :value='dataRenderItems'
+            :value='listStockSelected'
             dataKey='id'
-            :rows='20'
             responsiveLayout="scroll"
             :resizableColumns="true"
             :class="{ 'table-wrapper-empty': !listStockSelected || listStockSelected.length <= 0 }"
-            :selection="selectedStock"
-            @row-select-all="rowSelectAll"
-            @row-unselect-all="rowUnSelectAll"
-            @row-select="rowSelect"
-            @row-unselect="rowUnselect"
+            :selection.sync="selectedStock"
+            :paginator="false"
           )
             Column(selectionMode="multiple" :styles="{width: '3rem'}")
             Column(field='no' header='NO' :styles="{'width': '3rem'}")
-              template(#body='slotProps') {{ pagination.pageSize * pagination.pageNumber + slotProps.index + 1 }}
+              template(#body='slotProps') {{ slotProps.index + 1 }}
             Column(field='stock.barCode' header='Barcode' :sortable="true")
               template(#body='{ data }')
                 span.text-white-active.text-900.font-bold {{ data.stock.barCode }}
@@ -85,14 +78,14 @@
                   span.action-item(:class="{'disable-button': selectedStock.length > 0}" @click="showModalDelete([data])")
                     .icon.icon-btn-delete
             template(#footer)
-              Pagination(
-                type="stocks selected"
-                :paging="pagination"
-                :total="totalItem"
-                :deleted-list="selectedStock"
-                @onDelete="showModalDelete"
-                @onPage="onPage"
-              )
+              .grid.grid-nogutter.stock-takeItem__footer
+                .col-fixed.stock-takeItem__delete
+                  .pagination__delete(@click="showModalDelete()" v-if='selectedStock.length')
+                    .icon.icon-btn-delete
+                    span Delete {{ selectedStock.length }} items selected
+                .col-9.stock-takeItem__note
+                  div(style="padding-left: 10.5px") Note:
+                  InputText.inputSearchCode.w-full(v-model="noteText" rows="1" cols="40" placeholder='Write something...')
             template(#empty)
               div.flex.align-items-center.justify-content-center.flex-column
                 img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
@@ -118,35 +111,29 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import Pagination from '~/components/common/Pagination.vue'
 import { getDeleteMessage } from '~/utils'
 import ItemListModel from '~/components/stock-take/ItemListModel.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 import { User } from '~/models/User'
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: {
-    Pagination,
     ItemListModel,
-    ConfirmDialogCustom
+    ConfirmDialogCustom,
+    NoteInfo
   }
 })
 class StockTakeItems extends Vue {
   listStockSelected = []
   isModalAddItem: boolean = false
   disabledApply = true
-  stockDetail = 'namlcp'
   isModalDelete: boolean = false
   onEventDeleteList: any = []
   selectedStock: any = []
-  pagination: any = {
-    first: 0,
-    pageNumber: 0,
-    pageCount: 1,
-    pageSize: 20
-  }
+  noteText: string = ''
 
   @nsStoreUser.State
   user: User.Model | undefined
@@ -155,7 +142,40 @@ class StockTakeItems extends Vue {
   stockTakeCreated!: any
 
   @nsStoreCreateStockTake.Action
-  actCreateStockTake!: (params?: any) => Promise<void>
+  actCreateStockTake!: (params?: any) => Promise<any>
+  
+  get homeItem() {
+    return { label: 'Note list', to: '/stock-take' }
+  }
+
+  get breadcrumbItem() {
+    return [
+      { label: 'Add new note', to: '/stock-take/item' }
+    ]
+  }
+
+  get totalItem() {
+    return _.size(this.listStockSelected)
+  }
+
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'box')
+  }
+  
+  get isDisabledSubmit() {
+    return _.size(this.listStockSelected) > 0 ? null : 'disabled'
+  }
+
+  get sellerInfo() {
+    const firstStock: any = this.listStockSelected[0]
+    if(firstStock) {
+      const stockSame = _.partition(this.listStockSelected, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
+      if(_.size(stockSame) === this.totalItem) {
+        return firstStock
+      }
+    }
+    return { sellerName: 'N/A', sellerEmail: 'N/A', sellerPhone: 'N/A' }
+  }
 
   handleAddItems() {
     this.isModalAddItem = true
@@ -163,42 +183,21 @@ class StockTakeItems extends Vue {
 
   async handleSubmit(){
     const data = {
-      note: 'mac',
+      note: this.noteText,
       checkType: 'ITEM',
       stockBoxList: _.map(this.listStockSelected, ({ id }) => ({ id }))
     }
-    await this.actCreateStockTake(data)
-    if(this.stockTakeCreated.id){
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Success Message',
-        detail: 'Successfully create stock take',
-        life: 3000
-      })
-    }
-  }
-
-  onPage(event: any) {
-    this.pagination.pageSize = event.rows
-    this.pagination.pageNumber = event.page
-  }
-
-  get homeItem() {
-    return { label: 'D/O List', to: '/stock-out/order-list' }
-  }
-
-  get breadcrumbItem() {
-    return [
-      { label: 'stock',
-        to: `/stock-out/order/${this.$route.params.id}/stock` },
-      { label: 'Information',
-        to: `/stock-out/order/${this.$route.params.id}/stock/${this.$route.params.sid}`
+    const result = await this.actCreateStockTake(data)
+    if(result) {
+      if(result?.id) {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Successfully create stock take',
+          life: 3000
+        })
       }
-    ]
-  }
-
-  get totalItem() {
-    return _.size(this.listStockSelected)
+    }
   }
 
   handleApplyAddItem(selectedStock){
@@ -223,45 +222,10 @@ class StockTakeItems extends Vue {
     )
     this.selectedStock = []
     this.isModalDelete = false
-    this.pagination.first = 0
-    this.pagination.pageNumber = 0
-    
   }
 
   handleCancel() {
     this.isModalDelete = false
-  }
-
-  rowSelectAll({ data }) {
-    this.selectedStock = _.unionWith(this.selectedStock, data, _.isEqual)
-  }
-
-  rowUnSelectAll() {
-    this.selectedStock = _.differenceWith(this.selectedStock, this.dataRenderItems, _.isEqual)
-  }
-
-  rowSelect({ data }) {
-    this.selectedStock.push(data)
-  }
-
-  rowUnselect({ originalEvent, data }) {    
-    originalEvent.originalEvent.stopPropagation()
-    this.selectedStock = _.filter(this.selectedStock, (box: any) => box.id !== data.id)
-  }
-
-  get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'box')
-  }
-
-  get dataRenderItems() {
-    const lastIndex = this.pagination.first + this.pagination.pageSize
-    return this.listStockSelected.filter(
-      (_, index) => index >= this.pagination.first && index < lastIndex
-    )
-  }
-  
-  get isDisabledSubmit() {
-    return _.size(this.listStockSelected) > 0 ? null : 'disabled'
   }
 }
 
@@ -270,7 +234,7 @@ export default StockTakeItems
 <style lang="sass" scoped>
 .stock
   @include tablet
-    margin: 50px
+    // margin: 50px
   ::v-deep.sub-tab
     height: calc(100vh - 150px)
     overflow: hidden
@@ -316,7 +280,7 @@ export default StockTakeItems
   width: 300px
   margin-bottom: 16px
 
-::v-deep.stock-take
+::v-deep.stock-takeItem
   min-height: calc(100vh - 32px)
   margin-top: 3rem
   @include desktop
@@ -347,6 +311,14 @@ export default StockTakeItems
     border-radius: 4px
     position: relative
     overflow: hidden
+  &__note
+    border-left: 1px solid var(--gray-300)!important
+  &__footer
+    background: $color-white
+    display: flex
+    justify-content: space-between
+    padding: 6px 8px
+    align-items: center
   .text-right
     text-align: right !important
     .p-column-header-content

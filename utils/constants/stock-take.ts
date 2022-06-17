@@ -19,6 +19,14 @@ export namespace StockTakeConstants {
     { name: 'Ok', value: 'OK' },
     { name: 'Waiting', value: 'WAITING' }
   ]
+
+  export const RESULT_ITEM_STOCK_OPTIONS = [
+    { name: 'Available', value: 'ITEM_STATUS_AVAILABLE' },
+    { name: 'Disable', value: 'ITEM_STATUS_DISABLE' },
+    { name: 'Draft', value: 'ITEM_STATUS_DRAFT' },
+    { name: 'Unknown', value: 'ITEM_STATUS_UNKNOWN' },
+    { name: 'Reported', value: 'ITEM_STATUS_REPORTED' }
+  ]
 }
 
 export enum STOCK_TAKE_STATUS {
