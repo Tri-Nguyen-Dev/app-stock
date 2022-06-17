@@ -17,7 +17,6 @@
       .btn.btn-primary(@click='routeLinkAddReport')
         .icon.icon-add-items
         span Add Report
-      Button.btn.btn-primary(@click='createStockTake') Create stock-take note
   .grid.header__filter(:class='{ "active": true }')
     .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
         FilterTable(
@@ -116,6 +115,8 @@
           :deleted-list="selectedReportFilter"
           @onDelete="showModalDelete"
           @onPage="onPage")
+          template(#action)
+            Button.btn.btn-primary(@click='createStockTake' style="height: 34px") Create stock-take note
       template(#empty)
         div.flex.align-items-center.justify-content-center.flex-column
           img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
