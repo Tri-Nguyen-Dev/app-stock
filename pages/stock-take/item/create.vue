@@ -1,44 +1,6 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
-    //- div.bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
-    NoteInfo
-      //- .grid.flex.align-items-center.p-2.m-0
-      //-   .col-12.flex
-      //-     Button(@click='$router.go(-1)').p-button-link.pl-0
-      //-       .icon-arrow-left.icon.bg-primary.align-items-center
-      //-     Breadcrumb(:home='homeItem', :model='breadcrumbItem')
-      //- .border-bottom-1.border-gray-300
-      //- .grid.flex.flex-column.p-2.m-0
-      //-   .col.flex
-      //-     .icon-box-info.icon.bg-primary.mr-2
-      //-     span.font-bold.text-700 Note Items Detail
-      //-   .col
-      //-     span.p-2.table__status.table__status--available New
-      //-   .col.border-bottom-1.border-gray-300
-      //- div.sub--scroll
-      //-   .grid.stock--info.p-2.m-0
-      //-     .col-12.flex
-      //-       .col.flex.align-items-center
-      //-         .icon-sender-info.icon.bg-primary.mr-2
-      //-         span.font-bold.text-800.uppercase ID Information
-      //-     .col-12
-      //-       StockUnit.m-0(title="Creator ID " :value="user.staffId"  icon="icon-tag-user")
-      //-     .col-12
-      //-       StockUnit.m-0(title="Warehouse"  :value="user.warehouse.name" icon="icon-warehouse")
-      //-     .col-12
-      //-       StockUnit.m-0(title="Items"  :value="listStockSelected.length" icon="icon-frame")
-      //-     .col.border-bottom-1.border-gray-300
-      //-   .grid.stock--contact.p-2.m-0
-      //-     .col-12.flex
-      //-       .col.flex.align-items-center
-      //-         .icon-sender-info.icon.bg-primary.mr-2
-      //-         span.font-bold.text-800.uppercase Seller Information
-      //-     .col-12
-      //-       StockUnit.m-0(title="Name" :value="sellerInfo.sellerName" icon="icon-sender-name")
-      //-     .col-12
-      //-       StockUnit.m-0(title="Email" :value="sellerInfo.sellerEmail" icon="icon-sender-email")
-      //-     .col-12
-      //-       StockUnit.m-0(title="Phone" :value="sellerInfo.sellerPhone" icon="icon-sender-phone")
+    NoteInfo(v-if="sellerInfo" :sellerInfo="sellerInfo")
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
       .stock-takeItem.flex.flex-column
         .stock-takeItem__header
@@ -258,23 +220,23 @@ export default StockTakeItems
         align-items: baseline
         overflow: hidden
 
-::-webkit-input-placeholder
-  font-weight: normal
+  ::-webkit-input-placeholder
+    font-weight: normal
 
-::-webkit-scrollbar
-  width: 7px
-  height: 7px
-  background-color: #F5F5F5
+  ::-webkit-scrollbar
+    width: 7px
+    height: 7px
+    background-color: #F5F5F5
 
-::-webkit-scrollbar-track
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
-  border-radius: 10px
-  background-color: #F5F5F5
+  ::-webkit-scrollbar-track
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+    border-radius: 10px
+    background-color: #F5F5F5
 
-::-webkit-scrollbar-thumb
-  border-radius: 10px
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
-  background-color: #979AA4
+  ::-webkit-scrollbar-thumb
+    border-radius: 10px
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
+    background-color: #979AA4
 
 .wrap-unit
   width: 300px
