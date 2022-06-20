@@ -137,7 +137,8 @@ class DeliveryOrder extends Vue {
     const data = {
       note: 'Note',
       checkType: 'BOX',
-      boxList: listBox
+      stockTakeBox: listBox,
+      wareHouse: { id: this.user?.warehouse.id } 
     }
     await this.actCreateStockTake(data)
     if(this.stockTakeCreated.id){
@@ -147,7 +148,7 @@ class DeliveryOrder extends Vue {
         detail: 'Successfully create stock take',
         life: 3000
       })
-      this.$router.push(`/stock-take/box/${this.stockTakeCreated.id}`)
+      this.$router.push(`/stock-take/box/${this.stockTakeCreated.id}/note-detail`)
     }
   }
 

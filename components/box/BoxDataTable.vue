@@ -1,6 +1,6 @@
 <template lang="pug">
 .inventory
-  .inventory__filter.grid
+  .inventory__filter.grid.mb-1
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(
         title="Seller Email"
@@ -28,7 +28,7 @@
         :searchText='true',
         @updateFilter='handleFilterBox'
       )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
       FilterCalendar(
         title='From',
         :value='filter.dateFrom',
@@ -38,7 +38,7 @@
         :showIcon='true',
         @updateFilter='handleFilterBox'
       )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
       FilterCalendar(
         title='To',
         border='right',
@@ -49,7 +49,8 @@
         :showIcon='true',
         @updateFilter='handleFilterBox'
       )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+    .col-10
+    .col-12.text-right(class='xl:col-2 lg:col-2 md:col-4 sm:col-12' style='align-self: center;')
       Button.p-button-secondary.mr-1(label="Refresh" icon="pi pi-refresh" @click="handleRefeshFilter")
       Button.p-button-primary(label="Search" icon="pi pi-search"   @click="searchBox")
   .inventory__content

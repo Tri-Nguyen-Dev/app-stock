@@ -13,8 +13,8 @@
       StockUnit(title="Create ID" :value="info.user.displayName" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="PIC ID" :value="info.picId" icon="icon-user-octagon")
-    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-      StockUnit(title="Warehouse" :value="info.user.displayName" icon="icon-warehouse-info")
+    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.user.wareHouse')
+      StockUnit(title="Warehouse" :value="info.user.wareHouse.name" icon="icon-warehouse-info")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Total box" :value="info.totalBox" icon="icon-total-inventory")
 </template>
