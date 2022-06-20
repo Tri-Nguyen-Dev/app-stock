@@ -7,11 +7,11 @@
         .col-4
           h1.text-heading Stock-take Note
         .col-8.btn-right.flex.justify-content-end
-          .btn.btn-primary.cursor-pointer.mr-2(@click='checkItems' v-show='assigneeId === ""')
+          .btn.btn-primary.cursor-pointer.mr-2(@click='checkItems' v-if='isView')
             span.uppercase Check
-          .btn.btn-primary.cursor-pointer.mr-2(@click='saveDraft' v-show='assigneeId !== ""')
+          .btn.btn-primary.cursor-pointer.mr-2(@click='saveDraft' v-if='!isView')
             span.uppercase save draft
-          .btn.btn-primary.cursor-pointer.mr-2(@click='submitNote' v-show='assigneeId !== ""')
+          .btn.btn-primary.cursor-pointer.mr-2(@click='submitNote' v-if='!isView')
             span.uppercase submit
       .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
         .col.h-full.absolute.top-0.left-0.right-0.mt-2
@@ -33,17 +33,17 @@
             Column(field="boxCode" header="BOX CODE" :styles="{'width': '100%'}" sortable)
               template(#body="{data}")
                 span.mr-2 {{data.boxCode}}
-                badge.bg-green-400(value="CHECKING" v-if="isChecking")
+                badge.bg-green-400(value="CHECKING")
             Column(field="location" header="LOCATION" sortable)
               template(#body="{data}")
                 .flex.align-items-center.cursor-pointer
                   span.text-primary.font-bold.font-sm {{data.location}}
                   .icon--small.icon-arrow-up-right.bg-primary
-            Column(field="action" header="ACTION" v-if='assigneeId !== ""')
+            Column(field="action" header="ACTION")
               template(#body="{data}")
-                Button(@click='reportTakeNote' :disabled="isChecking")
+                Button(@click='reportTakeNote' :disabled="data.isChecking")
                   span.uppercase report
-            Column(field="categoryName" header="STATUS" sortable v-if='assigneeId !== ""')
+            Column(field="status" header="STATUS" sortable)
               template(#body="{data}")
                 .text-center
                   tag.table__status.table__status--error(v-if='data.status === "NG"') {{data.status}}
@@ -61,7 +61,7 @@
                   Column(field="inventoryQuantity" header="IVENTORY QTY" sortable)
                   Column(field="countedQuantity" header="COUNTED QTY" :styles="{'width': '5%'}")
                     template(#body="{data}")
-                      InputNumber.w-7rem(:disabled='!isCheck || isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity({ index: slotProps.index, barCode: data.barCode },$event)')
+                      InputNumber.w-7rem(disabled='false' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity({ index: slotProps.index, barCode: data.barCode },$event)')
                   Column(field="discrepancy" header=" VARIANT" :styles="{'width': '100%'}")
                   Column(field="resultStatus" header="STATUS" :styles="{'width': '3%'}" sortable)
                     template(#body="{data}")
@@ -69,11 +69,6 @@
                         tag.table__status.table__status--error(v-if='data.resultStatus === "NG"') {{data.resultStatus}}
                         tag.table__status.table__status--available(v-else-if='data.resultStatus === "OK"') {{data.resultStatus}}
                         tag.table__status.table__status--draft(v-else) {{data.resultStatus}}
-            template(#footer)
-              Pagination(
-                :paging="paging"
-                :total="total"
-                @onPage="onPage")
             template(#empty)
               div.flex.align-items-center.justify-content-center.flex-column
                 img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
@@ -88,7 +83,6 @@ import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 import { LIMIT_PAGE_OPTIONS, PAGINATE_DEFAULT } from '~/utils'
 const nsStoreStockTake = namespace('stock-take/box-detail')
-const nsStoreStockList = namespace('stock-take/note-list')
 
 @Component({
   components: {
@@ -119,19 +113,13 @@ class NoteBoxDetail extends Vue {
   }
 
   rowExpaned: any = []
-  assigneeId: any = ''
   isCheck: boolean = false
   isChecking: boolean = false
   dataList: any[] = []
-
-  @nsStoreStockTake.State
-  total!:any
+  isView: boolean = true
 
   @nsStoreStockTake.State
   boxStockTakeDetail!: any
-
-  @nsStoreStockList.State
-  stockTakeList!: any
 
   @nsStoreStockTake.Action
   actGetBoxStockTakeDetail!: (params?: any) => Promise<void>
@@ -139,54 +127,53 @@ class NoteBoxDetail extends Vue {
   @nsStoreStockTake.Action
   actSubmitBoxStockTakeDetail!: (params?: any) => Promise<void>
 
-  @nsStoreStockList.Action
-  actGetStockTakeList!: (params: any) => Promise<void>
-
-  onPage(event: any) {
-    this.paging.pageSize = event.rows
-    this.paging.pageNumber = event.page
-  }
+  @nsStoreStockTake.Action
+  actGetAssignBoxStockTake!: (params?: any) => Promise<void>
 
   async mounted() {
-    await Promise.all([
-      this.actGetBoxStockTakeDetail({ id: this.$route.params.id }),
-      this.actGetStockTakeList({ id: this.$route.params.id })
-    ])
+    await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+
     this.dataList = _.cloneDeep(
-      this.boxStockTakeDetail.map((element: any) => {
+      this.boxStockTakeDetail.stockTakeBox.map((element: any) => {
+        const checkingStatus = _.some(
+          element.stockTakeBoxItem,
+          function square(n: any) {
+            return n.isChecking
+          }
+        )
         return {
           ...element,
           status: null,
-          stockTakeBoxItem: element.stockTakeBoxItem.map(
-            (item: any) => {
-              return {
-                ...item,
-                boxCode: element.boxCode
-              }
+          isChecking: checkingStatus,
+          stockTakeBoxItem: element.stockTakeBoxItem.map((item: any) => {
+            return {
+              ...item,
+              boxCode: element.boxCode
             }
-          )
+          })
         }
       })
     )
-    this.stockTakeInfo.user = this.stockTakeList?.createdBy?.displayName
-    this.stockTakeInfo.createdAt = this.stockTakeList.createdAt
-    this.stockTakeInfo.picId = this.stockTakeList.assignee
-    this.stockTakeInfo.wareHouse = this.stockTakeList.warehouse
-    this.stockTakeInfo.totalBox = this.total
-    // console.log(this.stockTakeInfo);
-    // console.log(this.stockTakeList[0]);
 
+    this.stockTakeInfo.createdAt = this.boxStockTakeDetail?.createdAt
+    this.stockTakeInfo.user = this.boxStockTakeDetail?.createdBy?.staffId
+    this.stockTakeInfo.picId = this.boxStockTakeDetail?.assignee?.staffId
+    this.stockTakeInfo.totalBox = this.boxStockTakeDetail?.totalStockTakeBox
+    this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
   }
 
   checkItems() {
-    this.assigneeId = 'NV0001844'
+    this.actGetAssignBoxStockTake([this.$route.params.id])
     this.isCheck = true
   }
 
   changeQuantity({ index, barCode }) {
-    const itemIndex = _.findIndex(this.dataList[index].stockTakeBoxItem, (e) => {
-      return e.barCode === barCode
-    })
+    const itemIndex = _.findIndex(
+      this.dataList[index].stockTakeBoxItem,
+      (e: any) => {
+        return e.barCode === barCode
+      }
+    )
     if (itemIndex !== -1) {
       const data = this.dataList[index].stockTakeBoxItem[itemIndex]
       data.discrepancy = data.countedQuantity - data.inventoryQuantity
@@ -199,13 +186,16 @@ class NoteBoxDetail extends Vue {
       }
       const statusWaiting = _.findIndex(
         this.dataList[index].stockTakeBoxItem,
-        (e) => {
+        (e: any) => {
           return e.resultStatus === 'WAITING'
         }
       )
-      const statusOk = _.every(this.dataList[index].stockTakeBoxItem, (e) => {
-        return e.resultStatus === 'OK'
-      })
+      const statusOk = _.every(
+        this.dataList[index].stockTakeBoxItem,
+        (e: any) => {
+          return e.resultStatus === 'OK'
+        }
+      )
       if (statusWaiting !== -1) {
         this.dataList[index].status = 'WAITING'
       } else if (statusOk) {
@@ -222,14 +212,24 @@ class NoteBoxDetail extends Vue {
     let draftData = this.dataList.map((element) => {
       return [...element.stockTakeBoxItem]
     })
+
     draftData = _.flatten(draftData)
-    const submitData = _.map(draftData, function square(el) {
+    const submitData = _.map(draftData, function square(el: any) {
       return { ...el, isDraft: true }
     })
+
     this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       submitData
     })
+
+    this.$toast.add({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Save draft successfully!',
+      life: 3000
+    })
+    this.$router.push('/stock-take')
   }
 
   submitNote() {
@@ -247,6 +247,13 @@ class NoteBoxDetail extends Vue {
         id: this.$route.params.id,
         submitData
       })
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Submit stock take successfully!',
+        life: 3000
+      })
+      this.$router.push('/stock-take')
     } else {
       this.$toast.add({
         severity: 'error',

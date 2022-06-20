@@ -8,17 +8,16 @@ import { $api, PathBind } from '~/utils'
 
 export default class StoreBoxStockTake extends VuexModule {
   private static readonly STATE_URL = {
-    BOX_STOCK_TAKE_DETAIL: '/stock-take/:id/detail-by-box',
-    SUBMIT_BOX_STOCK_TAKE_DETAIL: '/stock-take/:id/submit'
+    BOX_STOCK_TAKE_DETAIL: '/stock-take/:id/detail',
+    SUBMIT_BOX_STOCK_TAKE_DETAIL: '/stock-take/:id/submit',
+    ASSIGN_BOX_STOCK_TAKE: '/stock-take/assign'
   }
 
-  public total?: number = 0
   public boxStockTakeDetail: any = {}
 
   @Mutation
-  setBoxStockTakeDetail({ data }) {
-    this.total = data.total
-    this.boxStockTakeDetail = data.items
+  setBoxStockTakeDetail(boxStockTakeDetail:any) {
+    this.boxStockTakeDetail = boxStockTakeDetail.data
   }
 
   @Action({ commit: 'setBoxStockTakeDetail', rawError: true })
@@ -31,5 +30,11 @@ export default class StoreBoxStockTake extends VuexModule {
   async actSubmitBoxStockTakeDetail(params: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBoxStockTake.STATE_URL.SUBMIT_BOX_STOCK_TAKE_DETAIL,{ id: params.id })
     return await $api.post(url, params.submitData)
+  }
+
+  @Action({ rawError: true })
+  async actGetAssignBoxStockTake(params: any): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreBoxStockTake.STATE_URL.ASSIGN_BOX_STOCK_TAKE)
+    return await $api.post(url, params)
   }
 }
