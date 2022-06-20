@@ -1,53 +1,67 @@
 <template lang="pug">
 div
   div.report-heading
-      span.report-status.table__status.table__status--available SOLVING
+      span.report-status.table__status.table__status--available {{ boxReportDetail.status }}
       div.report-title
         h3 Report Detail
-        h3(v-if="reportDetail") ID {{ reportDetail.id }}
+        h3 ID {{ boxReportDetail.id }}
       span.report-close(@click="hideModalDetail")
         i.pi.pi-times
   div.report-content
     .main-info
       .info-creator
         .info-item
-          span.info-title Creator ID:
+          span.info-title Creator ID: {{ boxReportDetail.createId }}
           span.info-content 
         .info-item
           span.info-title Creator Time:
-          span.info-content 19-09-2022 9:24AM
+          span.info-content {{ boxReportDetail.createdAt }}
         .info-item
           span.info-title Stock-take Note ID: 
-          span.info-content ST12222222
+          span.info-content {{ boxReportDetail.id }}
         .info-item
           span.info-title PIC ID: 
-          span.info-content NV66666
+          span.info-content {{ picId }}
       .info-seller
         h3.mt-0 Seller Information:
         .info-item
           span.info-title Email:
-          span.info-content ndk@gmail.com
+          span.info-content {{ sellerEmail }}
         .info-item
           span.info-title Phone:
-          span.info-content 0396675767
+          span.info-content {{ phoneNumber }}
         .info-item
           span.info-title Name: 
-          span.info-content Nguyễn Đình Khoa
-    .info-box(v-if="boxReportDetail")
+          span.info-content {{ displayName }}
+    .info-box
       .box-code
-        h3(v-if="boxReportDetail.box") BOX CODE: {{ boxReportDetail.box.id }}
-        h3
+        h3 BOX CODE: {{ boxReportDetail.boxNote.box.id }}
       .box-note
         h3 NOTE:
-        p {{ boxReportDetail.note }}
+        p {{ boxReportDetail.boxNote.note }}
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class ReportDetail extends Vue {
-  @Prop() readonly reportDetail!: any
   @Prop() readonly boxReportDetail!: any
+
+  get sellerEmail() {
+    return this.boxReportDetail?.boxNote?.box?.request?.seller?.email
+  }
+
+  get phoneNumber() {
+    return this.boxReportDetail?.boxNote?.box?.request?.seller?.phoneNumber
+  }
+
+  get displayName() {
+    return this.boxReportDetail?.boxNote?.box?.request?.seller?.displayName
+  }
+
+  get picId() {
+    return this.boxReportDetail?.boxNote?.box?.createdBy?.staffId
+  }
 
   hideModalDetail() {
     this.$emit('closeModal')

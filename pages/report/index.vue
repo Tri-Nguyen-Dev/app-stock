@@ -126,7 +126,7 @@
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
-    ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail" :boxReportDetail="boxReportDetail")
+    ReportDetail(@closeModal="hideModalDetail" :boxReportDetail="boxReportDetail")
     template(#footer)
       Button.btn.btn-primary.h-3rem(@click='createStockTake') Create stock-take note
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
@@ -191,13 +191,13 @@ class ReportList extends Vue {
   isShowFilter = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   sortByColumn: string = ''
-  isDescending: boolean|null = null
+  isDescending: boolean | null = null
   reportCodeDelete: string = ''
   showModal = false
   isShowModalDetail: boolean = false
   disabledApply = true
   boxSelected: any[] = []
-  boxShow : any[] = []
+  boxShow: any[] = []
   statusList: any = [
     { name: 'new', value: REPORT_STATUS.NEW },
     { name: 'In progress', value: REPORT_STATUS.IN_PROGRESS }
@@ -205,11 +205,11 @@ class ReportList extends Vue {
 
   isConfirm = false
   filter: any = {
-    sellerEmail:  '',
+    sellerEmail: '',
     boxCode: '',
     dateFrom: null,
     dateTo: null,
-    status:''
+    status: ''
   }
 
   data: any[] = []
@@ -237,40 +237,43 @@ class ReportList extends Vue {
   actWarehouseList!: () => Promise<void>
 
   @nsStoreReport.Action
-  actDeleteReportById!: (params: {ids: string[]}) => Promise<any>
+  actDeleteReportById!: (params: { ids: string[] }) => Promise<any>
 
   @nsStoreReport.Mutation
   setListBoxTakeNote!: (data: any) => Promise<any>
 
   @nsStoreReport.Action
-  actAddTransferReport!: (params: {ids: string[]}) => Promise<any>
+  actAddTransferReport!: (params: { ids: string[] }) => Promise<any>
 
   @nsStoreReportDetail.Action
-  actGetReportDetail !: (id: any) => Promise<any>
+  actGetReportDetail!: (id: any) => Promise<any>
 
   async mounted() {
-    await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
-    this.reportList.forEach(report => {
-      report.boxNote.forEach(box => {
+    await this.actGetReportList({
+      pageNumber: this.paging.pageNumber,
+      pageSize: this.paging.pageSize
+    })
+    this.reportList.forEach((report) => {
+      report.boxNote.forEach((box) => {
         this.data.push({
           id: report.id,
           boxNote: box,
           createdAt: report.createdAt,
           createId: report.createdBy.id,
-          status:'REPORT_NEW'
+          status: 'REPORT_NEW'
         })
       })
     })
   }
 
   // -- [ Getters ] -------------------------------------------------------------
-  get isFilter(){
+  get isFilter() {
     const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
 
   get selectedReportFilter() {
-    return  _.filter(this.selectedReportes, ({ status }) => { 
+    return _.filter(this.selectedReportes, ({ status }) => {
       return status !== 'BOX_STATUS_DISABLE' && status !== 'BOX_STATUS_OUTGOING'
     })
   }
@@ -282,19 +285,24 @@ class ReportList extends Vue {
   // -- [ Functions ] ------------------------------------------------------------
   getParamAPi() {
     return {
-      pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
-      'sellerEmail': this.filter.sellerEmail || null,
-      'barCode': this.filter.barCode || null,
-      'warehouseId': this.filter.warehouse?.id,
-      'location': this.filter.location || null,
-      'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
-      'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
-      'sortBy': this.sortByColumn || null,
-      'desc': this.isDescending
+      pageNumber: this.paging.pageNumber,
+      pageSize: this.paging.pageSize,
+      sellerEmail: this.filter.sellerEmail || null,
+      barCode: this.filter.barCode || null,
+      warehouseId: this.filter.warehouse?.id,
+      location: this.filter.location || null,
+      from: this.filter.dateFrom
+        ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD')
+        : null,
+      to: this.filter.dateTo
+        ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD')
+        : null,
+      sortBy: this.sortByColumn || null,
+      desc: this.isDescending
     }
   }
 
-  async handleFilterReport(e: any, name: string){
+  async handleFilterReport(e: any, name: string) {
     this.filter[name] = e
     await this.actGetReportList(this.getParamAPi())
     this.selectedReportes = []
@@ -310,7 +318,7 @@ class ReportList extends Vue {
   async handleDeleteStock() {
     const ids = _.map(this.onEventDeleteList, 'id')
     const result = await this.actDeleteReportById({ ids })
-    if(result) {
+    if (result) {
       this.isModalDelete = false
       this.selectedReportes = []
       this.$toast.add({
@@ -321,7 +329,10 @@ class ReportList extends Vue {
       })
       this.paging.first = 0
       this.paging.pageNumber = 0
-      await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
+      await this.actGetReportList({
+        pageNumber: this.paging.pageNumber,
+        pageSize: this.paging.pageSize
+      })
     }
   }
 
@@ -335,17 +346,17 @@ class ReportList extends Vue {
   }
 
   rowClass({ status }) {
-    if(status === 'BOX_STATUS_DISABLE' || status === 'BOX_STATUS_OUTGOING') {
+    if (status === 'BOX_STATUS_DISABLE' || status === 'BOX_STATUS_OUTGOING') {
       return 'row-disable'
     }
   }
 
-  validateText =  _.debounce(this.handleFilter, 500);
+  validateText = _.debounce(this.handleFilter, 500)
 
   async sortData(e: any) {
     resetScrollTable()
     const { sortField, sortOrder } = e
-    if(sortOrder){
+    if (sortOrder) {
       this.isDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '')
     } else {
@@ -379,7 +390,11 @@ class ReportList extends Vue {
   }
 
   rowUnSelectAll() {
-    this.selectedReportes = _.differenceWith(this.selectedReportes, this.reportList, _.isEqual)
+    this.selectedReportes = _.differenceWith(
+      this.selectedReportes,
+      this.reportList,
+      _.isEqual
+    )
   }
 
   rowSelect({ data }) {
@@ -388,23 +403,26 @@ class ReportList extends Vue {
 
   rowUnselect({ originalEvent, data }) {
     originalEvent.originalEvent.stopPropagation()
-    this.selectedReportes = _.filter(this.selectedReportes, (report: any) => report.id !== data.id)
+    this.selectedReportes = _.filter(
+      this.selectedReportes,
+      (report: any) => report.id !== data.id
+    )
   }
 
   routeLinkAddReport() {
     this.showModal = true
   }
 
-  selectBox(event){
+  selectBox(event) {
     this.boxSelected = _.cloneDeep(event)
-    if(this.boxSelected.length>0){
+    if (this.boxSelected.length > 0) {
       this.disabledApply = false
     } else {
       this.disabledApply = true
     }
   }
 
-  hideDialog(){
+  hideDialog() {
     this.showModal = false
   }
 
@@ -412,35 +430,28 @@ class ReportList extends Vue {
     this.isShowModalDetail = false
   }
 
-  async showModalDetail(id: any, boxId: any) {
-    this.isShowModalDetail = true
-    await this.actGetReportDetail(id)
-    const boxDetail = _.find(this.reportDetail.boxNote, function(o) { return o.box.id === boxId })
-    this.boxReportDetail = boxDetail
-  }
-  
-  applyBox(){
-    this.boxShow = this.boxSelected.map(element=>{
+  applyBox() {
+    this.boxShow = this.boxSelected.map((element) => {
       return {
-        id : element.id,
-        note:'',
+        id: element.id,
+        note: '',
         sellerEmail: element.sellerEmail
       }
     })
     this.isConfirm = true
   }
 
-  saveReport(){
+  saveReport() {
     this.showModal = false
   }
 
   rowClick({ data }) {
-    const boxId = data?.boxNote?.box?.id
-    this.showModalDetail(data.id, boxId)
+    this.boxReportDetail = data
+    this.isShowModalDetail = true
   }
 
   createStockTake() {
-    if(this.selectedReportes.length > 0) {
+    if (this.selectedReportes.length > 0) {
       this.setListBoxTakeNote(this.selectedReportes)
       this.$router.push('/stock-take/box/create')
     }
