@@ -4,7 +4,7 @@ div
       span.report-status.table__status.table__status--available SOLVING
       div.report-title
         h3 Report Detail
-        h3 ID 0001341
+        h3(v-if="reportDetail") ID {{ reportDetail.id }}
       span.report-close(@click="hideModalDetail")
         i.pi.pi-times
   div.report-content
@@ -12,7 +12,7 @@ div
       .info-creator
         .info-item
           span.info-title Creator ID:
-          span.info-content 0001341
+          span.info-content 
         .info-item
           span.info-title Creator Time:
           span.info-content 19-09-2022 9:24AM
@@ -33,20 +33,21 @@ div
         .info-item
           span.info-title Name: 
           span.info-content Nguyễn Đình Khoa
-    .info-box
+    .info-box(v-if="boxReportDetail")
       .box-code
-        h3 BOX CODE:
-        h3 B12232323233
+        h3(v-if="boxReportDetail.box") BOX CODE: {{ boxReportDetail.box.id }}
+        h3
       .box-note
         h3 NOTE:
-        p 5 items in this box have disappeared. The box should be changed into a new one
+        p {{ boxReportDetail.note }}
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class ReportDetail extends Vue {
-  @Prop() readonly ReportDetail!: any
+  @Prop() readonly reportDetail!: any
+  @Prop() readonly boxReportDetail!: any
 
   hideModalDetail() {
     this.$emit('closeModal')

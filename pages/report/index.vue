@@ -415,7 +415,7 @@ class ReportList extends Vue {
   async showModalDetail(id: any, boxId: any) {
     this.isShowModalDetail = true
     await this.actGetReportDetail(id)
-    const boxDetail = _.find(this.reportDetail.data.boxNote, function(o) { return o.box.id === boxId })
+    const boxDetail = _.find(this.reportDetail.boxNote, function(o) { return o.box.id === boxId })
     this.boxReportDetail = boxDetail
   }
   
