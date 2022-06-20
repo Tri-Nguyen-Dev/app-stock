@@ -368,6 +368,31 @@ class StockTake extends Vue {
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
+      const isDelete = _.find(this.onEventDeleteList, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
+      const isDelete2 = _.find(this.onEventDeleteList, function(o) { return o.status === 'IN_PROGRESS' })
+  
+      if(isDelete) {
+        this.loadingSubmit = false
+        this.isModalDelete = false
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Unable to delete stock take not with status new or inprogess!',
+          life: 3000
+        })
+        return
+      }
+      if(isDelete2) {
+        this.loadingSubmit = false
+        this.isModalDelete = false
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Can not delete field with status inprogess without pic!',
+          life: 3000
+        })
+        return
+      }
       const stockTakeIds = _.map(this.onEventDeleteList, 'id')
       const data = await this.actDeleteStockTakeList(stockTakeIds)
       if (data) {

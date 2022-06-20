@@ -8,7 +8,7 @@ export default class StoreStockTake extends VuexModule {
   private static readonly STATE_URL = {
     GET_STOCK_TAKE_LIST: '/stock-take/list',
     DELETE_STOCK_TAKE_LIST: '/stock-take/list/delete',
-    EXPORT_RECEIPT: '/stock-take/:id/pdf-stock-take-box'
+    EXPORT_RECEIPT: '/stock-take/:id/pdf'
   }
 
   public stockTakeList?: any = []
@@ -43,7 +43,7 @@ export default class StoreStockTake extends VuexModule {
       this.context,
       StoreStockTake.STATE_URL.DELETE_STOCK_TAKE_LIST
     )
-    const response = await $api.post(url, { ids })
+    const response = await $api.post(url, ids)
     return response.data
   }
   
