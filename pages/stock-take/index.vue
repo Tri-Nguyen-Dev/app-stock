@@ -368,10 +368,9 @@ class StockTake extends Vue {
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      const isDelete = _.find(this.onEventDeleteList, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
-      const isDelete2 = _.find(this.onEventDeleteList, function(o) { return o.status === 'IN_PROGRESS' })
-  
-      if(isDelete) {
+      const isCheckDelete = _.find(this.onEventDeleteList, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
+      const isCheckDelete2 = _.find(this.onEventDeleteList, function(o) { return o.status === 'IN_PROGRESS' && !o?.assignee?.staffId })
+      if(isCheckDelete) {
         this.loadingSubmit = false
         this.isModalDelete = false
         this.$toast.add({
@@ -382,13 +381,13 @@ class StockTake extends Vue {
         })
         return
       }
-      if(isDelete2) {
+      if(isCheckDelete2) {
         this.loadingSubmit = false
         this.isModalDelete = false
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
-          detail: 'Can not delete field with status inprogess without pic!',
+          detail: 'Can not delete stock take with status inprogess without pic!',
           life: 3000
         })
         return
