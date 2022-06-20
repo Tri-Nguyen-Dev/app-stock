@@ -13,13 +13,24 @@ export default class StoreReport extends VuexModule {
 
   public reportList?: any[] = []
   public totalReportRecords?: number = 0
+  public listBoxTakeNote: any = []
   public reportListFilter?: any[] = undefined
-  public reportTransfer: any = [];
+  public reportTransfer: any = []
 
   @Mutation
   setReportList(response: any) {
     this.reportList = response?.items
     this.totalReportRecords = response?.total
+  }
+
+  @Mutation
+  setReportTransfer(data: any) {
+    this.reportTransfer = data
+  }
+
+  @Mutation
+  setListBoxTakeNote(data: any) {
+    this.listBoxTakeNote = data
   }
 
   @Action({ commit: 'setReportList', rawError: true })

@@ -81,12 +81,12 @@
       groupRowsBy="id"
       rowGroupMode="rowspan"
       showGridlines
+      @row-dblclick="rowClick"
       )
       Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
       Column(field="id" header="ID"  bodyClass="font-semibold"  className="text-center" headerClass="grid-header-center" sortField="_id")
           template(#body="slotProps")
             span {{slotProps.data.id}}
-
       Column(field="createdAt" header="CREATE TIME" :sortable="true"  sortField="_createdAt")
         template(#body='{ data }')
           span {{ data.createdAt | dateTimeHour24 }}
@@ -115,6 +115,8 @@
           :deleted-list="selectedReportFilter"
           @onDelete="showModalDelete"
           @onPage="onPage")
+          template(#action)
+            Button.btn.btn-primary(@click='createStockTake' style="height: 34px") Create stock-take note
       template(#empty)
         div.flex.align-items-center.justify-content-center.flex-column
           img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
@@ -123,8 +125,11 @@
             span.text-primary.underline.cursor-pointer(@click='routeLinkAddReport') &nbsp;here
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
-    
-  Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
+  Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
+    ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail")
+    template(#footer)
+      Button.btn.btn-primary.h-3rem(@click='createStockTake') Create stock-take note
+  Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
       h1.text-heading Select Box
     BoxDataTable(@selectBox='selectBox($event)' :box='boxShow' v-if='!isConfirm')
@@ -159,12 +164,14 @@
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import ReportDetail from '~/components/report/ReportDetail.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
 import { REPORT_STATUS } from '~/utils/constants/report'
 import BoxDataTable from '~/components/box/BoxDataTable.vue'
 const nsStoreReport = namespace('report/report-list')
+const nsStoreReportDetail = namespace('report/report-detail')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
 
@@ -172,7 +179,8 @@ const dayjs = require('dayjs')
   components: {
     ConfirmDialogCustom,
     Pagination,
-    BoxDataTable
+    BoxDataTable,
+    ReportDetail
   }
 })
 class ReportList extends Vue {
@@ -186,6 +194,7 @@ class ReportList extends Vue {
   isDescending: boolean|null = null
   reportCodeDelete: string = ''
   showModal = false
+  isShowModalDetail: boolean = false
   disabledApply = true
   boxSelected: any[] = []
   boxShow : any[] = []
@@ -204,14 +213,21 @@ class ReportList extends Vue {
   }
 
   data: any[] = []
+
   @nsStoreReport.State
   reportList!: any[]
+
+  @nsStoreReport.State
+  listBoxTakeNote!: any[]
 
   @nsStoreReport.State
   totalReportRecords!: number
 
   @nsStoreWarehouse.State
   warehouseList!: any
+
+  @nsStoreReportDetail.State
+  reportDetail!: any
 
   @nsStoreReport.Action
   actGetReportList!: (params: any) => Promise<void>
@@ -222,8 +238,14 @@ class ReportList extends Vue {
   @nsStoreReport.Action
   actDeleteReportById!: (params: {ids: string[]}) => Promise<any>
 
+  @nsStoreReport.Mutation
+  setListBoxTakeNote!: (data: any) => Promise<any>
+
   @nsStoreReport.Action
   actAddTransferReport!: (params: {ids: string[]}) => Promise<any>
+
+  @nsStoreReportDetail.Action
+  actGetReportDetail !: (id: any) => Promise<any>
 
   async mounted() {
     await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
@@ -325,7 +347,7 @@ class ReportList extends Vue {
     if(sortOrder){
       this.isDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '')
-    }else{
+    } else {
       this.isDescending = null
       this.sortByColumn = ''
     }
@@ -379,13 +401,21 @@ class ReportList extends Vue {
     } else {
       this.disabledApply = true
     }
-
   }
 
   hideDialog(){
     this.showModal = false
   }
 
+  hideModalDetail() {
+    this.isShowModalDetail = false
+  }
+
+  async showModalDetail(id: any) {
+    this.isShowModalDetail = true
+    await this.actGetReportDetail(id)
+  }
+  
   applyBox(){
     this.boxShow = this.boxSelected.map(element=>{
       return {
@@ -399,6 +429,17 @@ class ReportList extends Vue {
 
   saveReport(){
     this.showModal = false
+  }
+
+  rowClick({ data }) {
+    this.showModalDetail(data.id)
+  }
+
+  createStockTake() {
+    if(this.selectedReportes.length > 0) {
+      this.setListBoxTakeNote(this.selectedReportes)
+      this.$router.push('/stock-take/box/create')
+    }
   }
 }
 export default ReportList
@@ -453,6 +494,50 @@ export default ReportList
       @include flex-center
       flex-direction: row
       margin-top: 0
+::v-deep.report-detail
+  .p-dialog
+    overflow: hidden
+  .p-dialog-header
+    display: none
+  .report-heading
+    display: flex
+    justify-content: space-between
+    align-items: center
+    .report-title
+      display: flex
+      flex-direction: column
+      align-items: center
+    .report-title h3
+      margin: 0
+      font-size: 20px
+    .report-close
+      cursor: pointer
+      &:hover
+        i
+          color: red !important
+      i
+        transition: 0.25s all ease
+        font-size: 1.2rem
+  .p-dialog-footer
+    display: flex
+    justify-content: center
+  .main-info
+    margin: 24px 0
+    display: flex
+    .info-creator
+      width: 50%
+    .info-seller
+      width: 50%
+    .info-item
+      color: $text-color-base
+      margin-top: 10px
+      font-size: 14px
+      font-weight: 400
+    .info-content
+      margin-left: 6px
+  .box-code
+    display: flex
+    gap: 0 6px
 ::v-deep.confirm
   .p-datatable-table
     .p-datatable-tbody
