@@ -23,18 +23,16 @@ div
           span.info-title PIC ID: 
           span.info-content NV66666
       .info-seller
+        h3.mt-0 Seller Information:
         .info-item
-          span.info-title Creator ID:
-          span.info-content 0001341
+          span.info-title Email:
+          span.info-content ndk@gmail.com
         .info-item
-          span.info-title Creator Time:
-          span.info-content 19-09-2022 9:24AM
+          span.info-title Phone:
+          span.info-content 0396675767
         .info-item
-          span.info-title Stock-take Note ID: 
-          span.info-content ST12222222
-        .info-item
-          span.info-title PIC ID: 
-          span.info-content NV66666
+          span.info-title Name: 
+          span.info-content Nguyễn Đình Khoa
     .info-box
       .box-code
         h3 BOX CODE:

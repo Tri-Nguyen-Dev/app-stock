@@ -125,7 +125,7 @@
             span.text-primary.underline.cursor-pointer(@click='routeLinkAddReport') &nbsp;here
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
-  Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "60vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
+  Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
     ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail")
     template(#footer)
       Button.btn.btn-primary.h-3rem(@click='createStockTake') Create stock-take note
