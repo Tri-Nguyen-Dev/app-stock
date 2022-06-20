@@ -6,7 +6,8 @@ export namespace StockTakeConstants {
     { name: 'New', value: 'NEW' },
     { name: 'In Progress', value: 'IN_PROGRESS' },
     { name: 'Approving', value: 'APPROVING' },
-    { name: 'Approved', value: 'APPROVED' }
+    { name: 'Approved', value: 'APPROVED' },
+    { name: 'Save Draft', value: 'SAVE_DRAFT' }
   ]
 
   export const TYPE_STOCK_TAKE_OPTIONS = [
