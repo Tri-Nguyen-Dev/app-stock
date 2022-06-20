@@ -6,15 +6,16 @@
     .my-3.font-bold.flex.align-items-center
       span.uppercase.ml-1 note detail
     span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') new &nbsp;
-  .grid.m-0.p-4(v-if='info && info.user')
-    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if=" info.status!== 'NEW'")
-      StockUnit(title="Create time" :value="info.createdAt" icon="icon-calendar")
+  .grid.m-0.p-4(v-if='info.user')
+    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.createdAt')
+      StockUnit(title="Create time" :value="info.createdAt | dateTimeHour12" icon="icon-calendar")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Create ID" :value="info.user.displayName" icon="icon-user-octagon")
-    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2'   v-if='info.picId')
       StockUnit(title="PIC ID" :value="info.picId" icon="icon-user-octagon")
-    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.user.wareHouse')
-      StockUnit(title="Warehouse" :value="info.user.wareHouse.name" icon="icon-warehouse-info")
+    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+      StockUnit(title="Warehouse" :value="info.wareHouse"   v-if='info.wareHouse' icon="icon-warehouse-info")
+      StockUnit(title="Warehouse" :value="info.user.wareHouse"  v-if='info.user.wareHouse' icon="icon-warehouse-info")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Total box" :value="info.totalBox" icon="icon-total-inventory")
 </template>

@@ -178,6 +178,7 @@ class DeliveryOrder extends Vue {
   }
 
   mounted() {
+    this.stockTakeInfo.totalBox = 0
     this.stockTakeInfo.user = this.user
   }
 }
