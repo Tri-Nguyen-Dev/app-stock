@@ -16,8 +16,10 @@
           .icon.icon-add-items
           span ADD NOTE
           ul.option-note-list(:class="{'active': isShowOptionAddNote}")
-            li.option-item Add Box
-            li.option-item Add Item
+            li.option-item
+              NuxtLink(to="/stock-take/box/create") Add Box
+            li.option-item
+              NuxtLink(to="/stock-take/item/create") Add Item
         Button.btn.btn-primary(@click="handleExportReceipt")
           span EXPORT FILE
     .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
@@ -94,6 +96,7 @@
           Column(
             selectionMode='multiple'
             :styles="{'width': '1%'}"
+            :headerClass="classHeaderMuti"
           )
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
@@ -109,12 +112,13 @@
           Column(header='PIC ID' field='picId' sortable sortField="_assignee.staffId")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-if="data.assignee") {{ data.assignee.staffId }}
-          Column(header='Result' sortable field='result' sortField="_result" headerClass="grid-header-right")
+              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-else) N/A
+          Column(header='Result' sortable field='result' sortField="_finalResultStatus" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right
-                  span.stock-take-result.result-ng(v-if="data.result === 'NG'") NG
-                  span.stock-take-result.result-ok(v-if="data.result === 'OK'") OK
-                  span.stock-take-result.result-waiting(v-if="data.result === 'WAITING'") N/A
+                  span.stock-take-result.result-ng(v-if="data.finalResultStatus === 'NG'") NG
+                  span.stock-take-result.result-ok(v-if="data.finalResultStatus === 'OK'") OK
+                  span.stock-take-result.result-waiting(v-if="data.finalResultStatus === 'WAITING'") N/A
           Column(header='nOTE' sortable field='note' sortField="_note" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.note }}
@@ -161,7 +165,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getDeleteMessage } from '~/utils'
+import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getDeleteMessage, resetScrollTable } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
@@ -246,9 +250,17 @@ class StockTake extends Vue {
     })
   }
 
+  get classHeaderMuti() {
+    return !this.stockTakeList ||
+      this.stockTakeList.length <= 0 ? 'checkbox-disable' : ''
+  }
+
   rowdbClick({ data }) {
-    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
-      this.$router.push(`/stock-out/order/${data.id}`)
+    if(data.checkType === 'BOX') {
+      this.$router.push(`/stock-take/box/${data.id}/note-detail`)
+    }
+    else if(data.checkType === 'ITEM') {
+      this.$router.push(`/stock-take/item/${data.id}/note-detail`)
     }
   }
 
@@ -275,6 +287,7 @@ class StockTake extends Vue {
   }
 
   onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getStockTakeList()
@@ -297,7 +310,7 @@ class StockTake extends Vue {
       status: this.filter.status?.value,
       checkType: this.filter.checkType?.value,
       warehouseId: this.filter.warehouse?.id,
-      result: this.filter.result?.value,
+      finalResultStatus: this.filter.result?.value,
       sortBy: this.sortByColumn || null,
       desc: this.isDescending
     }
@@ -336,6 +349,7 @@ class StockTake extends Vue {
   }
 
   async sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if (sortOrder) {
       this.isDescending = sortOrder !== 1
@@ -354,7 +368,31 @@ class StockTake extends Vue {
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      const stockTakeIds = _.map(this.onEventDeleteList, 'id').toString()
+      const isCheckDelete = _.find(this.onEventDeleteList, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
+      const isCheckDelete2 = _.find(this.onEventDeleteList, function(o) { return o.status === 'IN_PROGRESS' && !o?.assignee?.staffId })
+      if(isCheckDelete) {
+        this.loadingSubmit = false
+        this.isModalDelete = false
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Unable to delete stock take not with status new or inprogess!',
+          life: 3000
+        })
+        return
+      }
+      if(isCheckDelete2) {
+        this.loadingSubmit = false
+        this.isModalDelete = false
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Can not delete stock take with status inprogess without pic!',
+          life: 3000
+        })
+        return
+      }
+      const stockTakeIds = _.map(this.onEventDeleteList, 'id')
       const data = await this.actDeleteStockTakeList(stockTakeIds)
       if (data) {
         this.loadingSubmit = false
@@ -436,12 +474,17 @@ export default StockTake
         display: block
 
       .option-item
-        padding: 12px 0
         border-bottom: 1px solid #dee2e6
         transition: all 0.25 ease
         &:hover
           background-color: $primary
-          color: $color-white
+          a
+            color: $color-white
+        a
+          padding: 12px 0
+          display: block
+          color: $text-color-base
+          text-decoration: none
   .stock-take-result
     &.result-ng
       color: #F31818
