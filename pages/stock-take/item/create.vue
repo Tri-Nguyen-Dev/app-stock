@@ -1,6 +1,6 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
-    NoteInfo(v-if="sellerInfo" :sellerInfo="sellerInfo")
+    NoteInfo(v-if="sellerInfo" :sellerInfo="sellerInfo" :creator="user")
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
       .stock-takeItem.flex.flex-column
         .stock-takeItem__header

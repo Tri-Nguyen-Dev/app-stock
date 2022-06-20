@@ -20,9 +20,9 @@
             .icon-sender-info.icon.bg-primary.mr-2
             span.font-bold.text-800.uppercase ID Information
         .col-12
-          StockUnit.m-0(title="Creator ID " :value="user.staffId"  icon="icon-tag-user")
+          StockUnit.m-0(title="Creator ID " :value="creator.staffId"  icon="icon-tag-user")
         .col-12
-          StockUnit.m-0(title="Warehouse"  :value="user.warehouse.name" icon="icon-warehouse")
+          StockUnit.m-0(title="Warehouse"  :value="creator.warehouse.name" icon="icon-warehouse")
         .col-12
           StockUnit.m-0(title="Items" :value="totalItem" icon="icon-frame")
         .col.border-bottom-1.border-gray-300
@@ -40,17 +40,13 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
-import { User } from '~/models/User'
-const nsStoreUser = namespace('user-auth/store-user')
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
 
 @Component
 class NoteInfo extends Vue {
   @Prop({ default: 0 }) totalItem: number
   @Prop({ default: null }) sellerInfo: any
-  
-  @nsStoreUser.State
-  user: User.Model | undefined
+  @Prop({ default: null }) creator: any
 
   get homeItem() {
     return { label: 'Note list', to: '/stock-take' }
