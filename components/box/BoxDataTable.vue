@@ -3,14 +3,6 @@
   .inventory__filter.grid
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(
-        title='Warehouse',
-        :value='filter.warehouse',
-        :options='warehouseList',
-        name='warehouse',
-        @updateFilter='handleFilterBox'
-      )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-      FilterTable(
         title="Seller Email"
         placeholder="Enter Seller Email"
         name="sellerEmail"
@@ -57,6 +49,9 @@
         :showIcon='true',
         @updateFilter='handleFilterBox'
       )
+    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+      Button.p-button-secondary.mr-1(label="Refresh" icon="pi pi-refresh" @click="handleRefeshFilter")
+      Button.p-button-primary(label="Search" icon="pi pi-search"   @click="searchBox")
   .inventory__content
     DataTable(
       v-if='boxList',
@@ -130,10 +125,11 @@ import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import { Box } from '~/models/Box'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
+import { User } from '~/models/User'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
-
+const nsStoreUser = namespace('user-auth/store-user')
 @Component({
   components: {
     Pagination
@@ -165,6 +161,9 @@ class BoxDataTable extends Vue {
   @nsStoreWarehouse.State
   warehouseList!: any
 
+  @nsStoreUser.State
+  user: User.Model | undefined
+
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
 
@@ -192,7 +191,7 @@ class BoxDataTable extends Vue {
       pageSize: this.paging.pageSize,
       sellerEmail: this.filter.sellerEmail || null,
       barCode: this.filter.barCode || null,
-      warehouseId: this.filter.warehouse?.id,
+      warehouseId: this.user?.warehouse?.id,
       location: this.filter.location || null,
       from: this.filter.dateFrom
         ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD')
@@ -205,10 +204,8 @@ class BoxDataTable extends Vue {
     }
   }
 
-  async handleFilterBox(e: any, name: string) {
+  handleFilterBox(e: any, name: string) {
     this.filter[name] = e
-    await this.actGetBoxList(this.getParamAPi())
-    this.selectedBoxes = []
   }
 
   async onPage(event: any) {
@@ -216,8 +213,6 @@ class BoxDataTable extends Vue {
     this.paging.pageNumber = event.page
     await this.actGetBoxList(this.getParamAPi())
   }
-
-  validateText = _.debounce(this.handleFilter, 500)
 
   async sortData(e: any) {
     const { sortField, sortOrder } = e
@@ -231,7 +226,7 @@ class BoxDataTable extends Vue {
     await this.actGetBoxList(this.getParamAPi())
   }
 
-  async handleFilter() {
+  async searchBox() {
     await this.actGetBoxList(this.getParamAPi())
     this.selectedBoxes = []
   }

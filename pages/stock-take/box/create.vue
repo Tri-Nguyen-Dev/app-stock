@@ -81,6 +81,8 @@ import StockTakeNoteInfo from '~/components/stock-take/GeneralInfo.vue'
 import BoxDataTable from '~/components/box/BoxDataTable.vue'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
+import { User } from '~/models/User'
+const nsStoreUser = namespace('user-auth/store-user')
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 @Component({
   components: {
@@ -96,16 +98,20 @@ class DeliveryOrder extends Vue {
   disabledApply = true
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
   stockTakeInfo: {
-    user?: any,
+    user: User.Model | undefined,
     totalBox?: number,
-    wareHouse?: any
-  } = { user: undefined,totalBox:0,wareHouse: undefined }
+    wareHouse?: any,
+    status:string
+  } = { user: undefined ,totalBox:0,wareHouse: undefined, status: 'NEW' }
 
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
 
   @nsStoreCreateStockTake.Action
   actCreateStockTake!: (params?: any) => Promise<void>
+
+  @nsStoreUser.State
+  user: User.Model | undefined
 
   get breadcrumbItem() {
     return [
@@ -167,6 +173,10 @@ class DeliveryOrder extends Vue {
     this.showModal = false
     this.boxShow = [...this.boxSelected]
     this.$forceUpdate()
+  }
+
+  mounted() {
+    this.stockTakeInfo.user = this.user
   }
 }
 
