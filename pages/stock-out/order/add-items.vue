@@ -3,7 +3,10 @@
   .inventory__header
     div
       h1.text-heading Inventory Item list
-      span.text-subheading {{ total }} results found
+      div.flex.align-items-center
+        .icon.icon-warehouse-buildings.bg-primary.mr-2
+        span.font-bold.text-800 WAREHOUSE: {{ warehouseName }}&ensp;|&ensp;
+        div.text-subheading {{ total }} results found
     .inventory__header--action
       .btn__filter
         .btn-toggle(@click="isShowFilter = !isShowFilter")
@@ -100,7 +103,7 @@
       Column(field='amount' header='INVENTORY QUANTITY' bodyClass='text-bold'
         :sortable='true' :styles="{'width': '5%'}" sortField='_amount'
       )
-      Column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :sortable='true' :styles="{'width': '5%'}" sortField='_')
+      Column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :styles="{'width': '5%'}")
         template(#body='{data}')
           InputNumber.w-7rem(v-model="data.delivery" mode="decimal" :min="0"
             :max="data.amount" inputClass="w-full" @input='handleDeliveryChange'
@@ -160,6 +163,7 @@ class AddItems extends Vue {
   isDisabled: string | null = 'disabled'
   sellerEmail: string = ''
   warehouse: any = null
+  warehouseName: string = ''
   filter: any = {
     receiptId: null,
     barCode: null,
@@ -196,6 +200,7 @@ class AddItems extends Vue {
   mounted() {
     this.sellerEmail = _.get(this.listInfo, 'seller[0].value')
     this.warehouse = _.get(this.listInfo, 'warehouse[0].warehouseId')
+    this.warehouseName = _.get(this.listInfo, 'warehouse[0].value.name')
     if(!this.sellerEmail || !this.warehouse) {
       this.$router.push({ path: '/stock-out/order' })
       return
@@ -271,9 +276,10 @@ class AddItems extends Vue {
   }
 
   handleDeliveryChange() {
-    this.outGoingList = _.filter(this.inventoryList, ({ delivery }) => {
+    const itemChangeOnPage = _.filter(this.inventoryList, ({ delivery }) => {
       return delivery && delivery > 0
     })
+    this.outGoingList = _.unionWith(this.outGoingList, itemChangeOnPage, _.isEqual)
     this.isDisabled =  _.size(this.outGoingList) < 1 ? 'disabled' : null
   }
 
