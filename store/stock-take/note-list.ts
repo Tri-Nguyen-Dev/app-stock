@@ -8,7 +8,7 @@ export default class StoreStockTake extends VuexModule {
   private static readonly STATE_URL = {
     GET_STOCK_TAKE_LIST: '/stock-take/list',
     DELETE_STOCK_TAKE_LIST: '/stock-take/list/delete',
-    EXPORT_RECEIPT: '/stock-take/export'
+    EXPORT_RECEIPT: '/stock-take/:id/pdf-stock-take-box'
   }
 
   public stockTakeList?: any = []
