@@ -213,6 +213,7 @@ class ReportList extends Vue {
   }
 
   data: any[] = []
+  boxReportDetail: any = {}
 
   @nsStoreReport.State
   reportList!: any[]
@@ -411,9 +412,11 @@ class ReportList extends Vue {
     this.isShowModalDetail = false
   }
 
-  async showModalDetail(id: any) {
+  async showModalDetail(id: any, boxId: any) {
     this.isShowModalDetail = true
     await this.actGetReportDetail(id)
+    const boxDetail = _.find(this.reportDetail.data.boxNote, function(o) { return o.box.id === boxId })
+    this.boxReportDetail = boxDetail
   }
   
   applyBox(){
@@ -432,7 +435,8 @@ class ReportList extends Vue {
   }
 
   rowClick({ data }) {
-    this.showModalDetail(data.id)
+    const boxId = data?.boxNote?.box?.id
+    this.showModalDetail(data.id, boxId)
   }
 
   createStockTake() {
