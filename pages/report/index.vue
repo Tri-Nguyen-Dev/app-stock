@@ -83,19 +83,19 @@
       showGridlines
       @row-dblclick="rowClick"
       )
-      Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
+      Column(selectionMode="multiple" :styles="{width: '3rem'}")
       Column(field="id" header="ID"  bodyClass="font-semibold"  className="text-center" headerClass="grid-header-center" sortField="_id")
           template(#body="slotProps")
             span {{slotProps.data.id}}
       Column(field="createdAt" header="CREATE TIME" :sortable="true"  sortField="_createdAt")
         template(#body='{ data }')
           span {{ data.createdAt | dateTimeHour24 }}
-      Column(field="boxNote.id" header="BOX CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
-      Column(field="boxNote.sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
+      Column(field="boxNote.id" header="BOX CODE" bodyClass="font-semibold")
+      Column(field="boxNote.sellerEmail" header="SELLER EMAIL" className="w-3")
       Column(field="boxNote.id" header="stock take note id" className="uppercase")
       Column(field="boxNote.note" header="note" className="uppercase" bodyClass="font-semibold" )
       Column(field="createId" header="create id" className="uppercase" bodyClass="font-semibold" )
-      Column(field="status" header="STATUS" :sortable="true"  sortField="_status" className="text-center")
+      Column(field="status" header="STATUS"  className="text-center")
         template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
                 :class=" data.status === 'REPORT_RESOLVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")
@@ -131,21 +131,23 @@
       Button.btn.btn-primary.h-3rem(@click='createStockTake') Create stock-take note
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
-      h1.text-heading Select Box
+      h1.text-heading Report detail
     BoxDataTable(@selectBox='selectBox($event)' :box='boxShow' v-if='!isConfirm')
     .confirm.grid(v-if='isConfirm')
-      .col-12.text-center
-        h3 Report detail
       .col-12
         DataTable.w-full.table__sort-icon.h-full(:value="boxShow" responsiveLayout="scroll")
           Column(field="id" header="box code" className="uppercase")
           Column(field="sellerEmail" header="seller email" className="uppercase")
-          Column(field="note" header="note" className="uppercase")
+          Column(field="note" header="note" className="uppercase" :styles="{width: '50%'}")
             template(#body="{ data }")
-              InputText(v-model='data.note' autofocus)
-          Column(header="action" className="uppercase")
+              InputText.w-full(v-model='data.note' autofocus)
+          Column(header="action" className="text-center" headerClass="grid-header-center")
+            template(#body="{data}")
+              .table__action(style='justify-content: center')
+                span.action-item(@click="removeBox(data.id)")
+                  .icon.icon-btn-delete
     template(#footer)
-      Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
+      Button.p-button-secondary(label="Close" icon="pi pi-times" @click="closeDialog()")
       Button.p-button-primary(label="Back" icon="pi pi-arrow-left" @click="isConfirm = false;" v-if='isConfirm')
       Button.p-button-success(label="Save" icon="pi pi-check" @click="saveReport()" v-if='isConfirm')
       Button.p-button-success(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()" v-if='!isConfirm')
@@ -218,6 +220,9 @@ class ReportList extends Vue {
   reportList!: any[]
 
   @nsStoreReport.State
+  reportCreate!: any[]
+
+  @nsStoreReport.State
   listBoxTakeNote!: any[]
 
   @nsStoreReport.State
@@ -242,7 +247,7 @@ class ReportList extends Vue {
   setListBoxTakeNote!: (data: any) => Promise<any>
 
   @nsStoreReport.Action
-  actAddTransferReport!: (params: {ids: string[]}) => Promise<any>
+  actCreateReport!: (data: any) => Promise<any>
 
   @nsStoreReportDetail.Action
   actGetReportDetail !: (id: any) => Promise<any>
@@ -255,7 +260,7 @@ class ReportList extends Vue {
           id: report.id,
           boxNote: box,
           createdAt: report.createdAt,
-          createId: report.createdBy.id,
+          createId: report.createdBy.staffId,
           status:'REPORT_NEW'
         })
       })
@@ -378,7 +383,7 @@ class ReportList extends Vue {
   }
 
   rowUnSelectAll() {
-    this.selectedReportes = _.differenceWith(this.selectedReportes, this.reportList, _.isEqual)
+    this.selectedReportes = []
   }
 
   rowSelect({ data }) {
@@ -427,8 +432,28 @@ class ReportList extends Vue {
     this.isConfirm = true
   }
 
-  saveReport(){
-    this.showModal = false
+  async saveReport(){
+    const data = this.boxShow.map(element =>{
+      return {
+        box: {
+          id : element.id
+        },
+        note: element.note
+      }
+    })
+    await this.actCreateReport({ boxNote: data })
+    if(this.reportCreate){
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted report',
+        life: 3000
+      })
+      this.showModal = false
+      await this.actGetReportList(this.getParamAPi())
+      this.resetData()
+    }
+
   }
 
   rowClick({ data }) {
@@ -440,6 +465,21 @@ class ReportList extends Vue {
       this.setListBoxTakeNote(this.selectedReportes)
       this.$router.push('/stock-take/box/create')
     }
+  }
+
+  removeBox(id){
+    this.boxShow = _.filter(this.boxShow, (box: any) => box.id !== id)
+  }
+
+  closeDialog(){
+    this.showModal = false
+    this.resetData()
+  }
+
+  resetData(){
+    this.boxShow = []
+    this.boxSelected = []
+    this.isConfirm = false
   }
 }
 export default ReportList

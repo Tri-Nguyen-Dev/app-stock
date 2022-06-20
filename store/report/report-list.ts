@@ -8,14 +8,15 @@ import { $api, PathBind } from '~/utils'
 export default class StoreReport extends VuexModule {
   private static readonly STATE_URL = {
     GET_REPORT: '/report/list',
-    DELETE_REPORT: '/report/delete'
+    DELETE_REPORT: '/report/delete',
+    CREATE_REPORT: '/report/create'
   }
 
   public reportList?: any[] = []
   public totalReportRecords?: number = 0
   public listBoxTakeNote: any = []
   public reportListFilter?: any[] = undefined
-  public reportTransfer: any = []
+  public reportCreate: any = {}
 
   @Mutation
   setReportList(response: any) {
@@ -24,8 +25,8 @@ export default class StoreReport extends VuexModule {
   }
 
   @Mutation
-  setReportTransfer(data: any) {
-    this.reportTransfer = data
+  setReportCreate(data: any) {
+    this.reportCreate = data
   }
 
   @Mutation
@@ -47,4 +48,10 @@ export default class StoreReport extends VuexModule {
     return response.data
   }
 
+  @Action({ commit: 'setReportCreate',rawError: true })
+  async actCreateReport( data ): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreReport.STATE_URL.CREATE_REPORT)
+    const response: any = await $api.post(url,  data )
+    return response.data
+  }
 }
