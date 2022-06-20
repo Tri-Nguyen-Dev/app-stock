@@ -11,7 +11,7 @@
       StockUnit(title="Create time" :value="info.createdAt | dateTimeHour12" icon="icon-calendar")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Create ID" :value="user.displayName" icon="icon-user-octagon")
-    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.picId')
+    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-show='info.picId')
       StockUnit(title="PIC ID" :value="info.picId" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Warehouse" :value="info.wareHouse" icon="icon-warehouse-info")
