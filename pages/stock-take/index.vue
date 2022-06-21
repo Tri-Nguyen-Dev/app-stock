@@ -168,14 +168,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import {
-  PAGINATE_DEFAULT,
-  calculateIndex,
-  StockTakeConstants,
-  exportFileTypePdf,
-  getDeleteMessage,
-  resetScrollTable
-} from '~/utils'
+import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getDeleteMessage, resetScrollTable } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
@@ -261,15 +254,15 @@ class StockTake extends Vue {
   }
 
   get classHeaderMuti() {
-    return !this.stockTakeList || this.stockTakeList.length <= 0
-      ? 'checkbox-disable'
-      : ''
+    return !this.stockTakeList ||
+      this.stockTakeList.length <= 0 ? 'checkbox-disable' : ''
   }
 
   rowdbClick({ data }) {
-    if (data.checkType === 'BOX') {
+    if(data.checkType === 'BOX') {
       this.$router.push(`/stock-take/box/${data.id}/note-detail`)
-    } else if (data.checkType === 'ITEM') {
+    }
+    else if(data.checkType === 'ITEM') {
       this.$router.push(`/stock-take/item/${data.id}/note-detail`)
     }
   }
@@ -279,7 +272,7 @@ class StockTake extends Vue {
   }
 
   handleExportReceipt() {
-    if (this.selectedStockTake.length > 0) {
+    if(this.selectedStockTake.length > 0) {
       _.forEach(this.selectedStockTake, async ({ id }) => {
         const result = await this.actGetReceiptLable({ id })
         if (result) {
@@ -378,32 +371,26 @@ class StockTake extends Vue {
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      const isCheckDelete = _.find(this.onEventDeleteList, function (o) {
-        return o.status !== 'IN_PROGRESS' && o.status !== 'NEW'
-      })
-      const isCheckDelete2 = _.find(this.onEventDeleteList, function (o) {
-        return o.status === 'IN_PROGRESS' && !o?.assignee?.staffId
-      })
-      if (isCheckDelete) {
+      const isCheckDelete = _.find(this.onEventDeleteList, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
+      const isCheckDelete2 = _.find(this.onEventDeleteList, function(o) { return o.status === 'IN_PROGRESS' && !o?.assignee?.staffId })
+      if(isCheckDelete) {
         this.loadingSubmit = false
         this.isModalDelete = false
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
-          detail:
-            'Unable to delete stock take not with status new or inprogess!',
+          detail: 'Unable to delete stock take not with status new or inprogess!',
           life: 3000
         })
         return
       }
-      if (isCheckDelete2) {
+      if(isCheckDelete2) {
         this.loadingSubmit = false
         this.isModalDelete = false
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
-          detail:
-            'Can not delete stock take with status inprogess without pic!',
+          detail: 'Can not delete stock take with status inprogess without pic!',
           life: 3000
         })
         return
