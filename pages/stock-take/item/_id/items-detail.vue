@@ -49,9 +49,11 @@
           div
             h1.text-heading Stock Take Items Detail
             span.text-subheading {{ total }} total items
-          .inventory__header--action.flex
+          .inventory__header--action.flex(v-if="isDetail")
             Button.btn.btn-primary.border-0(@click='handleSaveDraft') Save Draft
             Button.btn.btn-primary.border-0(@click='handleSubmit' :disabled='isDisabled' ) Submit
+          .inventory__header--action.flex(v-else)
+            Button.btn.btn-primary.border-0(@click='exportpdf' ) Export
         .inventory__content
           DataTable.m-h-700(
             :value='items'
@@ -70,6 +72,7 @@
               template(#body='{data}')
                 span {{data.boxCode}}
                 badge.bg-green-400.ml-2(value="CHECKING" v-if="data.isChecking")
+            Column(field='location' header='LOCATION' :sortable='true' className="text-center" )
             Column(field='inventoryQuantity' header='INVENTORY Q.TY' :sortable='true' className="text-center" )
             Column(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center")
               template.text-center(#body='{data}' class="text-center")
@@ -100,7 +103,7 @@
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
-import { PAGINATE_DEFAULT } from '~/utils'
+import { exportFileTypePdf, PAGINATE_DEFAULT } from '~/utils'
 const nsStoreItems = namespace('stock-take/box-detail')
 
 @Component({
@@ -115,7 +118,7 @@ class stockTakeItemsDetail extends Vue {
   sellerInfo: []
   desc: boolean = null
   sortBy: string = ''
-
+  isDetail: boolean = true
   filter: any = {
   }
   // -- [ State ] ------------------------------------------------------------
@@ -128,6 +131,9 @@ class stockTakeItemsDetail extends Vue {
 
   @nsStoreItems.Action
   actSubmitBoxStockTakeDetail!: (params: any) => Promise<string>
+
+  @nsStoreItems.Action
+  actGetStockTakeLable!: (params: any) => Promise<string>
 
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
@@ -181,6 +187,8 @@ class stockTakeItemsDetail extends Vue {
         life: 3000
       })
       await this.$router.push({ path: '/stock-take' })
+      this.isDetail = !this.isDetail
+
     }
   }
 
@@ -203,6 +211,16 @@ class stockTakeItemsDetail extends Vue {
         life: 3000
       })
     }
+    this.isDetail = !this.isDetail
+
+  }
+
+  async exportpdf(){
+    const result = await this.actGetStockTakeLable({ id : this.$route.params.id })
+    if(result) {
+      exportFileTypePdf(result, `Stock-Take-${ this.$route.params.id }`)
+    }
+    await this.$router.push({ path: '/stock-take' })
   }
 
   handleDeliveryChange( event : any ){
