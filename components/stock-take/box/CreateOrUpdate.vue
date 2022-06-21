@@ -2,6 +2,12 @@
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
       StockTakeNoteInfo(:info='stockTakeInfo')
+      .grid.wapprer-unit.ml-4.mr-4
+        .col-2.flex.align-items-center.justify-content-center
+          .icon--large.bg-blue-700(class='icon-note')
+        .col-10.flex.flex-column.justify-content-center
+          div.font-normal.text-700.text-base Note
+          Textarea.text-lg(:value='note' placeholder='Write something...' rows='2' cols=30)
     .col-9.packing__detail--left.pl-4.pr-1.flex-1
       .grid
         .col-4
@@ -83,6 +89,7 @@ import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 import { User } from '~/models/User'
 import { STOCK_TAKE_STATUS } from '~/utils'
+import StockUnit from '~/components/stock/StockUnit.vue'
 const nsStoreUser = namespace('user-auth/store-user')
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 @Component({
@@ -90,7 +97,8 @@ const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
     ItemList,
     StockTakeNoteInfo,
     BoxDataTable,
-    Pagination
+    Pagination,
+    StockUnit
   }
 })
 class DeliveryOrder extends Vue {
@@ -99,6 +107,7 @@ class DeliveryOrder extends Vue {
   boxSelected: any
   disabledApply = true
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
+  note = ''
   stockTakeInfo: {
     user: User.Model | undefined,
     totalBox?: number,
@@ -129,14 +138,14 @@ class DeliveryOrder extends Vue {
   async  saveStockTake() {
     const listBox = this.boxShow.map(element =>{
       return {
-        id: element.id
+        boxCode: element.id
       }
     })
     if(listBox.length===0) {
       return
     }
     const data = {
-      note: 'Note',
+      note: this.note,
       checkType: 'BOX',
       stockTakeBox: listBox,
       wareHouse: { id: this.user?.warehouse.id },
@@ -198,4 +207,18 @@ export default DeliveryOrder
 .w-25
   width: 25%
   margin-left: 7px
+.wapprer-unit
+  min-height: 72px
+  border-radius: 4px
+  background-color: $text-color-200
+  .text-wrap
+    word-break: break-all
+  ::v-deep.p-inputtext
+    border: none
+    background: transparent
+    padding: 0
+    color: #000
+    font-weight: 600
+    box-shadow: none !important
+    max-width: 100%
 </style>
