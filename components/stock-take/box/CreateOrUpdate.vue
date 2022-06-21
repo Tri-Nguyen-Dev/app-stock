@@ -82,6 +82,7 @@ import BoxDataTable from '~/components/box/BoxDataTable.vue'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 import { User } from '~/models/User'
+import { STOCK_TAKE_STATUS } from '~/utils'
 const nsStoreUser = namespace('user-auth/store-user')
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 @Component({
@@ -138,7 +139,8 @@ class DeliveryOrder extends Vue {
       note: 'Note',
       checkType: 'BOX',
       stockTakeBox: listBox,
-      wareHouse: { id: this.user?.warehouse.id } 
+      wareHouse: { id: this.user?.warehouse.id },
+      status: STOCK_TAKE_STATUS.NEW
     }
     await this.actCreateStockTake(data)
     if(this.stockTakeCreated.id){

@@ -125,7 +125,7 @@ class DeliveryOrder extends Vue {
 
   async pickItem() {
     // update progress order
-    const dataUpdate = { ...this.orderDetail }
+    const dataUpdate = _.cloneDeep(this.orderDetail)
     dataUpdate.status = ORDER_STATUS.IN_PROGRESS
     if (!dataUpdate.assignee) {
       if (this.user) {
