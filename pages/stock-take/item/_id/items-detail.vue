@@ -50,8 +50,9 @@
             h1.text-heading Stock Take Items Detail
             span.text-subheading {{ total }} total items
           .inventory__header--action.flex
-            Button.btn.btn-primary.border-0(@click='handleSaveDraft') Save Draft
-            Button.btn.btn-primary.border-0(@click='handleSubmit' :disabled='isDisabled' ) Submit
+            Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSaveDraft') Save Draft
+            Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSubmit' :disabled='isDisabled' ) Submit
+            Button.btn.btn-primary.border-0(v-if="isCheckAssignee" @click='handleAssignee') Check
         .inventory__content
           DataTable.m-h-700(
             :value='items'
@@ -70,30 +71,37 @@
               template(#body='{data}')
                 span {{data.boxCode}}
                 badge.bg-green-400.ml-2(value="CHECKING" v-if="data.isChecking")
-            Column(field='inventoryQuantity' header='INVENTORY Q.TY' :sortable='true' className="text-center" )
-            Column(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center")
-              template.text-center(#body='{data}' class="text-center")
-                .text-center
-                  InputNumber.w-7rem(v-model="data.countedQuantity" :min="0" mode="decimal"
-                     inputClass="w-full" @input='handleDeliveryChange(data)'
-                  )
-            Column(field='discrepancy'  header='DISCREPANCY ' :sortable='true' className="text-center" )
-              template(#body='{data}')
-                .text-center(v-if="data.countedQuantity !== null")
-                  span(v-model="data.discrepancy") {{data.discrepancy}}
+            Column(field="location" header="LOCATION" :sortable="true" className="text-right")
+              template(#body="{data}")
+                div(v-if="data.location")
+                  .flex.align-items-center.cursor-pointer.justify-content-end
+                    span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
+                    .icon.icon-arrow-up-right.bg-primary.bg-white-active
+            div(v-if="!isCheckAssignee")
+              Column(field='inventoryQuantity' header='INVENTORY Q.TY' :sortable='true' className="text-center")
+              Column(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center")
+                template.text-center(#body='{data}' class="text-center")
+                  .text-center
+                    InputNumber.w-7rem(v-model="data.countedQuantity" :min="0" mode="decimal"
+                      inputClass="w-full" @input='handleDeliveryChange(data)'
+                    )
+              Column(field='discrepancy'  header='DISCREPANCY ' :sortable='true' className="text-center" )
+                template(#body='{data}')
+                  .text-center(v-if="data.countedQuantity !== null")
+                    span(v-model="data.discrepancy") {{data.discrepancy}}
 
-            Column(field='status' header='STATUS' :sortable='true' className="text-center" s)
-              template(#body='{ data }' )
-                span.table__status.table__status--available(
-                  v-if="data.resultStatus === 'OK'"
-                ) {{ data.resultStatus }}
-                span.table__status.table__status--error(
-                  v-else-if="data.resultStatus === 'NG'"
-                ) {{ data.resultStatus  }}
-                span.table__status.table__status--draft(
-                  v-else
-                ) Waiting
-            Column(field='completeTime' header='REPORT BOX ' :sortable='true' className="text-right" )
+              Column(field='status' header='STATUS' :sortable='true' className="text-center" s)
+                template(#body='{ data }' )
+                  span.table__status.table__status--available(
+                    v-if="data.resultStatus === 'OK'"
+                  ) {{ data.resultStatus }}
+                  span.table__status.table__status--error(
+                    v-else-if="data.resultStatus === 'NG'"
+                  ) {{ data.resultStatus  }}
+                  span.table__status.table__status--draft(
+                    v-else
+                  ) Waiting
+              Column(field='completeTime' header='REPORT BOX ' :sortable='true' className="text-right" )
 </template>
 
 <script lang="ts">
@@ -128,6 +136,9 @@ class stockTakeItemsDetail extends Vue {
 
   @nsStoreItems.Action
   actSubmitBoxStockTakeDetail!: (params: any) => Promise<string>
+
+  @nsStoreItems.Action
+  actGetAssignBoxStockTake!: (params?: any) => Promise<any>
 
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
@@ -261,6 +272,20 @@ class stockTakeItemsDetail extends Vue {
     ]
   }
 
+  get isCheckAssignee() {
+    const { assignee, status } = this.boxStockTakeDetail
+    return status === 'NEW' && !assignee
+  }
+
+  async handleAssignee() {
+    const result = await this.actGetAssignBoxStockTake([
+      this.$route.params.id
+    ])
+    if(result?.data) {
+      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+      this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
+    }
+  }
 }
 
 export default stockTakeItemsDetail
