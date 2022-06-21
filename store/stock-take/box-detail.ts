@@ -9,7 +9,7 @@ import { $api, PathBind } from '~/utils'
 export default class StoreBoxStockTake extends VuexModule {
   private static readonly STATE_URL = {
     BOX_STOCK_TAKE_DETAIL: '/stock-take/:id/detail',
-    SUBMIT_BOX_STOCK_TAKE_DETAIL: '/stock-take/:id/submit',
+    SUBMIT_BOX_STOCK_TAKE_DETAIL: '/stock-take/:id/submit?isDraft=:isDraft',
     ASSIGN_BOX_STOCK_TAKE: '/stock-take/assign'
   }
 
@@ -28,7 +28,7 @@ export default class StoreBoxStockTake extends VuexModule {
 
   @Action({ rawError: true })
   async actSubmitBoxStockTakeDetail(params: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreBoxStockTake.STATE_URL.SUBMIT_BOX_STOCK_TAKE_DETAIL,{ id: params.id })
+    const url = PathBind.transform(this.context, StoreBoxStockTake.STATE_URL.SUBMIT_BOX_STOCK_TAKE_DETAIL,{ id: params.id, isDraft: params.isDraft })
     return await $api.post(url, params.submitData)
   }
 
