@@ -104,7 +104,9 @@
                   span.table__status.table__status--draft(
                     v-else
                   ) Waiting
-              Column(field='completeTime' header='REPORT BOX ' :sortable='true' className="text-right" )
+              Column( v-if='isDetail' header='REPORT BOX ' className="text-right" )
+                template(#body='{data}' )
+                  Button.btn.btn-primary.border-0( @click='handleReport') Report
 </template>
 
 <script lang="ts">
@@ -155,7 +157,7 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get warehouse() {
-    return this.boxStockTakeDetail?.createdBy?.warehouse.name
+    return this.boxStockTakeDetail?.createdBy?.warehouse?.name
   }
 
   get creatorId() {
@@ -173,10 +175,11 @@ class stockTakeItemsDetail extends Vue {
   }
 
   async handleSaveDraft() {
-    const newArr = this.saveItems.map(el => ({ ...el, isDraft: true }))
+    // const newArr = this.saveItems.map(el => ({ ...el }))
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
-      submitData: newArr
+      isDraft: true,
+      submitData: this.saveItems
     })
     if(result) {
       this.$toast.add({
@@ -241,15 +244,13 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get homeItem() {
-    return { label: 'D/O List', to: '/stock-out/order-list' }
+    return { label: 'Stock Take', to: '/stock-take' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Driver',
-        to: `/stock-out/order/${this.$route.params.id}/driver` },
-      { label: 'Information',
-        to: `/stock-out/order/${this.$route.params.id}/driver/${this.$route.params.sid}`
+      { label: 'Note Take Detail',
+        to: `/stock-take/item/${this.$route.params.id}/items-detail`
       }
     ]
   }
