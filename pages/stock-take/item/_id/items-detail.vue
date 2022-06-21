@@ -63,7 +63,9 @@
                   span.table__status.table__status--draft(
                     v-else
                   ) Waiting
-              Column(field='completeTime' header='REPORT BOX ' :sortable='true' className="text-right" )
+              Column( v-if='isDetail' header='REPORT BOX ' className="text-right" )
+                template(#body='{data}' )
+                  Button.btn.btn-primary.border-0( @click='handleReport') Report
 </template>
 
 <script lang="ts">
@@ -73,6 +75,7 @@ import Pagination from '~/components/common/Pagination.vue'
 import { exportFileTypePdf, PAGINATE_DEFAULT } from '~/utils'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 const nsStoreItems = namespace('stock-take/box-detail')
+const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -116,16 +119,23 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get noteInfor() {
+    const { createdAt, createdBy } = this.boxStockTakeDetail
     return {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
-      creator: {
-        createdAt: this.boxStockTakeDetail.createdAt,
-        creatorID: this.boxStockTakeDetail?.createdBy?.staffId,
-        warehouse: this.boxStockTakeDetail?.createdBy?.warehouse?.name
-      },
-      totalItem: this.total,
-      seller: this.sellerInfo
+      creatorInfo: [
+        { title:'Create Time', value: createdAt ?
+          dayjs(new Date(createdAt)).format('YYYY-MM-DD') 
+          : null, icon: 'icon-receipt-note' },
+        { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
+        { title:'Warehouse', value: createdBy?.warehouse?.name, icon: 'icon-warehouse' },
+        { title:'Items', value: this.total, icon: 'icon-frame' }
+      ],
+      sellerInfo: [
+        { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },
+        { title:'Email', value: this.sellerInfo?.sellerEmail, icon: 'icon-sender-email' },
+        { title:'Phone', value: this.sellerInfo?.sellerPhone, icon: 'icon-sender-phone' }
+      ]
     }
   }
 
@@ -154,10 +164,11 @@ class stockTakeItemsDetail extends Vue {
   }
 
   async handleSaveDraft() {
-    const newArr = this.saveItems.map(el => ({ ...el, isDraft: true }))
+    // const newArr = this.saveItems.map(el => ({ ...el }))
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
-      submitData: newArr
+      isDraft: true,
+      submitData: this.saveItems
     })
     if(result) {
       this.$toast.add({
@@ -180,6 +191,7 @@ class stockTakeItemsDetail extends Vue {
   async handleSubmit(){
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
+      isDraft: false,
       submitData: this.saveItems
     })
     if(result) {
@@ -222,15 +234,13 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get homeItem() {
-    return { label: 'D/O List', to: '/stock-out/order-list' }
+    return { label: 'Stock Take', to: '/stock-take' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Driver',
-        to: `/stock-out/order/${this.$route.params.id}/driver` },
-      { label: 'Information',
-        to: `/stock-out/order/${this.$route.params.id}/driver/${this.$route.params.sid}`
+      { label: 'Note Take Detail',
+        to: `/stock-take/item/${this.$route.params.id}/items-detail`
       }
     ]
   }
@@ -241,8 +251,8 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get isApprove() {
-    const { finalResultStatus, status } = this.boxStockTakeDetail
-    return finalResultStatus === 'NG' && status === 'COMPLETED'
+    const { finalResultStatus, status, approver } = this.boxStockTakeDetail
+    return finalResultStatus === 'NG' && status === 'COMPLETED' && !approver
   }
 
   async handleAssignee() {

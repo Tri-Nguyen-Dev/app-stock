@@ -21,31 +21,20 @@
           .col.flex.align-items-center
             .icon-sender-info.icon.bg-primary.mr-2
             span.font-bold.text-800.uppercase ID Information
-        .col-12
-          StockUnit.m-0(title="Create Time" :value='createTime' icon="icon-receipt-note")
-        .col-12
-          StockUnit.m-0(title="Creator ID" :value='noteInfor.creator.creatorID || "N/A"' icon="icon-tag-user")
-        .col-12
-          StockUnit.m-0(title="Warehouse"  :value='noteInfor.creator.warehouse || "N/A"' icon="icon-warehouse")
-        .col-12
-          StockUnit.m-0(title="Items" :value='noteInfor.totalItem || "N/A"' icon="icon-frame")
+        .col-12(v-for="creator of noteInfor.creatorInfo")
+          StockUnit.m-0(:title="creator.title" :value='creator.value || "N/A"' :icon='creator.icon')
         .col.border-bottom-1.border-gray-300
-      .grid.stock--contact.p-2.m-0(v-if="noteInfor.seller")
+      .grid.stock--contact.p-2.m-0(v-if="noteInfor.sellerInfo")
         .col-12.flex
           .col.flex.align-items-center
             .icon-sender-info.icon.bg-primary.mr-2
             span.font-bold.text-800.uppercase Seller Information
-        .col-12
-          StockUnit.m-0(title="Name" :value='noteInfor.seller.sellerName || "N/A"' icon="icon-sender-name")
-        .col-12
-          StockUnit.m-0(title="Email" :value='noteInfor.seller.sellerEmail || "N/A"' icon="icon-sender-email")
-        .col-12
-          StockUnit.m-0(title="Phone" :value='noteInfor.seller.sellerPhone || "N/A"' icon="icon-sender-phone")
+        .col-12(v-for="seller of noteInfor.sellerInfo")
+          StockUnit.m-0(:title="seller.title" :value='seller.value || "N/A"' :icon="seller.icon")
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
-const dayjs = require('dayjs')
 
 @Component
 class NoteInfo extends Vue {
@@ -55,11 +44,6 @@ class NoteInfo extends Vue {
 
   get noteLabel() {
     return _.last(this.breadcrumbItem).label
-  }
-
-  get createTime() {
-    const date = this.noteInfor.creator.createdAt
-    return date ? dayjs(new Date(date)).format('YYYY-MM-DD') : 'N/A'
   }
 }
 

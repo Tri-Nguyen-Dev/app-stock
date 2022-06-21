@@ -79,6 +79,7 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 const nsStoreUser = namespace('user-auth/store-user')
+const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -135,19 +136,24 @@ class StockTakeItems extends Vue {
         return firstStock
       }
     }
-    return { sellerName: 'N/A', sellerEmail: 'N/A', sellerPhone: 'N/A' }
   }
   
   get noteInfor() {
     return {
       status: 'NEW',
-      creator: {
-        createdAt: this.user?.createdAt,
-        creatorID: this.user.staffId,
-        warehouse: this.user?.warehouse?.name
-      },
-      totalItem: this.totalItem,
-      seller: this.sellerInfo
+      creatorInfo: [
+        { title:'Create Time', value: this.user?.createdAt ?
+          dayjs(new Date(this.user?.createdAt)).format('YYYY-MM-DD') 
+          : null, icon: 'icon-receipt-note' },
+        { title:'Creator ID', value: this.user.staffId, icon: 'icon-tag-user' },
+        { title:'Warehouse', value: this.user?.warehouse?.name, icon: 'icon-warehouse' },
+        { title:'Items', value: this.totalItem, icon: 'icon-frame' }
+      ],
+      sellerInfo: [
+        { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },
+        { title:'Email', value: this.sellerInfo?.sellerEmail, icon: 'icon-sender-email' },
+        { title:'Phone', value: this.sellerInfo?.sellerPhone, icon: 'icon-sender-phone' }
+      ]
     }
   }
 
@@ -164,6 +170,7 @@ class StockTakeItems extends Vue {
     const result = await this.actCreateStockTake(data)
     if(result) {
       if(result?.id) {
+        this.$router.push(`/stock-take/item/${result.id}/items-detail`)
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',
