@@ -18,7 +18,8 @@ div
           span.info-content {{ boxReportDetail.createdAt }}
         .info-item
           span.info-title Stock-take Note ID: 
-          span.info-content {{ boxReportDetail.id }}
+          span.info-content 
+            NuxtLink(to="/") {{ boxReportDetail.boxNote.id }}
         .info-item
           span.info-title PIC ID: 
           span.info-content {{ picId }}
@@ -35,7 +36,8 @@ div
           span.info-content {{ displayName }}
     .info-box
       .box-code
-        h3 BOX CODE: {{ boxReportDetail.boxNote.box.id }}
+        h3 BOX CODE:
+          NuxtLink(:to="`/box/${boxReportDetail.boxNote.box.id}`" class="ml-2") {{ boxReportDetail.boxNote.box.id }}
       .box-note
         h3 NOTE:
         p {{ boxReportDetail.boxNote.note }}

@@ -128,7 +128,7 @@
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
     ReportDetail(@closeModal="hideModalDetail" :boxReportDetail="boxReportDetail")
     template(#footer)
-      Button.btn.btn-primary.h-3rem(@click='createStockTake') Create stock-take note
+      Button.btn.btn-primary.h-3rem(@click='createStockTake(1)') Create stock-take note
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
       h1.text-heading Select Box
@@ -446,12 +446,20 @@ class ReportList extends Vue {
   }
 
   rowClick({ data }) {
+    this.selectedReportes = []
     this.boxReportDetail = data
     this.isShowModalDetail = true
   }
 
-  createStockTake() {
-    if (this.selectedReportes.length > 0) {
+  createStockTake(type) { 
+    if(type === 1) {
+      if(this.boxReportDetail) {
+        this.setListBoxTakeNote([this.boxReportDetail])
+        this.$router.push('/stock-take/box/create')
+        
+      }
+    }
+    else if (this.selectedReportes.length > 0) {
       this.setListBoxTakeNote(this.selectedReportes)
       this.$router.push('/stock-take/box/create')
     }
