@@ -123,12 +123,8 @@ class stockTakeItemsDetail extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   stockTakeItems: any = []
   items: [] = []
-  sellerInfo: []
-  desc: boolean = null
-  sortBy: string = ''
   isDetail: boolean = true
-  filter: any = {
-  }
+
   // -- [ State ] ------------------------------------------------------------
 
   @nsStoreItems.State
@@ -164,17 +160,6 @@ class stockTakeItemsDetail extends Vue {
 
   get creatorId() {
     return this.boxStockTakeDetail?.createdBy?.staffId
-  }
-
-  get seller() {
-    _.forEach(this.items, ({ sellerEmail , sellerName , sellerPhone }) => {
-      this.sellerInfo.push({
-        name: sellerName,
-        email: sellerEmail,
-        phone: sellerPhone
-      })
-    })
-    return this.sellerInfo
   }
 
   get saveItems(){
@@ -253,29 +238,6 @@ class stockTakeItemsDetail extends Vue {
         return true
       }
     })
-  }
-
-  async getItemsList() {
-    const filter = {
-      desc: this.desc,
-      sortBy: this.sortBy || null
-    }
-    await this.actGetItemsList({
-      filter,
-      id: this.$route.params.id
-    })
-  }
-
-  sortData(e: any) {
-    const { sortField, sortOrder } = e
-    if(sortOrder){
-      this.desc = sortOrder !== 1
-      this.sortBy = sortField.replace('_', '')
-    }else{
-      this.desc = null
-      this.sortBy = null
-    }
-    // await this.getItemsList()
   }
 
   get homeItem() {
@@ -419,13 +381,4 @@ export default stockTakeItemsDetail
     .p-column-header-content
       justify-content: end !important
 
-  .filter__dropdown, .filter__multiselect
-    @include size(100%, 40px)
-    border: none
-  .pi-calendar:before
-    content: url('~/assets/icons/calendar.svg')
-  .p-calendar-w-btn
-    .p-button
-      background: none
-      border: none
 </style>
