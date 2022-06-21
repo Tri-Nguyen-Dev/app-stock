@@ -84,16 +84,15 @@
               Column(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center")
                 template.text-center(#body='{data}' class="text-center")
                   .text-center
-                    span( v-if="!isDetail" ) {{data.countedQuantity}}
+                    span( v-if="!isDetail" ) {{data.countedQuantity }}
                     InputNumber.w-7rem( v-else   v-model="data.countedQuantity" :min="0" mode="decimal"
                       inputClass="w-full" @input='handleDeliveryChange(data)'
                     )
               Column(field='discrepancy'  header='DISCREPANCY ' :sortable='true' className="text-center" )
                 template(#body='{data}')
                   .text-center(v-if="data.countedQuantity !== null")
-                    span(v-model="data.discrepancy") {{data.discrepancy}}
-
-              Column(field='status' header='STATUS' :sortable='true' className="text-center" s)
+                    span {{data.countedQuantity - data.inventoryQuantity}}
+              Column(field='status' header='STATUS' :sortable='true' className="text-center")
                 template(#body='{ data }' )
                   span.table__status.table__status--available(
                     v-if="data.resultStatus === 'OK'"
@@ -106,19 +105,35 @@
                   ) Waiting
               Column( v-if='isDetail' header='REPORT BOX ' className="text-right" )
                 template(#body='{data}' )
-                  Button.btn.btn-primary.border-0( @click='handleReport') Report
+                  Button.btn.btn-primary.border-0( @click='handleReport(data)') Report
+    ConfirmDialogCustom(
+      title="Report Confirm"
+      image="confirm-delete"
+      :isShow="isShowModalReport"
+      :onOk="handleReportItems"
+      :onCancel="cancelReportBox"
+      :loading="loadingSubmit"
+    )
+      template(v-slot:message)
+        p Do you want to report the quantity discrepancy  in the box {{ reportData }}?
+      template(v-slot:content)
+        h3.text-left.text-900 NOTE:
+        Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { exportFileTypePdf, PAGINATE_DEFAULT } from '~/utils'
 const nsStoreItems = namespace('stock-take/box-detail')
+const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component({
   components: {
-    Pagination
+    Pagination,
+    ConfirmDialogCustom
   }
 })
 class stockTakeItemsDetail extends Vue {
@@ -126,6 +141,10 @@ class stockTakeItemsDetail extends Vue {
   stockTakeItems: any = []
   items: [] = []
   isDetail: boolean = true
+  loadingSubmit: boolean = false
+  isShowModalReport: boolean = false
+  valueReportNote: string = ''
+  reportData: {}
 
   // -- [ State ] ------------------------------------------------------------
 
@@ -143,6 +162,9 @@ class stockTakeItemsDetail extends Vue {
 
   @nsStoreItems.Action
   actGetAssignBoxStockTake!: (params?: any) => Promise<any>
+
+  @nsStorePackingDetail.Action
+  actCreateReport!:(data: any) => Promise<any>
 
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
@@ -202,6 +224,7 @@ class stockTakeItemsDetail extends Vue {
   async handleSubmit(){
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
+      isDraft: false,
       submitData: this.saveItems
     })
     if(result) {
@@ -269,6 +292,47 @@ class stockTakeItemsDetail extends Vue {
       this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
     }
   }
+
+  handleReport(data) {
+    this.isShowModalReport = true
+    this.reportData = data
+  }
+
+  async handleReportItems() {
+    if(this.reportData) {
+      const result = await this.actCreateReport({
+        box: {
+          id: this.reportData.boxCode
+        },
+        note: this.valueReportNote
+      })
+      if (result) {
+        this.isShowModalReport = false
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Add report successfully!',
+          life: 3000
+        })
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'This box has been reported!',
+          life: 3000
+        })
+      }
+    }
+  }
+
+  showFormReportBox() {
+    this.isShowModalReport = true
+  }
+
+  cancelReportBox(){
+    this.isShowModalReport = false
+  }
+
 }
 
 export default stockTakeItemsDetail
