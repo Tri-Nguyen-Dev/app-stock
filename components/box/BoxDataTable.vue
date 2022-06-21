@@ -172,10 +172,7 @@ class BoxDataTable extends Vue {
   actWarehouseList!: () => Promise<void>
 
   async mounted() {
-    await this.actGetBoxList({
-      pageNumber: this.paging.pageNumber,
-      pageSize: this.paging.pageSize
-    })
+    await this.actGetBoxList(this.getParamAPi())
     await this.actWarehouseList()
     this.selectedBoxes = [...this.box]
   }
