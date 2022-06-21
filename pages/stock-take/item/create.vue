@@ -1,6 +1,6 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
-    NoteInfo(v-if="sellerInfo" :sellerInfo="sellerInfo" :creator="user")
+    NoteInfo(:noteInfor="noteInfor" :homeItem="homeItem" :breadcrumbItem="breadcrumbItem")
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
       .stock-takeItem.flex.flex-column
         .stock-takeItem__header
@@ -77,7 +77,6 @@ import { getDeleteMessage } from '~/utils'
 import ItemListModel from '~/components/stock-take/ItemListModel.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
-import { User } from '~/models/User'
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 const nsStoreUser = namespace('user-auth/store-user')
 
@@ -98,7 +97,7 @@ class StockTakeItems extends Vue {
   noteText: string = ''
 
   @nsStoreUser.State
-  user: User.Model | undefined
+  user: any | undefined
 
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
@@ -138,6 +137,19 @@ class StockTakeItems extends Vue {
     }
     return { sellerName: 'N/A', sellerEmail: 'N/A', sellerPhone: 'N/A' }
   }
+  
+  get noteInfor() {
+    return {
+      status: 'NEW',
+      creator: {
+        createdAt: this.user?.createdAt,
+        creatorID: this.user.staffId,
+        warehouse: this.user?.warehouse?.name
+      },
+      totalItem: this.totalItem,
+      seller: this.sellerInfo
+    }
+  }
 
   handleAddItems() {
     this.isModalAddItem = true
@@ -147,7 +159,7 @@ class StockTakeItems extends Vue {
     const data = {
       note: this.noteText,
       checkType: 'ITEM',
-      stockBoxList: _.map(this.listStockSelected, ({ id }) => ({ id }))
+      stockTakeItem: _.map(this.listStockSelected, ({ id }) => ({ stockBoxId: id }))
     }
     const result = await this.actCreateStockTake(data)
     if(result) {

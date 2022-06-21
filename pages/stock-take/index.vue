@@ -260,7 +260,7 @@ class StockTake extends Vue {
       this.$router.push(`/stock-take/box/${data.id}/note-detail`)
     }
     else if(data.checkType === 'ITEM') {
-      this.$router.push(`/stock-take/item/${data.id}/note-detail`)
+      this.$router.push(`/stock-take/item/${data.id}/items-detail`)
     }
   }
 

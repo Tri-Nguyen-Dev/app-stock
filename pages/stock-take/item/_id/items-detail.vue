@@ -1,48 +1,6 @@
 <template lang="pug">
-  .grid.flex.grid-nogutter.driver
-    div.bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
-      .col.flex.align-items-center.px-3
-        Button(@click='$router.go(-1)').p-button-link
-          .icon-arrow-left.icon.bg-primary.align-items-center
-        Breadcrumb.font-bold(:home="homeItem" :model="breadcrumbItem")
-      .border-bottom-1.border-gray-300
-      .grid.flex.flex-column.my-4.p-3.grid-nogutter
-        .col.flex
-          .icon-box-info.icon.bg-primary.mr-2
-          span.font-bold.text-700 Note Items Detail
-        .col.mt-5
-          span.font-bold Note ID: {{ boxStockTakeDetail.id }}
-        .col.mt-5
-          span.p-2.table__status.table__status--available {{boxStockTakeDetail.status}}
-      div.sub--scroll.col-12
-        .driver--info
-          .col.border-bottom-1.border-gray-300
-          div.wrap-unit.px-3
-          .col.flex.my-3.mx-1
-            .col.flex.align-items-center
-              .icon-sender-info.icon.bg-primary.mr-2
-              span.font-bold.text-800.uppercase ID Information
-          div.wrap-unit.px-4
-            StockUnit(title="Create Time "  :value="boxStockTakeDetail.createdAt | dateTimeHour12" icon="icon-receipt-note")
-          div.wrap-unit.px-4
-            StockUnit(title="Creator ID " :value="creatorId"  icon="icon-tag-user")
-          div.wrap-unit.px-4
-            StockUnit(title="Warehouse"  :value="warehouse" icon="icon-warehouse")
-          div.wrap-unit.px-4
-            StockUnit(title="Items"  :value="total" icon="icon-frame")
-        .driver--contact
-          .col.border-bottom-1.border-gray-300
-          div.wrap-unit.px-3
-          .col.flex.my-3
-            .col.flex.align-items-center
-              .icon-sender-info.icon.bg-primary.mr-2
-              span.font-bold.text-800.uppercase Seller Information
-          .wrap-unit.px-4
-            StockUnit(title="Name" :value="abc" icon="icon-sender-name")
-          .wrap-unit.px-4
-            StockUnit(title="Email" :value="abc" icon="icon-sender-email")
-          .wrap-unit.px-4
-            StockUnit(title="Phone" :value="abc" icon="icon-sender-phone")
+  .grid.flex.grid-nogutter.stock
+    NoteInfo(:noteInfor="noteInfor" :homeItem="homeItem" :breadcrumbItem="breadcrumbItem")
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
       .inventory.flex.flex-column
         .inventory__header
@@ -54,6 +12,7 @@
             Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSubmit' :disabled='isDisabled' ) Submit
             Button.btn.btn-primary.border-0(v-if="isCheckAssignee" @click='handleAssignee') Check
           .inventory__header--action.flex(v-else)
+            Button.btn.btn-primary.border-0(v-if="isApprove") Approve
             Button.btn.btn-primary.border-0(@click='exportpdf' ) Export
         .inventory__content
           DataTable.m-h-700(
@@ -112,11 +71,13 @@ import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 import { exportFileTypePdf, PAGINATE_DEFAULT } from '~/utils'
+import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 const nsStoreItems = namespace('stock-take/box-detail')
 
 @Component({
   components: {
-    Pagination
+    Pagination,
+    NoteInfo
   }
 })
 class stockTakeItemsDetail extends Vue {
@@ -154,12 +115,32 @@ class stockTakeItemsDetail extends Vue {
     return this.boxStockTakeDetail?.totalStockTakeItem
   }
 
-  get warehouse() {
-    return this.boxStockTakeDetail?.createdBy?.warehouse.name
+  get noteInfor() {
+    return {
+      id: this.boxStockTakeDetail?.id,
+      status: this.boxStockTakeDetail?.status,
+      creator: {
+        createdAt: this.boxStockTakeDetail.createdAt,
+        creatorID: this.boxStockTakeDetail?.createdBy?.staffId,
+        warehouse: this.boxStockTakeDetail?.createdBy?.warehouse?.name
+      },
+      totalItem: this.total,
+      seller: this.sellerInfo
+    }
   }
 
-  get creatorId() {
-    return this.boxStockTakeDetail?.createdBy?.staffId
+  get sellerInfo() {
+    const { stockTakeItem } = this.boxStockTakeDetail
+    if(stockTakeItem) {
+      const sumStockTakeItem = _.size(stockTakeItem)
+      const firstStock: any = stockTakeItem[0]
+      if(firstStock) {
+        const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
+        if(_.size(stockSame) === sumStockTakeItem) {
+          return firstStock
+        }
+      }
+    }
   }
 
   get saveItems(){
@@ -259,6 +240,11 @@ class stockTakeItemsDetail extends Vue {
     return status === 'NEW' && !assignee
   }
 
+  get isApprove() {
+    const { finalResultStatus, status } = this.boxStockTakeDetail
+    return finalResultStatus === 'NG' && status === 'COMPLETED'
+  }
+
   async handleAssignee() {
     const result = await this.actGetAssignBoxStockTake([
       this.$route.params.id
@@ -273,7 +259,7 @@ class stockTakeItemsDetail extends Vue {
 export default stockTakeItemsDetail
 </script>
 <style lang="sass" scoped>
-.driver
+.stock
   @include tablet
     margin: 50px
   ::v-deep.sub-tab
@@ -299,23 +285,23 @@ export default stockTakeItemsDetail
         align-items: baseline
         overflow: hidden
 
-::-webkit-input-placeholder
-  font-weight: normal
+  ::-webkit-input-placeholder
+    font-weight: normal
 
-::-webkit-scrollbar
-  width: 7px
-  height: 7px
-  background-color: #F5F5F5
+  ::-webkit-scrollbar
+    width: 7px
+    height: 7px
+    background-color: #F5F5F5
 
-::-webkit-scrollbar-track
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
-  border-radius: 10px
-  background-color: #F5F5F5
+  ::-webkit-scrollbar-track
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+    border-radius: 10px
+    background-color: #F5F5F5
 
-::-webkit-scrollbar-thumb
-  border-radius: 10px
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
-  background-color: #979AA4
+  ::-webkit-scrollbar-thumb
+    border-radius: 10px
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
+    background-color: #979AA4
 
 .wrap-unit
   width: 300px
