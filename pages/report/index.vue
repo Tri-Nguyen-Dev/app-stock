@@ -124,7 +124,7 @@
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
-    ReportDetail(@closeModal="hideModalDetail" :boxReportDetail="boxReportDetail")
+    ReportDetail(@closeModal="hideModalDetail" :boxReportDetail="boxReportDetail" :reportDetail="reportDetail")
     template(#footer)
       Button.btn.btn-primary.h-3rem(@click='createStockTake(1)') Create stock-take note
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
@@ -468,7 +468,8 @@ class ReportList extends Vue {
     }
   }
 
-  rowClick({ data }) {
+  async rowClick({ data }) {
+    await this.actGetReportDetail(data.id)
     this.selectedReportes = []
     this.boxReportDetail = data
     this.isShowModalDetail = true
@@ -476,8 +477,18 @@ class ReportList extends Vue {
 
   createStockTake(type) { 
     if(type === 1) {
-      if(this.boxReportDetail) {
-        this.setListBoxTakeNote([this.boxReportDetail])
+      if(this.reportDetail) {
+        const data:any = []
+        this.reportDetail.boxNote.forEach((box) => {
+          data.push({
+            id: this.reportDetail.id,
+            boxNote: box,
+            createdAt: this.reportDetail.createdAt,
+            createId: this.reportDetail.createdBy.id,
+            status: 'REPORT_NEW'
+          })
+        })
+        this.setListBoxTakeNote(data)
         this.$router.push('/stock-take/box/create')
         
       }
@@ -565,9 +576,6 @@ export default ReportList
   .p-dialog-header
     display: none
   .report-heading
-    display: flex
-    justify-content: space-between
-    align-items: center
     .report-title
       display: flex
       flex-direction: column
@@ -575,24 +583,32 @@ export default ReportList
     .report-title h3
       margin: 0
       font-size: 20px
-    .report-close
-      cursor: pointer
-      &:hover
-        i
-          color: red !important
+  .report-close
+    cursor: pointer
+    position: absolute
+    right: 10px
+    &:hover
       i
-        transition: 0.25s all ease
-        font-size: 1.2rem
+        color: red !important
+    i
+      transition: 0.25s all ease
+      font-size: 1.2rem
+  .info-box
+    .info-box-item
+      display: flex
+      .box-code
+        width: 50%
+      .box-note
+        width: 50%
+      .info-item
+        margin-top: 6px
+      .info-content
+        margin-left: 4px
   .p-dialog-footer
     display: flex
     justify-content: center
   .main-info
     margin: 24px 0
-    display: flex
-    .info-creator
-      width: 50%
-    .info-seller
-      width: 50%
     .info-item
       color: $text-color-base
       margin-top: 10px
@@ -600,9 +616,6 @@ export default ReportList
       font-weight: 400
     .info-content
       margin-left: 6px
-  .box-code
-    display: flex
-    gap: 0 6px
 ::v-deep.confirm
   .p-datatable-table
     .p-datatable-tbody
