@@ -1,5 +1,5 @@
 <template lang="pug">
-.box-page-container.flex.flex-column
+.report-page-container.flex.flex-column
   .box__header
     div
       h1.text-heading Report list
@@ -69,7 +69,7 @@
       )
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
-  DataTable(:value="data" responsiveLayout="scroll"
+  DataTable.relative.overflow-hidden.m-h-700(:value="data" responsiveLayout="scroll"
       :selection="selectedReportes" :rows="20" :scrollable="false"
       :rowClass="rowClass" @sort="sortData($event)"
       @row-select-all="rowSelectAll"
@@ -89,7 +89,7 @@
         template(#body='{ data }')
           span {{ data.createdAt | dateTimeHour24 }}
       Column(field="boxNote.box.id" header="BOX CODE" bodyClass="font-semibold")
-      Column(field="boxNote.box.request.seller.email" header="SELLER EMAIL" className="w-3")
+      Column(field="boxNote.box.request.seller.email" :sortable="true" header="SELLER EMAIL" className="w-3" sortField="_sellerEmail")
       Column(field="boxNote.id" header="stock take note id" className="uppercase")
       Column(field="boxNote.note" header="note" className="uppercase" bodyClass="font-semibold" )
       Column(field="createId" header="create id" className="uppercase" bodyClass="font-semibold" )
@@ -100,9 +100,9 @@
                 | {{ data.status | reportStatus }}
       Column(:exportable="false" header="ACTION" className="text-center")
         template(#body="{data}")
-          .table__action(:class="{'action-disabled': checkShowAction(data)}")
-            span.action-item(@click="handleEditReport(data.id)")
-              .icon.icon-edit-btn
+          .table__action(:class="{'action-disabled': checkDisabledAction(data)}" style= 'justify-content: center')
+            //- span.action-item(@click="handleEditReport(data.id)")
+            //-   .icon.icon-edit-btn
             span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
               .icon.icon-btn-delete
       template(#footer)
@@ -490,8 +490,8 @@ class ReportList extends Vue {
     this.isConfirm = false
   }
   
-  checkShowAction(data){
-    return !!data
+  checkDisabledAction(data){
+    return !data
   }
 }
 export default ReportList
