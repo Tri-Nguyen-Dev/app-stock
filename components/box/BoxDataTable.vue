@@ -3,13 +3,13 @@
   .inventory__filter.grid.mb-1
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(
-        title="Seller Email"
-        placeholder="Enter Seller Email"
-        name="sellerEmail"
-        :value="filter.sellerEmail"
-        :searchText="true"
+        title='Seller Email',
+        placeholder='Enter Seller Email',
+        name='sellerEmail',
+        :value='filter.sellerEmail',
+        :searchText='true',
         @updateFilter='handleFilterBox'
-        )
+      )
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(
         title='Location',
@@ -50,9 +50,20 @@
         @updateFilter='handleFilterBox'
       )
     .col-10
-    .col-12.text-right(class='xl:col-2 lg:col-2 md:col-4 sm:col-12' style='align-self: center;')
-      Button.p-button-secondary.mr-1(label="Refresh" icon="pi pi-refresh" @click="handleRefeshFilter")
-      Button.p-button-primary(label="Search" icon="pi pi-search"   @click="searchBox")
+    .col-12.text-right(
+      class='xl:col-2 lg:col-2 md:col-4 sm:col-12',
+      style='align-self: center'
+    )
+      Button.p-button-secondary.mr-1(
+        label='Refresh',
+        icon='pi pi-refresh',
+        @click='handleRefeshFilter'
+      )
+      Button.p-button-primary(
+        label='Search',
+        icon='pi pi-search',
+        @click='searchBox'
+      )
   .inventory__content
     DataTable(
       v-if='boxList',
@@ -68,7 +79,8 @@
       @row-select-all='rowSelectAll',
       @row-unselect-all='rowUnSelectAll',
       @row-select='rowSelect',
-      @row-unselect='rowUnselect'
+      @row-unselect='rowUnselect',
+      :rowClass='rowClass'
     )
       Column(
         selectionMode='multiple',
@@ -92,14 +104,10 @@
         className='w-3',
         sortField='_request.seller.email'
       )
-      Column(
-        field='usedCapacity',
-        header='USED CAPACITY',
-        className='text-right'
-      )
+      Column(field='usedCapacity', header='USED CAPACITY', className='text-right')
         template(#body='{ data }') {{ data.usedCapacity | capacityPercent }}
       Column(
-        field='rackLocation.name',
+        field='location',
         header='LOCATION',
         :sortable='true',
         className='text-right',
@@ -109,12 +117,29 @@
           div(v-if='data.location')
             .flex.align-items-center.cursor-pointer.justify-content-end
               span.font-bold {{ data.location }}
+      Column(
+        field='status',
+        header='STATUS',
+        :sortable='true',
+        className='text-center'
+      )
+        template(#body='{ data }')
+          .flex.justify-content-end
+            span.table__status.table__status--available(
+              v-if='data.status === "BOX_STATUS_AVAILABLE"'
+            ) {{ data.status | boxStatus }}
+            span.table__status.table__status--disable(
+              v-else-if='data.status === "BOX_STATUS_DISABLE"'
+            ) {{ data.status | boxStatus }}
+            span.table__status.table__status--draft(
+              v-else-if='data.status === "BOX_STATUS_DRAFT"'
+            ) {{ data.status | boxStatus }}
+            span.table__status.table__status--reported(
+              v-else-if='data.status === "BOX_STATUS_REPORTED"'
+            ) {{ data.status | boxStatus }}
+            span.table__status.table__status--outgoing(v-else) {{ data.status | boxStatus }}
       template(#footer)
-        Pagination(
-          :paging='paging',
-          :total='totalBoxRecords',
-          @onPage='onPage'
-        )
+        Pagination(:paging='paging', :total='totalBoxRecords', @onPage='onPage')
       template(#empty)
         .flex.align-items-center.justify-content-center.flex-column
           img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
@@ -127,6 +152,7 @@ import { Box } from '~/models/Box'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
+import { BOX_STATUS } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -137,10 +163,9 @@ const nsStoreUser = namespace('user-auth/store-user')
   }
 })
 class BoxDataTable extends Vue {
-  
   @Prop({ default: [] }) box
   selectedBoxes: Box.Model[] = []
-  paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
+  paging: Paging.Model = { pageNumber: 0, pageSize: 10, first: 0 }
   sortByColumn: string = ''
   isDescending: boolean | null = null
   boxCodeDelete: string = ''
@@ -240,7 +265,10 @@ class BoxDataTable extends Vue {
   }
 
   rowSelectAll({ data }) {
-    this.selectedBoxes = _.unionWith(this.selectedBoxes, data, _.isEqual)
+    const dataValid = _.filter(data, function (o) {
+      return o.status === BOX_STATUS.BOX_STATUS_AVAILABLE
+    })
+    this.selectedBoxes = _.unionWith(this.selectedBoxes, dataValid, _.isEqual)
     this.updateSelectedBox()
   }
 
@@ -267,10 +295,14 @@ class BoxDataTable extends Vue {
     this.updateSelectedBox()
   }
 
-  updateSelectedBox(){
-    this.$emit('selectBox',this.selectedBoxes)
+  updateSelectedBox() {
+    this.$emit('selectBox', this.selectedBoxes)
   }
-} 
+
+  rowClass(data: any) {
+    return data.status === BOX_STATUS.BOX_STATUS_AVAILABLE ? '' : 'row-disable'
+  }
+}
 export default BoxDataTable
 </script>
 
@@ -285,7 +317,7 @@ export default BoxDataTable
     .p-button
       background: none
       border: none
-  min-height: 60vh
+      min-height: 60vh
   .p-inputtext
     box-shadow: none
   &__header

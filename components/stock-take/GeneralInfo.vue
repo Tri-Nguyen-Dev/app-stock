@@ -5,7 +5,7 @@
   .packing__detail--content.pl-4.pr-4
     .my-3.font-bold.flex.align-items-center
       span.uppercase.ml-1 note detail
-    span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{info.detailStatus}} &nbsp;
+    span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{info.status}} &nbsp;
   .grid.m-0.p-4(v-if='info.user')
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.createdAt')
       StockUnit(title="Create time" :value="info.createdAt | dateTimeHour12" icon="icon-calendar")
