@@ -2,6 +2,12 @@
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
       StockTakeNoteInfo(:info='stockTakeInfo')
+      .grid.wapprer-unit.ml-4.mr-4
+        .col-2.flex.align-items-center.justify-content-center
+          .icon--large.bg-blue-700(class='icon-note')
+        .col-10.flex.flex-column.justify-content-center
+          div.font-normal.text-700.text-base Note
+          Textarea.text-lg(:value='note' placeholder='Write something...' rows='2' cols=30)
     .col-9.pl-4.pr-1.flex.flex-column.h-full
       .grid
         .col-4
@@ -13,6 +19,8 @@
             span.uppercase save draft
           .btn.btn-primary.cursor-pointer.mr-2(@click='submitNote' v-if='!isCheck && !isComplete')
             span.uppercase submit
+          .btn.btn-primary.cursor-pointer.mr-2(@click='approveNote' v-if='isApprove')
+            span.uppercase approve
           .btn.btn-primary.cursor-pointer.mr-2(@click='exportNote' v-if='isComplete')
             span.uppercase export
       .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
@@ -28,11 +36,12 @@
             :class="{ 'table-wrapper-empty': !dataList || dataList.length <= 0 }"
             :expandedRows.sync="rowExpaned"
             :rowHover="false"
+            :rowClass='rowClass'
           )
             Column(:expander="true" )
             Column(field='no' header='NO' :styles="{'width': '1rem'}")
               template(#body='slotProps') {{ slotProps.index + 1 }}
-            Column(field="boxCode" header="BOX CODE" :styles="{'width': '100%'}" sortable)
+            Column(field="boxCode" header="BOX CODE" :styles="{'width': '85%'}" sortable)
               template(#body="{data}")
                 span.mr-2 {{data.boxCode}}
                 badge.bg-green-400(value="CHECKING" v-if="data.isChecking")
@@ -45,27 +54,27 @@
               template(#body="{data}")
                 Button(@click='reportTakeNote' :disabled="data.isChecking")
                   span.uppercase report
-            Column(field="status" header="STATUS" sortable)
+            Column(field="status" header="STATUS" headerClass='grid-header-center' :styles="{'width': '15%'}" sortable)
               template(#body="{data}")
                 .text-center
                   tag.table__status.table__status--error(v-if='data.status === "NG"') {{data.status}}
                   tag.table__status.table__status--available(v-else-if='data.status === "OK"') {{data.status}}
                   tag.table__status.table__status--draft(v-else) {{data.status}}
             template(#expansion="slotProps")
-              div.orders-subtable.pb-2
+              div.orders-subtable.pb-2.pr-2
                 DataTable.bg-white.table__sort-icon.w-full.h-full.flex.flex-column.child-table(
                   :value="slotProps.data.stockTakeBoxItem"
                   responsiveLayout="scroll"
                 )
                   Column(field='no' header='NO' bodyClass='text-bold')
                     template(#body='slotProps') {{ slotProps.index + 1 }}
-                  Column(field="barCode" header="Barcode" :styles="{'width': '30%'}" sortable)
+                  Column(field="barCode" header="Barcode" sortable)
                   Column(field="inventoryQuantity" header="INVENTORY QTY" sortable)
                   Column(field="countedQuantity" header="COUNTED QTY" :styles="{'width': '5%'}")
                     template(#body="{data}")
-                      InputNumber.w-7rem(:disabled='isCheck || isComplete' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity({ index: slotProps.index, barCode: data.barCode },$event)')
-                  Column(field="discrepancy" header=" VARIANT" :styles="{'width': '100%'}")
-                  Column(field="resultStatus" header="STATUS" :styles="{'width': '3%'}" sortable)
+                      InputNumber.w-7rem(:disabled='isCheck || isComplete || data.isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity(data)')
+                  Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}")
+                  Column(field="resultStatus" header="STATUS" headerClass='grid-header-center' :styles="{'width': '20%'}" sortable)
                     template(#body="{data}")
                       .text-center
                         tag.table__status.table__status--error(v-if='data.resultStatus === "NG"') {{data.resultStatus}}
@@ -94,17 +103,18 @@ class NoteBoxDetail extends Vue {
     user?: any
     picId?: any
     totalBox?: number
-    wareHouse?: any
+    wareHouse?: any,
+    detailStatus?: any
   } = {
     user: undefined,
     totalBox: 0,
     wareHouse: undefined,
     createdAt: 0,
-    picId: ''
+    picId: '',
+    detailStatus: ''
   }
 
   rowExpaned: any = []
-  isChecking: boolean = false
   dataList: any[] = []
 
   @nsStoreStockTake.State
@@ -124,19 +134,20 @@ class NoteBoxDetail extends Vue {
     this.dataList = _.cloneDeep(
       this.boxStockTakeDetail.stockTakeBox.map((element: any) => {
         const checkingStatus = _.some(
-          element.stockTakeBoxItem,
+          element.stockTakeItem,
           function square(n: any) {
             return n.isChecking
           }
         )
         return {
           ...element,
-          status: null,
+          status: this.getStatusBox(element.stockTakeItem),
           isChecking: checkingStatus,
           stockTakeBoxItem: element.stockTakeItem.map((item: any) => {
             return {
               ...item,
-              boxCode: element.boxCode
+              boxCode: element.boxCode,
+              resultStatus: item.resultStatus || 'WAITING'
             }
           })
         }
@@ -147,6 +158,7 @@ class NoteBoxDetail extends Vue {
     this.stockTakeInfo.picId = this.boxStockTakeDetail?.assignee.staffId
     this.stockTakeInfo.totalBox = this.boxStockTakeDetail?.totalStockTakeBox
     this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
+    this.stockTakeInfo.detailStatus = this.boxStockTakeDetail?.status
   }
 
   async checkItems() {
@@ -162,15 +174,27 @@ class NoteBoxDetail extends Vue {
     }
   }
 
-  changeQuantity({ index, barCode }) {
-    const itemIndex = _.findIndex(
-      this.dataList[index].stockTakeBoxItem,
-      (e: any) => {
-        return e.barCode === barCode
+  getStatusBox(stockTakeBoxItem: any) {
+    if (!stockTakeBoxItem) return null
+    const statusWaiting = _.findIndex(stockTakeBoxItem, (e: any) => {
+      return e.resultStatus === 'WAITING' || !e.resultStatus
+    })
+    if (statusWaiting !== -1) {
+      return 'WAITING'
+    } else {
+      const statusOk = _.every(stockTakeBoxItem, (e: any) => {
+        return e.resultStatus === 'OK'
+      })
+      if (statusOk) {
+        return 'OK'
+      } else {
+        return 'NG'
       }
-    )
-    if (itemIndex !== -1) {
-      const data = this.dataList[index].stockTakeBoxItem[itemIndex]
+    }
+  }
+
+  changeQuantity(data) {
+    if (data) {
       data.discrepancy = data.countedQuantity - data.inventoryQuantity
       if (data.countedQuantity === null) {
         data.resultStatus = 'WAITING'
@@ -179,25 +203,12 @@ class NoteBoxDetail extends Vue {
       } else {
         data.resultStatus = 'NG'
       }
-      const statusWaiting = _.findIndex(
-        this.dataList[index].stockTakeBoxItem,
-        (e: any) => {
-          return e.resultStatus === 'WAITING'
+      const box = _.find(this.dataList, function ({ boxCode }) {
+        if (boxCode === data.boxCode) {
+          return true
         }
-      )
-      const statusOk = _.every(
-        this.dataList[index].stockTakeBoxItem,
-        (e: any) => {
-          return e.resultStatus === 'OK'
-        }
-      )
-      if (statusWaiting !== -1) {
-        this.dataList[index].status = 'WAITING'
-      } else if (statusOk) {
-        this.dataList[index].status = 'OK'
-      } else {
-        this.dataList[index].status = 'NG'
-      }
+      })
+      box.status = this.getStatusBox(box.stockTakeBoxItem)
     }
   }
 
@@ -205,37 +216,45 @@ class NoteBoxDetail extends Vue {
 
   exportNote() {}
 
-  saveDraft() {
-    let draftData = this.dataList.map((element) => {
-      return [...element.stockTakeBoxItem]
-    })
-
-    draftData = _.flatten(draftData)
-    const submitData = _.map(draftData, function square(el: any) {
-      return { ...el, isDraft: true }
-    })
-
-    this.actSubmitBoxStockTakeDetail({
+  async saveDraft() {
+    const submitData = _.flatten(
+      _.map(this.dataList, ({ stockTakeBoxItem }) => {
+        return _.map(stockTakeBoxItem, ({ id, countedQuantity }) => {
+          return { id, countedQuantity }
+        })
+      })
+    )    const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
+      isDraft: true,
       submitData
     })
 
-    this.$toast.add({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: 'Save draft successfully!',
-      life: 3000
-    })
-    this.$router.push('/stock-take')
+    if (result) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Save draft successfully!',
+        life: 3000
+      })
+      this.$router.push('/stock-take')
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Save draft take note failed!',
+        life: 3000
+      })
+    }
   }
 
   async submitNote() {
-    let submitData = this.dataList.map((element) => {
-      return [...element.stockTakeBoxItem]
-    })
-
-    submitData = _.flatten(submitData)
-    const checkStatus = _.some(this.dataList, function square(n: any) {
+    const submitData = _.flatten(
+      _.map(this.dataList, ({ stockTakeBoxItem }) => {
+        return _.map(stockTakeBoxItem, ({ id, countedQuantity }) => {
+          return { id, countedQuantity }
+        })
+      })
+    )    const checkStatus = _.some(this.dataList, function square(n: any) {
       return n.status === null || n.status === 'WAITING'
     })
 
@@ -272,6 +291,15 @@ class NoteBoxDetail extends Vue {
     const { status } = this.boxStockTakeDetail
     return status === 'COMPLETED'
   }
+
+  get isApprove() {
+    const { status, finalResultStatus } = this.boxStockTakeDetail
+    return status === 'COMPLETED' && finalResultStatus === 'NG'
+  }
+
+  rowClass(data: any) {
+    return data.isChecking ? 'row-disable-bg' : ''
+  }
 }
 
 export default NoteBoxDetail
@@ -288,12 +316,24 @@ export default NoteBoxDetail
 .ng-tag
   background-color: #ffdcdc
   color: #c30e0e
-::v-deep.parent-table .p-datatable-tbody > tr
-  background-color: #72a9ff  !important
-  .child-table .p-datatable-tbody > tr
-    background-color: #fff !important
 ::v-deep.parent-table .p-datatable-tbody > tr.p-datatable-row-expansion
   background-color: #fff !important
   & td
     padding-right: 0
+    .child-table
+      border: solid 1px #ececec
+.wapprer-unit
+  min-height: 72px
+  border-radius: 4px
+  background-color: $text-color-200
+  .text-wrap
+    word-break: break-all
+  ::v-deep.p-inputtext
+    border: none
+    background: transparent
+    padding: 0
+    color: #000
+    font-weight: 600
+    box-shadow: none !important
+    max-width: 100%
 </style>

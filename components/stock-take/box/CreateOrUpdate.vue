@@ -132,7 +132,7 @@ class DeliveryOrder extends Vue {
 
   showModal = false
   addBox() {
-    this.showModal = true  
+    this.showModal = true
   }
 
   async  saveStockTake() {
@@ -148,7 +148,7 @@ class DeliveryOrder extends Vue {
       note: this.note,
       checkType: 'BOX',
       stockTakeBox: listBox,
-      wareHouse: { id: this.user?.warehouse.id },
+      wareHouse: this.user?.warehouse? { id: this.user?.warehouse.id } : undefined,
       status: STOCK_TAKE_STATUS.NEW
     }
     await this.actCreateStockTake(data)
