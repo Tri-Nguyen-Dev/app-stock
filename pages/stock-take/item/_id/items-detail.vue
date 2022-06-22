@@ -47,7 +47,7 @@
                     InputNumber.w-7rem( v-else   v-model="data.countedQuantity" :min="0" mode="decimal"
                       inputClass="w-full" @input='handleDeliveryChange(data)'
                     )
-              Column(field='discrepancy'  header='DISCREPANCY ' :sortable='true' className="text-center" )
+              Column(field='discrepancy'  header='VARIANT' :sortable='true' className="text-center" )
                 template(#body='{data}')
                   .text-center(v-if="data.countedQuantity !== null")
                     span {{data.countedQuantity - data.inventoryQuantity}}
@@ -65,19 +65,19 @@
               Column( v-if='isDetail' header='REPORT BOX ' className="text-right" )
                 template(#body='{data}' )
                   Button.btn.btn-primary.border-0( @click='handleReport(data)') Report
-              ConfirmDialogCustom(
-                title="Report Confirm"
-                image="confirm-delete"
-                :isShow="isShowModalReport"
-                :onOk="handleReportItems"
-                :onCancel="cancelReportBox"
-                :loading="loadingSubmit"
-              )
-                template(v-slot:message)
-                  p(v-if="reportData") Do you want to report the quantity discrepancy  in the box {{ reportData.boxCode }}?
-                template(v-slot:content)
-                  h3.text-left.text-900 NOTE:
-                  Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
+        ConfirmDialogCustom(
+          title="Report Confirm"
+          image="confirm-delete"
+          :isShow="isShowModalReport"
+          :onOk="handleReportItems"
+          :onCancel="cancelReportBox"
+          :loading="loadingSubmit"
+        )
+          template(v-slot:message)
+            p(v-if="reportData") Do you want to report the quantity variant  in the box {{ reportData.boxCode }}?
+          template(v-slot:content)
+            h3.text-left.text-900 NOTE:
+            Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
 </template>
 
 <script lang="ts">
@@ -87,8 +87,8 @@ import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { exportFileTypePdf, PAGINATE_DEFAULT } from '~/utils'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
-const nsStoreItems = namespace('stock-take/box-detail')
 const dayjs = require('dayjs')
+const nsStoreItems = namespace('stock-take/box-detail')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 
 @Component({
@@ -106,7 +106,7 @@ class stockTakeItemsDetail extends Vue {
   loadingSubmit: boolean = false
   isShowModalReport: boolean = false
   valueReportNote: string = ''
-  reportData: {}
+  reportData: any = {}
 
   // -- [ State ] ------------------------------------------------------------
 
@@ -127,9 +127,11 @@ class stockTakeItemsDetail extends Vue {
 
   @nsStoreItems.Action
   actApproveStockTake!: (params?: any) => Promise<any>
-  
+
   @nsStorePackingDetail.Action
   actCreateReport!:(data: any) => Promise<any>
+
+  // -- [ Function ] ------------------------------------------------------------
 
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
@@ -137,6 +139,7 @@ class stockTakeItemsDetail extends Vue {
     if(this.boxStockTakeDetail.status === 'COMPLETED') {
       this.isDetail = false
     }
+
   }
 
   get total() {
@@ -150,7 +153,7 @@ class stockTakeItemsDetail extends Vue {
       status: this.boxStockTakeDetail?.status,
       creatorInfo: [
         { title:'Create Time', value: createdAt ?
-          dayjs(new Date(createdAt)).format('YYYY-MM-DD') 
+          dayjs(new Date(createdAt)).format('YYYY-MM-DD')
           : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
         { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' },
@@ -164,30 +167,6 @@ class stockTakeItemsDetail extends Vue {
         { title:'Phone', value: this.sellerInfo?.sellerPhone, icon: 'icon-sender-phone' }
       ]
     }
-  }
-
-  get sellerInfo() {
-    const { stockTakeItem } = this.boxStockTakeDetail
-    if(stockTakeItem) {
-      const sumStockTakeItem = _.size(stockTakeItem)
-      const firstStock: any = stockTakeItem[0]
-      if(firstStock) {
-        const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
-        if(_.size(stockSame) === sumStockTakeItem) {
-          return firstStock
-        }
-      }
-    }
-  }
-
-  get saveItems(){
-    _.forEach(this.items, ( { id, countedQuantity }  ) => {
-      this.stockTakeItems.push({
-        id ,
-        countedQuantity
-      })
-    })
-    return this.stockTakeItems
   }
 
   async handleSaveDraft() {
@@ -237,7 +216,6 @@ class stockTakeItemsDetail extends Vue {
     if(result) {
       exportFileTypePdf(result, `Stock-Take-${ this.$route.params.id }`)
     }
-    await this.$router.push({ path: '/stock-take' })
   }
 
   handleDeliveryChange( event : any ){
@@ -288,6 +266,7 @@ class stockTakeItemsDetail extends Vue {
     if(result?.data) {
       await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
       this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
+
     }
   }
 
@@ -297,7 +276,31 @@ class stockTakeItemsDetail extends Vue {
       await this.$router.push(`/stock-take/item/${this.$route.params.id}/approved`)
     }
   }
-  
+
+  get sellerInfo() {
+    const { stockTakeItem } = this.boxStockTakeDetail
+    if(stockTakeItem) {
+      const sumStockTakeItem = _.size(stockTakeItem)
+      const firstStock: any = stockTakeItem[0]
+      if(firstStock) {
+        const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
+        if(_.size(stockSame) === sumStockTakeItem) {
+          return firstStock
+        }
+      }
+    }
+  }
+
+  get saveItems(){
+    _.forEach(this.items, ( { id, countedQuantity }  ) => {
+      this.stockTakeItems.push({
+        id ,
+        countedQuantity
+      })
+    })
+    return this.stockTakeItems
+  }
+
   handleReport(data) {
     this.isShowModalReport = true
     this.reportData = data
@@ -309,7 +312,7 @@ class stockTakeItemsDetail extends Vue {
         boxNote: [
           {
             box: {
-              id: this.reportData.boxCode
+              id: this.reportData?.boxCode
             },
             note: this.valueReportNote
           }
@@ -318,6 +321,7 @@ class stockTakeItemsDetail extends Vue {
       })
       if (result) {
         this.isShowModalReport = false
+        this.valueReportNote = ''
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',
@@ -341,6 +345,7 @@ class stockTakeItemsDetail extends Vue {
 
   cancelReportBox(){
     this.isShowModalReport = false
+    this.valueReportNote = ''
   }
 
 }

@@ -11,7 +11,7 @@
             Button.btn.btn-primary.border-0(@click='handleAddItems') Add Item
             Button.btn.btn-primary.border-0(@click='handleSubmit' :disabled='isDisabledSubmit') Save
         .stock-takeItem__content
-          DataTable(
+          DataTable.m-h-700(
             :value='listStockSelected'
             dataKey='id'
             responsiveLayout="scroll"
@@ -105,7 +105,7 @@ class StockTakeItems extends Vue {
 
   @nsStoreCreateStockTake.Action
   actCreateStockTake!: (params?: any) => Promise<any>
-  
+
   get homeItem() {
     return { label: 'Note list', to: '/stock-take' }
   }
@@ -123,7 +123,7 @@ class StockTakeItems extends Vue {
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'box')
   }
-  
+
   get isDisabledSubmit() {
     return _.size(this.listStockSelected) > 0 ? null : 'disabled'
   }
@@ -137,13 +137,13 @@ class StockTakeItems extends Vue {
       }
     }
   }
-  
+
   get noteInfor() {
     return {
       status: 'NEW',
       creatorInfo: [
         { title:'Create Time', value: this.user?.createdAt ?
-          dayjs(new Date(this.user?.createdAt)).format('YYYY-MM-DD') 
+          dayjs(new Date(this.user?.createdAt)).format('YYYY-MM-DD')
           : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: this.user.staffId, icon: 'icon-tag-user' },
         { title:'Warehouse', value: this.user?.warehouse?.name, icon: 'icon-warehouse' },
