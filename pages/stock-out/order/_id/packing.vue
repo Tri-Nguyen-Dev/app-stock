@@ -357,6 +357,7 @@ class DeliveryOrderPacking extends Vue {
           detail: 'This box has been reported!',
           life: 3000
         })
+        this.isShowModalReport = false
       }
     }
   }
