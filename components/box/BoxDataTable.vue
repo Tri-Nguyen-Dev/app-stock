@@ -122,9 +122,10 @@
         header='STATUS',
         :sortable='true',
         className='text-center'
+        headerClass="grid-header-center"
       )
         template(#body='{ data }')
-          .flex.justify-content-end
+          .flex.justify-content-center
             span.table__status.table__status--available(
               v-if='data.status === "BOX_STATUS_AVAILABLE"'
             ) {{ data.status | boxStatus }}
@@ -317,7 +318,6 @@ export default BoxDataTable
     .p-button
       background: none
       border: none
-      min-height: 60vh
   .p-inputtext
     box-shadow: none
   &__header
