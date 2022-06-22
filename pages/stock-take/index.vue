@@ -174,7 +174,7 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockTake = namespace('stock-take/note-list')
-const dayjs = require('dayjs')
+const nsStoreUser = namespace('user-auth/store-user')const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -213,6 +213,9 @@ class StockTake extends Vue {
 
   @nsStoreStockTake.State
   total!: number
+
+  @nsStoreUser.State
+  user!: any
 
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
@@ -260,10 +263,18 @@ class StockTake extends Vue {
 
   rowdbClick({ data }) {
     if(data.checkType === 'BOX') {
-      this.$router.push(`/stock-take/box/${data.id}/note-detail`)
+      if( data.assignee?.staffId === this.user?.staffId && data.approver == null) {
+        this.$router.push(`/stock-take/box/${data.id}/note-detail`)
+      } else if (data.status === ' APPROVING' || data.status === 'APPROVED' &&  data.approve?.staffId === this.user?.staffId) {
+        this.$router.push(`/stock-take/box/${data.id}/approve`)
+      }
     }
     else if(data.checkType === 'ITEM') {
-      this.$router.push(`/stock-take/item/${data.id}/note-detail`)
+      if( data.assignee?.staffId === this.user?.staffId && data.approver == null) {
+        this.$router.push(`/stock-take/item/${data.id}/note-detail`)
+      } else if (data.status === ' APPROVING' || data.status === 'APPROVED' &&  data.approve?.staffId === this.user?.staffId) {
+        this.$router.push(`/stock-take/item/${data.id}/approve`)
+      }
     }
   }
 
@@ -379,7 +390,7 @@ class StockTake extends Vue {
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
-          detail: 'Unable to delete stock take not with status new or inprogess!',
+          detail: 'Only new and in progress status can be delete!',
           life: 3000
         })
         return

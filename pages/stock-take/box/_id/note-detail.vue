@@ -49,10 +49,10 @@
               template(#body="{data}")
                 .flex.align-items-center.cursor-pointer
                   span.text-primary.font-bold.font-sm {{data.location}}
-                  .icon--small.icon-arrow-up-right.bg-primary
+                  .icon--small.icon-arrow-up-right.bg-primary(v-if='data.location')
             Column(field="action" header="ACTION")
               template(#body="{data}")
-                Button(@click='reportTakeNote' :disabled="data.isChecking")
+                Button(@click='reportTakeNote(data)' :disabled="data.isChecking || isComplete")
                   span.uppercase report
             Column(field="status" header="STATUS" headerClass='grid-header-center' :styles="{'width': '15%'}" sortable)
               template(#body="{data}")
@@ -84,17 +84,34 @@
               div.flex.align-items-center.justify-content-center.flex-column
                 img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
                 p.text-900.font-bold.mt-3 List is empty!
+    ConfirmDialogCustom(
+      title="Report Confirm"
+      image="confirm-delete"
+      :isShow="isShowModalReport"
+      :onOk="handleReportItems"
+      :onCancel="cancelReportBox"
+      :loading="loadingSubmit"
+    )
+      template(v-slot:message)
+        p(v-if="reportData") Do you want to report the quantity variant in the box {{ reportData.boxCode }}?
+      template(v-slot:content)
+        h3.text-left.text-900 NOTE:
+        Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
 
 </template>
 
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import StockTakeNoteInfo from '~/components/stock-take/GeneralInfo.vue'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 const nsStoreStockTake = namespace('stock-take/box-detail')
+const nsStorePackingDetail = namespace('stock-out/packing-box')
+const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: {
-    StockTakeNoteInfo
+    StockTakeNoteInfo,
+    ConfirmDialogCustom
   }
 })
 class NoteBoxDetail extends Vue {
@@ -103,22 +120,31 @@ class NoteBoxDetail extends Vue {
     user?: any
     picId?: any
     totalBox?: number
-    wareHouse?: any,
-    detailStatus?: any
+    wareHouse?: any
+    status?: any
+    id: any
   } = {
     user: undefined,
     totalBox: 0,
     wareHouse: undefined,
     createdAt: 0,
     picId: '',
-    detailStatus: ''
+    status: '',
+    id: ''
   }
 
   rowExpaned: any = []
   dataList: any[] = []
+  isShowModalReport: boolean = false
+  reportData: any = {}
+  valueReportNote: string = ''
+  loadingSubmit: boolean = false
 
   @nsStoreStockTake.State
   boxStockTakeDetail!: any
+
+  @nsStoreUser.State
+  user!: any
 
   @nsStoreStockTake.Action
   actGetBoxStockTakeDetail!: (params?: any) => Promise<void>
@@ -129,8 +155,14 @@ class NoteBoxDetail extends Vue {
   @nsStoreStockTake.Action
   actGetAssignBoxStockTake!: (params?: any) => Promise<any>
 
+  @nsStorePackingDetail.Action
+  actCreateReport!:(data: any) => Promise<any>
+
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+    if(this.boxStockTakeDetail?.status !== 'NEW' && this.user?.staffId !== this.boxStockTakeDetail?.assignee?.staffId) {
+      this.$router.push('/stock-take')
+    }
     this.dataList = _.cloneDeep(
       this.boxStockTakeDetail.stockTakeBox.map((element: any) => {
         const checkingStatus = _.some(
@@ -158,7 +190,8 @@ class NoteBoxDetail extends Vue {
     this.stockTakeInfo.picId = this.boxStockTakeDetail?.assignee.staffId
     this.stockTakeInfo.totalBox = this.boxStockTakeDetail?.totalStockTakeBox
     this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
-    this.stockTakeInfo.detailStatus = this.boxStockTakeDetail?.status
+    this.stockTakeInfo.status = this.boxStockTakeDetail?.status
+    this.stockTakeInfo.id = this.boxStockTakeDetail?.id
   }
 
   async checkItems() {
@@ -193,7 +226,7 @@ class NoteBoxDetail extends Vue {
     }
   }
 
-  changeQuantity(data) {
+  changeQuantity( data:any ) {
     if (data) {
       data.discrepancy = data.countedQuantity - data.inventoryQuantity
       if (data.countedQuantity === null) {
@@ -212,7 +245,10 @@ class NoteBoxDetail extends Vue {
     }
   }
 
-  reportTakeNote() {}
+  reportTakeNote( data:any ) {
+    this.isShowModalReport = true
+    this.reportData = data
+  }
 
   exportNote() {}
 
@@ -223,7 +259,8 @@ class NoteBoxDetail extends Vue {
           return { id, countedQuantity }
         })
       })
-    )    const result = await this.actSubmitBoxStockTakeDetail({
+    )
+    const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: true,
       submitData
@@ -254,13 +291,15 @@ class NoteBoxDetail extends Vue {
           return { id, countedQuantity }
         })
       })
-    )    const checkStatus = _.some(this.dataList, function square(n: any) {
+    )
+    const checkStatus = _.some(this.dataList, function square(n: any) {
       return n.status === null || n.status === 'WAITING'
     })
 
     if (!checkStatus) {
       const result = await this.actSubmitBoxStockTakeDetail({
         id: this.$route.params.id,
+        isDraft: false,
         submitData
       })
       if (result) {
@@ -270,7 +309,10 @@ class NoteBoxDetail extends Vue {
           detail: 'Submit stock take successfully!',
           life: 3000
         })
-        this.$router.push('/stock-take')
+        this.actGetBoxStockTakeDetail({
+          id: this.$route.params.id,
+          isDraft: false
+        })
       }
     } else {
       this.$toast.add({
@@ -280,6 +322,46 @@ class NoteBoxDetail extends Vue {
         life: 3000
       })
     }
+  }
+
+  async handleReportItems() {
+    if(this.reportData) {
+      const result = await this.actCreateReport({
+        boxNote: [
+          {
+            box: {
+              id: this.reportData.boxCode
+            },
+            note: this.valueReportNote
+          }
+        ]
+
+      })
+      if (result) {
+        this.isShowModalReport = false
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Add report successfully!',
+          life: 3000
+        })
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'This box has been reported!',
+          life: 3000
+        })
+      }
+    }
+  }
+
+  approveNote() {
+    this.$router.push(`/stock-take/box/${this.$route.params.id}/approve`)
+  }
+
+  cancelReportBox(){
+    this.isShowModalReport = false
   }
 
   get isCheck() {
@@ -307,8 +389,6 @@ export default NoteBoxDetail
 <style lang="sass" scoped>
 .packing__detail--container
   height: calc(100vh - 32px)
-.packing__detail--left
-  // height: calc( 100% - 32px) !important
 .btn-report
   height: 32px !important
   width: 57px !important
@@ -317,7 +397,6 @@ export default NoteBoxDetail
   background-color: #ffdcdc
   color: #c30e0e
 ::v-deep.parent-table .p-datatable-tbody > tr.p-datatable-row-expansion
-  background-color: #fff !important
   & td
     padding-right: 0
     .child-table

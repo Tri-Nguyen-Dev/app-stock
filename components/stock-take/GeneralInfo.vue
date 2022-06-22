@@ -5,7 +5,8 @@
   .packing__detail--content.pl-4.pr-4
     .my-3.font-bold.flex.align-items-center
       span.uppercase.ml-1 note detail
-    span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{info.detailStatus}} &nbsp;
+    p.uppercase.font-bold note id: {{info.id}}
+    span.uppercase.font-bold.p-1(style='background-color: #eaf3eb; color: #16a469; border-radius: 4px;') {{info.status}}
   .grid.m-0.p-4(v-if='info.user')
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.createdAt')
       StockUnit(title="Create time" :value="info.createdAt | dateTimeHour12" icon="icon-calendar")
@@ -13,6 +14,8 @@
       StockUnit(title="Create ID" :value="info.user.displayName" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2'   v-if='info.picId')
       StockUnit(title="PIC ID" :value="info.picId" icon="icon-user-octagon")
+    .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2'   v-if='info.approveId')
+      StockUnit(title="APPROVER ID" :value="info.approveId" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Warehouse" :value="info.wareHouse"   v-if='info.wareHouse' icon="icon-warehouse-info")
       StockUnit(title="Warehouse" :value="info.user.wareHouse"  v-if='info.user.wareHouse' icon="icon-warehouse-info")
