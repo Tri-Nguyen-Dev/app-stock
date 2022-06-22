@@ -62,21 +62,21 @@
           :value="filter.checkType"
           :options="typeList"
           name="checkType"
-          @updateFilter="handleFilter") 
+          @updateFilter="handleFilter")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Result"
           :value="filter.result"
           :options="resultList"
           name="result"
-          @updateFilter="handleFilter") 
+          @updateFilter="handleFilter")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Status"
           :value="filter.status"
           :options="statusList"
           name="status"
-          @updateFilter="handleFilter") 
+          @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable(
@@ -129,6 +129,9 @@
                 span.table__status.table__status--draft(v-if="data.status === 'IN_PROGRESS'") In Progress
                 span.table__status.table__status--disable(v-if="data.status === 'CANCELLED'") Cancelled
                 span.table__status.table__status--available(v-if="data.status === 'COMPLETED'") Completed
+                span.table__status.table__status--draft(v-if="data.status === 'APPROVING'") Approving
+                span.table__status.table__status--available(v-if="data.status === 'APPROVED'") Approved
+                span.table__status.table__status--draft(v-if="data.status === 'SAVE_DRAFT'") Save Draft
           Column(header='CHECK Type' :sortable="true" field='checkType' sortField="_checkType" headerClass="grid-header-right")
             template(#body='{ data }')
                 div.grid-cell-right {{ data.checkType }}
