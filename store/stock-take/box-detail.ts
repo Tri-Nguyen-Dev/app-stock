@@ -12,7 +12,8 @@ export default class StoreBoxStockTake extends VuexModule {
     SUBMIT_BOX_STOCK_TAKE_DETAIL: '/stock-take/:id/submit?isDraft=:isDraft',
     ASSIGN_BOX_STOCK_TAKE: '/stock-take/assign',
     EXPORT_STOCK_TAKE: '/stock-take/:id/pdf',
-    APPROVE_BOX_STOCK_TAKE: '/stock-take/:id/approve'
+    APPROVE_BOX_STOCK_TAKE: '/stock-take/:id/approve',
+    APPROVE_STOCK_TAKE_SAVE: 'stock-take/:id/save'
   }
 
   public boxStockTakeDetail: any = {}
@@ -63,5 +64,11 @@ export default class StoreBoxStockTake extends VuexModule {
   async actApproveStockTake({ id }): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreBoxStockTake.STATE_URL.APPROVE_BOX_STOCK_TAKE, { id })
     return await $api.post(url, { id })
+  }
+
+  @Action({ rawError: true })
+  async actApproveSubmit({ id, data }): Promise<string | undefined> {
+    const url = PathBind.transform(this.context, StoreBoxStockTake.STATE_URL.APPROVE_STOCK_TAKE_SAVE, { id })
+    return await $api.post(url, data)
   }
 }

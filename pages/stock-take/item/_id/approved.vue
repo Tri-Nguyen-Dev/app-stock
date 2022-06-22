@@ -7,18 +7,21 @@
           div
             h1.text-heading Approving Stock-take Note Detail
             span.text-subheading {{ total }} total items
+          .stock-takeItem__header--action.flex
+            Button.btn.btn-primary.border-0(@click='handleSubmit' v-if='isShowSubmit' :disabled='isDisabled') Save
+            Button.btn.btn-primary.border-0(@click='exportpdf' v-else) Export
         .stock-takeItem__content
           DataTable.m-h-700(
             :value='items'
             dataKey='id'
             :rows='20'
             responsiveLayout="scroll"
-            :rowClass="rowClass"
             :resizableColumns="true"
+            :rowClass='rowClass'
             :class="{ 'table-wrapper-empty': !items || items.length <= 0 }"
           )
             Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
-              template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
+              template(#body='slotProps') {{ slotProps.index + 1 }}
             Column(field='barCode' header='BARCODE' :sortable='true' )
             Column(field='itemName' header='ITEM NAME' :sortable='true' )
             Column(field='boxCode' header='BOX CODE' :sortable='true' bodyClass='font-semibold' )
@@ -31,40 +34,23 @@
                   .flex.align-items-center.cursor-pointer.justify-content-end
                     span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
-            div(v-if="!isCheckAssignee")
-              Column(field='inventoryQuantity' header='INVENTORY Q.TY' :sortable='true' className="text-center")
-              Column(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center")
-                template.text-center(#body='{data}' class="text-center")
-                  .text-center
-                    span( v-if="!isDetail" ) {{data.countedQuantity}}
-                    InputNumber.w-7rem( v-else   v-model="data.countedQuantity" :min="0" mode="decimal"
-                      inputClass="w-full" @input='handleDeliveryChange(data)'
-                    )
-              Column(field='discrepancy'  header='DISCREPANCY ' :sortable='true' className="text-center" )
-                template(#body='{data}')
-                  .text-center(v-if="data.countedQuantity !== null")
-                    span(v-model="data.discrepancy") {{data.discrepancy}}
-
-              Column(field='status' header='STATUS' :sortable='true' className="text-center" s)
-                template(#body='{ data }' )
-                  span.table__status.table__status--available(
-                    v-if="data.resultStatus === 'OK'"
-                  ) {{ data.resultStatus }}
-                  span.table__status.table__status--error(
-                    v-else-if="data.resultStatus === 'NG'"
-                  ) {{ data.resultStatus  }}
-                  span.table__status.table__status--draft(
-                    v-else
-                  ) Waiting
-              Column( v-if='isDetail' header='REPORT BOX ' className="text-right" )
-                template(#body='{data}' )
-                  Button.btn.btn-primary.border-0( @click='handleReport') Report
-
+            Column(field='inventoryQuantity' header='INVENTORY Q.TY' :sortable='true' 
+              className="text-center text-highlight" :styles="{'width': '25px'}")
+            Column.white-space-normal(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center text-highlight")
+            Column(field='approvedQuantity' header='APPROVED Q.TY' :sortable='true' className="text-center text-highlight")
+              template.text-center(#body='{data}' class="text-center")
+                .text-center
+                  span( v-if="!isDetail" ) {{data.countedQuantity }}
+                  InputNumber.w-7rem( v-else v-model="data.approvedQuantity" :min="0" mode="decimal" inputClass="w-full" )
+            Column(field='countedQuantity' header='APPROVED VARIANT' :sortable='true' className="text-center")
+              template.text-center(#body='{data}' class="text-center")
+                .text-center {{ data.approvedQuantity - data.inventoryQuantity }}
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
+import { exportFileTypePdf } from '~/utils'
 const nsStoreItems = namespace('stock-take/box-detail')
 const dayjs = require('dayjs')
 
@@ -97,10 +83,16 @@ class stockTakeItemsDetail extends Vue {
 
   @nsStoreItems.Action
   actApproveStockTake!: (params?: any) => Promise<any>
+  
+  @nsStoreItems.Action
+  actApproveSubmit!: (params?: any) => Promise<any>
 
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
-    this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
+    this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem.map((x: any) => ({ 
+      ..._.cloneDeep(x),
+      approvedQuantity: x.countedQuantity
+    })))
     if(this.boxStockTakeDetail.status === 'COMPLETED') {
       this.isDetail = false
     }
@@ -169,6 +161,23 @@ class stockTakeItemsDetail extends Vue {
     return finalResultStatus === 'NG' && status === 'COMPLETED' && !approver
   }
 
+  get isShowSubmit() {
+    return this.boxStockTakeDetail.status === 'APPROVING'
+  }
+
+  get isDisabled() {
+    const object = _.find(this.items, ({ approvedQuantity })=>{
+      if(_.isNull(approvedQuantity)){
+        return true
+      }
+    })
+    return !!object
+  }
+
+  rowClass({ inventoryQuantity, countedQuantity, approvedQuantity }) {
+    return (inventoryQuantity !== countedQuantity || countedQuantity !== approvedQuantity)  && 'row__statusNG'
+  }
+
   async handleAssignee() {
     const result = await this.actGetAssignBoxStockTake([
       this.$route.params.id
@@ -183,6 +192,21 @@ class stockTakeItemsDetail extends Vue {
     const result = await this.actApproveStockTake({ id: this.$route.params.id })
     if(result?.data) {
       await this.$router.push(`/stock-take/item/${this.$route.params.id}/approve`)
+    }
+  }
+
+  async handleSubmit(){
+    const data = _.map(this.items, ({ id, approvedQuantity }) => ({ id, approvedQuantity }))
+    const result = await this.actApproveSubmit({ id: this.$route.params.id, data })
+    if(result) {
+      // console.log(result)
+    }
+  }
+
+  async exportpdf(){
+    const result = await this.actGetStockTakeLable({ id : this.$route.params.id })
+    if(result) {
+      exportFileTypePdf(result, `Stock-Take-${ this.$route.params.id }`)
     }
   }
 }
@@ -269,6 +293,8 @@ export default stockTakeItemsDetail
     border-radius: 4px
     position: relative
     overflow: hidden
+    .p-datatable-resizable .p-datatable-thead > tr > th
+      white-space: normal
   &__note
     border-left: 1px solid var(--gray-300)!important
   &__footer
@@ -294,4 +320,10 @@ export default stockTakeItemsDetail
     .p-button
       background: none
       border: none
+  .row__statusNG
+    // background-color: $text-color-500
+    .text-highlight
+      color: red
+      input
+        color: red
 </style>
