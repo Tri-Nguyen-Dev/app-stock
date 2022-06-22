@@ -20,7 +20,7 @@ div
       InputText.w-full(
         v-else-if='item.type === INPUT_TYPE.Text || item.type === INPUT_TYPE.Dropdown && checkRole === "staff"'
         v-model='item.value'
-        :disabled='item.disabled'
+        :disabled=`checkRole === 'staff'? item.staffDisable : item.disabled `
         @change='receiverChange',
       )
 
