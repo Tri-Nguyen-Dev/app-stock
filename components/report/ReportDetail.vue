@@ -8,25 +8,23 @@ div
         h3 ID {{ reportDetail.id }}
   div.report-content
     .main-info
-      .info-creator
-        .info-item
+      .info-creator.text-center
+        .info-item.font-semibold
           span.info-title Creator ID:
           span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.id }}
-        .info-item
+        .info-item.font-semibold
           span.info-title Creator Time:
           span.info-content {{ reportDetail.createdAt }}
-        .info-item
-          span.info-title Stock-take Note ID: 
-          span.info-content 
-            NuxtLink(to="/") {{ reportDetail.boxNote.id }}
-        .info-item
+        .info-item.font-semibold
           span.info-title PIC ID: 
-          span.info-content {{ picId }}
+          span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.staffId }}
     .info-box.p-3
       .info-box-item.py-3.border-top-1.border-gray-300(v-for="item in reportDetail.boxNote")
         .box-code
-          h3.mt-0.mb-2 BOX CODE:
-          NuxtLink(:to="`/box/${item.box.id}`") {{ item.box.id }}
+          h3.mt-0.mb-0 BOX CODE:
+          span.table__status.table__status--available {{ item.status }}
+          p.mt-2
+            NuxtLink(:to="`/box/${item.box.id}`") {{ item.box.id }}
           .info-seller
             h3.mt-2.mb-0.text-base Seller Information:
             .info-item
@@ -38,6 +36,9 @@ div
             .info-item
               span.info-title Name: 
               span.info-content(v-if="item.box.request") {{  item.box.request.seller.displayName }}
+        .box-note-id
+          h3.mt-0.mb-2.uppercase ST Note ID:
+          NuxtLink(:to="`/box/${item.box.id}`") {{ item.box.id }}
         .box-note
           h3.mt-0.mb-2 NOTE:
           p.text-primary.m-0 {{ item.note }}

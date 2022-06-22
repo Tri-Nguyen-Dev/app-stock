@@ -597,9 +597,11 @@ export default ReportList
     .info-box-item
       display: flex
       .box-code
-        width: 50%
+        flex: 1
       .box-note
-        width: 50%
+        flex: 1
+      .box-note-id
+        flex: 1
       .info-item
         margin-top: 6px
       .info-content
