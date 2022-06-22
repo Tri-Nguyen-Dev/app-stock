@@ -62,21 +62,21 @@
           :value="filter.checkType"
           :options="typeList"
           name="checkType"
-          @updateFilter="handleFilter") 
+          @updateFilter="handleFilter")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Result"
           :value="filter.result"
           :options="resultList"
           name="result"
-          @updateFilter="handleFilter") 
+          @updateFilter="handleFilter")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Status"
           :value="filter.status"
           :options="statusList"
           name="status"
-          @updateFilter="handleFilter") 
+          @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable(
