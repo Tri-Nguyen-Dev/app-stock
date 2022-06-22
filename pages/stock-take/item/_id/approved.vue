@@ -2,19 +2,12 @@
   .grid.flex.grid-nogutter.stock
     NoteInfo(:noteInfor="noteInfor" :homeItem="homeItem" :breadcrumbItem="breadcrumbItem")
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
-      .inventory.flex.flex-column
-        .inventory__header
+      .stock-takeItem.flex.flex-column
+        .stock-takeItem__header
           div
-            h1.text-heading Stock Take Items Detail
+            h1.text-heading Approving Stock-take Note Detail
             span.text-subheading {{ total }} total items
-          .inventory__header--action.flex(v-if="isDetail")
-            Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSaveDraft') Save Draft
-            Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSubmit' :disabled='isDisabled' ) Submit
-            Button.btn.btn-primary.border-0(v-if="isCheckAssignee" @click='handleAssignee') Check
-          .inventory__header--action.flex(v-else)
-            Button.btn.btn-primary.border-0(v-if="isApprove" @click="handleApprove") Approve
-            Button.btn.btn-primary.border-0(@click='exportpdf' ) Export
-        .inventory__content
+        .stock-takeItem__content
           DataTable.m-h-700(
             :value='items'
             dataKey='id'
@@ -66,25 +59,21 @@
               Column( v-if='isDetail' header='REPORT BOX ' className="text-right" )
                 template(#body='{data}' )
                   Button.btn.btn-primary.border-0( @click='handleReport') Report
+
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { Paging } from '~/models/common/Paging'
-import Pagination from '~/components/common/Pagination.vue'
-import { exportFileTypePdf, PAGINATE_DEFAULT } from '~/utils'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 const nsStoreItems = namespace('stock-take/box-detail')
 const dayjs = require('dayjs')
 
 @Component({
   components: {
-    Pagination,
     NoteInfo
   }
 })
 class stockTakeItemsDetail extends Vue {
-  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   stockTakeItems: any = []
   items: [] = []
   isDetail: boolean = true
@@ -121,6 +110,20 @@ class stockTakeItemsDetail extends Vue {
     return this.boxStockTakeDetail?.totalStockTakeItem
   }
 
+  get sellerInfo() {
+    const { stockTakeItem } = this.boxStockTakeDetail
+    if(stockTakeItem) {
+      const sumStockTakeItem = _.size(stockTakeItem)
+      const firstStock: any = stockTakeItem[0]
+      if(firstStock) {
+        const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
+        if(_.size(stockSame) === sumStockTakeItem) {
+          return firstStock
+        }
+      }
+    }
+  }
+
   get noteInfor() {
     const { createdAt, createdBy, approver, assignee } = this.boxStockTakeDetail
     return {
@@ -144,100 +147,6 @@ class stockTakeItemsDetail extends Vue {
     }
   }
 
-  get sellerInfo() {
-    const { stockTakeItem } = this.boxStockTakeDetail
-    if(stockTakeItem) {
-      const sumStockTakeItem = _.size(stockTakeItem)
-      const firstStock: any = stockTakeItem[0]
-      if(firstStock) {
-        const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
-        if(_.size(stockSame) === sumStockTakeItem) {
-          return firstStock
-        }
-      }
-    }
-  }
-
-  get saveItems(){
-    _.forEach(this.items, ( { id, countedQuantity }  ) => {
-      this.stockTakeItems.push({
-        id ,
-        countedQuantity
-      })
-    })
-    return this.stockTakeItems
-  }
-
-  async handleSaveDraft() {
-    // const newArr = this.saveItems.map(el => ({ ...el }))
-    const result = await this.actSubmitBoxStockTakeDetail({
-      id: this.$route.params.id,
-      isDraft: true,
-      submitData: this.saveItems
-    })
-    if(result) {
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Success Message',
-        detail: 'Successfully Save Draft',
-        life: 3000
-      })
-      await this.$router.push({ path: '/stock-take' })
-      this.isDetail = !this.isDetail
-    }
-  }
-
-  rowClass({ isChecking }) {
-    if( isChecking ) {
-      return 'row-disable'
-    }
-  }
-
-  async handleSubmit(){
-    const result = await this.actSubmitBoxStockTakeDetail({
-      id: this.$route.params.id,
-      isDraft: false,
-      submitData: this.saveItems
-    })
-    if(result) {
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Success Message',
-        detail: 'Successfully submit items',
-        life: 3000
-      })
-    }
-    this.isDetail = !this.isDetail
-
-  }
-
-  async exportpdf(){
-    const result = await this.actGetStockTakeLable({ id : this.$route.params.id })
-    if(result) {
-      exportFileTypePdf(result, `Stock-Take-${ this.$route.params.id }`)
-    }
-    await this.$router.push({ path: '/stock-take' })
-  }
-
-  handleDeliveryChange( event : any ){
-    event.discrepancy  = event.countedQuantity - event.inventoryQuantity
-    if(event.discrepancy ===  0 ) {
-      event.resultStatus = 'OK'
-    }else if(event.discrepancy !== 0 && event.countedQuantity !== null ) {
-      event.resultStatus = 'NG'
-    } else {
-      event.resultStatus = 'Waiting'
-    }
-  }
-
-  get isDisabled() {
-    return !!_.find(this.items , function (obj) {
-      if(obj.resultStatus === 'Waiting' || obj.resultStatus === null ) {
-        return true
-      }
-    })
-  }
-
   get homeItem() {
     return { label: 'Stock Take', to: '/stock-take' }
   }
@@ -245,7 +154,7 @@ class stockTakeItemsDetail extends Vue {
   get breadcrumbItem() {
     return [
       { label: 'Note Take Detail',
-        to: `/stock-take/item/${this.$route.params.id}/items-detail`
+        to: `/stock-take/item/${this.$route.params.id}/approved`
       }
     ]
   }
@@ -273,7 +182,7 @@ class stockTakeItemsDetail extends Vue {
   async handleApprove() {
     const result = await this.actApproveStockTake({ id: this.$route.params.id })
     if(result?.data) {
-      await this.$router.push(`/stock-take/item/${this.$route.params.id}/approved`)
+      await this.$router.push(`/stock-take/item/${this.$route.params.id}/approve`)
     }
   }
 }
@@ -283,10 +192,12 @@ export default stockTakeItemsDetail
 <style lang="sass" scoped>
 .stock
   @include tablet
-    margin: 50px
+    // margin: 50px
   ::v-deep.sub-tab
-    height: calc(100vh - 100px)
+    height: calc(100vh - 150px)
     overflow: hidden
+    display: flex
+    flex-direction: column
     @include desktop
       height: calc(100vh - 32px)
       max-width: 23rem
@@ -295,13 +206,11 @@ export default stockTakeItemsDetail
       display: flex
       align-items: center
       flex-direction: column
-      height: calc(100vh - 32px)
+      flex: 1
       overflow: auto
       @include desktop
-        height: calc(100vh - 250px)
         overflow: auto
       @include tablet
-        height: calc(100vh - 300px)
         flex-direction: row
         justify-content: center
         align-items: baseline
@@ -329,17 +238,17 @@ export default stockTakeItemsDetail
   width: 300px
   margin-bottom: 16px
 
-::v-deep.inventory
+::v-deep.stock-takeItem
   min-height: calc(100vh - 32px)
   margin-top: 3rem
   @include desktop
     margin-top: 0px
-    margin-left: 3rem
+    margin-left: 2rem
     height: calc(100vh - 32px)
   &__header
     flex-direction: column
     flex-wrap: wrap
-    margin-bottom: 24px
+    margin-bottom: 16px
     @include desktop
       flex-direction: row
       @include flex-center-space-between
@@ -360,33 +269,29 @@ export default stockTakeItemsDetail
     border-radius: 4px
     position: relative
     overflow: hidden
-    .p-datatable-table
-      .text-primary
-        color: $primary-dark !important
-        font-weight: $font-weight-medium
-      .p-datatable-tbody
-        & > tr
-          background: $text-color-100
-          .text-bold
-            color: $text-color-700
-            .p-inputnumber-input
-              color: $text-color-700
-        .outgoing__selected
-          background: $color-white
-          > .text-bold
-            font-weight: $font-weight-bold
-            color: $text-color-900
-            .p-inputnumber-input
-              font-weight: $font-weight-bold
-              color: $text-color-900 !important
-      .p-datatable-thead > tr > th
-        white-space: unset
-        .p-column-header-content
-          .p-checkbox
-            display: none
+  &__note
+    border-left: 1px solid var(--gray-300)!important
+  &__footer
+    background: $color-white
+    display: flex
+    justify-content: space-between
+    padding: 6px 8px
+    align-items: center
   .text-right
     text-align: right !important
     .p-column-header-content
       justify-content: end !important
-
+    .table__action
+      float: right
+  .disable-button
+    pointer-events: none
+    background-color: $text-color-300
+    .icon
+      background-color: $text-color-500
+  .pi-calendar:before
+    content: url('~/assets/icons/calendar.svg')
+  .p-calendar-w-btn
+    .p-button
+      background: none
+      border: none
 </style>
