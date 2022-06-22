@@ -347,6 +347,7 @@ class DeliveryOrderPacking extends Vue {
         })
       }
       else {
+        this.isShowModalReport = false
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
