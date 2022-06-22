@@ -129,6 +129,9 @@
                 span.table__status.table__status--draft(v-if="data.status === 'IN_PROGRESS'") In Progress
                 span.table__status.table__status--disable(v-if="data.status === 'CANCELLED'") Cancelled
                 span.table__status.table__status--available(v-if="data.status === 'COMPLETED'") Completed
+                span.table__status.table__status--draft(v-if="data.status === 'APPROVING'") Approving
+                span.table__status.table__status--available(v-if="data.status === 'APPROVED'") Approved
+                span.table__status.table__status--draft(v-if="data.status === 'SAVE_DRAFT'") Save Draft
           Column(header='CHECK Type' :sortable="true" field='checkType' sortField="_checkType" headerClass="grid-header-right")
             template(#body='{ data }')
                 div.grid-cell-right {{ data.checkType }}
