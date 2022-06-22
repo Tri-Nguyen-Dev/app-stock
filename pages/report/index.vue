@@ -14,11 +14,11 @@
           span Filter
         .btn-refresh(@click="handleRefeshFilter")
           .icon.icon-rotate-left.bg-white
-      .btn.btn-primary(@click='routeLinkAddReport')
+      .btn.btn-primary(@click='addReport')
         .icon.icon-add-items
         span Add Report
-  .grid.header__filter(:class='{ "active": true }')
-    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+  .grid.header__filter(:class='{ "active": isShowFilter }')
+    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
         FilterTable(
           title="Seller email"
           placeholder="Search"
@@ -27,17 +27,17 @@
           name="sellerEmail"
           @updateFilter="handleFilter"
         )
-    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(
         title="Report Code"
-        :value="filter.barCode"
+        :value="filter.id"
         placeholder="Enter code"
-        name="barCode"
+        name="id"
         :searchText="true"
         @updateFilter="handleFilterReport"
         :isShowFilter="isShowFilter"
       )
-    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterCalendar(
         title="From"
         :value="filter.dateFrom"
@@ -47,7 +47,7 @@
         :showIcon="true"
         @updateFilter="handleFilterReport"
       )
-    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterCalendar(
         title="To"
         border="right"
@@ -58,8 +58,7 @@
         :showIcon="true"
         @updateFilter="handleFilterReport"
       )
-  .grid.header__filter(:class='{ "active": isShowFilter }')
-    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(
         title="Box Code"
         :value="filter.barCode"
@@ -67,9 +66,8 @@
         name="barCode"
         :searchText="true"
         @updateFilter="handleFilterReport"
-        :isShowFilter="isShowFilter"
       )
-    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
   DataTable(:value="data" responsiveLayout="scroll"
       :selection="selectedReportes" :rows="20" :scrollable="false"
@@ -83,26 +81,26 @@
       showGridlines
       @row-dblclick="rowClick"
       )
-      Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
+      Column(selectionMode="multiple" :styles="{width: '3rem'}")
       Column(field="id" header="ID"  bodyClass="font-semibold"  className="text-center" headerClass="grid-header-center" sortField="_id")
           template(#body="slotProps")
             span {{slotProps.data.id}}
       Column(field="createdAt" header="CREATE TIME" :sortable="true"  sortField="_createdAt")
         template(#body='{ data }')
           span {{ data.createdAt | dateTimeHour24 }}
-      Column(field="boxNote.id" header="BOX CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
-      Column(field="boxNote.sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
+      Column(field="boxNote.box.id" header="BOX CODE" bodyClass="font-semibold")
+      Column(field="boxNote.box.request.seller.email" header="SELLER EMAIL" className="w-3")
       Column(field="boxNote.id" header="stock take note id" className="uppercase")
       Column(field="boxNote.note" header="note" className="uppercase" bodyClass="font-semibold" )
       Column(field="createId" header="create id" className="uppercase" bodyClass="font-semibold" )
-      Column(field="status" header="STATUS" :sortable="true"  sortField="_status" className="text-center")
+      Column(field="status" header="STATUS"  className="text-center")
         template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
                 :class=" data.status === 'REPORT_RESOLVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")
                 | {{ data.status | reportStatus }}
       Column(:exportable="false" header="ACTION" className="text-center")
         template(#body="{data}")
-          .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
+          .table__action(:class="{'action-disabled': checkShowAction(data)}")
             span.action-item(@click="handleEditReport(data.id)")
               .icon.icon-edit-btn
             span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
@@ -122,7 +120,7 @@
           img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
           img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
           p.text-900.font-bold.mt-3(v-if="!isFilter") List is empty!, Click
-            span.text-primary.underline.cursor-pointer(@click='routeLinkAddReport') &nbsp;here
+            span.text-primary.underline.cursor-pointer(@click='addReport') &nbsp;here
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
@@ -131,29 +129,32 @@
       Button.btn.btn-primary.h-3rem(@click='createStockTake(1)') Create stock-take note
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
-      h1.text-heading Select Box
+      h1.text-heading Report detail
     BoxDataTable(@selectBox='selectBox($event)' :box='boxShow' v-if='!isConfirm')
     .confirm.grid(v-if='isConfirm')
-      .col-12.text-center
-        h3 Report detail
       .col-12
         DataTable.w-full.table__sort-icon.h-full(:value="boxShow" responsiveLayout="scroll")
           Column(field="id" header="box code" className="uppercase")
           Column(field="sellerEmail" header="seller email" className="uppercase")
-          Column(field="note" header="note" className="uppercase")
+          Column(field="note" header="note" className="uppercase" :styles="{width: '50%'}")
             template(#body="{ data }")
-              InputText(v-model='data.note' autofocus)
-          Column(header="action" className="uppercase")
+              InputText.w-full(v-model='data.note' autofocus)
+          Column(header="action" className="text-center" headerClass="grid-header-center")
+            template(#body="{data}")
+              .table__action(style='justify-content: center')
+                span.action-item(@click="removeBox(data.id)")
+                  .icon.icon-btn-delete
     template(#footer)
-      Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
+      Button.p-button-secondary(label="Close" icon="pi pi-times" @click="closeDialog()")
       Button.p-button-primary(label="Back" icon="pi pi-arrow-left" @click="isConfirm = false;" v-if='isConfirm')
       Button.p-button-success(label="Save" icon="pi pi-check" @click="saveReport()" v-if='isConfirm')
+      Button.p-button-success(label="Save" icon="pi pi-check" @click="saveReport()" v-if='isConfirm && isUpdate')
       Button.p-button-success(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()" v-if='!isConfirm')
   ConfirmDialogCustom(
     title="Confirm delete"
     image="confirm-delete"
     :isShow="isModalDelete"
-    :onOk="handleDeleteStock"
+    :onOk="handleDeleteReport"
     :onCancel="handleCancel"
     :loading="loadingSubmit"
   )
@@ -198,6 +199,7 @@ class ReportList extends Vue {
   disabledApply = true
   boxSelected: any[] = []
   boxShow: any[] = []
+  isUpdate = false
   statusList: any = [
     { name: 'new', value: REPORT_STATUS.NEW },
     { name: 'In progress', value: REPORT_STATUS.IN_PROGRESS }
@@ -217,6 +219,9 @@ class ReportList extends Vue {
 
   @nsStoreReport.State
   reportList!: any[]
+
+  @nsStoreReport.State
+  reportCreate!: any[]
 
   @nsStoreReport.State
   listBoxTakeNote!: any[]
@@ -244,6 +249,8 @@ class ReportList extends Vue {
 
   @nsStoreReport.Action
   actAddTransferReport!: (params: { ids: string[] }) => Promise<any>
+
+  actCreateReport!: (data: any) => Promise<any>
 
   @nsStoreReportDetail.Action
   actGetReportDetail!: (id: any) => Promise<any>
@@ -285,20 +292,15 @@ class ReportList extends Vue {
   // -- [ Functions ] ------------------------------------------------------------
   getParamAPi() {
     return {
-      pageNumber: this.paging.pageNumber,
-      pageSize: this.paging.pageSize,
-      sellerEmail: this.filter.sellerEmail || null,
-      barCode: this.filter.barCode || null,
-      warehouseId: this.filter.warehouse?.id,
-      location: this.filter.location || null,
-      from: this.filter.dateFrom
-        ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD')
-        : null,
-      to: this.filter.dateTo
-        ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD')
-        : null,
-      sortBy: this.sortByColumn || null,
-      desc: this.isDescending
+      pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
+      'sellerEmail': this.filter.sellerEmail || null,
+      'id': this.filter.id || null,
+      'warehouseId': this.filter.warehouse?.id,
+      'location': this.filter.location || null,
+      'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
+      'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
+      'sortBy': this.sortByColumn || null,
+      'desc': this.isDescending
     }
   }
 
@@ -315,7 +317,7 @@ class ReportList extends Vue {
     await this.actGetReportList(this.getParamAPi())
   }
 
-  async handleDeleteStock() {
+  async handleDeleteReport() {
     const ids = _.map(this.onEventDeleteList, 'id')
     const result = await this.actDeleteReportById({ ids })
     if (result) {
@@ -329,10 +331,7 @@ class ReportList extends Vue {
       })
       this.paging.first = 0
       this.paging.pageNumber = 0
-      await this.actGetReportList({
-        pageNumber: this.paging.pageNumber,
-        pageSize: this.paging.pageSize
-      })
+      await this.actGetReportList(this.getParamAPi())
     }
   }
 
@@ -345,10 +344,8 @@ class ReportList extends Vue {
     this.isModalDelete = true
   }
 
-  rowClass({ status }) {
-    if (status === 'BOX_STATUS_DISABLE' || status === 'BOX_STATUS_OUTGOING') {
-      return 'row-disable'
-    }
+  rowClass({ boxNote }) {
+    return boxNote? '': ''
   }
 
   validateText = _.debounce(this.handleFilter, 500)
@@ -367,7 +364,18 @@ class ReportList extends Vue {
   }
 
   handleEditReport(id: any) {
-    this.$router.push({ path: `/report/${id}`, query: { plan: 'edit' } })
+    this.showModal = true
+    this.isConfirm = true
+    this.isUpdate = true
+    this.boxShow = this.reportList.find( element=> {
+      return element.id===id
+    }).boxNote.map(element => {
+      return {
+        id : element.box.id,
+        note:element.note,
+        sellerEmail: element.box.request.seller.email
+      }
+    })
   }
 
   async handleFilter() {
@@ -390,11 +398,7 @@ class ReportList extends Vue {
   }
 
   rowUnSelectAll() {
-    this.selectedReportes = _.differenceWith(
-      this.selectedReportes,
-      this.reportList,
-      _.isEqual
-    )
+    this.selectedReportes = []
   }
 
   rowSelect({ data }) {
@@ -409,7 +413,7 @@ class ReportList extends Vue {
     )
   }
 
-  routeLinkAddReport() {
+  addReport() {
     this.showModal = true
   }
 
@@ -433,16 +437,35 @@ class ReportList extends Vue {
   applyBox() {
     this.boxShow = this.boxSelected.map((element) => {
       return {
-        id: element.id,
-        note: '',
+        id : element.id,
+        note: element.note,
         sellerEmail: element.sellerEmail
       }
     })
     this.isConfirm = true
   }
 
-  saveReport() {
-    this.showModal = false
+  async saveReport(){
+    const data = this.boxShow.map(element =>{
+      return {
+        box: {
+          id : element.id
+        },
+        note: element.note
+      }
+    })
+    await this.actCreateReport({ boxNote: data })
+    if(this.reportCreate){
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully submitted Report',
+        life: 3000
+      })
+      this.showModal = false
+      await this.actGetReportList(this.getParamAPi())
+      this.resetData()
+    }
   }
 
   rowClick({ data }) {
@@ -463,6 +486,25 @@ class ReportList extends Vue {
       this.setListBoxTakeNote(this.selectedReportes)
       this.$router.push('/stock-take/box/create')
     }
+  }
+
+  removeBox(id){
+    this.boxShow = _.filter(this.boxShow, (box: any) => box.id !== id)
+  }
+
+  closeDialog(){
+    this.showModal = false
+    this.resetData()
+  }
+
+  resetData(){
+    this.boxShow = []
+    this.boxSelected = []
+    this.isConfirm = false
+  }
+  
+  checkShowAction(data){
+    return !!data
   }
 }
 export default ReportList
