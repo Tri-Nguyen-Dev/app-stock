@@ -7,7 +7,7 @@
     .header__action
       .header__search
         .icon.icon--left.icon-search
-        InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
+        InputText(type="text" placeholder="Search" v-model="filter.id" v-on:input="validateText")
       .btn__filter
         .btn-toggle(@click="isShowFilter = !isShowFilter")
           .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
@@ -25,11 +25,11 @@
           :value="filter.sellerEmail"
           :searchText="true"
           name="sellerEmail"
-          @updateFilter="handleFilter"
+          @updateFilter="handleFilterReport"
         )
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(
-        title="Report Code"
+        title="Report ID"
         :value="filter.id"
         placeholder="Enter code"
         name="id"
@@ -82,7 +82,7 @@
       @row-dblclick="rowClick"
       )
       Column(selectionMode="multiple" :styles="{width: '3rem'}")
-      Column(field="id" header="ID"  bodyClass="font-semibold"  className="text-center" headerClass="grid-header-center" sortField="_id")
+      Column(field="id" header="Report ID"  bodyClass="font-semibold"  className="text-center" headerClass="grid-header-center" sortField="_id")
           template(#body="slotProps")
             span {{slotProps.data.id}}
       Column(field="createdAt" header="CREATE TIME" :sortable="true"  sortField="_createdAt")
@@ -97,7 +97,7 @@
         template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
                 :class=" data.status === 'REPORT_RESOLVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")
-                | {{ data.status | reportStatus }}
+                | {{ data.boxNote.status | reportStatus }}
       Column(:exportable="false" header="ACTION" className="text-center")
         template(#body="{data}")
           .table__action(:class="{'action-disabled': checkDisabledAction(data)}" style= 'justify-content: center')
@@ -163,7 +163,7 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ReportDetail from '~/components/report/ReportDetail.vue'
 import Pagination from '~/components/common/Pagination.vue'
@@ -254,17 +254,6 @@ class ReportList extends Vue {
 
   async mounted() {
     await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
-    this.reportList.forEach(report => {
-      report.boxNote.forEach(box => {
-        this.data.push({
-          id: report.id,
-          boxNote: box,
-          createdAt: report.createdAt,
-          createId: report.createdBy.staffId,
-          status:'REPORT_NEW'
-        })
-      })
-    })
   }
 
   // -- [ Getters ] -------------------------------------------------------------
@@ -281,6 +270,23 @@ class ReportList extends Vue {
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'report')
+  }
+
+  // -- [ Watch ] -----------------------------------------------------------
+
+  @Watch('reportList')
+  changeReportList(){
+    this.data = []
+    this.reportList.forEach(report => {
+      report.boxNote.forEach(boxNote => {
+        this.data.push({
+          id: report.id,
+          boxNote,
+          createdAt: report.createdAt,
+          createId: report.createdBy.staffId
+        })
+      })
+    })
   }
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -493,6 +499,7 @@ class ReportList extends Vue {
   checkDisabledAction(data){
     return !data
   }
+
 }
 export default ReportList
 </script>
