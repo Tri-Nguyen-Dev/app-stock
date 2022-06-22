@@ -11,7 +11,7 @@ div
         v-if='item.type === INPUT_TYPE.AutoComplete'
         field='email'
         forceSelection
-        v-model='selectedSeller'
+        v-model='item.value'
         :disabled='item.disabled'
         :suggestions='sellerList'
         @item-select='changeItem($event)'
@@ -67,15 +67,18 @@ class ItemInput extends Vue {
     this.$emit('fieldReceiver', event.target.value)
   }
 
-  mounted() {
-    const infoObj = this.listInfor[0]
-    if(infoObj.label === 'Email' && infoObj.value !== ''  ) {
-      this.selectedSeller = infoObj.value
-    }
-    else if ( this.listInfor[0].label === 'Name'){
-      this.filedWarehouse = infoObj.value
-    }
-  }
+  // mounted() {
+  //   const infoObj = this.listInfor[0]
+  //   // if(infoObj.label === 'Email' && infoObj.value !== ''  ) {
+  //   //   console.log(infoObj, 'infoObj')
+  //   //
+  //   //   this.selectedSeller = infoObj.value
+  //   //
+  //   // }
+  //   // else if ( this.listInfor[0].label === 'Name'){
+  //   //   this.filedWarehouse = infoObj.value
+  //   // }
+  // }
 
   get checkRole (){
     return this.user.role
@@ -85,8 +88,8 @@ class ItemInput extends Vue {
     this.$emit('sellerInfor' , event.value)
   }
 
-  searchSeller() {
-    this.$emit('paramSeller' , this.selectedSeller)
+  searchSeller(event: any) {
+    this.$emit('paramSeller' , event.query)
   }
 }
 

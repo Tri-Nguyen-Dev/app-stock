@@ -463,6 +463,7 @@ class createOrder extends Vue {
         i.value = null
       })
     })
+    this.isModalCancel = false
     await this.$router.push({ path: '/stock-out/order-list' })
   }
 
@@ -490,6 +491,8 @@ class createOrder extends Vue {
     InfoWarehouse[0].warehouseId = event.id
     InfoWarehouse[1].value = event.email
     InfoWarehouse[2].value = event.phone
+    this.unSelectedSeller()
+
   }
 
   handleSeller(event: any) {
@@ -499,7 +502,7 @@ class createOrder extends Vue {
     InfoSeller[0].id = event.id
     InfoSeller[1].value = event.displayName
     InfoSeller[2].value = event.phoneNumber
-    this.unSelectedSeller()
+    // this.unSelectedSeller()
   }
 
   handleUser() {
@@ -526,7 +529,7 @@ class createOrder extends Vue {
   }
 
   unSelectedSeller() {
-    _.forEach(this.information.warehouse, (val) => {
+    _.forEach(this.information.seller, (val) => {
       val.value = null
     })
   }
