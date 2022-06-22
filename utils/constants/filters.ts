@@ -26,7 +26,7 @@ export namespace FilterConstants {
     ['REPORT_NEW', 'NEW'],
     ['REPORT_RESOLVED', 'RESOLVED']
   ])
-
+  
   export const STATUS_ITEM_STOCK = new Map<string, string>([
     ['ITEM_STATUS_AVAILABLE', 'AVAILABLE'],
     ['ITEM_STATUS_DISABLE', 'DISABLE'],

@@ -17,6 +17,7 @@
             type='button',
             label='Add box',
             @click='addBox'
+            :disabled ='disabledAddBox'
           )
           Button.p-button-outlined.p-button-primary.bg-white.w-25(
             type='button',
@@ -46,7 +47,6 @@
             field='sellerEmail',
             header='SELLER EMAIL',
             className='w-3',
-            sortField='_request.seller.email'
           )
           Column(
             field='rackLocation.name',
@@ -92,6 +92,7 @@ import { STOCK_TAKE_STATUS } from '~/utils'
 import StockUnit from '~/components/stock/StockUnit.vue'
 const nsStoreUser = namespace('user-auth/store-user')
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
+const nsStoreReportList = namespace('report/report-list')
 @Component({
   components: {
     ItemList,
@@ -108,6 +109,7 @@ class DeliveryOrder extends Vue {
   disabledApply = true
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
   note = ''
+  disabledAddBox= false
   stockTakeInfo: {
     user: User.Model | undefined,
     totalBox?: number,
@@ -123,6 +125,9 @@ class DeliveryOrder extends Vue {
 
   @nsStoreUser.State
   user: User.Model | undefined
+
+  @nsStoreReportList.State
+  listBoxTakeNote!: any
 
   get breadcrumbItem() {
     return [
@@ -191,6 +196,17 @@ class DeliveryOrder extends Vue {
   mounted() {
     this.stockTakeInfo.totalBox = 0
     this.stockTakeInfo.user = this.user
+    if(this.listBoxTakeNote){
+      this.stockTakeInfo.totalBox = this.listBoxTakeNote.length
+      this.boxShow = this.listBoxTakeNote.map(element => {
+        return {
+          id:element.boxNote.box.id,
+          sellerEmail: element.boxNote.box.request?.seller.email,
+          rackLocation: element.boxNote.box.rackLocation
+        }
+      })
+      this.disabledAddBox = true
+    }
   }
 }
 
