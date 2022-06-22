@@ -106,19 +106,19 @@
               Column( v-if='isDetail' header='REPORT BOX ' className="text-right" )
                 template(#body='{data}' )
                   Button.btn.btn-primary.border-0( @click='handleReport(data)') Report
-    ConfirmDialogCustom(
-      title="Report Confirm"
-      image="confirm-delete"
-      :isShow="isShowModalReport"
-      :onOk="handleReportItems"
-      :onCancel="cancelReportBox"
-      :loading="loadingSubmit"
-    )
-      template(v-slot:message)
-        p Do you want to report the quantity discrepancy  in the box {{ reportData }}?
-      template(v-slot:content)
-        h3.text-left.text-900 NOTE:
-        Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
+              ConfirmDialogCustom(
+                title="Report Confirm"
+                image="confirm-delete"
+                :isShow="isShowModalReport"
+                :onOk="handleReportItems"
+                :onCancel="cancelReportBox"
+                :loading="loadingSubmit"
+              )
+                template(v-slot:message)
+                  p(v-if="reportData") Do you want to report the quantity discrepancy  in the box {{ reportData.boxCode }}?
+                template(v-slot:content)
+                  h3.text-left.text-900 NOTE:
+                  Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
 </template>
 
 <script lang="ts">
@@ -197,7 +197,6 @@ class stockTakeItemsDetail extends Vue {
   }
 
   async handleSaveDraft() {
-    // const newArr = this.saveItems.map(el => ({ ...el }))
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: true,
@@ -301,10 +300,15 @@ class stockTakeItemsDetail extends Vue {
   async handleReportItems() {
     if(this.reportData) {
       const result = await this.actCreateReport({
-        box: {
-          id: this.reportData.boxCode
-        },
-        note: this.valueReportNote
+        boxNote: [
+          {
+            box: {
+              id: this.reportData.boxCode
+            },
+            note: this.valueReportNote
+          }
+        ]
+
       })
       if (result) {
         this.isShowModalReport = false
