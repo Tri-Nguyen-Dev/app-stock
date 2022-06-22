@@ -1,3 +1,5 @@
+import { Warehouse }  from '~/models/Warehouse'
+
 export namespace User {
 
   export interface Model {
@@ -10,6 +12,7 @@ export namespace User {
     phoneNumber?: string,
     avatarUrl?: string,
     role?: string
+    warehouse:Warehouse.Model
   }
 
   export interface KeyCloak {
