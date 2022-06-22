@@ -8,17 +8,17 @@
             h1.text-heading Approving Stock-take Note Detail
             span.text-subheading {{ total }} total items
           .stock-takeItem__header--action.flex
-            Button.btn.btn-primary.border-0(@click='handleSubmit' v-if='isShowSubmit' :disabled='isDisabled') Save
+            Button.btn.btn-primary.border-0(@click='handleSubmit' v-if='isApproving' :disabled='isDisabled') Save
             Button.btn.btn-primary.border-0(@click='exportpdf' v-else) Export
         .stock-takeItem__content
           DataTable.m-h-700(
-            :value='items'
+            :value='dataTable'
             dataKey='id'
             :rows='20'
             responsiveLayout="scroll"
             :resizableColumns="true"
             :rowClass='rowClass'
-            :class="{ 'table-wrapper-empty': !items || items.length <= 0 }"
+            :class="{ 'table-wrapper-empty': !dataTable || dataTable.length <= 0 }"
           )
             Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
               template(#body='slotProps') {{ slotProps.index + 1 }}
@@ -40,7 +40,7 @@
             Column(field='approvedQuantity' header='APPROVED Q.TY' :sortable='true' className="text-center text-highlight")
               template.text-center(#body='{data}' class="text-center")
                 .text-center
-                  span( v-if="!isDetail" ) {{data.countedQuantity }}
+                  span( v-if="!isApproving" ) {{data.approvedQuantity }}
                   InputNumber.w-7rem( v-else v-model="data.approvedQuantity" :min="0" mode="decimal" inputClass="w-full" )
             Column(field='countedQuantity' header='APPROVED VARIANT' :sortable='true' className="text-center")
               template.text-center(#body='{data}' class="text-center")
@@ -52,6 +52,7 @@ import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 import { exportFileTypePdf } from '~/utils'
 const nsStoreItems = namespace('stock-take/box-detail')
+const nsStoreUser = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
 @Component({
@@ -62,39 +63,34 @@ const dayjs = require('dayjs')
 class stockTakeItemsDetail extends Vue {
   stockTakeItems: any = []
   items: [] = []
-  isDetail: boolean = true
 
   // -- [ State ] ------------------------------------------------------------
-
   @nsStoreItems.State
   boxStockTakeDetail!: any
+  
+  @nsStoreUser.State
+  user: any | undefined
 
   @nsStoreItems.Action
   actGetBoxStockTakeDetail!: (params?: any) => Promise<void>
 
   @nsStoreItems.Action
-  actSubmitBoxStockTakeDetail!: (params: any) => Promise<string>
-
-  @nsStoreItems.Action
   actGetStockTakeLable!: (params: any) => Promise<string>
-
-  @nsStoreItems.Action
-  actGetAssignBoxStockTake!: (params?: any) => Promise<any>
-
-  @nsStoreItems.Action
-  actApproveStockTake!: (params?: any) => Promise<any>
   
   @nsStoreItems.Action
   actApproveSubmit!: (params?: any) => Promise<any>
 
   async mounted() {
-    await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
-    this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem.map((x: any) => ({ 
-      ..._.cloneDeep(x),
-      approvedQuantity: x.countedQuantity
-    })))
-    if(this.boxStockTakeDetail.status === 'COMPLETED') {
-      this.isDetail = false
+    if(this.user.role === 'admin') {
+      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'You do not have permission to access this page.',
+        life: 3000
+      })
+      this.$router.push('/stock-take')
     }
   }
 
@@ -161,12 +157,12 @@ class stockTakeItemsDetail extends Vue {
     return finalResultStatus === 'NG' && status === 'COMPLETED' && !approver
   }
 
-  get isShowSubmit() {
+  get isApproving() {
     return this.boxStockTakeDetail.status === 'APPROVING'
   }
 
   get isDisabled() {
-    const object = _.find(this.items, ({ approvedQuantity })=>{
+    const object = _.find(this.dataTable, ({ approvedQuantity })=>{
       if(_.isNull(approvedQuantity)){
         return true
       }
@@ -174,32 +170,33 @@ class stockTakeItemsDetail extends Vue {
     return !!object
   }
 
+  get dataTable() {
+    if(!this.boxStockTakeDetail?.stockTakeItem) return
+    this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem.map((x: any) => {
+      const approvedQuantity = this.isApproving ? x.countedQuantity : x.approvedQuantity
+      return { 
+        ..._.cloneDeep(x),
+        approvedQuantity
+      }
+    }))
+    return this.items
+  }
+
   rowClass({ inventoryQuantity, countedQuantity, approvedQuantity }) {
     return (inventoryQuantity !== countedQuantity || countedQuantity !== approvedQuantity)  && 'row__statusNG'
-  }
-
-  async handleAssignee() {
-    const result = await this.actGetAssignBoxStockTake([
-      this.$route.params.id
-    ])
-    if(result?.data) {
-      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
-      this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
-    }
-  }
-
-  async handleApprove() {
-    const result = await this.actApproveStockTake({ id: this.$route.params.id })
-    if(result?.data) {
-      await this.$router.push(`/stock-take/item/${this.$route.params.id}/approve`)
-    }
   }
 
   async handleSubmit(){
     const data = _.map(this.items, ({ id, approvedQuantity }) => ({ id, approvedQuantity }))
     const result = await this.actApproveSubmit({ id: this.$route.params.id, data })
     if(result) {
-      // console.log(result)
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Approving Stock-take Note successfully!',
+        life: 3000
+      })
+      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
     }
   }
 
@@ -216,7 +213,6 @@ export default stockTakeItemsDetail
 <style lang="sass" scoped>
 .stock
   @include tablet
-    // margin: 50px
   ::v-deep.sub-tab
     height: calc(100vh - 150px)
     overflow: hidden
@@ -258,10 +254,6 @@ export default stockTakeItemsDetail
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
     background-color: #979AA4
 
-.wrap-unit
-  width: 300px
-  margin-bottom: 16px
-
 ::v-deep.stock-takeItem
   min-height: calc(100vh - 32px)
   margin-top: 3rem
@@ -286,8 +278,6 @@ export default stockTakeItemsDetail
         @include flex-center
         flex-direction: row
         margin-top: 0
-  &__filter
-    margin-bottom: $space-size-24
   &__content
     flex: 1
     border-radius: 4px
@@ -295,31 +285,12 @@ export default stockTakeItemsDetail
     overflow: hidden
     .p-datatable-resizable .p-datatable-thead > tr > th
       white-space: normal
-  &__note
-    border-left: 1px solid var(--gray-300)!important
-  &__footer
-    background: $color-white
-    display: flex
-    justify-content: space-between
-    padding: 6px 8px
-    align-items: center
   .text-right
     text-align: right !important
     .p-column-header-content
       justify-content: end !important
     .table__action
       float: right
-  .disable-button
-    pointer-events: none
-    background-color: $text-color-300
-    .icon
-      background-color: $text-color-500
-  .pi-calendar:before
-    content: url('~/assets/icons/calendar.svg')
-  .p-calendar-w-btn
-    .p-button
-      background: none
-      border: none
   .row__statusNG
     // background-color: $text-color-500
     .text-highlight

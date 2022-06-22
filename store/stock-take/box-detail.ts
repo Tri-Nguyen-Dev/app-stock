@@ -13,7 +13,7 @@ export default class StoreBoxStockTake extends VuexModule {
     ASSIGN_BOX_STOCK_TAKE: '/stock-take/assign',
     EXPORT_STOCK_TAKE: '/stock-take/:id/pdf',
     APPROVE_BOX_STOCK_TAKE: '/stock-take/:id/approve',
-    APPROVE_STOCK_TAKE_SAVE: 'stock-take/:id/save'
+    APPROVE_STOCK_TAKE_SAVE: '/stock-take/:id/save'
   }
 
   public boxStockTakeDetail: any = {}

@@ -294,7 +294,7 @@ class stockTakeItemsDetail extends Vue {
   async handleApprove() {
     const result = await this.actApproveStockTake({ id: this.$route.params.id })
     if(result?.data) {
-      await this.$router.push(`/stock-take/item/${this.$route.params.id}/approved`)
+      await this.$router.push(`/stock-take/item/${this.$route.params.id}/approve`)
     }
   }
   
