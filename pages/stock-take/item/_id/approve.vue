@@ -34,7 +34,7 @@
                   .flex.align-items-center.cursor-pointer.justify-content-end
                     span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
-            Column(field='inventoryQuantity' header='INVENTORY Q.TY' :sortable='true' 
+            Column(field='inventoryQuantity' header='INVENTORY Q.TY' :sortable='true'
               className="text-center text-highlight" :styles="{'width': '25px'}")
             Column.white-space-normal(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center text-highlight")
             Column(field='approvedQuantity' header='APPROVED Q.TY' :sortable='true' className="text-center text-highlight")
@@ -44,7 +44,7 @@
                   InputNumber.w-7rem( v-else v-model="data.approvedQuantity" :min="0" mode="decimal" inputClass="w-full" )
             Column(field='countedQuantity' header='APPROVED VARIANT' :sortable='true' className="text-center")
               template.text-center(#body='{data}' class="text-center")
-                .text-center {{ data.approvedQuantity - data.inventoryQuantity }}
+                .text-center(v-if='data.approvedQuantity !== null') {{ data.approvedQuantity - data.inventoryQuantity }}
 </template>
 
 <script lang="ts">
@@ -67,7 +67,7 @@ class stockTakeItemsDetail extends Vue {
   // -- [ State ] ------------------------------------------------------------
   @nsStoreItems.State
   boxStockTakeDetail!: any
-  
+
   @nsStoreUser.State
   user: any | undefined
 
@@ -76,7 +76,7 @@ class stockTakeItemsDetail extends Vue {
 
   @nsStoreItems.Action
   actGetStockTakeLable!: (params: any) => Promise<string>
-  
+
   @nsStoreItems.Action
   actApproveSubmit!: (params?: any) => Promise<any>
 
@@ -119,7 +119,7 @@ class stockTakeItemsDetail extends Vue {
       status: this.boxStockTakeDetail?.status,
       creatorInfo: [
         { title:'Create Time', value: createdAt ?
-          dayjs(new Date(createdAt)).format('YYYY-MM-DD') 
+          dayjs(new Date(createdAt)).format('YYYY-MM-DD')
           : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
         { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' },
@@ -174,7 +174,7 @@ class stockTakeItemsDetail extends Vue {
     if(!this.boxStockTakeDetail?.stockTakeItem) return
     this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem.map((x: any) => {
       const approvedQuantity = this.isApproving ? x.countedQuantity : x.approvedQuantity
-      return { 
+      return {
         ..._.cloneDeep(x),
         approvedQuantity
       }
