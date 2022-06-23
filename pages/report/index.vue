@@ -124,7 +124,7 @@
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
-    ReportDetail(@closeModal="hideModalDetail" :boxReportDetail="boxReportDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
+    ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
       h1.text-heading Report detail
@@ -213,7 +213,6 @@ class ReportList extends Vue {
   }
 
   data: any[] = []
-  boxReportDetail: any = {}
 
   @nsStoreReport.State
   reportList!: any[]
@@ -469,7 +468,6 @@ class ReportList extends Vue {
   async rowClick({ data }) {
     await this.actGetReportDetail(data.id)
     this.selectedReportes = []
-    this.boxReportDetail = data
     this.isShowModalDetail = true
   }
 

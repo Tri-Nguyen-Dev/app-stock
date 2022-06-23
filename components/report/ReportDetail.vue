@@ -68,26 +68,9 @@ import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class ReportDetail extends Vue {
-  @Prop() readonly boxReportDetail!: any
   @Prop() readonly reportDetail!: any
 
   selectedBox: any = []
-
-  get sellerEmail() {
-    return this.boxReportDetail?.boxNote?.box?.request?.seller?.email
-  }
-
-  get phoneNumber() {
-    return this.boxReportDetail?.boxNote?.box?.request?.seller?.phoneNumber
-  }
-
-  get displayName() {
-    return this.boxReportDetail?.boxNote?.box?.request?.seller?.displayName
-  }
-
-  get picId() {
-    return this.boxReportDetail?.boxNote?.box?.createdBy?.staffId
-  }
 
   hideModalDetail() {
     this.$emit('closeModal')
