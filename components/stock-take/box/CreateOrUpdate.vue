@@ -196,7 +196,7 @@ class DeliveryOrder extends Vue {
   mounted() {
     this.stockTakeInfo.totalBox = 0
     this.stockTakeInfo.user = this.user
-    if(this.listBoxTakeNote){
+    if(this.listBoxTakeNote && this.listBoxTakeNote.length>0){
       this.stockTakeInfo.totalBox = this.listBoxTakeNote.length
       this.boxShow = this.listBoxTakeNote.map(element => {
         return {
