@@ -34,6 +34,11 @@ export default class StoreReport extends VuexModule {
     this.listBoxTakeNote = data
   }
 
+  @Mutation
+  resetListBoxTakeNote(data: any) {
+    this.listBoxTakeNote = data
+  }
+
   @Action({ commit: 'setReportList', rawError: true })
   async actGetReportList(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreReport.STATE_URL.GET_REPORT, params)
@@ -53,5 +58,10 @@ export default class StoreReport extends VuexModule {
     const url = PathBind.transform(this.context, StoreReport.STATE_URL.CREATE_REPORT)
     const response: any = await $api.post(url,  data )
     return response.data
+  }
+
+  @Action({ commit: 'resetListBoxTakeNote',rawError: true })
+  actResetStockTake(  ) {
+    return []
   }
 }

@@ -109,7 +109,8 @@ class DeliveryOrder extends Vue {
   disabledApply = true
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
   note = ''
-  disabledAddBox= false
+  disabledAddBox = false
+  reportList: any[] | undefined
   stockTakeInfo: {
     user: User.Model | undefined,
     totalBox?: number,
@@ -129,6 +130,9 @@ class DeliveryOrder extends Vue {
   @nsStoreReportList.State
   listBoxTakeNote!: any
 
+  @nsStoreReportList.Action
+  actResetStockTake
+
   get breadcrumbItem() {
     return [
       { label: 'Stock take Box', to: '/stock-take/box/create', icon: 'pi pi-info-circle' }
@@ -146,7 +150,7 @@ class DeliveryOrder extends Vue {
         boxCode: element.id
       }
     })
-    if(listBox.length===0) {
+    if(listBox.length === 0) {
       return
     }
     const data = {
@@ -154,7 +158,8 @@ class DeliveryOrder extends Vue {
       checkType: 'BOX',
       stockTakeBox: listBox,
       wareHouse: this.user?.warehouse? { id: this.user?.warehouse.id } : undefined,
-      status: STOCK_TAKE_STATUS.NEW
+      status: STOCK_TAKE_STATUS.NEW,
+      reportList: this.reportList
     }
     await this.actCreateStockTake(data)
     if(this.stockTakeCreated.id){
@@ -164,6 +169,7 @@ class DeliveryOrder extends Vue {
         detail: 'Successfully create stock take',
         life: 3000
       })
+      this.actResetStockTake()
       this.$router.push(`/stock-take/box/${this.stockTakeCreated.id}/note-detail`)
     }
   }
@@ -196,7 +202,7 @@ class DeliveryOrder extends Vue {
   mounted() {
     this.stockTakeInfo.totalBox = 0
     this.stockTakeInfo.user = this.user
-    if(this.listBoxTakeNote){
+    if(this.listBoxTakeNote && this.listBoxTakeNote.length>0){
       this.stockTakeInfo.totalBox = this.listBoxTakeNote.length
       this.boxShow = this.listBoxTakeNote.map(element => {
         return {
@@ -205,6 +211,12 @@ class DeliveryOrder extends Vue {
           rackLocation: element.boxNote.box.rackLocation
         }
       })
+      this.reportList = this.listBoxTakeNote.map(element => {
+        return {
+          id:element.id
+        }
+      })
+      _.uniqBy(this.reportList, 'id')
       this.disabledAddBox = true
     }
   }

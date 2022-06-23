@@ -399,6 +399,10 @@ export default StockIn
     .p-button
       background: none
       border: none
+  ::v-deep.text-right
+    text-align: right !important
+    .p-column-header-content
+      justify-content: end !important
 .receipt__header
   flex-direction: column
   flex-wrap: wrap
