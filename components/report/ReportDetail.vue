@@ -77,7 +77,7 @@ class ReportDetail extends Vue {
   }
 
   rowClass(data: any) {
-    return data.stockStatus === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
+    return !data.stockTakeId ? 'row-disable' : ''
   }
 
   rowSelectAll({ data }) {
