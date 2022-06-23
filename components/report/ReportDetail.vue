@@ -72,6 +72,12 @@ class ReportDetail extends Vue {
 
   selectedBox: any = []
 
+  get selectedBoxFilter() {
+    return  _.filter(this.selectedBox, (item: any) => {
+      return item.stockTakeId
+    })
+  }
+
   hideModalDetail() {
     this.$emit('closeModal')
   }
@@ -105,14 +111,14 @@ class ReportDetail extends Vue {
   }
 
   get disabledButton() {
-    if(!(this.selectedBox.length > 0)) {
+    if(!(this.selectedBoxFilter.length > 0)) {
       return 'disabled'
     }
     else return null
   }
 
   createStockTake() {
-    this.$emit('createStockTakeFromDatail', this.selectedBox)
+    this.$emit('createStockTakeFromDatail', this.selectedBoxFilter)
   }
 }
 
