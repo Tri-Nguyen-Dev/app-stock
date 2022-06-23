@@ -174,6 +174,7 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockTake = namespace('stock-take/note-list')
+const nsStoreUser = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
 @Component({
@@ -213,6 +214,9 @@ class StockTake extends Vue {
 
   @nsStoreStockTake.State
   total!: number
+
+  @nsStoreUser.State
+  user: any | undefined
 
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
@@ -260,10 +264,20 @@ class StockTake extends Vue {
 
   rowdbClick({ data }) {
     if(data.checkType === 'BOX') {
-      this.$router.push(`/stock-take/box/${data.id}/note-detail`)
+      if( data.assignee?.staffId === this.user?.staffId && data.approver == null) {
+        this.$router.push(`/stock-take/box/${data.id}/note-detail`)
+      } else if (data.status === ' APPROVING' || data.status === 'APPROVED' &&  data.approver?.staffId === this.user?.staffId) {
+        this.$router.push(`/stock-take/box/${data.id}/approve`)
+      }
     }
     else if(data.checkType === 'ITEM') {
-      this.$router.push(`/stock-take/item/${data.id}/items-detail`)
+      if(data.status === 'APPROVING' || data.status === 'APPROVED') {
+        if(data.approver && data.approver?.staffId === this.user?.staffId) {
+          this.$router.push(`/stock-take/item/${data.id}/approve`)
+        }
+      } else if(data.assignee?.staffId === this.user?.staffId && !data.approver) {
+        this.$router.push(`/stock-take/item/${data.id}/note-detail`)
+      }
     }
   }
 

@@ -90,6 +90,7 @@ import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 const nsStoreItems = namespace('stock-take/box-detail')
 const dayjs = require('dayjs')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
+const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: {
@@ -106,12 +107,14 @@ class stockTakeItemsDetail extends Vue {
   loadingSubmit: boolean = false
   isShowModalReport: boolean = false
   valueReportNote: string = ''
-  reportData: {}
+  reportData: any = {}
 
   // -- [ State ] ------------------------------------------------------------
-
   @nsStoreItems.State
   boxStockTakeDetail!: any
+
+  @nsStoreUser.State
+  user: any | undefined
 
   @nsStoreItems.Action
   actGetBoxStockTakeDetail!: (params?: any) => Promise<void>
@@ -278,7 +281,7 @@ class stockTakeItemsDetail extends Vue {
 
   get isApprove() {
     const { finalResultStatus, status, approver } = this.boxStockTakeDetail
-    return finalResultStatus === 'NG' && status === 'COMPLETED' && !approver
+    return finalResultStatus === 'NG' && status === 'COMPLETED' && !approver && this.user.role === 'admin'
   }
 
   async handleAssignee() {
