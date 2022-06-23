@@ -1,11 +1,8 @@
 <template lang="pug">
-DataTable#custom-table.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
-  :resizableColumns='true',
+DataTable.w-full.flex.flex-column.bg-white.box-page-container(
   :value='dataRenderItems',
   dataKey='id',
-  :row-hover='true',
   responsiveLayout='scroll',
-  columnResizeMode='fit',
   v-if='dataRenderItems',
   :selection.sync='selectedItem',
   @row-select='selectRow()',
@@ -30,29 +27,28 @@ DataTable#custom-table.w-full.flex.flex-column.table__sort-icon.bg-white.box-pag
   column(
     field='stock.imagePath',
     header='IMAGE',
-    :sortable='true',
     filter-match-mode='contains'
   )
     template(#body='slotProps')
       img(:src='slotProps.data.stockBox.stock.imagePath | getThumbnailUrl')
   column.text-overflow-ellipsis(
-    field='stock.barCode',
+    field='stockBox.stock.barCode',
     header='BARCODE',
     :sortable='true',
     :show-filter-match-modes='false'
   )
     template(#body='{ data }')
       span.text-primary.font-bold {{ data.stockBox.stock.barCode }}
-  column(field='sku', header='SKU', sortable='', data-type='numeric')
+  column(field='stockBox.sku', header='SKU', :sortable='true')
     template(#body='{ data }')
       span.uppercase {{ data.stockBox.sku }}
-  column(field='stock.name', header='NAME', :sortable='true')
+  column(field='stockBox.stock.name', header='NAME', :sortable='true')
     template(#body='{ data }')
       span.font-bold.text-right {{ data.stockBox.stock.name }}
   column(
-    field='location.name',
+    field='stockBox.box.rackLocation.name',
     :header='isPack ? "LOCATION" : ""',
-    :sortable='isPack',
+    sortable
     :rendered='false',
     :hidden='!isPack'
   )
@@ -60,11 +56,11 @@ DataTable#custom-table.w-full.flex.flex-column.table__sort-icon.bg-white.box-pag
       span.font-bold.text-primary.text-right(
         v-if='data.stockBox.box.rackLocation'
       ) {{ data.stockBox.box.rackLocation.name }}
-  column(field='stockBox.box.id', header='BOXCODE', :sortable='true')
+  column(field='stockBox.box.id', header='BOXCODE', sortable)
     template(#body='{ data }')
       span.font-bold.text-right {{ data.stockBox.box.id }}
   column(
-    field='amount',
+    field='stockBox.amount',
     header='QUANTITY',
     :sortable='true',
     headerClass='grid-header-right'
@@ -90,7 +86,6 @@ class ItemList extends Vue {
   isPack = false
   selectedItem: any[] = []
   enablePack = false
-
   get dataRenderItems() {
     return this.listItems
   }
@@ -119,6 +114,11 @@ class ItemList extends Vue {
   unSelectRow() {
     this.$emit('enablePack', false)
   }
+
+  // sortData(e: any){
+  //   const  order = e.sortOrder === 1? 'asc': 'desc'
+  //   this.dataRenderItems =  _.orderBy(this.listItems,'stockBox.stock.barCode',order)
+  // }
 }
 
 export default ItemList

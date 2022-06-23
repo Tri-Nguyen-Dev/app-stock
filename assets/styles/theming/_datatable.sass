@@ -74,6 +74,9 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
   .p-datatable-tbody > tr
     height: 66px !important
 
+  .p-datatable-tbody > tr.row-disable-bg,
+  .p-datatable-tbody > tr.row-disable-bg + tr.p-datatable-row-expansion
+      background: #e8eaef !important
   .p-datatable-tbody > tr.p-highlight:not(.row-disable)
     background-color: $primary !important
 
@@ -118,7 +121,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
       background-color: unset
 
   tr.row-disable
-    pointer-events: none !important 
+    pointer-events: none !important
     .p-checkbox
       cursor: auto !important
       pointer-events: none !important
@@ -182,7 +185,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
       &.p-highlight
         color: $primary !important
-    
+
     .p-paginator-icon
       color: $text-color-700
       font-weight: $font-weight-regular
@@ -197,7 +200,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
     .p-link:focus
       box-shadow: none
-    
+
     .p-inputtext
       color: $text-color-700
       font-weight: $font-weight-regular
@@ -205,7 +208,7 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
     .p-dropdown
       @include flex-center-vert
       font-family: $font-family-primary !important
-    
+
 
 .table__action
   @include flex-center-vert
@@ -235,16 +238,23 @@ $bottom-td-color: rgb(21, 22, 34, 0.05)
 
   &--available
     color: $text-color-status
-   
+
   &--disable
     color: #979AA4
     background: #E8EAEF
   &--draft
-    color: $primary   
+    color: $primary
     background: #ECEEFF
   &--outgoing
-    color: var(--yellow-500)  
+    color: var(--yellow-500)
     background: #ECEEFF
+  &--reported
+    color: var(--red-500)
+    background: #b64e4e
+  &--error
+    color: #FF2626FF
+    background: var(--pink-50)
+
 .text-small
   font-size: $font-size-small !important
 

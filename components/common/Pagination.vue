@@ -4,7 +4,8 @@
       img(:src="require('~/assets/icons/filter-left.svg')")
       span.pagination__total {{ showingText }}
     .pagination__delete(v-else @click="$emit('onDelete')")
-      .icon.icon-btn-delete
+      .pi.pi-times(v-if='title === "Cancel"')
+      .icon.icon-btn-delete(v-else)
       span {{title}} {{ deletedList.length }} {{type}}
     Paginator(
       :rows="paging.pageSize"

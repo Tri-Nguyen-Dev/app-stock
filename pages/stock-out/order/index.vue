@@ -136,7 +136,9 @@
           template(#empty)
             .flex.align-items-center.justify-content-center.flex-column
               img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
-              p.text-900.font-bold.mt-3 List is empty!
+              p.text-900.font-bold.mt-3 List is empty!, Click
+                span.text-primary.underline.cursor-pointer &nbsp;here
+                span &nbsp;to add item.
           column(field='no', header='NO')
             template(#body='slotProps')
               span.font-bold {{ slotProps.index + 1 }}
