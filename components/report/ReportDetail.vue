@@ -1,55 +1,124 @@
 <template lang="pug">
 div
+  span.report-close(@click="hideModalDetail")
+    i.pi.pi-times
   div.report-heading
-      span.report-status.table__status.table__status--available SOLVING
       div.report-title
         h3 Report Detail
-        h3 ID 0001341
-      span.report-close(@click="hideModalDetail")
-        i.pi.pi-times
+        h3 ID {{ reportDetail.id }}
   div.report-content
     .main-info
-      .info-creator
-        .info-item
+      .info-creator.text-center
+        .info-item.font-semibold
           span.info-title Creator ID:
-          span.info-content 0001341
-        .info-item
+          span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.id }}
+        .info-item.font-semibold
           span.info-title Creator Time:
-          span.info-content 19-09-2022 9:24AM
-        .info-item
-          span.info-title Stock-take Note ID: 
-          span.info-content ST12222222
-        .info-item
+          span.info-content {{ reportDetail.createdAt | dateTimeHour24 }}
+        .info-item.font-semibold
           span.info-title PIC ID: 
-          span.info-content NV66666
-      .info-seller
-        h3.mt-0 Seller Information:
-        .info-item
-          span.info-title Email:
-          span.info-content ndk@gmail.com
-        .info-item
-          span.info-title Phone:
-          span.info-content 0396675767
-        .info-item
-          span.info-title Name: 
-          span.info-content Nguyễn Đình Khoa
-    .info-box
-      .box-code
-        h3 BOX CODE:
-        h3 B12232323233
-      .box-note
-        h3 NOTE:
-        p 5 items in this box have disappeared. The box should be changed into a new one
+          span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.staffId }}
+    .info-box.p-3
+      .info-box-item.py-3.border-top-1.border-gray-300
+        DataTable.w-full(
+          :rowClass="rowClass" :value='reportDetail.boxNote' responsiveLayout="scroll"
+          dataKey='box.id'
+          :rows='10'
+          :rowHover='true'
+          showGridlines
+          :selection='selectedBox'
+          @row-select-all="rowSelectAll"
+          @row-unselect-all="rowUnSelectAll"
+          @row-select="rowSelect"
+          @row-unselect="rowUnselect"
+        )
+          Column(
+            selectionMode='multiple'
+            :styles="{'width': '1%'}"
+          )
+          Column(header='Box code' field='name' sortField="_name" headerClass="grid-header-center")
+            template(#body='{ data }')
+              div
+                NuxtLink.m-0(:to="`/box/${data.box.id}`") {{ data.box.id }}
+                br
+                span.report-status.table__status.table__status--available(v-if="data.status") {{ data.status }}
+                .info-seller
+                  h3.mt-2.mb-0.text-base Seller Information:
+                  .info-item
+                    span.info-title Email:
+                    span.info-content(v-if="data.box.request") {{  data.box.request.seller.email }}
+                  .info-item
+                    span.info-title Phone:
+                    span.info-content(v-if="data.box.request") {{  data.box.request.seller.phoneNumber }}
+                  .info-item
+                    span.info-title Name: 
+                    span.info-content(v-if="data.box.request") {{  data.box.request.seller.displayName }}
+          Column(header='ST Note ID' field='barCode' sortField="_barCode" headerClass="grid-header-center")
+            template(#body='{ data }')
+              div.grid-cell-center
+                NuxtLink(:to="`/box/${data.box.id}`") {{ data.stockTakeId }}
+          Column(header='NOTE' :styles="{'width': '40%'}" field='category' sortField="_category" headerClass="grid-header-center")
+            template(#body='{ data }')
+              div.grid-cell-center {{ data.note }}
+    div.flex.justify-content-center
+      Button.btn.btn-primary.h-3rem.mb-2(:disabled="disabledButton" @click="createStockTake") Create stock-take note
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class ReportDetail extends Vue {
-  @Prop() readonly ReportDetail!: any
+  @Prop() readonly reportDetail!: any
+
+  selectedBox: any = []
+
+  get selectedBoxFilter() {
+    return  _.filter(this.selectedBox, (item: any) => {
+      return item.stockTakeId
+    })
+  }
 
   hideModalDetail() {
     this.$emit('closeModal')
+  }
+
+  rowClass(data: any) {
+    return !data.stockTakeId ? 'row-disable' : ''
+  }
+
+  rowSelectAll({ data }) {
+    this.selectedBox = _.union(this.selectedBox, data)
+  }
+
+  rowUnSelectAll() {
+    this.selectedBox = _.differenceWith(
+      this.selectedBox,
+      this.reportDetail.boxNote,
+      _.isEqual
+    )
+  }
+
+  rowSelect({ data }) {
+    this.selectedBox.push(data)
+  }
+
+  rowUnselect({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
+    this.selectedBox = _.filter(
+      this.selectedBox,
+      (stock: any) => stock.id !== data.id
+    )
+  }
+
+  get disabledButton() {
+    if(!(this.selectedBoxFilter.length > 0)) {
+      return 'disabled'
+    }
+    else return null
+  }
+
+  createStockTake() {
+    this.$emit('createStockTakeFromDatail', this.selectedBoxFilter)
   }
 }
 

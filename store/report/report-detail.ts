@@ -13,7 +13,7 @@ export default class StoreReportDetail extends VuexModule {
   public reportDetail?: any = {}
 
   @Mutation
-  setReportDetail(data) {
+  setReportDetail({ data }) {
     this.reportDetail = data
   }
 
