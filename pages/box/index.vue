@@ -17,9 +17,9 @@
       .btn.btn-primary(@click='routeLinkAddBox')
         .icon.icon-add-items
         span Add box
-      .btn.btn-primary(@click='handleTransferBox')
+      Button.btn.btn-primary(@click='handleTransferBox')
         span Transfer box
-  .grid(v-if="isShowFilter")
+  .grid.header__filter(:class='{ "active": isShowFilter }')
     div(class="md:col-12 lg:col-8 col-12")
       .grid
         div(class="col-12 md:col-4")
@@ -47,6 +47,7 @@
             name="barCode"
             :searchText="true"
             @updateFilter="handleFilterBox"
+            :isShowFilter="isShowFilter"
           )
     div(class="col-12 lg:col-4")
       .grid
@@ -78,7 +79,7 @@
       :rowClass="rowClass" @sort="sortData($event)"
       :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
       @row-unselect-all="rowUnSelectAll" @row-select="rowSelect" @row-unselect="rowUnselect")
-        Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
+        Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false" :headerClass="classHeaderMuti")
         Column(field="no" header="NO")
           template(#body="slotProps")
             span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
@@ -167,7 +168,7 @@ import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-import { getDeleteMessage, PAGINATE_DEFAULT } from '~/utils'
+import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -239,6 +240,13 @@ class BoxList extends Vue {
     return getDeleteMessage(this.onEventDeleteList, 'box')
   }
 
+  get classHeaderMuti() {
+    return !this.boxList ||
+      this.boxList.length <= 0
+      ? 'checkbox-disable'
+      : ''
+  }
+
   // -- [ Functions ] ------------------------------------------------------------
   getParamAPi() {
     return {
@@ -261,6 +269,7 @@ class BoxList extends Vue {
   }
 
   async onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     await this.actGetBoxList(this.getParamAPi())
@@ -302,6 +311,7 @@ class BoxList extends Vue {
   validateText =  _.debounce(this.handleFilter, 500);
 
   async sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1

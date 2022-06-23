@@ -15,7 +15,7 @@
             span Filter
           .btn-refresh(@click="handleRefreshFilter")
             .icon.icon-rotate-left.bg-white
-        .btn.btn-primary(@click="handleAddStock")
+        Button.btn.btn-primary(@click="handleAddStock")
           .icon.icon-add-items
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
@@ -38,6 +38,7 @@
           :value="filter.barCode"
           :searchText="true"
           @updateFilter="handleFilter"
+          :isShowFilter="isShowFilter"
         )
       .div(class="col-12 md:col-4")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
@@ -59,7 +60,8 @@
           Column(
             selectionMode='multiple'
             :styles="{'width': '1%'}"
-            :headerClass="classHeaderMuti")
+            :headerClass="classHeaderMuti"
+          )
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -128,7 +130,8 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   StockConstants,
-  getDeleteMessage
+  getDeleteMessage,
+  resetScrollTable
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
@@ -186,14 +189,6 @@ class Stock extends Vue {
     })
   }
 
-  get classHeaderMuti() {
-    return !this.stockList ||
-      this.stockList.length <= 0 ||
-      this.checkStockDisable
-      ? 'checkbox-disable'
-      : ''
-  }
-
   get checkStockDisable() {
     return this.stockList.every(
       (item) => item.stockStatus === 'STOCK_STATUS_DISABLE'
@@ -207,6 +202,14 @@ class Stock extends Vue {
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'stock')
+  }
+
+  get classHeaderMuti() {
+    return !this.stockList ||
+      this.stockList.length <= 0 ||
+      this.checkStockDisable
+      ? 'checkbox-disable'
+      : ''
   }
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -245,6 +248,7 @@ class Stock extends Vue {
   handleFilter(e: any, name: string){
     this.filter[name] = e
     this.getProductList()
+    this.selectedStock = []
   }
 
   async getProductList() {
@@ -261,9 +265,11 @@ class Stock extends Vue {
       this.filter.categories = ''
       this.getProductList()
     }
+    this.selectedStock = []
   }
 
   onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getProductList()
@@ -303,6 +309,7 @@ class Stock extends Vue {
   }
 
   sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if (sortOrder) {
       this.filter.desc = sortOrder !== 1

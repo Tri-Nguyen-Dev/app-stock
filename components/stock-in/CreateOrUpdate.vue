@@ -150,7 +150,6 @@
               InputText.box-input.mr-2(
                 placeholder='Enter barcode',
                 style='width: 60%',
-                @change='changeBarcode($event)',
                 v-model='boxQrCode'
                 @keyup.enter='changeBarcode($event)'
               )
@@ -483,7 +482,7 @@ class CreateOrUpdateReceipt extends Vue {
         },
         box: '',
         amount: stockInformation.quantity,
-        value: 0,
+        value: stockInformation.value,
         sku: stockInformation.sku,
         itemStatus: ''
       }
@@ -595,6 +594,12 @@ class CreateOrUpdateReceipt extends Vue {
       if (!this.listBox[element.index].location?.id) {
         this.listBox[element.index].location = { ...element }
       }
+    })
+    this.$toast.add({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Location suggested',
+      life: 3000
     })
     this.checkLocation()
   }

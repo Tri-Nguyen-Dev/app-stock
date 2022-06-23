@@ -10,7 +10,9 @@ export default class StoreOrderDetail extends VuexModule {
   private static readonly STATE_URL = {
     GET_DETAIL_ORDER: '/delivery-order/:id/detail',
     UPDATE_ORDER: '/delivery-order/:id/update',
-    ASSIGN_DRIVER: '/delivery-order/:id/set-delivery'
+    ASSIGN_DRIVER: '/delivery-order/:id/set-delivery',
+    GET_ORIGINAL_LABEL: '/delivery-order/:id/original-box/pdf',
+    GET_OUTGOING_LABEL: '/delivery-order/:id/outgoing-box/pdf'
   }
 
   public total?: number = 0
@@ -19,6 +21,7 @@ export default class StoreOrderDetail extends VuexModule {
   public newReceipt: any = {};
   public orderUpdate: any = {};
   public dataAssignDriver: any = {};
+  public packingLabelUrl: any = {};
 
   @Mutation
   setOrderDetail(data: any) {
@@ -28,6 +31,7 @@ export default class StoreOrderDetail extends VuexModule {
   @Mutation
   updateProgressOrder(data: any) {
     this.orderUpdate = data
+    this.orderDetail.status = data.data.status
   }
 
   @Mutation
@@ -35,6 +39,11 @@ export default class StoreOrderDetail extends VuexModule {
     this.dataAssignDriver = data.data
     this.orderDetail.driver = data.data.driver
     this.orderDetail.status = data.data.status
+  }
+
+  @Mutation
+  setPackingLabel(packingLabelUrl: any) {
+    this.packingLabelUrl = packingLabelUrl
   }
 
   @Action({ commit: 'setOrderDetail', rawError: true })
@@ -58,5 +67,19 @@ export default class StoreOrderDetail extends VuexModule {
   @Action({ commit: 'setOrderDetail', rawError: true })
   updateDriverInOrderDetail(data){
     return data
+  }
+
+  @Action({ commit: 'setPackingLabel', rawError: true })
+  async actGetPackingLabel({ params, type }): Promise<string | undefined> {
+    if(!params.id) return ''
+    try {
+      const path = type === 'originalBox' ? StoreOrderDetail.STATE_URL.GET_ORIGINAL_LABEL : StoreOrderDetail.STATE_URL.GET_OUTGOING_LABEL
+      const url = PathBind.transform(this.context, path, { id: params.id })
+      const response: any =  await $api.post(url, params.boxIds, { responseType: 'blob' })
+      const file = new Blob([response], { type: 'application/pdf' })
+      return URL.createObjectURL(file)
+    } catch (error) {
+      return ''
+    }
   }
 }

@@ -10,40 +10,41 @@
       .col-4
         h1.text-heading {{ textHeading }}
         span.text-subheading {{ total }} items found
-      .col-8.btn-right(v-if='orderDetail')
-        ThemeButtonExport.w-25(:click='handleExportReceipt')
-        //- Button.p-button-outlined.p-button-primary.bg-white.w-25(
-        //-   type='button',
-        //-   label='Map',
-        //-   @click='packItem',
-        //-   v-if='isPack'
-        //- )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+      .col-8.btn-right.flex.justify-content-end(v-if='orderDetail')
+        ThemeButtonExport(:click='handleExportReceipt' v-if='checkStatus("PICK_ITEM") || isPick')
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
+          type='button',
+          @click='packItem',
+          v-if='checkStatus("PACK_ITEM") && !isPick'
+        )
+          .icon.icon-map-pin.bg-primary
+          span Map
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
           label='Pick Items',
           @click='pickItem',
           v-if='checkStatus("PICK_ITEM") || isPick'
         )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+        Button.btn.btn-primary.w-25(
           type='button',
-          label='Pack Items',
+          label='Pack',
           @click='packItem',
           v-if='!isPick && checkStatus("PACK_ITEM")',
           :disabled='!enablePack'
         )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
           label='Packing detail',
           v-if='checkStatus("PACKING_DETAIL")',
           @click='packDetail()'
         )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
           label='Set Delivery',
           v-if='checkStatus("SET_DELIVERY")',
           @click='setDelivery()'
         )
-        Button.p-button-outlined.p-button-primary.bg-white.w-25(
+        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
           type='button',
           label='Reset Delivery',
           v-if='checkStatus("RESET_DELIVERY")',
@@ -124,7 +125,7 @@ class DeliveryOrder extends Vue {
 
   async pickItem() {
     // update progress order
-    const dataUpdate = { ...this.orderDetail }
+    const dataUpdate = _.cloneDeep(this.orderDetail)
     dataUpdate.status = ORDER_STATUS.IN_PROGRESS
     if (!dataUpdate.assignee) {
       if (this.user) {
@@ -133,12 +134,14 @@ class DeliveryOrder extends Vue {
         }
       }
     }
-    await this.actPostUpdateProgressOrder(dataUpdate)
-    this.typeTitle = 'PICK_ITEM'
-    this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
-    this.enablePack = false
-    this.textHeading = 'Picking list'
-    this.$router.push(`/stock-out/order/${this.id}?isPick=false`)
+    const result = await this.actPostUpdateProgressOrder(dataUpdate)
+    if(result) {
+      this.typeTitle = 'PICK_ITEM'
+      this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
+      this.enablePack = false
+      this.textHeading = 'Picking list'
+      this.$router.push(`/stock-out/order/${this.id}?isPick=false`)
+    }
   }
 
   selectItem(event) {
@@ -176,7 +179,7 @@ class DeliveryOrder extends Vue {
       if(this.orderDetail.status === ORDER_STATUS.NEW ||this.$route.query.isPick === 'true') {
         show = true
       }
-      break       
+      break
     case 'PACK_ITEM':
       if(this.orderDetail.status === ORDER_STATUS.IN_PROGRESS && this.$route.query.isPick !== 'true') {
         show = true
@@ -193,7 +196,7 @@ class DeliveryOrder extends Vue {
       }
       break
     case 'RESET_DELIVERY':
-      if(this.orderDetail.status === ORDER_STATUS.SETTED) {
+      if(this.orderDetail.status === ORDER_STATUS.SETTED || this.orderDetail.status === ORDER_STATUS.ACCEPTED) {
         show = true
       }
       break
@@ -202,7 +205,8 @@ class DeliveryOrder extends Vue {
   }
 
   initialValue() {
-    if (this.$route.query.isPick !== 'true'  &&  this.orderDetail.status === ORDER_STATUS.IN_PROGRESS){
+    if ((this.$route.query.isPick === 'false'  &&  this.orderDetail.status === ORDER_STATUS.IN_PROGRESS)
+      || (this.$route.query.isPick === undefined && this.orderDetail.status === ORDER_STATUS.IN_PROGRESS)){
       this.action = STOCK_OUT_ACTION.ORDER_PICK_ITEM
     } else {
       this.action = STOCK_OUT_ACTION.ORDER_DETAIL
@@ -245,7 +249,7 @@ class DeliveryOrder extends Vue {
         packingInfo.scrollTop = scrollHeight
       }
     }
-    
+
   }
 }
 
@@ -260,6 +264,6 @@ export default DeliveryOrder
 .packing__detail--left
   height: calc( 100% - 32px) !important
 .w-25
-  width: 25%
+  min-width: 95px
   margin-left: 7px
 </style>

@@ -332,10 +332,14 @@ class DeliveryOrderPacking extends Vue {
   async handleReportBox() {
     if(this.originalBoxActive) {
       const result = await this.actCreateReport({
-        box: {
-          id: this.originalBoxActive.boxCode
-        },
-        note: this.valueReportNote
+        boxNote: [
+          {
+            box: {
+              id: this.originalBoxActive.boxCode
+            },
+            note: this.valueReportNote
+          }
+        ] 
       })
       if(result) {
         this.isShowModalReport = false
@@ -353,6 +357,7 @@ class DeliveryOrderPacking extends Vue {
           detail: 'This box has been reported!',
           life: 3000
         })
+        this.isShowModalReport = false
       }
     }
   }

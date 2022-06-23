@@ -6,8 +6,8 @@
     .my-3.font-bold.flex.align-items-center
       .icon.icon-info.inline-block
       span.uppercase.ml-1 order detail
-    h3.uppercase.m-1 id: {{ deliveryOrderDetail.id }}
     span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{status}} &nbsp;
+    h3.uppercase.inline-block.m-1 id: {{ deliveryOrderDetail.id }} 
     h5.uppercase.inline-block.text-400 Create time:&nbsp;
     span.uppercase.font-bold 2022 12:22AM
     TabView
@@ -24,6 +24,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 import DeliveryDriverInfo from '~/components/stock-out/driver/DriverInfor.vue'
+import { ORDER_STATUS } from '~/utils'
 @Component({
   components: {
     DeliveryDriverInfo
@@ -62,10 +63,19 @@ class PackingInformationDetail extends Vue {
         { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=true`, icon: 'pi pi-info-circle' },
         { label: 'Picking list', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-list' }
       ]
-    } else {
+    } else if(this.deliveryOrderDetail.status===ORDER_STATUS.IN_PROGRESS) {
       return [
         { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=true`, icon: 'pi pi-info-circle' },
         { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-list' },
+        {
+          label: 'Packing detail',
+          to: `/stock-out/order/${this.deliveryOrderDetail.id}/packing`,
+          icon: 'pi pi-info-circle'
+        }
+      ]
+    } else {
+      return [
+        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-info-circle' },
         {
           label: 'Packing detail',
           to: `/stock-out/order/${this.deliveryOrderDetail.id}/packing`,
