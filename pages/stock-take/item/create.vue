@@ -1,6 +1,6 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
-    NoteInfo(v-if="sellerInfo" :sellerInfo="sellerInfo" :creator="user")
+    NoteInfo(:noteInfor="noteInfor" :homeItem="homeItem" :breadcrumbItem="breadcrumbItem")
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
       .stock-takeItem.flex.flex-column
         .stock-takeItem__header
@@ -11,7 +11,7 @@
             Button.btn.btn-primary.border-0(@click='handleAddItems') Add Item
             Button.btn.btn-primary.border-0(@click='handleSubmit' :disabled='isDisabledSubmit') Save
         .stock-takeItem__content
-          DataTable(
+          DataTable.m-h-700(
             :value='listStockSelected'
             dataKey='id'
             responsiveLayout="scroll"
@@ -77,9 +77,9 @@ import { getDeleteMessage } from '~/utils'
 import ItemListModel from '~/components/stock-take/ItemListModel.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
-import { User } from '~/models/User'
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 const nsStoreUser = namespace('user-auth/store-user')
+const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -98,14 +98,14 @@ class StockTakeItems extends Vue {
   noteText: string = ''
 
   @nsStoreUser.State
-  user: User.Model | undefined
+  user: any | undefined
 
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
 
   @nsStoreCreateStockTake.Action
   actCreateStockTake!: (params?: any) => Promise<any>
-  
+
   get homeItem() {
     return { label: 'Note list', to: '/stock-take' }
   }
@@ -123,7 +123,7 @@ class StockTakeItems extends Vue {
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'box')
   }
-  
+
   get isDisabledSubmit() {
     return _.size(this.listStockSelected) > 0 ? null : 'disabled'
   }
@@ -136,7 +136,25 @@ class StockTakeItems extends Vue {
         return firstStock
       }
     }
-    return { sellerName: 'N/A', sellerEmail: 'N/A', sellerPhone: 'N/A' }
+  }
+
+  get noteInfor() {
+    return {
+      status: 'NEW',
+      creatorInfo: [
+        { title:'Create Time', value: this.user?.createdAt ?
+          dayjs(new Date(this.user?.createdAt)).format('YYYY-MM-DD')
+          : null, icon: 'icon-receipt-note' },
+        { title:'Creator ID', value: this.user.staffId, icon: 'icon-tag-user' },
+        { title:'Warehouse', value: this.user?.warehouse?.name, icon: 'icon-warehouse' },
+        { title:'Items', value: this.totalItem, icon: 'icon-frame' }
+      ],
+      sellerInfo: [
+        { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },
+        { title:'Email', value: this.sellerInfo?.sellerEmail, icon: 'icon-sender-email' },
+        { title:'Phone', value: this.sellerInfo?.sellerPhone, icon: 'icon-sender-phone' }
+      ]
+    }
   }
 
   handleAddItems() {
@@ -147,11 +165,12 @@ class StockTakeItems extends Vue {
     const data = {
       note: this.noteText,
       checkType: 'ITEM',
-      stockBoxList: _.map(this.listStockSelected, ({ id }) => ({ id }))
+      stockTakeItem: _.map(this.listStockSelected, ({ id }) => ({ stockBoxId: id }))
     }
     const result = await this.actCreateStockTake(data)
     if(result) {
       if(result?.id) {
+        this.$router.push(`/stock-take/item/${result.id}/note-detail`)
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',

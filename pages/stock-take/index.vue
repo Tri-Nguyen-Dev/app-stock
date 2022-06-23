@@ -131,7 +131,7 @@
                 span.table__status.table__status--available(v-if="data.status === 'COMPLETED'") Completed
                 span.table__status.table__status--draft(v-if="data.status === 'APPROVING'") Approving
                 span.table__status.table__status--available(v-if="data.status === 'APPROVED'") Approved
-                span.table__status.table__status--draft(v-if="data.status === 'SAVE_DRAFT'") Save Draft
+                span.table__status.table__status--draft(v-if="data.status === 'DRAFT'") Draft
           Column(header='CHECK Type' :sortable="true" field='checkType' sortField="_checkType" headerClass="grid-header-right")
             template(#body='{ data }')
                 div.grid-cell-right {{ data.checkType }}
@@ -174,7 +174,8 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockTake = namespace('stock-take/note-list')
-const nsStoreUser = namespace('user-auth/store-user')const dayjs = require('dayjs')
+const nsStoreUser = namespace('user-auth/store-user')
+const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -262,19 +263,13 @@ class StockTake extends Vue {
   }
 
   rowdbClick({ data }) {
-    if(data.checkType === 'BOX') {
-      if( data.assignee?.staffId === this.user?.staffId && data.approver == null) {
-        this.$router.push(`/stock-take/box/${data.id}/note-detail`)
-      } else if (data.status === ' APPROVING' || data.status === 'APPROVED' &&  data.approve?.staffId === this.user?.staffId) {
-        this.$router.push(`/stock-take/box/${data.id}/approve`)
+    const type = data.checkType === 'BOX' ? 'box' : 'item'
+    if(data.status === 'APPROVING' || data.status === 'APPROVED') {
+      if(data.approver && data.approver?.staffId === this.user?.staffId) {
+        this.$router.push(`/stock-take/${type}/${data.id}/approve`)
       }
-    }
-    else if(data.checkType === 'ITEM') {
-      if( data.assignee?.staffId === this.user?.staffId && data.approver == null) {
-        this.$router.push(`/stock-take/item/${data.id}/note-detail`)
-      } else if (data.status === ' APPROVING' || data.status === 'APPROVED' &&  data.approve?.staffId === this.user?.staffId) {
-        this.$router.push(`/stock-take/item/${data.id}/approve`)
-      }
+    } else if(!data.assignee || data.assignee?.staffId === this.user?.staffId) {
+      this.$router.push(`/stock-take/${type}/${data.id}/note-detail`)
     }
   }
 
