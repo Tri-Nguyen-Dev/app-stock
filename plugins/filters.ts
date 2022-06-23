@@ -65,5 +65,6 @@ Vue.filter('itemStockStatus', (value) => {
 })
 
 Vue.filter('trimUnderShift', (value) => {
+  if(!value) return ''
   return value.replace('_', ' ')
 })

@@ -7,7 +7,7 @@
           .icon--large.bg-blue-700(class='icon-note')
         .col-10.flex.flex-column.justify-content-center
           div.font-normal.text-700.text-base Note
-          Textarea.text-lg(:value='note' :disabled='isComplete' placeholder='Write something...' rows='2' cols=30)
+          Textarea.text-lg(:value='noteDetailInfo.note' :disabled='isComplete' placeholder='Write something...' rows='2' cols=30)
     .col-9.pl-4.pr-1.flex.flex-column.h-full
       .grid
         .col-4
@@ -124,6 +124,7 @@ class NoteBoxDetail extends Vue {
     wareHouse?: any
     status?: any
     id: any
+    note: any
   } = {
     user: undefined,
     totalBox: 0,
@@ -131,7 +132,8 @@ class NoteBoxDetail extends Vue {
     createdAt: 0,
     picId: '',
     status: '',
-    id: ''
+    id: '',
+    note: ''
   }
 
   rowExpaned: any = []
@@ -415,6 +417,7 @@ class NoteBoxDetail extends Vue {
     this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
     this.stockTakeInfo.status = this.boxStockTakeDetail?.status
     this.stockTakeInfo.id = this.boxStockTakeDetail?.id
+    this.stockTakeInfo.note = this.boxStockTakeDetail?.note
     return this.stockTakeInfo
   }
 
