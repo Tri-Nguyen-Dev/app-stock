@@ -3,9 +3,11 @@
     div.pagination__info(v-if="!showDeleteBtn")
       img(:src="require('~/assets/icons/filter-left.svg')")
       span.pagination__total {{ showingText }}
-    .pagination__delete(v-else @click="$emit('onDelete')")
-      .icon.icon-btn-delete
-      span {{title}} {{ deletedList.length }} {{type}}
+    div.flex.align-items-center(v-else)
+      .pagination__delete.mr-2(@click="$emit('onDelete')")
+        .icon.icon-btn-delete
+        span {{title}} {{ deletedList.length }} {{type}}
+      slot(name="action")
     Paginator(
       :rows="paging.pageSize"
       :totalRecords="total"

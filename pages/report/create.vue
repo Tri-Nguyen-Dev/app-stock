@@ -1,13 +1,20 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-      StockTakeNoteInfo(:info='stockTakeInfo')
-      .grid.wapprer-unit.ml-4.mr-4
-        .col-2.flex.align-items-center.justify-content-center
-          .icon--large.bg-blue-700(class='icon-note')
-        .col-10.flex.flex-column.justify-content-center
-          div.font-normal.text-700.text-base Note
-          Textarea.text-lg(:value='note' placeholder='Write something...' rows='2' cols=30)
+      .order__packing--detail
+      .packing__detail--header.border-bottom-1.border-gray-300
+        Breadcrumb(:home='homeItem', :model='breadcrumbItem')
+      .packing__detail--content.pl-4.pr-4
+        .my-3.font-bold.flex.align-items-center
+          span.uppercase.ml-1 note detail
+        span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') new &nbsp;
+      .grid.m-0.p-4(v-if='user')
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Create ID" :value="user.displayName" icon="icon-user-octagon")
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Warehouse" :value="user.displayName" icon="icon-warehouse-info")
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          StockUnit(title="Total box" :value="100" icon="icon-total-inventory")
     .col-9.packing__detail--left.pl-4.pr-1.flex-1
       .grid
         .col-4
@@ -17,7 +24,6 @@
             type='button',
             label='Add box',
             @click='addBox'
-            :disabled ='disabledAddBox'
           )
           Button.p-button-outlined.p-button-primary.bg-white.w-25(
             type='button',
@@ -47,6 +53,7 @@
             field='sellerEmail',
             header='SELLER EMAIL',
             className='w-3',
+            sortField='_request.seller.email'
           )
           Column(
             field='rackLocation.name',
@@ -81,41 +88,33 @@
 </template>
 
 <script lang="ts">
-import { Component, namespace, Prop, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
 import ItemList from '~/components/stock-out/item/ItemList.vue'
 import StockTakeNoteInfo from '~/components/stock-take/GeneralInfo.vue'
 import BoxDataTable from '~/components/box/BoxDataTable.vue'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 import { User } from '~/models/User'
-import { STOCK_TAKE_STATUS } from '~/utils'
-import StockUnit from '~/components/stock/StockUnit.vue'
-const nsStoreUser = namespace('user-auth/store-user')
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
-const nsStoreReportList = namespace('report/report-list')
+const nsStoreUser = namespace('user-auth/store-user')
 @Component({
   components: {
     ItemList,
     StockTakeNoteInfo,
     BoxDataTable,
-    Pagination,
-    StockUnit
+    Pagination
   }
 })
 class DeliveryOrder extends Vue {
-  @Prop() id!: string
   boxShow : any[] = []
   boxSelected: any
   disabledApply = true
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
-  note = ''
-  disabledAddBox= false
   stockTakeInfo: {
-    user: User.Model | undefined,
+    user?: any,
     totalBox?: number,
-    wareHouse?: any,
-    status:string
-  } = { user: undefined ,totalBox:0,wareHouse: undefined, status: 'NEW' }
+    wareHouse?: any
+  } = { user: undefined,totalBox:0,wareHouse: undefined }
 
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
@@ -126,9 +125,6 @@ class DeliveryOrder extends Vue {
   @nsStoreUser.State
   user: User.Model | undefined
 
-  @nsStoreReportList.State
-  listBoxTakeNote!: any
-
   get breadcrumbItem() {
     return [
       { label: 'Stock take Box', to: '/stock-take/box/create', icon: 'pi pi-info-circle' }
@@ -137,24 +133,23 @@ class DeliveryOrder extends Vue {
 
   showModal = false
   addBox() {
-    this.showModal = true
+    this.showModal = true  
   }
 
   async  saveStockTake() {
+   
     const listBox = this.boxShow.map(element =>{
       return {
-        boxCode: element.id
+        id: element.id
       }
     })
     if(listBox.length===0) {
       return
     }
     const data = {
-      note: this.note,
+      note: 'Note',
       checkType: 'BOX',
-      stockTakeBox: listBox,
-      wareHouse: this.user?.warehouse? { id: this.user?.warehouse.id } : undefined,
-      status: STOCK_TAKE_STATUS.NEW
+      boxList: listBox
     }
     await this.actCreateStockTake(data)
     if(this.stockTakeCreated.id){
@@ -164,7 +159,6 @@ class DeliveryOrder extends Vue {
         detail: 'Successfully create stock take',
         life: 3000
       })
-      this.$router.push(`/stock-take/box/${this.stockTakeCreated.id}/note-detail`)
     }
   }
 
@@ -189,24 +183,8 @@ class DeliveryOrder extends Vue {
 
   applyBox(){
     this.showModal = false
-    this.boxShow = _.cloneDeep(this.boxSelected)
+    this.boxShow = [...this.boxSelected]
     this.$forceUpdate()
-  }
-
-  mounted() {
-    this.stockTakeInfo.totalBox = 0
-    this.stockTakeInfo.user = this.user
-    if(this.listBoxTakeNote){
-      this.stockTakeInfo.totalBox = this.listBoxTakeNote.length
-      this.boxShow = this.listBoxTakeNote.map(element => {
-        return {
-          id:element.boxNote.box.id,
-          sellerEmail: element.boxNote.box.request?.seller.email,
-          rackLocation: element.boxNote.box.rackLocation
-        }
-      })
-      this.disabledAddBox = true
-    }
   }
 }
 
@@ -223,18 +201,29 @@ export default DeliveryOrder
 .w-25
   width: 25%
   margin-left: 7px
-.wapprer-unit
-  min-height: 72px
-  border-radius: 4px
-  background-color: $text-color-200
-  .text-wrap
-    word-break: break-all
-  ::v-deep.p-inputtext
-    border: none
-    background: transparent
-    padding: 0
-    color: #000
-    font-weight: 600
-    box-shadow: none !important
-    max-width: 100%
+::v-deep.order__packing--detail
+  .p-breadcrumb
+    .p-menuitem-link
+      display: flex
+      align-items: center
+      .p-menuitem-icon
+        display: block !important
+        height: 100%
+      .p-menuitem-text
+        margin-left: 4px
+  .packing__detail--content
+
+    .p-tabview .p-tabview-nav li
+      .p-tabview-nav-link
+        background: #fff
+        border: none
+        box-shadow: none !important
+
+    .p-tabview .p-tabview-panels
+      background: #fff
+      padding: 1.25rem 0 0 0
+
+    .p-highlight .p-tabview-nav-link
+      color: #000 !important
+      border-bottom: 2px solid #486AE2 !important
 </style>

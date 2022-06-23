@@ -60,6 +60,10 @@ Vue.filter('capacityPercent', (value) => {
   return `${_.isInteger(percent) ? percent : (value * 100).toFixed(2)}%`
 })
 
+// -- [report status] -------------------------------
+Vue.filter('reportStatus', (value) => {
+  return FilterConstants.REPORT_STATUS_MAP.get(value) || ''
+})
 Vue.filter('itemStockStatus', (value) => {
   return FilterConstants.STATUS_ITEM_STOCK.get(value) || ''
 })
