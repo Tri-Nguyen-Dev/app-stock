@@ -55,8 +55,8 @@ div
                     span.info-content(v-if="data.box.request") {{  data.box.request.seller.displayName }}
           Column(header='ST Note ID' field='barCode' sortField="_barCode" headerClass="grid-header-center")
             template(#body='{ data }')
-              div.grid-cell-center
-                NuxtLink(:to="`/box/${data.box.id}`") {{ data.stockTakeId }}
+              div.grid-cell-center 
+                NuxtLink(:to="`/stock-take/box/${data.box.id}/note-detail`") {{ data.stockTakeId }}
           Column(header='NOTE' :styles="{'width': '40%'}" field='category' sortField="_category" headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center {{ data.note }}
