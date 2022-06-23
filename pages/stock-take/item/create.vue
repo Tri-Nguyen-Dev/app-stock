@@ -170,7 +170,7 @@ class StockTakeItems extends Vue {
     const result = await this.actCreateStockTake(data)
     if(result) {
       if(result?.id) {
-        this.$router.push(`/stock-take/item/${result.id}/items-detail`)
+        this.$router.push(`/stock-take/item/${result.id}/note-detail`)
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',

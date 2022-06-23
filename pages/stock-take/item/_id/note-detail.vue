@@ -16,7 +16,7 @@
             Button.btn.btn-primary.border-0(@click='exportpdf' ) Export
         .inventory__content
           DataTable.m-h-700(
-            :value='items'
+            :value='itemsData'
             dataKey='id'
             :rows='20'
             responsiveLayout="scroll"
@@ -138,7 +138,6 @@ class stockTakeItemsDetail extends Vue {
 
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
-    this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
     if(this.boxStockTakeDetail.status === 'COMPLETED') {
       this.isDetail = false
     }
@@ -147,6 +146,11 @@ class stockTakeItemsDetail extends Vue {
 
   get total() {
     return this.boxStockTakeDetail?.totalStockTakeItem
+  }
+
+  get itemsData(){
+    this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
+    return this.items
   }
 
   get noteInfor() {
@@ -209,8 +213,9 @@ class stockTakeItemsDetail extends Vue {
         detail: 'Successfully submit items',
         life: 3000
       })
+      this.isDetail = !this.isDetail
+      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
     }
-    this.isDetail = !this.isDetail
 
   }
 
@@ -247,7 +252,7 @@ class stockTakeItemsDetail extends Vue {
   get breadcrumbItem() {
     return [
       { label: 'Note Take Detail',
-        to: `/stock-take/item/${this.$route.params.id}/items-detail`
+        to: `/stock-take/item/${this.$route.params.id}/note-detail`
       }
     ]
   }
