@@ -7,11 +7,11 @@
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           p.my-0.info-title.text-sm ID Creator
-          p.info-content.text-900.font-semibold.text-sm.my-1 {{ user.email }}
+          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="user") {{ user.email }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           p.my-0.info-title.text-sm Creator name
-          p.info-content.text-900.font-semibold.text-sm.my-1 {{ user.displayName }}
+          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="user") {{ user.displayName }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           p.my-0.info-title.text-sm Warehouse
@@ -19,15 +19,15 @@
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           p.my-0.info-title.text-sm Seller email
-          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length > 0") {{ infoSeller.email }}
+          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length > 0 && infoSeller") {{ infoSeller.email }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           .my-0p.info-title.text-sm Seller phone
-          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length > 0") {{ infoSeller.phoneNumber }}
+          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length > 0 && infoSeller") {{ infoSeller.phoneNumber }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           p.my-0.info-title.text-sm Seller name
-          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length > 0") {{ infoSeller.displayName }} 
+          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length > 0 && infoSeller") {{ infoSeller.displayName }} 
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
