@@ -40,6 +40,8 @@ div
             template(#body='{ data }')
               div
                 NuxtLink.m-0(:to="`/box/${data.box.id}`") {{ data.box.id }}
+                br
+                span.report-status.table__status.table__status--available(v-if="data.status") {{ data.status }}
                 .info-seller
                   h3.mt-2.mb-0.text-base Seller Information:
                   .info-item
@@ -57,7 +59,7 @@ div
                 NuxtLink(:to="`/box/${data.box.id}`") {{ data.box.id }}
           Column(header='NOTE' :styles="{'width': '40%'}" field='category' sortField="_category" headerClass="grid-header-center")
             template(#body='{ data }')
-              div.grid-cell-center.text-primary {{ data.note }}
+              div.grid-cell-center {{ data.note }}
     div.flex.justify-content-center
       Button.btn.btn-primary.h-3rem.mb-2(:disabled="disabledButton" @click="createStockTake") Create stock-take note
 </template>
