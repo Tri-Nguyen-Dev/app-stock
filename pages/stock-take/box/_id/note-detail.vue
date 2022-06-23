@@ -1,7 +1,7 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-      StockTakeNoteInfo(:info='stockTakeInfo')
+      StockTakeNoteInfo(:info='noteDetailInfo')
       .grid.wapprer-unit.ml-4.mr-4
         .col-2.flex.align-items-center.justify-content-center
           .icon--large.bg-blue-700(class='icon-note')
@@ -198,13 +198,6 @@ class NoteBoxDetail extends Vue {
         }
       })
     )
-    this.stockTakeInfo.createdAt = this.boxStockTakeDetail?.createdAt
-    this.stockTakeInfo.user = this.boxStockTakeDetail?.createdBy
-    this.stockTakeInfo.picId = this.boxStockTakeDetail?.assignee.staffId
-    this.stockTakeInfo.totalBox = this.boxStockTakeDetail?.totalStockTakeBox
-    this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
-    this.stockTakeInfo.status = this.boxStockTakeDetail?.status
-    this.stockTakeInfo.id = this.boxStockTakeDetail?.id
   }
 
   async checkItems() {
@@ -412,6 +405,17 @@ class NoteBoxDetail extends Vue {
   get isApprove() {
     const { status, finalResultStatus } = this.boxStockTakeDetail
     return status === 'COMPLETED' && finalResultStatus === 'NG'
+  }
+
+  get noteDetailInfo() {
+    this.stockTakeInfo.createdAt = this.boxStockTakeDetail?.createdAt
+    this.stockTakeInfo.user = this.boxStockTakeDetail?.createdBy
+    this.stockTakeInfo.picId = this.boxStockTakeDetail?.assignee?.staffId
+    this.stockTakeInfo.totalBox = this.boxStockTakeDetail?.totalStockTakeBox
+    this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
+    this.stockTakeInfo.status = this.boxStockTakeDetail?.status
+    this.stockTakeInfo.id = this.boxStockTakeDetail?.id
+    return this.stockTakeInfo
   }
 
   rowClass(data: any) {

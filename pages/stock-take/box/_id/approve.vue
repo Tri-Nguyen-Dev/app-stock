@@ -1,7 +1,7 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-      StockTakeNoteInfo(:info='stockTakeInfo')
+      StockTakeNoteInfo(:info='noteDetailInfo')
     .col-9.pl-4.pr-1.flex.flex-column.h-full
       .grid
         .col-4
@@ -146,14 +146,6 @@ class ApproveBoxStockTake extends Vue {
         }
       })
     )
-    this.stockTakeInfo.createdAt = this.boxStockTakeDetail?.createdAt
-    this.stockTakeInfo.user = this.boxStockTakeDetail?.createdBy
-    this.stockTakeInfo.picId = this.boxStockTakeDetail?.assignee?.staffId
-    this.stockTakeInfo.approveId = this.boxStockTakeDetail?.approve?.staffId
-    this.stockTakeInfo.totalBox = this.boxStockTakeDetail?.totalStockTakeBox
-    this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
-    this.stockTakeInfo.id = this.boxStockTakeDetail?.id
-    this.stockTakeInfo.status = this.boxStockTakeDetail?.status
   }
 
   getStatusBox(stockTakeBoxItem: any) {
@@ -188,7 +180,8 @@ class ApproveBoxStockTake extends Vue {
           return { id, approvedQuantity }
         })
       })
-    )    const result = await this.actApproveSubmit({ id: this.$route.params.id , data: submitData })
+    )
+    const result = await this.actApproveSubmit({ id: this.$route.params.id , data: submitData })
     if (result) {
       this.$toast.add({
         severity: 'success',
@@ -223,6 +216,18 @@ class ApproveBoxStockTake extends Vue {
   get isApproved () {
     const { status } = this.boxStockTakeDetail
     return status === 'APPROVED'
+  }
+
+  get noteDetailInfo() {
+    this.stockTakeInfo.createdAt = this.boxStockTakeDetail?.createdAt
+    this.stockTakeInfo.user = this.boxStockTakeDetail?.createdBy
+    this.stockTakeInfo.picId = this.boxStockTakeDetail?.assignee?.staffId
+    this.stockTakeInfo.approveId = this.boxStockTakeDetail?.approve?.staffId
+    this.stockTakeInfo.totalBox = this.boxStockTakeDetail?.totalStockTakeBox
+    this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
+    this.stockTakeInfo.id = this.boxStockTakeDetail?.id
+    this.stockTakeInfo.status = this.boxStockTakeDetail?.status
+    return this.stockTakeInfo
   }
 }
 
