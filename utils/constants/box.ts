@@ -14,3 +14,11 @@ export const ITEM_SELLER_INFO = [
   { id: 2, icon: 'sender-email', label: 'Email' },
   { id: 3, icon: 'sender-phone', label: 'Phone number' }
 ]
+
+export enum BOX_STATUS  {
+  BOX_STATUS_AVAILABLE = 'BOX_STATUS_AVAILABLE',
+  BOX_STATUS_OUTGOING = 'BOX_STATUS_OUTGOING',
+  BOX_STATUS_DRAFT = 'BOX_STATUS_DRAFT',
+  BOX_STATUS_DISABLE= 'BOX_STATUS_DISABLE',
+  BOX_STATUS_REPORTED= 'BOX_STATUS_REPORTED',
+}
