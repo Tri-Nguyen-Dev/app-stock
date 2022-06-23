@@ -68,3 +68,8 @@ Vue.filter('reportStatus', (value) => {
 Vue.filter('itemStockStatus', (value) => {
   return FilterConstants.STATUS_ITEM_STOCK.get(value) || ''
 })
+
+Vue.filter('trimUnderShift', (value) => {
+  if(!value) return ''
+  return value.replace('_', ' ')
+})
