@@ -7,7 +7,7 @@
         .col-4
           h1.text-heading Stock-take Note
         .col-8.btn-right.flex.justify-content-end
-          .btn.btn-primary.cursor-pointer.mr-2(@click='saveApprove')
+          .btn.btn-primary.cursor-pointer.mr-2(@click='saveApprove' v-if='!isApproved')
             span.uppercase save
           .btn.btn-primary.cursor-pointer.mr-2(@click='exportNote')
             span.uppercase export
@@ -50,7 +50,7 @@
                   Column(field="countedQuantity" header="COUNTED QTY" className="red-text")
                   Column(field="approvedQuantity" header="APPROVE QTY" className="red-text")
                     template(#body="{data}")
-                      InputNumber.w-7rem(inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)')
+                      InputNumber.w-7rem(inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)' :disabled='isApproved')
                   Column(field="discrepancy" header="APPROVE VARIANT")
             template(#empty)
               div.flex.align-items-center.justify-content-center.flex-column
@@ -61,6 +61,7 @@
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import StockTakeNoteInfo from '~/components/stock-take/GeneralInfo.vue'
+import { exportFileTypePdf } from '~/utils'
 const nsStoreStockTake = namespace('stock-take/box-detail')
 const nsStoreUser = namespace('user-auth/store-user')
 
@@ -99,11 +100,20 @@ class ApproveBoxStockTake extends Vue {
   @nsStoreUser.State
   user!: any
 
+  @nsStoreUser.State
+  receiptUrl!: any
+
   @nsStoreStockTake.Action
   actGetBoxStockTakeDetail!: (params?: any) => Promise<void>
 
   @nsStoreStockTake.Action
   actGetAssignBoxStockTake!: (params?: any) => Promise<any>
+
+  @nsStoreStockTake.Action
+  actApproveSubmit!: (params?: any) => Promise<any>
+
+  @nsStoreStockTake.Action
+  actGetStockTakeLable!: (params?: any) => Promise<any>
 
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
@@ -171,20 +181,48 @@ class ApproveBoxStockTake extends Vue {
     }
   }
 
-  // saveApprove() {
-  //   const submitData = _.flatten(
-  //     _.map(this.dataList, ({ stockTakeBoxItem }) => {
-  //       return _.map(stockTakeBoxItem, ({ id, approvedQuantity }) => {
-  //         return { id, approvedQuantity }
-  //       })
-  //     })
-  //   )
-  // }
+  async saveApprove() {
+    const submitData = _.flatten(
+      _.map(this.dataList, ({ stockTakeBoxItem }) => {
+        return _.map(stockTakeBoxItem, ({ id, approvedQuantity }) => {
+          return { id, approvedQuantity }
+        })
+      })
+    )    const result = await this.actApproveSubmit({ id: this.$route.params.id , data: submitData })
+    if (result) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Save approve stock take successfully!',
+        life: 3000
+      })
+      this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Save approve stock take failed!',
+        life: 3000
+      })
+    }
+  }
 
-  exportNote() {}
+  async exportNote() {
+    const result = await this.actGetStockTakeLable({
+      id: this.$route.params.id
+    })
+    if (result) {
+      exportFileTypePdf(result, `Stock-Take-${this.$route.params.id}`)
+    }
+  }
 
   rowClass(data: any) {
     return (data.countedQuantity !== data.approvedQuantity || data.countedQuantity !== data.inventoryQuantity) && 'red-row'
+  }
+
+  get isApproved () {
+    const { status } = this.boxStockTakeDetail
+    return status === 'APPROVED'
   }
 }
 

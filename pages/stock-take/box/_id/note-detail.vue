@@ -7,7 +7,7 @@
           .icon--large.bg-blue-700(class='icon-note')
         .col-10.flex.flex-column.justify-content-center
           div.font-normal.text-700.text-base Note
-          Textarea.text-lg(:value='note' placeholder='Write something...' rows='2' cols=30)
+          Textarea.text-lg(:value='note' :disabled='isComplete' placeholder='Write something...' rows='2' cols=30)
     .col-9.pl-4.pr-1.flex.flex-column.h-full
       .grid
         .col-4
@@ -104,6 +104,7 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import StockTakeNoteInfo from '~/components/stock-take/GeneralInfo.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import { exportFileTypePdf } from '~/utils'
 const nsStoreStockTake = namespace('stock-take/box-detail')
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 const nsStoreUser = namespace('user-auth/store-user')
@@ -146,6 +147,9 @@ class NoteBoxDetail extends Vue {
   @nsStoreUser.State
   user!: any
 
+  @nsStoreUser.State
+  receiptUrl!: any
+
   @nsStoreStockTake.Action
   actGetBoxStockTakeDetail!: (params?: any) => Promise<void>
 
@@ -156,11 +160,20 @@ class NoteBoxDetail extends Vue {
   actGetAssignBoxStockTake!: (params?: any) => Promise<any>
 
   @nsStorePackingDetail.Action
-  actCreateReport!:(data: any) => Promise<any>
+  actCreateReport!: (data: any) => Promise<any>
+
+  @nsStoreStockTake.Action
+  actApproveStockTake!: (params?: any) => Promise<any>
+
+  @nsStoreStockTake.Action
+  actGetStockTakeLable!: (params?: any) => Promise<any>
 
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
-    if(this.boxStockTakeDetail?.status !== 'NEW' && this.user?.staffId !== this.boxStockTakeDetail?.assignee?.staffId) {
+    if (
+      this.boxStockTakeDetail?.status !== 'NEW' &&
+      this.user?.staffId !== this.boxStockTakeDetail?.assignee?.staffId
+    ) {
       this.$router.push('/stock-take')
     }
     this.dataList = _.cloneDeep(
@@ -226,7 +239,7 @@ class NoteBoxDetail extends Vue {
     }
   }
 
-  changeQuantity( data:any ) {
+  changeQuantity(data: any) {
     if (data) {
       data.discrepancy = data.countedQuantity - data.inventoryQuantity
       if (data.countedQuantity === null) {
@@ -245,12 +258,19 @@ class NoteBoxDetail extends Vue {
     }
   }
 
-  reportTakeNote( data:any ) {
+  reportTakeNote(data: any) {
     this.isShowModalReport = true
     this.reportData = data
   }
 
-  exportNote() {}
+  async exportNote() {
+    const result = await this.actGetStockTakeLable({
+      id: this.$route.params.id
+    })
+    if (result) {
+      exportFileTypePdf(result, `Stock-Take-${this.$route.params.id}`)
+    }
+  }
 
   async saveDraft() {
     const submitData = _.flatten(
@@ -325,7 +345,7 @@ class NoteBoxDetail extends Vue {
   }
 
   async handleReportItems() {
-    if(this.reportData) {
+    if (this.reportData) {
       const result = await this.actCreateReport({
         boxNote: [
           {
@@ -335,7 +355,6 @@ class NoteBoxDetail extends Vue {
             note: this.valueReportNote
           }
         ]
-
       })
       if (result) {
         this.isShowModalReport = false
@@ -356,11 +375,27 @@ class NoteBoxDetail extends Vue {
     }
   }
 
-  approveNote() {
-    this.$router.push(`/stock-take/box/${this.$route.params.id}/approve`)
+  async approveNote() {
+    const result = await this.actApproveStockTake({ id: this.$route.params.id })
+    if (result) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'This box has been approve!',
+        life: 3000
+      })
+      this.$router.push(`/stock-take/box/${this.$route.params.id}/approve`)
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Approve box failed!',
+        life: 3000
+      })
+    }
   }
 
-  cancelReportBox(){
+  cancelReportBox() {
     this.isShowModalReport = false
   }
 
