@@ -337,6 +337,12 @@ class createOrder extends Vue {
     }
   }
 
+  destroyed() {
+    if(this.$route.path !== '/stock-out/order/add-items') {
+      this.emptyList()
+    }
+  }
+
   createStockOut() {
     this.$v.information.seller?.$each?.$touch()
     this.$v.information.warehouse?.$each?.$touch()
@@ -455,6 +461,12 @@ class createOrder extends Vue {
   }
 
   async handleCancel() {
+    this.emptyList()
+    this.isModalCancel = false
+    await this.$router.push({ path: '/stock-out/order-list' })
+  }
+
+  async emptyList() {
     const emptyList =  this.listItemsAdd = []
     await this.actGetCreateOrder(_.cloneDeep(emptyList))
     await this.actOutGoingList(_.cloneDeep(emptyList))
@@ -463,8 +475,6 @@ class createOrder extends Vue {
         i.value = null
       })
     })
-    this.isModalCancel = false
-    await this.$router.push({ path: '/stock-out/order-list' })
   }
 
   disableInput(isDisable: boolean) {
