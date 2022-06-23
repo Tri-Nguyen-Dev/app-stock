@@ -124,9 +124,7 @@
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
-    ReportDetail(@closeModal="hideModalDetail" :boxReportDetail="boxReportDetail" :reportDetail="reportDetail")
-    template(#footer)
-      Button.btn.btn-primary.h-3rem(@click='createStockTake(1)') Create stock-take note
+    ReportDetail(@closeModal="hideModalDetail" :boxReportDetail="boxReportDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
       h1.text-heading Report detail
@@ -478,25 +476,8 @@ class ReportList extends Vue {
     this.isShowModalDetail = true
   }
 
-  createStockTake(type) { 
-    if(type === 1) {
-      if(this.reportDetail) {
-        const data:any = []
-        this.reportDetail.boxNote.forEach((box) => {
-          data.push({
-            id: this.reportDetail.id,
-            boxNote: box,
-            createdAt: this.reportDetail.createdAt,
-            createId: this.reportDetail.createdBy.id,
-            status: 'REPORT_NEW'
-          })
-        })
-        this.setListBoxTakeNote(data)
-        this.$router.push('/stock-take/box/create')
-        
-      }
-    }
-    else if (this.selectedReportes.length > 0) {
+  createStockTake() { 
+    if (this.selectedReportes.length > 0) {
       this.setListBoxTakeNote(this.selectedReportes)
       this.$router.push('/stock-take/box/create')
     }
@@ -521,6 +502,8 @@ class ReportList extends Vue {
     return !data
   }
 
+  createStockTakeFromDatail() {
+  }
 }
 export default ReportList
 </script>
