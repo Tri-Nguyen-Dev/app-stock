@@ -7,8 +7,8 @@
       .p-input-icon-right.w-full
         .icon.icon--right.icon-scan
         InputText(v-model='stockInformation.barCode').w-full
-      //- h5.mb-1 SKU
-      //- InputText(v-model='stockInformation.sku').w-full
+      h5.mb-1 SKU
+      InputText(v-model='stockInformation.sku').w-full
       h5.mb-1.required__title Name
       InputText(v-model='stockInformation.name' :class="{'name--error' : $v.stockInformation.name.$error}").w-full
       .error-message(v-if='$v.stockInformation.name.$dirty && !$v.stockInformation.name.required') Name cannot be empty!
@@ -48,7 +48,7 @@
             InputText(type="number" :min="1" v-model='stockInformation.weight').w-full
             .error-message(v-if='stockInformation.weight < 0') Weight cannot be negative!
         .col-6
-          h5.mb-1.required__title Value
+          h5.mb-1.required__title Price
           .p-input-icon-right.w-full
             .icon.icon--right $
             InputText(type="number" :min="1" v-model='stockInformation.value').w-full
@@ -183,7 +183,6 @@ class AddNewStock extends Vue {
     }
     await this.actCreateNewStock({
       barCode: this.stockInformation.barCode,
-      sku: this.stockInformation.sku,
       name: this.stockInformation.name,
       category: this.stockInformation.category,
       quantity: this.stockInformation.quantity,
