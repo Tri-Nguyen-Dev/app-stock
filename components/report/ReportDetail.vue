@@ -57,8 +57,9 @@ div
                 NuxtLink(:to="`/box/${data.box.id}`") {{ data.box.id }}
           Column(header='NOTE' :styles="{'width': '40%'}" field='category' sortField="_category" headerClass="grid-header-center")
             template(#body='{ data }')
-              div.grid-cell-center.text-primary {{ data.note }}  
-    Button.btn.btn-primary.h-3rem.mb-2(:disabled="disabledButton" @click="createStockTake") Create stock-take note
+              div.grid-cell-center.text-primary {{ data.note }}
+    div.flex.justify-content-center
+      Button.btn.btn-primary.h-3rem.mb-2(:disabled="disabledButton" @click="createStockTake") Create stock-take note
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'

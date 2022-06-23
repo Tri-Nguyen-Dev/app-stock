@@ -502,7 +502,24 @@ class ReportList extends Vue {
     return !data
   }
 
-  createStockTakeFromDatail() {
+  createStockTakeFromDatail(data) {
+    const listReport = [{
+      ...this.reportDetail,
+      boxNote: data
+    }]
+    const dataReport:any = []
+    listReport.forEach(report => {
+      report.boxNote.forEach(boxNote => {
+        dataReport.push({
+          id: report.id,
+          boxNote,
+          createdAt: report.createdAt,
+          createId: report.createdBy.staffId
+        })
+      })
+    })
+    this.setListBoxTakeNote(dataReport)
+    this.$router.push('/stock-take/box/create')
   }
 }
 export default ReportList
