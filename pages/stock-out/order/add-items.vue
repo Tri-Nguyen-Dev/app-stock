@@ -107,6 +107,7 @@
         template(#body='{data}')
           InputNumber.w-7rem(v-model="data.delivery" mode="decimal" :min="0"
             :max="data.amount" inputClass="w-full" @input='handleDeliveryChange'
+            :disabled="!data.amount"
           )
       Column(field='image' header='IMAGE')
         template(#body='{data}')

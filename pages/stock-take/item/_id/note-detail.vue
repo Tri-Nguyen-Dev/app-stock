@@ -414,7 +414,7 @@ export default stockTakeItemsDetail
   margin-top: 3rem
   @include desktop
     margin-top: 0px
-    margin-left: 3rem
+    margin-left: 2rem
     height: calc(100vh - 32px)
   &__header
     flex-direction: column
@@ -440,30 +440,6 @@ export default stockTakeItemsDetail
     border-radius: 4px
     position: relative
     overflow: hidden
-    .p-datatable-table
-      .text-primary
-        color: $primary-dark !important
-        font-weight: $font-weight-medium
-      .p-datatable-tbody
-        & > tr
-          background: $text-color-100
-          .text-bold
-            color: $text-color-700
-            .p-inputnumber-input
-              color: $text-color-700
-        .outgoing__selected
-          background: $color-white
-          > .text-bold
-            font-weight: $font-weight-bold
-            color: $text-color-900
-            .p-inputnumber-input
-              font-weight: $font-weight-bold
-              color: $text-color-900 !important
-      .p-datatable-thead > tr > th
-        white-space: unset
-        .p-column-header-content
-          .p-checkbox
-            display: none
   .text-right
     text-align: right !important
     .p-column-header-content
