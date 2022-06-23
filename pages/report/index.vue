@@ -408,10 +408,7 @@ class ReportList extends Vue {
 
   rowUnselect({ originalEvent, data }) {
     originalEvent.originalEvent.stopPropagation()
-    this.selectedReportes = _.filter(
-      this.selectedReportes,
-      (report: any) => report.id !== data.id
-    )
+    this.selectedReportes = _.filter(this.selectedReportes, (report: any) => report.id !== data.id)
   }
 
   addReport() {
