@@ -90,7 +90,7 @@
           span {{ data.createdAt | dateTimeHour24 }}
       Column(field="boxNote.box.id" header="BOX CODE" bodyClass="font-semibold")
       Column(field="boxNote.box.request.seller.email" :sortable="true" header="SELLER EMAIL" className="w-3" sortField="_sellerEmail")
-      Column(field="boxNote.id" header="stock take note id" className="uppercase")
+      Column(field="boxNote.stockTakeId" header="stock take note id" className="uppercase")
       Column(field="boxNote.note" header="note" className="uppercase" bodyClass="font-semibold" )
       Column(field="createId" header="create id" className="uppercase" bodyClass="font-semibold" )
       Column(field="status" header="STATUS"  className="text-center")
