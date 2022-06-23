@@ -90,13 +90,13 @@
           span {{ data.createdAt | dateTimeHour24 }}
       Column(field="boxNote.box.id" header="BOX CODE" bodyClass="font-semibold")
       Column(field="boxNote.box.request.seller.email" :sortable="true" header="SELLER EMAIL" className="w-3" sortField="_sellerEmail")
-      Column(field="boxNote.id" header="stock take note id" className="uppercase")
+      Column(field="boxNote.stockTakeId" header="stock take note id" className="uppercase")
       Column(field="boxNote.note" header="note" className="uppercase" bodyClass="font-semibold" )
       Column(field="createId" header="create id" className="uppercase" bodyClass="font-semibold" )
       Column(field="status" header="STATUS"  className="text-center")
         template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
-                :class=" data.status === 'REPORT_RESOLVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")
+                :class="checkStatus(data.boxNote.status)")
                 | {{ data.boxNote.status | reportStatus }}
       Column(:exportable="false" header="ACTION" className="text-center")
         template(#body="{data}")
@@ -201,8 +201,8 @@ class ReportList extends Vue {
   boxShow : any[] = []
   isUpdate = false
   statusList: any = [
-    { name: 'new', value: REPORT_STATUS.NEW },
-    { name: 'In progress', value: REPORT_STATUS.IN_PROGRESS }
+    { name: 'New', value: REPORT_STATUS.NEW },
+    { name: 'Solved', value: REPORT_STATUS.SOLVED }
   ]
 
   isConfirm = false
@@ -500,6 +500,19 @@ class ReportList extends Vue {
     return !data
   }
 
+  checkStatus(status){
+    switch(status){
+    case REPORT_STATUS.NEW:{
+      return 'text-green-400 bg-green-100 '
+    }
+    case REPORT_STATUS.SOLVED:{
+      return 'text-primary bg-blue-100 '
+    }
+    case REPORT_STATUS.CANCELED:{
+      return 'text-gray-400 bg-gray-100 '
+    }
+    }
+  }
 }
 export default ReportList
 </script>
