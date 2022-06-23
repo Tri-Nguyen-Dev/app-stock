@@ -56,7 +56,7 @@ div
           Column(header='ST Note ID' field='barCode' sortField="_barCode" headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center
-                NuxtLink(:to="`/box/${data.box.id}`") {{ data.box.id }}
+                NuxtLink(:to="`/box/${data.box.id}`") {{ data.stockTakeId }}
           Column(header='NOTE' :styles="{'width': '40%'}" field='category' sortField="_category" headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center {{ data.note }}
