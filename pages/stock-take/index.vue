@@ -113,7 +113,7 @@
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-if="data.assignee") {{ data.assignee.staffId }}
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-else) N/A
-          Column(header='Result' sortable field='result' sortField="_finalResultStatus" headerClass="grid-header-right")
+          Column(header='Result' sortable field='result' sortField="_resultStatus" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right
                   span.stock-take-result.result-ng(v-if="data.finalResultStatus === 'NG'") NG
@@ -131,7 +131,7 @@
                 span.table__status.table__status--available(v-if="data.status === 'COMPLETED'") Completed
                 span.table__status.table__status--draft(v-if="data.status === 'APPROVING'") Approving
                 span.table__status.table__status--available(v-if="data.status === 'APPROVED'") Approved
-                span.table__status.table__status--draft(v-if="data.status === 'SAVE_DRAFT'") Save Draft
+                span.table__status.table__status--draft(v-if="data.status === 'DRAFT'") Draft
           Column(header='CHECK Type' :sortable="true" field='checkType' sortField="_checkType" headerClass="grid-header-right")
             template(#body='{ data }')
                 div.grid-cell-right {{ data.checkType }}
@@ -174,6 +174,7 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockTake = namespace('stock-take/note-list')
+const nsStoreUser = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
 @Component({
@@ -213,6 +214,9 @@ class StockTake extends Vue {
 
   @nsStoreStockTake.State
   total!: number
+
+  @nsStoreUser.State
+  user: any | undefined
 
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
@@ -260,10 +264,20 @@ class StockTake extends Vue {
 
   rowdbClick({ data }) {
     if(data.checkType === 'BOX') {
-      this.$router.push(`/stock-take/box/${data.id}/note-detail`)
+      if( data.assignee?.staffId === this.user?.staffId && data.approver == null) {
+        this.$router.push(`/stock-take/box/${data.id}/note-detail`)
+      } else if (data.status === ' APPROVING' || data.status === 'APPROVED' &&  data.approver?.staffId === this.user?.staffId) {
+        this.$router.push(`/stock-take/box/${data.id}/approve`)
+      }
     }
     else if(data.checkType === 'ITEM') {
-      this.$router.push(`/stock-take/item/${data.id}/note-detail`)
+      if(data.status === 'APPROVING' || data.status === 'APPROVED') {
+        if(data.approver && data.approver?.staffId === this.user?.staffId) {
+          this.$router.push(`/stock-take/item/${data.id}/approve`)
+        }
+      } else if(data.assignee?.staffId === this.user?.staffId && !data.approver) {
+        this.$router.push(`/stock-take/item/${data.id}/note-detail`)
+      }
     }
   }
 
@@ -313,7 +327,7 @@ class StockTake extends Vue {
       status: this.filter.status?.value,
       checkType: this.filter.checkType?.value,
       warehouseId: this.filter.warehouse?.id,
-      finalResultStatus: this.filter.result?.value,
+      resultStatus: this.filter.result?.value,
       sortBy: this.sortByColumn || null,
       desc: this.isDescending
     }
