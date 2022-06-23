@@ -53,7 +53,8 @@ class FormAddSeller extends Vue {
     firstName: undefined,
     lastName:  undefined,
     email: this.email,
-    phoneNumber: undefined
+    phoneNumber: undefined,
+    displayName: ''
   }
 
   @nsStoreSeller.State
@@ -66,6 +67,7 @@ class FormAddSeller extends Vue {
     if (!this.checkValidateInput()) {
       return
     }
+    this.seller.displayName = this.seller.firstName + ' ' + this.seller.lastName
     await this.actCreateSeller(this.seller)
     if (this.newSeller) {
       this.$toast.add({
