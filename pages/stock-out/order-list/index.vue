@@ -207,7 +207,7 @@
         template(#footer)
           Pagination(
             title="Cancel"
-            type="orders selected"
+            type="D/O selected"
             :paging="paging"
             :total="total"
             @onDelete="showModalDelete"
@@ -217,7 +217,7 @@
           div.table__empty
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-            p.text-900.font-bold.mt-3 Order not found!
+            p.text-900.font-bold.mt-3 D/O not found!
     ConfirmDialogCustom(
       title="Cancel Confirm"
       image="confirm-delete"
@@ -443,7 +443,7 @@ class DeliveryOrderList extends Vue {
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',
-          detail: 'Successfully deleted delivery order',
+          detail: 'Successfully cancelled D/O',
           life: 3000
         })
         this.selectedDelivery = []
