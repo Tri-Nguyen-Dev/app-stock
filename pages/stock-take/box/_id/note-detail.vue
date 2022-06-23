@@ -74,6 +74,8 @@
                     template(#body="{data}")
                       InputNumber.w-7rem(:disabled='isCheck || isComplete || data.isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity(data)')
                   Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}")
+                    template(#body="{data}")
+                      span(v-if='data.countedQuantity !== null') {{data.discrepancy}}
                   Column(field="resultStatus" header="STATUS" headerClass='grid-header-center' :styles="{'width': '20%'}" sortable)
                     template(#body="{data}")
                       .text-center

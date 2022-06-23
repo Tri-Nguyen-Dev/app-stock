@@ -52,6 +52,8 @@
                     template(#body="{data}")
                       InputNumber.w-7rem(inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)' :disabled='isApproved')
                   Column(field="discrepancy" header="APPROVE VARIANT")
+                    template(#body="{data}")
+                      span(v-if='data.approvedQuantity !== null') {{data.discrepancy}}
             template(#empty)
               div.flex.align-items-center.justify-content-center.flex-column
                 img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
