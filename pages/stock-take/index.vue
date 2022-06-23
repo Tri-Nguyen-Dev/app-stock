@@ -113,7 +113,7 @@
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-if="data.assignee") {{ data.assignee.staffId }}
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-else) N/A
-          Column(header='Result' sortable field='result' sortField="_resultStatus" headerClass="grid-header-right")
+          Column(header='Result' sortable field='result' sortField="_finalResultStatus" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right
                   span.stock-take-result.result-ng(v-if="data.finalResultStatus === 'NG'") NG
@@ -216,7 +216,7 @@ class StockTake extends Vue {
   total!: number
 
   @nsStoreUser.State
-  user: any | undefined
+  user!: any
 
   @nsWarehouseStock.Action
   actWarehouseList!: () => Promise<void>
@@ -263,21 +263,13 @@ class StockTake extends Vue {
   }
 
   rowdbClick({ data }) {
-    if(data.checkType === 'BOX') {
-      if( data.assignee?.staffId === this.user?.staffId && data.approver == null) {
-        this.$router.push(`/stock-take/box/${data.id}/note-detail`)
-      } else if (data.status === ' APPROVING' || data.status === 'APPROVED' &&  data.approver?.staffId === this.user?.staffId) {
-        this.$router.push(`/stock-take/box/${data.id}/approve`)
+    const type = data.checkType === 'BOX' ? 'box' : 'item'
+    if(data.status === 'APPROVING' || data.status === 'APPROVED') {
+      if(data.approver && data.approver?.staffId === this.user?.staffId) {
+        this.$router.push(`/stock-take/${type}/${data.id}/approve`)
       }
-    }
-    else if(data.checkType === 'ITEM') {
-      if(data.status === 'APPROVING' || data.status === 'APPROVED') {
-        if(data.approver && data.approver?.staffId === this.user?.staffId) {
-          this.$router.push(`/stock-take/item/${data.id}/approve`)
-        }
-      } else if(data.assignee?.staffId === this.user?.staffId && !data.approver) {
-        this.$router.push(`/stock-take/item/${data.id}/note-detail`)
-      }
+    } else if(!data.assignee || data.assignee?.staffId === this.user?.staffId) {
+      this.$router.push(`/stock-take/${type}/${data.id}/note-detail`)
     }
   }
 
@@ -327,7 +319,7 @@ class StockTake extends Vue {
       status: this.filter.status?.value,
       checkType: this.filter.checkType?.value,
       warehouseId: this.filter.warehouse?.id,
-      resultStatus: this.filter.result?.value,
+      finalResultStatus: this.filter.result?.value,
       sortBy: this.sortByColumn || null,
       desc: this.isDescending
     }
@@ -393,7 +385,7 @@ class StockTake extends Vue {
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
-          detail: 'Unable to delete stock take not with status new or inprogess!',
+          detail: 'Only new and in progress status can be delete!',
           life: 3000
         })
         return
