@@ -8,11 +8,11 @@ import { $api, PathBind } from '~/utils'
 export default class StoreReportDetail extends VuexModule {
   private static readonly STATE_URL = {
     GET_REPORT_DETAIL: '/report/:id/detail',
-    EXPORT_RECEIPT: '/stock-take/:id/pdf'
+    EXPORT_RECEIPT: '/report/:id/pdf'
   }
 
   public reportDetail?: any = {}
-  public reportUrl: any = {}
+  public receiptUrl: any = {}
 
   @Mutation
   setReportDetail({ data }) {
@@ -20,8 +20,8 @@ export default class StoreReportDetail extends VuexModule {
   }
 
   @Mutation
-  setReportUrl(ReportUrl: any) {
-    this.reportUrl = ReportUrl
+  setReceiptUrl(receiptUrl: any) {
+    this.receiptUrl = receiptUrl
   }
 
   @Action({ commit: 'setReportDetail', rawError: true })
@@ -30,7 +30,7 @@ export default class StoreReportDetail extends VuexModule {
     return await $api.get(url)
   }
 
-  @Action({ commit: 'setReportUrl', rawError: true })
+  @Action({ commit: 'setReceiptUrl', rawError: true })
   async actGetReceiptLable(params: {id: string}): Promise<string | undefined> {
     if(!params.id) return ''
     try {
