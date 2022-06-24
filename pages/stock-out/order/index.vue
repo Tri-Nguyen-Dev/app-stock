@@ -166,10 +166,11 @@
               InputNumber(
               v-model="data.delivery"
               mode="decimal"
-              :min="1"
+              :min="0"
               :max="data.amount"
               inputClass="w-full"
-              v-else ).w-7rem
+              v-else
+              @input="deliveryChange(data)").w-7rem
           column(field='tag', header='TAG', headerClass='grid-header-center')
             template(#body='{ data }')
               .grid-cell-center
@@ -189,8 +190,9 @@
                   )
                     .icon--small.icon-btn-delete
               .table__action(v-else)
-                Button.btn-action(
-                  @click='saveEditItem()'
+                Button.btn-action( :disabled="isDisableSubmit"
+
+                  @click='saveEditItem( data )'
                 )
                   .icon--small.pi.pi-check.text-primary
                 Button.btn-action(
@@ -288,6 +290,7 @@ class createOrder extends Vue {
   deliveryDate: string | any = 'Fill receiver information'
   estimatedDate: string | any = 'Fill receiver information'
   information = INFORMATION
+  isDisableSubmit: boolean = false
 
   // -- [ State ] ------------------------------------------------------------
 
@@ -375,10 +378,9 @@ class createOrder extends Vue {
   }
 
   showModalDelete(data?: any ) {
-    _.forEach(data, (obj)=> {
+    this.valueDelete = _.forEach(data, (obj) => {
       this.onEventDeleteList = [obj.stock]
     })
-    this.valueDelete = data
     this.isModalDelete = true
   }
 
@@ -386,7 +388,7 @@ class createOrder extends Vue {
     this.isModalCancel = true
   }
 
-  async saveEditItem() {
+  async saveEditItem( ) {
     await this.actOutGoingList(
       _.cloneDeep(this.listItemsAdd))
     this.isActive = ''
@@ -463,7 +465,7 @@ class createOrder extends Vue {
   }
 
   async handleCancel() {
-    this.emptyList()
+    await this.emptyList()
     this.isModalCancel = false
     await this.$router.push({ path: '/stock-out/order-list' })
   }
@@ -544,6 +546,13 @@ class createOrder extends Vue {
     _.forEach(this.information.seller, (val) => {
       val.value = null
     })
+  }
+
+  deliveryChange( data?: any ){
+    const value = _.cloneDeep(data)
+    if(data.delivery === 0) {
+      this.showModalDelete([value])
+    } else this.isDisableSubmit = data.delivery === null
   }
 
   // -- [ Getter ] ------------------------------------------------------------
