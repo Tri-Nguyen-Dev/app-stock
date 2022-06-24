@@ -224,7 +224,7 @@ class ApproveBoxStockTake extends Vue {
     this.stockTakeInfo.createdAt = this.boxStockTakeDetail?.createdAt
     this.stockTakeInfo.user = this.boxStockTakeDetail?.createdBy
     this.stockTakeInfo.picId = this.boxStockTakeDetail?.assignee?.staffId
-    this.stockTakeInfo.approveId = this.boxStockTakeDetail?.approve?.staffId
+    this.stockTakeInfo.approveId = this.boxStockTakeDetail?.approver?.staffId
     this.stockTakeInfo.totalBox = this.boxStockTakeDetail?.totalStockTakeBox
     this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
     this.stockTakeInfo.id = this.boxStockTakeDetail?.id
