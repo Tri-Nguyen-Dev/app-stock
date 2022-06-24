@@ -2,7 +2,7 @@
 div
   span.report-close(@click="hideModalDetail")
     i.pi.pi-times
-  span.report-status.table__status.table__status--available
+  span.report-status.table__status.table__status--available {{ reportDetail.reportStatus  }}
   div.report-heading
       div.report-title
         h3 Report Detail
