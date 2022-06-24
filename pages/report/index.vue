@@ -17,6 +17,8 @@
       .btn.btn-primary(@click='addReport')
         .icon.icon-add-items
         span Add Report
+      Button.btn.btn-primary(@click="handleExportReceipt")
+        span Export File
   .grid.header__filter(:class='{ "active": isShowFilter }')
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
         FilterTable(
@@ -121,10 +123,8 @@
             span.text-primary.underline.cursor-pointer(@click='addReport') &nbsp;here
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
-  Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
-    ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail")
-    template(#footer)
-      Button.btn.btn-primary.h-3rem(@click='createStockTake') Create stock-take note
+  Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "50vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
+    ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
       h1.text-heading Report detail
@@ -166,7 +166,7 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ReportDetail from '~/components/report/ReportDetail.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
+import { exportFileTypePdf, getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
 import { REPORT_STATUS } from '~/utils/constants/report'
 import BoxDataTable from '~/components/box/BoxDataTable.vue'
 const nsStoreReport = namespace('report/report-list')
@@ -190,13 +190,13 @@ class ReportList extends Vue {
   isShowFilter = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   sortByColumn: string = ''
-  isDescending: boolean|null = null
+  isDescending: boolean | null = null
   reportCodeDelete: string = ''
   showModal = false
   isShowModalDetail: boolean = false
   disabledApply = true
   boxSelected: any[] = []
-  boxShow : any[] = []
+  boxShow: any[] = []
   isUpdate = false
   statusList: any = [
     { name: 'New', value: REPORT_STATUS.NEW },
@@ -205,11 +205,11 @@ class ReportList extends Vue {
 
   isConfirm = false
   filter: any = {
-    sellerEmail:  '',
+    sellerEmail: '',
     boxCode: '',
     dateFrom: null,
     dateTo: null,
-    status:''
+    status: ''
   }
 
   data: any[] = []
@@ -239,29 +239,34 @@ class ReportList extends Vue {
   actWarehouseList!: () => Promise<void>
 
   @nsStoreReport.Action
-  actDeleteReportById!: (params: {ids: string[]}) => Promise<any>
+  actDeleteReportById!: (params: { ids: string[] }) => Promise<any>
 
   @nsStoreReport.Mutation
   setListBoxTakeNote!: (data: any) => Promise<any>
 
   @nsStoreReport.Action
+  actAddTransferReport!: (params: { ids: string[] }) => Promise<any>
+
   actCreateReport!: (data: any) => Promise<any>
 
   @nsStoreReportDetail.Action
-  actGetReportDetail !: (id: any) => Promise<any>
+  actGetReportDetail!: (id: any) => Promise<any>
+
+  @nsStoreReportDetail.Action
+  actGetReceiptLable!: (id: any) => Promise<any>
 
   async mounted() {
     await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
   }
 
   // -- [ Getters ] -------------------------------------------------------------
-  get isFilter(){
+  get isFilter() {
     const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
 
   get selectedReportFilter() {
-    return  _.filter(this.selectedReportes, ({ status }) => { 
+    return _.filter(this.selectedReportes, ({ status }) => {
       return status !== 'BOX_STATUS_DISABLE' && status !== 'BOX_STATUS_OUTGOING'
     })
   }
@@ -303,7 +308,7 @@ class ReportList extends Vue {
     }
   }
 
-  async handleFilterReport(e: any, name: string){
+  async handleFilterReport(e: any, name: string) {
     this.filter[name] = e
     await this.actGetReportList(this.getParamAPi())
     this.selectedReportes = []
@@ -319,7 +324,7 @@ class ReportList extends Vue {
   async handleDeleteReport() {
     const ids = _.map(this.onEventDeleteList, 'id')
     const result = await this.actDeleteReportById({ ids })
-    if(result) {
+    if (result) {
       this.isModalDelete = false
       this.selectedReportes = []
       this.$toast.add({
@@ -351,12 +356,12 @@ class ReportList extends Vue {
     }
   }
 
-  validateText =  _.debounce(this.handleFilter, 500);
+  validateText = _.debounce(this.handleFilter, 500)
 
   async sortData(e: any) {
     resetScrollTable()
     const { sortField, sortOrder } = e
-    if(sortOrder){
+    if (sortOrder) {
       this.isDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '')
     } else {
@@ -417,16 +422,16 @@ class ReportList extends Vue {
     this.showModal = true
   }
 
-  selectBox(event){
+  selectBox(event) {
     this.boxSelected = _.cloneDeep(event)
-    if(this.boxSelected.length>0){
+    if (this.boxSelected.length > 0) {
       this.disabledApply = false
     } else {
       this.disabledApply = true
     }
   }
 
-  hideDialog(){
+  hideDialog() {
     this.showModal = false
   }
 
@@ -434,13 +439,8 @@ class ReportList extends Vue {
     this.isShowModalDetail = false
   }
 
-  async showModalDetail(id: any) {
-    this.isShowModalDetail = true
-    await this.actGetReportDetail(id)
-  }
-  
-  applyBox(){
-    this.boxShow = this.boxSelected.map(element=>{
+  applyBox() {
+    this.boxShow = this.boxSelected.map((element) => {
       return {
         id : element.id,
         note: element.note,
@@ -473,12 +473,14 @@ class ReportList extends Vue {
     }
   }
 
-  rowClick({ data }) {
-    this.showModalDetail(data.id)
+  async rowClick({ data }) {
+    await this.actGetReportDetail(data.id)
+    this.selectedReportes = []
+    this.isShowModalDetail = true
   }
 
-  createStockTake() {
-    if(this.selectedReportes.length > 0) {
+  createStockTake() { 
+    if (this.selectedReportes.length > 0) {
       this.setListBoxTakeNote(this.selectedReportes)
       this.$router.push('/stock-take/box/create')
     }
@@ -503,6 +505,26 @@ class ReportList extends Vue {
     return !data
   }
 
+  createStockTakeFromDatail(data) {
+    const listReport = [{
+      ...this.reportDetail,
+      boxNote: data
+    }]
+    const dataReport:any = []
+    listReport.forEach(report => {
+      report.boxNote.forEach(boxNote => {
+        dataReport.push({
+          id: report.id,
+          boxNote,
+          createdAt: report.createdAt,
+          createId: report.createdBy.staffId
+        })
+      })
+    })
+    this.setListBoxTakeNote(dataReport)
+    this.$router.push('/stock-take/box/create')
+  }
+  
   checkStatus(status){
     switch(status){
     case REPORT_STATUS.NEW:{
@@ -514,6 +536,24 @@ class ReportList extends Vue {
     case REPORT_STATUS.CANCELED:{
       return 'text-gray-400 bg-gray-100 '
     }
+    }
+  }
+
+  handleExportReceipt() {
+    if(this.selectedReportes.length > 0) {
+      _.forEach(this.selectedReportes, async ({ id }) => {
+        const result = await this.actGetReceiptLable({ id })
+        if (result) {
+          exportFileTypePdf(result, `report-${id}`)
+        }
+      })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'No records have been selected yet!',
+        life: 3000
+      })
     }
   }
 }
@@ -575,9 +615,6 @@ export default ReportList
   .p-dialog-header
     display: none
   .report-heading
-    display: flex
-    justify-content: space-between
-    align-items: center
     .report-title
       display: flex
       flex-direction: column
@@ -585,24 +622,37 @@ export default ReportList
     .report-title h3
       margin: 0
       font-size: 20px
-    .report-close
-      cursor: pointer
-      &:hover
-        i
-          color: red !important
+  .report-status
+    position: absolute
+    left: 10px
+  .report-close
+    cursor: pointer
+    position: absolute
+    right: 10px
+    &:hover
       i
-        transition: 0.25s all ease
-        font-size: 1.2rem
+        color: red !important
+    i
+      transition: 0.25s all ease
+      font-size: 1.2rem
+  .info-box
+    .info-box-item
+      display: flex
+      .box-code
+        flex: 1
+      .box-note
+        flex: 1
+      .box-note-id
+        flex: 1
+      .info-item
+        margin-top: 6px
+      .info-content
+        margin-left: 4px
   .p-dialog-footer
     display: flex
     justify-content: center
   .main-info
     margin: 24px 0
-    display: flex
-    .info-creator
-      width: 50%
-    .info-seller
-      width: 50%
     .info-item
       color: $text-color-base
       margin-top: 10px
@@ -610,9 +660,6 @@ export default ReportList
       font-weight: 400
     .info-content
       margin-left: 6px
-  .box-code
-    display: flex
-    gap: 0 6px
 ::v-deep.confirm
   .p-datatable-table
     .p-datatable-tbody
