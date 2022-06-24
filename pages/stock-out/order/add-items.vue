@@ -212,12 +212,13 @@ class AddItems extends Vue {
   }
 
   get checkIsFilter() {
-    const params = _.omit(this.getParamAPi(), ['email', 'warehouseId', 'pageNumber', 'pageSize'])
+    const params = _.omit(this.getParamAPi(), ['email', 'warehouseId', 'pageNumber', 'pageSize', 'itemStatus'])
     return Object.values(params).some((item) => item)
   }
 
   getParamAPi() {
     return {
+      itemStatus: 'ITEM_STATUS_AVAILABLE',
       pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
       email: this.sellerEmail || null,
       warehouseId: this.warehouse || null,

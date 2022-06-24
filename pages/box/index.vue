@@ -7,14 +7,14 @@
     .header__action
       .header__search
         .icon.icon--left.icon-search
-        InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
+        InputText(type="text" placeholder="Enter seller email" v-model="filter.sellerEmail" v-on:input="validateText")
       .btn__filter
         .btn-toggle(@click="isShowFilter = !isShowFilter")
           .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
           span Filter
-        .btn-refresh(@click="handleRefeshFilter")
+        Button.btn-refresh(@click="handleRefeshFilter")
           .icon.icon-rotate-left.bg-white
-      .btn.btn-primary(@click='routeLinkAddBox')
+      Button.btn.btn-primary(@click='routeLinkAddBox')
         .icon.icon-add-items
         span Add box
       Button.btn.btn-primary(@click='handleTransferBox')
@@ -127,7 +127,7 @@
               span.table__status.table__status--outgoing(v-else) {{ data.status | boxStatus }}
         Column(:exportable="false" header="ACTION" className="text-right")
           template(#body="{data}")
-            .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
+            .table__action(:class="{'action-disabled': (data.status === 'BOX_STATUS_DISABLE' || data.status === 'BOX_STATUS_OUTGOING')}")
               span.action-item(@click="handleEditBox(data.id)")
                 .icon.icon-edit-btn
               span.action-item(:class="{'disable-button': selectedBoxFilter.length > 0}" @click="showModalDelete([data])")
@@ -428,4 +428,9 @@ export default BoxList
       @include flex-center
       flex-direction: row
       margin-top: 0
+    .btn__filter
+      .btn-refresh
+        border-top-left-radius: 0 !important
+        border-bottom-left-radius: 0 !important
+        border: none
 </style>
