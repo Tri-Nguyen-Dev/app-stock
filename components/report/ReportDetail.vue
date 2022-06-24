@@ -26,7 +26,6 @@ div
           dataKey='box.id'
           :rows='10'
           :rowHover='true'
-          showGridlines
           :selection='selectedBox'
           @row-select-all="rowSelectAll"
           @row-unselect-all="rowUnSelectAll"
