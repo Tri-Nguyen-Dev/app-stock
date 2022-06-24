@@ -100,7 +100,7 @@
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
                 :class="checkStatus(data.status)")
                 | {{ data.status | reportStatus }}
-      Column(:exportable="false" header="ACTION" className="text-center")
+      Column( field="id" :exportable="false" header="ACTION" className="text-center")
         template(#body="{data}")
           .table__action(:class="{'action-disabled': checkDisabledAction(data)}" style= 'justify-content: center')
             span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
@@ -246,7 +246,7 @@ class ReportList extends Vue {
 
   @nsStoreReport.Action
   actAddTransferReport!: (params: { ids: string[] }) => Promise<any>
-  
+
   @nsStoreReport.Action
   actCreateReport!: (data: any) => Promise<any>
 
