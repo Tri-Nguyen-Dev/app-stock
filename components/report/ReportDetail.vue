@@ -2,7 +2,7 @@
 div
   span.report-close(@click="hideModalDetail")
     i.pi.pi-times
-  span.report-status.table__status.table__status--available
+  span.report-status.table__status.table__status--available {{ reportDetail.reportStatus  }}
   div.report-heading
       div.report-title
         h3 Report Detail
@@ -14,7 +14,7 @@ div
           span.info-title Creator ID:
           span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.id }}
         .info-item.font-semibold
-          span.info-title Creator Time:
+          span.info-title Create Time:
           span.info-content {{ reportDetail.createdAt | dateTimeHour24 }}
         .info-item.font-semibold
           span.info-title PIC ID: 
@@ -55,7 +55,7 @@ div
           Column(header='ST Note ID' field='barCode' sortField="_barCode" headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center 
-                NuxtLink(:to="`/stock-take/box/${data.box.id}/note-detail`") {{ data.stockTakeId }}
+                NuxtLink(:to="`/stock-take/box/${data.stockTakeId}/note-detail`") {{ data.stockTakeId }}
           Column(header='NOTE' :styles="{'width': '40%'}" field='category' sortField="_category" headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center {{ data.note }}
