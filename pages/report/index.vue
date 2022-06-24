@@ -246,7 +246,8 @@ class ReportList extends Vue {
 
   @nsStoreReport.Action
   actAddTransferReport!: (params: { ids: string[] }) => Promise<any>
-
+  
+  @nsStoreReport.Action
   actCreateReport!: (data: any) => Promise<any>
 
   @nsStoreReportDetail.Action
