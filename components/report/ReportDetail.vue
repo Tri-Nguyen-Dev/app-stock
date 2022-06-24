@@ -14,7 +14,7 @@ div
           span.info-title Creator ID:
           span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.id }}
         .info-item.font-semibold
-          span.info-title Creator Time:
+          span.info-title Create Time:
           span.info-content {{ reportDetail.createdAt | dateTimeHour24 }}
         .info-item.font-semibold
           span.info-title PIC ID: 
