@@ -9,7 +9,7 @@
       :loading="loadingSubmit"
     )
       template(v-slot:message)
-        p Do you want to save this packing?
+        p Do you want to save this tranferring box?
     .col-9.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
       .flex.flex-column.flex-1.overflow-hidden
         StockOutPackingOriginal.mb-2.flex-1(
@@ -41,7 +41,7 @@
               .icon--large.icon-note
             .col
               div(style="padding-left: 10.5px") Note:
-              Textarea.inputSearchCode.w-full(rows="1" cols="40" placeholder='Write something...')
+              Textarea.inputSearchCode.w-full(rows="1" cols="40" placeholder='Write something...' v-model="noteText")
         .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
@@ -88,6 +88,7 @@ class DeliveryOrderPacking extends Vue {
   autoActiveTabOut: boolean = false
   listOriginalBox: any = []
   loadingSubmit: boolean = false
+  noteText: string = ''
   listTranfferingBox: any =  [
     {
       boxCode: 'TR1',
@@ -350,6 +351,12 @@ class DeliveryOrderPacking extends Vue {
       })
       const locationList = await this.actLocationSuggestion(listBoxLocation)
       if(locationList) {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Please check the location!',
+          life: 3000
+        })
         _.forEach(this.listTranfferingBox, function (obj, index) {
           _.set(obj, 'location', locationList[index])
         })
@@ -387,10 +394,12 @@ class DeliveryOrderPacking extends Vue {
     data.warehouse = {
       id: this.listOriginalBox[0]?.request?.warehouse?.id
     } 
+
+    data.note = this.noteText
     const result = await this.actCombineBox(data)
 
     if(result) {
-      this.$toast.add({ severity:'success', summary: 'Success Message', detail:'Packing successfully!', life: 3000 })
+      this.$toast.add({ severity:'success', summary: 'Success Message', detail:'Tranffering box successfully!', life: 3000 })
       this.$router.push(`/stock-in/${this.combineBox?.id}/detail`)
     }
   }

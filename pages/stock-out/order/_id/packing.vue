@@ -273,6 +273,7 @@ class DeliveryOrderPacking extends Vue {
     const { id } = this.$route.params
     const result = await this.actSavePackingDetail({ data, id })
     if(result) {
+      this.$toast.add({ severity:'success', summary: 'Success Message', detail:'Packing successfully!', life: 3000 })
       this.$router.push(`/stock-out/order/${id}/packing-detail`)
     }
   }
@@ -280,7 +281,9 @@ class DeliveryOrderPacking extends Vue {
   get totalItem() {
     const totalItem = [...this.listOutGoingBox]
     return totalItem.reduce((accumulator:any, object:any) => {
-      return accumulator + object.items.length
+      return accumulator + object.items.reduce((accumulator:any, object:any) => {
+        return accumulator + object.quantity
+      },0)
     },0)
   }
 

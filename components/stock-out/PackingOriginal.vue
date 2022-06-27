@@ -51,10 +51,10 @@
         .col.py-3.flex.justify-content-end(v-if="!isMergeBox && !isPackingDetail")
           Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
-        .col.py-3
+        .col.py-3(v-if="isTranffering")
           span.mr-2 Capacity:
           .p-input-icon-right
-            InputNumber(id="percent" suffix="%" v-model="tab.usedCapacityTranffering" :max="100")
+            InputNumber(id="percent" suffix="%" v-model="tab.usedCapacityTranffering" :max="100" :disabled="disableEditQty")
         .col.py-3
           span.mr-1 Size:
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
