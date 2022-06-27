@@ -7,7 +7,7 @@
           .icon--large.bg-blue-700(class='icon-note')
         .col-10.flex.flex-column.justify-content-center
           div.font-normal.text-700.text-base Note
-          Textarea.text-lg(:value='note' placeholder='Write something...' rows='2' cols=30)
+          Textarea.text-lg(v-model='note' placeholder='Write something...' rows='2' cols=30)
     .col-9.packing__detail--left.pl-4.pr-1.flex-1
       .grid
         .col-4
