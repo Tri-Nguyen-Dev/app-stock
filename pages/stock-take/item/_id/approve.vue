@@ -5,7 +5,7 @@
       .stock-takeItem.flex.flex-column
         .stock-takeItem__header
           div
-            h1.text-heading Approving Stock-take Note Detail
+            h1.text-heading {{ isApproving ? 'Approving' : 'Approved' }} Stock-take Note Detail
             span.text-subheading {{ total }} total items
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='handleSubmit' v-if='isApproving' :disabled='isDisabled') Save
@@ -45,6 +45,12 @@
             Column(field='countedQuantity' header='APPROVED VARIANT' :sortable='true' className="text-center")
               template.text-center(#body='{data}' class="text-center")
                 .text-center(v-if='data.approvedQuantity !== null') {{ data.approvedQuantity - data.inventoryQuantity }}
+            template(#footer)
+              .grid.grid-nogutter.stock-takeItem__footer
+                .col-12.stock-takeItem__note
+                  div(style="padding-left: 10.5px") Note:
+                  span.font-normal(v-if="!isApproving" style="padding-left: 10.5px") {{ noteText }}
+                  InputText.inputSearchCode.w-full(v-else v-model="approveNote" rows="1" cols="40" placeholder='Write something...')
 </template>
 
 <script lang="ts">
@@ -63,6 +69,7 @@ const dayjs = require('dayjs')
 class stockTakeItemsDetail extends Vue {
   stockTakeItems: any = []
   items: [] = []
+  approveNote: string =''
 
   // -- [ State ] ------------------------------------------------------------
   @nsStoreItems.State
@@ -142,7 +149,7 @@ class stockTakeItemsDetail extends Vue {
   get breadcrumbItem() {
     return [
       { label: 'Note Take Detail',
-        to: `/stock-take/item/${this.$route.params.id}/approved`
+        to: `/stock-take/item/${this.$route.params.id}/approve`
       }
     ]
   }
@@ -182,12 +189,19 @@ class stockTakeItemsDetail extends Vue {
     return this.items
   }
 
+  get noteText() {
+    return this.boxStockTakeDetail.approveNote
+  }
+
   rowClass({ inventoryQuantity, countedQuantity, approvedQuantity }) {
     return (inventoryQuantity !== countedQuantity || countedQuantity !== approvedQuantity)  && 'row__statusNG'
   }
 
   async handleSubmit(){
-    const data = _.map(this.items, ({ id, approvedQuantity }) => ({ id, approvedQuantity }))
+    const data = {
+      stockTakeItem: _.map(this.items, ({ id, approvedQuantity }) => ({ id, approvedQuantity })),
+      approveNote: this.approveNote
+    }
     const result = await this.actApproveSubmit({ id: this.$route.params.id, data })
     if(result) {
       this.$toast.add({
@@ -297,4 +311,7 @@ export default stockTakeItemsDetail
       color: red
       input
         color: red
+  &__footer
+    background: $color-white
+    padding: 6px 8px
 </style>

@@ -154,17 +154,16 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get noteInfor() {
-    const { createdAt, createdBy, approver, assignee } = this.boxStockTakeDetail
+    const { createdAt, createdBy, assignee } = this.boxStockTakeDetail
     return {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
       creatorInfo: [
         { title:'Create Time', value: createdAt ?
-          dayjs(new Date(createdAt)).format('YYYY-MM-DD')
+          dayjs(new Date(createdAt)).format('MM-DD-YYYY hh:mm A')
           : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
-        { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' },
-        { title:'APPROVER ID', value: approver?.staffId, icon: 'icon-tag-user' },
+        !this.isCheckAssignee ? { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' } : null,
         { title:'Warehouse', value: createdBy?.warehouse?.name, icon: 'icon-warehouse' },
         { title:'Items', value: this.total, icon: 'icon-frame' }
       ],

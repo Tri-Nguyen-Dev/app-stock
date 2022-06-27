@@ -21,7 +21,7 @@
           .col.flex.align-items-center
             .icon-sender-info.icon.bg-primary.mr-2
             span.font-bold.text-800.uppercase ID Information
-        .col-12(v-for="creator of noteInfor.creatorInfo")
+        .col-12(v-for="creator of noteInfor.creatorInfo" v-if="creator")
           StockUnit.m-0(:title="creator.title" :value='creator.value || "N/A"' :icon='creator.icon')
         .col.border-bottom-1.border-gray-300
       .grid.stock--contact.p-2.m-0(v-if="noteInfor.sellerInfo")
