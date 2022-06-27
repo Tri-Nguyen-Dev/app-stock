@@ -113,7 +113,7 @@
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-if="data.assignee") {{ data.assignee.staffId }}
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-else) N/A
-          Column(header='Result' sortable field='result' sortField="_finalResultStatus" headerClass="grid-header-right")
+          Column(header='Result' sortable field='result' sortField="_resultStatus" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right
                   span.stock-take-result.result-ng(v-if="data.finalResultStatus === 'NG'") NG
@@ -319,7 +319,7 @@ class StockTake extends Vue {
       status: this.filter.status?.value,
       checkType: this.filter.checkType?.value,
       warehouseId: this.filter.warehouse?.id,
-      finalResultStatus: this.filter.result?.value,
+      resultStatus: this.filter.result?.value,
       sortBy: this.sortByColumn || null,
       desc: this.isDescending
     }

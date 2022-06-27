@@ -413,7 +413,7 @@ class DeliveryOrderList extends Vue {
       dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom || null,
       dueDeliveryDateTo: this.filter.dueDeliveryDateTo || null,
       sortBy: this.filter.sortBy ||null,
-      desc: this.filter.desc ||null,
+      desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
       warehouseId: this.filter.warehouseId?.id,
       pageSize: this.paging.pageSize,
