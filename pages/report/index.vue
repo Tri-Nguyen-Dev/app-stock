@@ -17,6 +17,8 @@
       .btn.btn-primary(@click='addReport')
         .icon.icon-add-items
         span Add Report
+      Button.btn.btn-primary(@click="handleExportReceipt")
+        span Export File
   .grid.header__filter(:class='{ "active": isShowFilter }')
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
         FilterTable(
@@ -123,7 +125,7 @@
             span.text-primary.underline.cursor-pointer(@click='addReport') &nbsp;here
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
-  Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "40vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
+  Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "50vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
     ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
@@ -166,7 +168,7 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ReportDetail from '~/components/report/ReportDetail.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
+import { exportFileTypePdf, getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
 import { REPORT_STATUS } from '~/utils/constants/report'
 import BoxDataTable from '~/components/box/BoxDataTable.vue'
 const nsStoreReport = namespace('report/report-list')
@@ -251,6 +253,9 @@ class ReportList extends Vue {
 
   @nsStoreReportDetail.Action
   actGetReportDetail!: (id: any) => Promise<any>
+
+  @nsStoreReportDetail.Action
+  actGetReceiptLable!: (id: any) => Promise<any>
 
   async mounted() {
     await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
@@ -530,6 +535,24 @@ class ReportList extends Vue {
     }
     }
   }
+
+  handleExportReceipt() {
+    if(this.selectedReportes.length > 0) {
+      _.forEach(this.selectedReportes, async ({ id }) => {
+        const result = await this.actGetReceiptLable({ id })
+        if (result) {
+          exportFileTypePdf(result, `report-${id}`)
+        }
+      })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'No records have been selected yet!',
+        life: 3000
+      })
+    }
+  }
 }
 export default ReportList
 </script>
@@ -596,6 +619,9 @@ export default ReportList
     .report-title h3
       margin: 0
       font-size: 20px
+  .report-status
+    position: absolute
+    left: 10px
   .report-close
     cursor: pointer
     position: absolute
