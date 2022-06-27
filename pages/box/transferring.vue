@@ -221,8 +221,7 @@ class DeliveryOrderPacking extends Vue {
     boxActive,
     stockOriginal,
     stockPacking,
-    isFullQuantityStock,
-    isOutGoing = false
+    isFullQuantityStock
   ) {
     if (isFullQuantityStock) {
       stockOriginal.quantity--
@@ -238,11 +237,7 @@ class DeliveryOrderPacking extends Vue {
           }
         })
       }
-      if (isOutGoing) {
-        stockOriginal.actualOutGoing++
-      } else {
-        stockOriginal.actualTranffering++
-      }
+      stockOriginal.actualTranffering++
     } else {
       this.$toast.add({
         severity: 'error',
@@ -283,8 +278,7 @@ class DeliveryOrderPacking extends Vue {
       const tranfferingStock = _.find(this.tranfferingBoxActive.items, {
         barCode, originalBox: this.originalBoxActive.boxCode
       })
-      const { quantity } =
-        stockOriginal
+      const { quantity } = stockOriginal
       const isFullQuantityStock = quantity > 0
       this.addStock(
         this.tranfferingBoxActive,
