@@ -52,6 +52,10 @@
           Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
         .col.py-3
+          span.mr-2 Capacity:
+          .p-input-icon-right
+            InputNumber(id="percent" suffix="%" v-model="tab.usedCapacityTranffering" :max="100")
+        .col.py-3
           span.mr-1 Size:
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
           span.ml-1 (cm)
@@ -66,7 +70,7 @@
                 v-model="tagCodeText"
                 ref="inputScanTag"
               )
-        .col.py-3.border-right-1.border-left-1.border-gray-300.px-3(v-if='isTranffering')
+        .col.py-3.border-right-1.border-left-1.border-gray-300.px-3.relative.z-3(v-if='isTranffering')
           div.flex.align-items-center
             div
               div Estimated
@@ -158,7 +162,7 @@ class PackingOriginal extends Vue {
 
   @Watch('autoActiveTabOut')
   activeFirstOutTag(value) {
-    if(value && this.isOutgoing) {
+    if(value && this.isOutgoing || this.isTranffering) {
       this.activeIndex = 1
       this.$emit('selectedTab', 1)
     }
@@ -392,7 +396,6 @@ export default PackingOriginal
     position: relative
     z-index: 1000
     font-size: 10px !important
-    color: red !important
   .originalTable
     .p-tabview-nav-container
       width: calc(100% - 200px)
