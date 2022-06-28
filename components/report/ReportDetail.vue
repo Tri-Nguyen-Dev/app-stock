@@ -1,32 +1,24 @@
 <template lang="pug">
 div
-  span.report-close(@click="hideModalDetail")
-    i.pi.pi-times
-  span.report-status.table__status.table__status--available {{ reportDetail.reportStatus  }}
-  div.report-heading
-      div.report-title
-        h3 Report Detail
-        h3 ID {{ reportDetail.id }}
   div.report-content
     .main-info
-      .info-creator.text-center
-        .info-item.font-semibold
+      .info-creator
+        .info-item
           span.info-title Creator ID:
           span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.id }}
-        .info-item.font-semibold
+        .info-item
           span.info-title Create Time:
           span.info-content {{ reportDetail.createdAt | dateTimeHour24 }}
-        .info-item.font-semibold
+        .info-item
           span.info-title PIC ID: 
           span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.staffId }}
-    .info-box.p-3
-      .info-box-item.py-3.border-top-1.border-gray-300
+    .info-box
+      .info-box-item.py-3
         DataTable.w-full(
           :rowClass="rowClass" :value='reportDetail.boxNote' responsiveLayout="scroll"
           dataKey='box.id'
           :rows='10'
           :rowHover='true'
-          showGridlines
           :selection='selectedBox'
           @row-select-all="rowSelectAll"
           @row-unselect-all="rowUnSelectAll"
