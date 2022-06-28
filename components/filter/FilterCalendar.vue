@@ -27,6 +27,7 @@ class FilterTable extends Vue {
   @Prop() readonly inputClass!: any | undefined
   @Prop() readonly showIcon!: Boolean | false
   @Prop() readonly border!: string | undefined
+  
   handleFilter(e :any){
     this.$emit('updateFilter', e, this.name)
   }
