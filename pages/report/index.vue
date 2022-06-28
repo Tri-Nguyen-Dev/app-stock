@@ -80,7 +80,6 @@
       @row-unselect="rowUnselect"
       groupRowsBy="id"
       rowGroupMode="rowspan"
-      showGridlines
       @row-dblclick="rowClick"
       )
       Column(selectionMode="multiple" :styles="{width: '3rem'}")
