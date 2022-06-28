@@ -164,13 +164,13 @@
             template(#body='{data}')
               span(v-if='isActive !== data.id ') {{ data.delivery }}
               InputNumber(
-              v-model="data.delivery"
+              :value='data.delivery'
               mode="decimal"
               :min="0"
-              :max="data.amount"
               inputClass="w-full"
               v-else
-              @input="deliveryChange(data)").w-7rem
+              @input='deliveryChange($event, data)'
+              :class='data.amount < data.delivery && "p-invalid"').w-7rem
           column(field='tag', header='TAG', headerClass='grid-header-center')
             template(#body='{ data }')
               .grid-cell-center
@@ -180,13 +180,15 @@
             header='ACTION',
           )
             template(#body='{ data}')
-              .table__action(v-if='isActive !== data.id')
+              .table__action(v-if='isActive !== data.id' :class="{'action-disabled': (data.id !== isActive)}")
                   Button.btn-action(
                     @click='editItem(data)'
+                    :disabled="data.id !== isActive && isActive !==''"
                   )
                     .icon--small.icon-btn-edit
                   Button.btn-action(
-                    @click='showModalDelete( [data] )',
+                    @click='showModalDelete( [data] )'
+                    :disabled="data.id !== isActive && isActive !==''"
                   )
                     .icon--small.icon-btn-delete
               .table__action(v-else)
@@ -394,24 +396,6 @@ class createOrder extends Vue {
     this.isActive = ''
   }
 
-  async handleDelete() {
-    const b = this.valueDelete[0]
-    _.remove(this.listItemsAdd, ({ id }) => id === b.id)
-    const result : any =  await this.actOutGoingList(
-      _.cloneDeep(this.listItemsAdd))
-    if( result ) {
-      this.isModalDelete = false
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Success Message',
-        detail: 'Successfully deleted stock',
-        life: 3000
-      })
-    }
-    if(this.listItemsAdd.length === 0) this.disableInput(false)
-    this.listItemsAdd = result
-  }
-
   async handleSubmit(){
     const listReceiver = this.listInfo.receiver
     const deliveryItemList: any = []
@@ -548,11 +532,44 @@ class createOrder extends Vue {
     })
   }
 
-  deliveryChange( data?: any ){
-    const value = _.cloneDeep(data)
-    if(data.delivery === 0) {
-      this.showModalDelete([value])
-    } else this.isDisableSubmit = data.delivery === null
+  deliveryChange( deliveryNew , data?: any ){
+    if(deliveryNew === 0) {
+      this.showModalDelete([data])
+      this.isDisableSubmit = true
+    }
+    else if (deliveryNew > data.amount && data.delivery !== deliveryNew) {
+      this.isDisableSubmit = true
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: `Delivery quantity could not exceed ${data.amount}`,
+        life: 3000
+      })
+    } else if (deliveryNew === null){
+      this.isDisableSubmit = true
+    } else if (deliveryNew <= data.amount) {
+      this.isDisableSubmit = false
+    }
+    data.delivery = deliveryNew
+  }
+
+  async handleDelete() {
+    const b = this.valueDelete[0]
+    const c = _.cloneDeep(this.listItemsAdd)
+    _.remove(c, ({ id }) => id === b.id)
+    const result : any =  await this.actOutGoingList(
+      c)
+    if( result ) {
+      this.isModalDelete = false
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted stock',
+        life: 3000
+      })
+    }
+    if(this.listItemsAdd.length === 0) this.disableInput(false)
+    this.listItemsAdd = _.cloneDeep(result)
   }
 
   // -- [ Getter ] ------------------------------------------------------------
@@ -651,7 +668,7 @@ export default createOrder
   margin-top: 3rem
   @include desktop
     margin-top: 0px
-    margin-left: 3rem
+    margin-left: 2rem
     height: calc(100vh - 32px)
   &__header
     flex-direction: column

@@ -49,8 +49,6 @@ class ItemInput extends Vue {
   @Prop() validations :any
   @Prop() invalid: any | undefined
   INPUT_TYPE : any  = INPUT_TYPE
-  filedWarehouse: any = null
-  selectedSeller: any = null
   name: any | string
 
   @nsStoreWarehouse.State
@@ -66,19 +64,6 @@ class ItemInput extends Vue {
   receiverChange( event : any  ) {
     this.$emit('fieldReceiver', event.target.value)
   }
-
-  // mounted() {
-  //   const infoObj = this.listInfor[0]
-  //   // if(infoObj.label === 'Email' && infoObj.value !== ''  ) {
-  //   //   console.log(infoObj, 'infoObj')
-  //   //
-  //   //   this.selectedSeller = infoObj.value
-  //   //
-  //   // }
-  //   // else if ( this.listInfor[0].label === 'Name'){
-  //   //   this.filedWarehouse = infoObj.value
-  //   // }
-  // }
 
   get checkRole (){
     return this.user.role
@@ -97,7 +82,7 @@ export default ItemInput
 </script>
 <style lang="sass" scoped>
 .text-label::after
-  content: ':'
+  content: ' *:'
 ::v-deep.p-inputwrapper
   .p-autocomplete-input
     width: 100%
