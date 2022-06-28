@@ -107,12 +107,12 @@ class StockTakeItems extends Vue {
   actCreateStockTake!: (params?: any) => Promise<any>
 
   get homeItem() {
-    return { label: 'Note list', to: '/stock-take' }
+    return { to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Add new note', to: '/stock-take/item' }
+      { label: 'Stock-take Note', to: '/stock-take/item/create' }
     ]
   }
 

@@ -1,15 +1,14 @@
 <template lang="pug">
   .bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
-    .grid.flex.align-items-center.p-2.m-0
-      .col-12.flex
-        Button(@click='$router.go(-1)').p-button-link.pl-0
-          .icon-arrow-left.icon.bg-primary.align-items-center
-        Breadcrumb(:home='homeItem', :model='breadcrumbItem')
+    .border-bottom-1.border-gray-300.flex.pl-3
+      Button(@click='$router.go(-1)').p-button-link.p-0
+        .icon-arrow-left.icon.bg-primary.align-items-center
+      Breadcrumb(:home='homeItem', :model='breadcrumbItem')
     .border-bottom-1.border-gray-300
     .grid.flex.flex-column.p-2.m-0
       .col.flex
         .icon-box-info.icon.bg-primary.mr-2
-        span.font-bold.text-700 {{ noteLabel }}
+        span.font-bold.text-800 NOTE DETAIL
       .col(v-if="noteInfor.id")
         span.p-2.font-bold NOTE ID: {{ noteInfor.id }}
       .col
@@ -50,4 +49,7 @@ class NoteInfo extends Vue {
 export default NoteInfo
 </script>
 <style lang="sass" scoped>
+::v-deep.sub-tab
+  .p-menuitem-link
+    display: flex !important
 </style>

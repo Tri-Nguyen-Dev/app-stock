@@ -105,22 +105,22 @@ class stockTakeItemsDetail extends Vue {
     return this.boxStockTakeDetail?.totalStockTakeItem
   }
 
-  get sellerInfo() {
-    const { stockTakeItem } = this.boxStockTakeDetail
-    if(stockTakeItem) {
-      const sumStockTakeItem = _.size(stockTakeItem)
-      const firstStock: any = stockTakeItem[0]
-      if(firstStock) {
-        const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
-        if(_.size(stockSame) === sumStockTakeItem) {
-          return firstStock
-        }
-      }
-    }
-  }
+  // get sellerInfo() {
+  //   const { stockTakeItem } = this.boxStockTakeDetail
+  //   if(stockTakeItem) {
+  //     const sumStockTakeItem = _.size(stockTakeItem)
+  //     const firstStock: any = stockTakeItem[0]
+  //     if(firstStock) {
+  //       const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
+  //       if(_.size(stockSame) === sumStockTakeItem) {
+  //         return firstStock
+  //       }
+  //     }
+  //   }
+  // }
 
   get noteInfor() {
-    const { createdAt, createdBy, approver, assignee } = this.boxStockTakeDetail
+    const { createdAt, createdBy, approver, assignee, seller } = this.boxStockTakeDetail
     return {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
@@ -135,20 +135,24 @@ class stockTakeItemsDetail extends Vue {
         { title:'Items', value: this.total, icon: 'icon-frame' }
       ],
       sellerInfo: [
-        { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },
-        { title:'Email', value: this.sellerInfo?.sellerEmail, icon: 'icon-sender-email' },
-        { title:'Phone', value: this.sellerInfo?.sellerPhone, icon: 'icon-sender-phone' }
+        { title:'Name', value: function(seller) {
+          if(!seller) return null
+          const name = seller.displayName || seller.firstName + ' ' + seller.lastName
+          return name || 'N/A'
+        }(seller), icon: 'icon-sender-name' },
+        { title:'Email', value: seller?.email, icon: 'icon-sender-email' },
+        { title:'Phone', value: seller?.phoneNumber, icon: 'icon-sender-phone' }
       ]
     }
   }
 
   get homeItem() {
-    return { label: 'Stock Take', to: '/stock-take' }
+    return { to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Note Take Detail',
+      { label: `${this.isApproving ? 'Approving' : 'Approved'}  Stock-take Note Detail`,
         to: `/stock-take/item/${this.$route.params.id}/approve`
       }
     ]

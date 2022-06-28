@@ -5,7 +5,7 @@
       .inventory.flex.flex-column
         .inventory__header
           div
-            h1.text-heading Stock Take Items Detail
+            h1.text-heading {{ titlePage }}
             span.text-subheading {{ total }} total items
           .inventory__header--action.flex(v-if="isDetail")
             Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSaveDraft') Save Draft
@@ -141,7 +141,6 @@ class stockTakeItemsDetail extends Vue {
     if(this.boxStockTakeDetail.status === 'COMPLETED') {
       this.isDetail = false
     }
-
   }
 
   get total() {
@@ -154,7 +153,7 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get noteInfor() {
-    const { createdAt, createdBy, assignee } = this.boxStockTakeDetail
+    const { createdAt, createdBy, assignee, seller } = this.boxStockTakeDetail
     return {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
@@ -168,11 +167,15 @@ class stockTakeItemsDetail extends Vue {
         { title:'Items', value: this.total, icon: 'icon-frame' }
       ],
       sellerInfo: [
-        { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },
-        { title:'Email', value: this.sellerInfo?.sellerEmail, icon: 'icon-sender-email' },
-        { title:'Phone', value: this.sellerInfo?.sellerPhone, icon: 'icon-sender-phone' }
+        { title:'Name', value: seller, icon: 'icon-sender-name' },
+        { title:'Email', value: seller.sellerEmail, icon: 'icon-sender-email' },
+        { title:'Phone', value: seller.sellerPhone, icon: 'icon-sender-phone' }
       ]
     }
+  }
+
+  get titlePage() {
+    return `Stock-take Note ${this.boxStockTakeDetail?.status !== 'NEW' ? ' Detail' : ''}`
   }
 
   async handleSaveDraft() {
@@ -245,12 +248,12 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get homeItem() {
-    return { label: 'Stock Take', to: '/stock-take' }
+    return { to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Note Take Detail',
+      { label: this.titlePage,
         to: `/stock-take/item/${this.$route.params.id}/note-detail`
       }
     ]
@@ -284,19 +287,19 @@ class stockTakeItemsDetail extends Vue {
     }
   }
 
-  get sellerInfo() {
-    const { stockTakeItem } = this.boxStockTakeDetail
-    if(stockTakeItem) {
-      const sumStockTakeItem = _.size(stockTakeItem)
-      const firstStock: any = stockTakeItem[0]
-      if(firstStock) {
-        const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
-        if(_.size(stockSame) === sumStockTakeItem) {
-          return firstStock
-        }
-      }
-    }
-  }
+  // get sellerInfo() {
+  //   const { stockTakeItem } = this.boxStockTakeDetail
+  //   if(stockTakeItem) {
+  //     const sumStockTakeItem = _.size(stockTakeItem)
+  //     const firstStock: any = stockTakeItem[0]
+  //     if(firstStock) {
+  //       const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
+  //       if(_.size(stockSame) === sumStockTakeItem) {
+  //         return firstStock
+  //       }
+  //     }
+  //   }
+  // }
 
   get saveItems(){
     _.forEach(this.items, ( { id, countedQuantity }  ) => {
