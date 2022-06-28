@@ -39,7 +39,6 @@
                     dateFormat="dd-mm-yy"
                     :showIcon="true"
                     @updateFilter="handleFilter"
-                    :max="filter.dateTo"
                   )
               .col.ml-1
                   FilterCalendar(
@@ -51,7 +50,6 @@
                   dateFormat="dd-mm-yy"
                   :showIcon="true"
                   @updateFilter="handleFilter"
-                  :min="filter.dateFrom"
                 )
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
