@@ -67,7 +67,7 @@ class FormAddSeller extends Vue {
     if (!this.checkValidateInput()) {
       return
     }
-    this.seller.displayName = this.seller.firstName + ' ' + this.seller.lastName
+    this.seller.displayName = `${this.seller.firstName} ${this.seller.lastName}`
     await this.actCreateSeller(this.seller)
     if (this.newSeller) {
       this.$toast.add({

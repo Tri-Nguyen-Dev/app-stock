@@ -76,5 +76,5 @@ Vue.filter('trimUnderShift', (value) => {
 
 Vue.filter('sellerName', (value) => {
   if(!value) return ''
-  return value.displayName || value.firstName + ' ' + value.lastName
+  return value.displayName || `${value.firstName} ${value.lastName}`
 })
