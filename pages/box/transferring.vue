@@ -2,7 +2,7 @@
   .grid.grid-nogutter.packing__detail--container
     Toast
     ConfirmDialogCustom(
-      title="Packing Confirm"
+      title="Transferring Confirm"
       :isShow="isShowConfirmPacking"
       :onOk="handleSavePacking"
       :onCancel="cancelSavePacking"
@@ -255,7 +255,6 @@ class DeliveryOrderPacking extends Vue {
       boxCode: this.genearateBoxCode(this.listTranfferingBox, 'TR'),
       items: [],
       airtag:  this.originalBoxActive.airtag,
-      checked: true,
       boxSize: null,
       inventoryFee: 0,
       location: null,
@@ -359,14 +358,17 @@ class DeliveryOrderPacking extends Vue {
   }
 
   getStocks(stocks) {
-    const result =  _.map(stocks, ({ stock, originalBox, originalLocation, initialQuantity, quantity, sku, id }) => ({
+    const result =  _.map(stocks, ({ stock, originalBox, originalLocation, initialQuantity, quantity, sku, id, validAmount, originalAmount, value }) => ({
       id,
       stock: { id: stock.id },
       originalBox,
       sku,
       originalLocation,
       initialQuantity,
-      amount: quantity
+      amount: quantity,
+      validAmount,
+      originalAmount,
+      value
     }))
     return result
   }
