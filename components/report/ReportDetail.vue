@@ -65,7 +65,7 @@ class ReportDetail extends Vue {
 
   get selectedBoxFilter() {
     return  _.filter(this.selectedBox, (item: any) => {
-      return item.stockTakeId
+      return !item.stockTakeId
     })
   }
 
@@ -74,7 +74,7 @@ class ReportDetail extends Vue {
   }
 
   rowClass(data: any) {
-    return !data.stockTakeId ? 'row-disable' : ''
+    return data.stockTakeId ? 'row-disable' : ''
   }
 
   rowSelectAll({ data }) {
