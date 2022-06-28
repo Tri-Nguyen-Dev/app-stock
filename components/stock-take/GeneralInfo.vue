@@ -5,7 +5,7 @@
   .packing__detail--content.pl-4.pr-4
     .my-3.font-bold.flex.align-items-center
       span.uppercase.ml-1 note detail
-    p.uppercase.font-bold note id: {{info.id}}
+    p.uppercase.font-bold(v-if='info.id') note id: {{info.id}}
     span.uppercase.font-bold.p-1(style='background-color: #eaf3eb; color: #16a469; border-radius: 4px;') {{info.status | trimUnderShift}}
   .grid.m-0.p-4(v-if='info.user')
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.createdAt')

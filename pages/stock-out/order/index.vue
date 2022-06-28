@@ -485,7 +485,7 @@ class createOrder extends Vue {
     const InfoSeller = this.information.seller
     InfoSeller[0].value = event.email
     InfoSeller[0].id = event.id
-    InfoSeller[1].value = event.displayName
+    InfoSeller[1].value = event.displayName || `${event.firstName} ${event.lastName}`
     InfoSeller[2].value = event.phoneNumber
     this.unSelectedSeller()
   }
