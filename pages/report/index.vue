@@ -80,7 +80,6 @@
       @row-unselect="rowUnselect"
       groupRowsBy="id"
       rowGroupMode="rowspan"
-      showGridlines
       @row-dblclick="rowClick"
       )
       Column(selectionMode="multiple" :styles="{width: '3rem'}")
@@ -94,17 +93,15 @@
       Column(field="boxNote.box.request.seller.email" :sortable="true" header="SELLER EMAIL" className="w-3" sortField="_sellerEmail")
       Column(field="boxNote.stockTakeId" header="stock take note id" className="uppercase")
       Column(field="boxNote.note" header="note" className="uppercase" bodyClass="font-semibold" )
-      Column(field="createId" header="create id" className="uppercase" bodyClass="font-semibold" )
-      Column(field="status" header="STATUS"  className="text-center")
+      Column(field="createId" header="creator id" className="uppercase" bodyClass="font-semibold" )
+      Column(field="id" header="STATUS"  className="text-right")
         template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
-                :class="checkStatus(data.boxNote.status)")
-                | {{ data.boxNote.status | reportStatus }}
-      Column(:exportable="false" header="ACTION" className="text-center")
+                :class="checkStatus(data.status)")
+                | {{ data.status | reportStatus }}
+      Column( field="id" :exportable="false" header="ACTION" className="text-center")
         template(#body="{data}")
           .table__action(:class="{'action-disabled': checkDisabledAction(data)}" style= 'justify-content: center')
-            //- span.action-item(@click="handleEditReport(data.id)")
-            //-   .icon.icon-edit-btn
             span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
               .icon.icon-btn-delete
       template(#footer)
@@ -254,6 +251,7 @@ class ReportList extends Vue {
   @nsStoreReport.Action
   actAddTransferReport!: (params: { ids: string[] }) => Promise<any>
 
+  @nsStoreReport.Action
   actCreateReport!: (data: any) => Promise<any>
 
   @nsStoreReportDetail.Action
@@ -293,7 +291,8 @@ class ReportList extends Vue {
           id: report.id,
           boxNote,
           createdAt: report.createdAt,
-          createId: report.createdBy.staffId
+          createId: report.createdBy.staffId,
+          status:'REPORT_NEW'
         })
       })
     })
@@ -355,7 +354,11 @@ class ReportList extends Vue {
   }
 
   rowClass({ boxNote }) {
-    return boxNote? '': ''
+    if(boxNote.status === REPORT_STATUS.NEW) {
+      return ''
+    } else {
+      return 'row-disable'
+    }
   }
 
   validateText = _.debounce(this.handleFilter, 500)
