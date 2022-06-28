@@ -38,7 +38,9 @@
                     inputClass="border-0"
                     dateFormat="dd-mm-yy"
                     :showIcon="true"
-                    @updateFilter="handleFilter")
+                    @updateFilter="handleFilter"
+                    :max="filter.dateTo"
+                  )
               .col.ml-1
                   FilterCalendar(
                   title="To"
@@ -48,7 +50,9 @@
                   inputClass="border-0"
                   dateFormat="dd-mm-yy"
                   :showIcon="true"
-                  @updateFilter="handleFilter")
+                  @updateFilter="handleFilter"
+                  :min="filter.dateFrom"
+                )
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Warehouse"
