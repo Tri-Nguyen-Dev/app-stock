@@ -17,8 +17,6 @@
       .btn.btn-primary(@click='addReport')
         .icon.icon-add-items
         span Add Report
-      Button.btn.btn-primary(@click="handleExportReceipt")
-        span Export File
   .grid.header__filter(:class='{ "active": isShowFilter }')
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
         FilterTable(
@@ -71,49 +69,81 @@
       )
     .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
       FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
-  DataTable.relative.overflow-hidden.m-h-700(:value="data" responsiveLayout="scroll"
+  DataTable.relative.overflow-hidden.m-h-700(:value="reportList" responsiveLayout="scroll"
       :selection="selectedReportes" :rows="20" :scrollable="false"
       :rowClass="rowClass" @sort="sortData($event)"
       @row-select-all="rowSelectAll"
       @row-unselect-all="rowUnSelectAll"
-      @row-select="rowSelect"
+      @row-select="rowSelect($event)"
       @row-unselect="rowUnselect"
-      groupRowsBy="id"
-      rowGroupMode="rowspan"
-      @row-dblclick="rowClick"
+      :expandedRows.sync="expandedRows"
       )
-      Column(selectionMode="multiple" :styles="{width: '3rem'}")
-      Column(field="id" header="Report ID"  bodyClass="font-semibold"  className="text-center" headerClass="grid-header-center" sortField="_id")
+      Column(:expander="true" :styles="{width: '2rem'}")
+      Column(selectionMode="multiple" :styles="{width: '3rem'}" :selection="selectedReportes")
+      Column(field="id" header="Report ID"  bodyClass="font-semibold" sortField="_id")
           template(#body="slotProps")
             span {{slotProps.data.id}}
-      Column(field="createdAt" header="CREATE TIME" :sortable="true"  sortField="_createdAt")
+      Column(field="createdAt" header="CREATE TIME" :sortable="true" :styles="{width: '5rem'}"   sortField="_createdAt")
         template(#body='{ data }')
           span {{ data.createdAt | dateTimeHour24 }}
-      Column(field="boxNote.box.id" header="BOX CODE" bodyClass="font-semibold")
-      Column(field="boxNote.box.request.seller.email" :sortable="true" header="SELLER EMAIL" className="w-3" sortField="_sellerEmail")
-      Column(field="boxNote.stockTakeId" header="stock take note id" className="uppercase")
-      Column(field="boxNote.note" header="note" className="uppercase" bodyClass="font-semibold" )
-      Column(field="createId" header="creator id" className="uppercase" bodyClass="font-semibold" )
-      Column(field="id" header="STATUS"  className="text-right")
+      Column(field="createdBy.staffId" header="CREATOR ID" className="text-center" :sortable="true" :styles="{width: '6rem'}"   sortField="_createdAt")
+      Column(field="status" header="STATUS"  :styles="{width: '5rem'}")
         template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
-                :class="checkStatus(data.status)")
-                | {{ data.status | reportStatus }}
-      Column( field="id" :exportable="false" header="ACTION" className="text-center")
+                :class="checkStatus(data.reportStatus)")
+                | {{ data.reportStatus | reportStatus }}
+      Column( field="id" :exportable="false" header="ACTION" headerClass='grid-header-center' className="text-center" :styles="{width: '9rem'}")
         template(#body="{data}")
           .table__action(:class="{'action-disabled': checkDisabledAction(data)}" style= 'justify-content: center')
             span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
               .icon.icon-btn-delete
+      template(#expansion="slotProps")
+          div.orders-subtable
+            .grid
+              .col-1
+              .col-11
+                DataTable(
+                  :value='slotProps.data.boxNote'
+                  dataKey='box.id'
+                  responsiveLayout="scroll"
+                  :selection.sync="selectedShowBox[slotProps.index]"
+                  @row-select="rowChirldSelect($event,slotProps.index)"
+                  @row-unselect="rowChirldUnselect($event,slotProps.index)"                  
+                  )
+                  Column(selectionMode="multiple" 
+                  :styles="{width: '3rem'}"
+                  :selection='selectedShowBox[slotProps.index]'
+                  )
+                  Column(field="box.id" header="BOX CODE" :styles="{width: '7rem'}" bodyClass="font-semibold")
+                  Column(field="box.request.seller.email" :styles="{width: '5rem'}" header="SELLER EMAIL")
+                  Column(field="stockTakeId" header="stock take note id" :styles="{width: '7rem'}" className="uppercase")
+                  Column(field="note" header="note" )
+                  //- Column(field="id" header="action" className="uppercase" :styles="{width: '7rem'}" bodyClass="font-semibold" )
+                  //-   template(#body="{data}")
+                  //-     .table__action(style= 'justify-content: center')
+                  //-       span.action-item( @click="showModalDelete([data])")
+                  //-         .icon.icon-btn-delete
+                  template(#empty)
+                    div.flex.align-items-center.justify-content-center.flex-column
+                      img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
+                      p.text-900.font-bold.mt-3 Information not found!
       template(#footer)
-        Pagination(
-          type="reportes selected"
-          :paging="paging"
-          :total="totalReportRecords"
-          :deleted-list="selectedReportFilter"
-          @onDelete="showModalDelete"
-          @onPage="onPage")
-          template(#action)
-            Button.btn.btn-primary(@click='createStockTake' style="height: 34px") Create stock-take note
+        .pagination
+          div.pagination__info(v-if='!(isDeleteReport || isStockTake)')
+            img(:src="require('~/assets/icons/filter-left.svg')")
+            span.pagination__total {{ showingText }}
+          div.flex
+            .pagination__delete.mr-2(v-if='isDeleteReport')
+              .icon.icon-btn-delete
+              span Cancel {{ selectedReportes.length }} reportes selected
+            Button.btn.btn-primary(@click='createStockTake' style="height: 34px" v-if='isStockTake') Create stock-take note
+          Paginator(
+            :rows="paging.pageSize"
+            :totalRecords="totalReportRecords"
+            @page="onPage"
+            :first.sync="paging.first"
+            :rowsPerPageOptions="pageOption"
+          ).p-000
       template(#empty)
         div.flex.align-items-center.justify-content-center.flex-column
           img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
@@ -122,12 +152,13 @@
             span.text-primary.underline.cursor-pointer(@click='addReport') &nbsp;here
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
+  
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "50vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
     ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
       h1.text-heading Report detail
-    BoxDataTable(@selectBox='selectBox($event)' :box='boxShow' v-if='!isConfirm')
+    BoxDataTable(@selectBox='createSelectBox($event)' :box='boxShow' v-if='!isConfirm')
     .confirm.grid(v-if='isConfirm')
       .col-12
         DataTable.w-full.table__sort-icon.h-full(:value="boxShow" responsiveLayout="scroll")
@@ -165,7 +196,7 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import ReportDetail from '~/components/report/ReportDetail.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-import { exportFileTypePdf, getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
+import { getDeleteMessage, LIMIT_PAGE_OPTIONS, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
 import { REPORT_STATUS } from '~/utils/constants/report'
 import BoxDataTable from '~/components/box/BoxDataTable.vue'
 const nsStoreReport = namespace('report/report-list')
@@ -202,6 +233,8 @@ class ReportList extends Vue {
     { name: 'Solved', value: REPORT_STATUS.SOLVED }
   ]
 
+  expandedRows : any[] = []
+  selectedShowBox: any[] = [] 
   isConfirm = false
   filter: any = {
     sellerEmail: '',
@@ -211,8 +244,9 @@ class ReportList extends Vue {
     status: ''
   }
 
-  data: any[] = []
-
+  pageOption = LIMIT_PAGE_OPTIONS 
+  isStockTake = false
+  isDeleteReport = false
   @nsStoreReport.State
   reportList!: any[]
 
@@ -257,6 +291,7 @@ class ReportList extends Vue {
 
   async mounted() {
     await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
+    this.expandedRows = this.reportList
   }
 
   // -- [ Getters ] -------------------------------------------------------------
@@ -265,10 +300,15 @@ class ReportList extends Vue {
     return Object.values(params).some((item) => item)
   }
 
+  get showingText() {
+    if (this.totalReportRecords <= 0) return ''
+    const from = String(this.paging.pageNumber * this.paging.pageSize + 1).padStart(2, '0')
+    const to = Math.min(this.totalReportRecords, (this.paging.pageNumber + 1) * this.paging.pageSize)
+    return `Showing ${from} - ${to} of ${this.totalReportRecords}`
+  }
+
   get selectedReportFilter() {
-    return _.filter(this.selectedReportes, ({ status }) => {
-      return status !== 'BOX_STATUS_DISABLE' && status !== 'BOX_STATUS_OUTGOING'
-    })
+    return []
   }
 
   get deleteMessage() {
@@ -279,17 +319,9 @@ class ReportList extends Vue {
 
   @Watch('reportList')
   changeReportList(){
-    this.data = []
-    this.reportList.forEach(report => {
-      report.boxNote.forEach(boxNote => {
-        this.data.push({
-          id: report.id,
-          boxNote,
-          createdAt: report.createdAt,
-          createId: report.createdBy.staffId,
-          status:'REPORT_NEW'
-        })
-      })
+    this.boxSelected = []
+    this.reportList.forEach(() => {
+      this.boxSelected.push([])
     })
   }
 
@@ -348,8 +380,8 @@ class ReportList extends Vue {
     this.isModalDelete = true
   }
 
-  rowClass({ boxNote }) {
-    if(boxNote.status === REPORT_STATUS.NEW) {
+  rowClass(report) {
+    if(report.reportStatus === REPORT_STATUS.NEW) {
       return ''
     } else {
       return 'row-disable'
@@ -403,26 +435,58 @@ class ReportList extends Vue {
 
   rowSelectAll({ data }) {
     this.selectedReportes = _.unionWith(this.selectedReportes, data, _.isEqual)
+    this.selectedReportes.forEach((element, index)=> {
+      this.boxSelected[index].push(...element.boxNote)  
+    })
+    this.selectedShowBox = _.cloneDeep(this.boxSelected)
+    this.setReportSelected(-1)
   }
 
   rowUnSelectAll() {
     this.selectedReportes = []
+    this.selectedShowBox = []
+    this.boxSelected = []
+    this.setReportSelected(-1)
   }
 
-  rowSelect({ data }) {
-    this.selectedReportes.push(data)
+  rowSelect(event) {
+    this.selectedReportes.push(event.data)
+    const index = this.reportList.indexOf(event.data)
+    this.boxSelected[index] = event.data.boxNote
+    this.selectedShowBox = _.cloneDeep(this.boxSelected)
+    this.setReportSelected(index)
   }
 
   rowUnselect({ originalEvent, data }) {
     originalEvent.originalEvent.stopPropagation()
+    const index = this.reportList.indexOf(data)
     this.selectedReportes = _.filter(this.selectedReportes, (report: any) => report.id !== data.id)
+    this.boxSelected[index] = []
+    this.selectedShowBox = _.cloneDeep(this.boxSelected)
+    this.setReportSelected(index)
+  }
+
+  // -- [select chirld] --------------------------------
+
+  rowChirldSelect({ data },index) {
+    this.isStockTake = true
+    this.boxSelected[index].push(data)
+    this.setReportSelected(index)
+  }
+
+  rowChirldUnselect({ originalEvent, data }, index) {
+    _.remove(this.boxSelected[index], function(boxNote) {
+      return boxNote.id === data.id
+    })
+    originalEvent.originalEvent.stopPropagation()
+    this.setReportSelected(index)
   }
 
   addReport() {
     this.showModal = true
   }
 
-  selectBox(event) {
+  createSelectBox(event) {
     this.boxSelected = _.cloneDeep(event)
     if (this.boxSelected.length > 0) {
       this.disabledApply = false
@@ -539,23 +603,29 @@ class ReportList extends Vue {
     }
   }
 
-  handleExportReceipt() {
-    if(this.selectedReportes.length > 0) {
-      _.forEach(this.selectedReportes, async ({ id }) => {
-        const result = await this.actGetReceiptLable({ id })
-        if (result) {
-          exportFileTypePdf(result, `report-${id}`)
-        }
-      })
+  setReportSelected(reportIndex){
+    const stockTakeItem: any = []
+    if(reportIndex >-1 ) {
+      this.boxSelected[reportIndex].forEach(element => {
+        stockTakeItem.push({
+          id: this.reportList[reportIndex].id,
+          boxNote: element
+        })
+      }) 
     } else {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'No records have been selected yet!',
-        life: 3000
+      this.selectedReportes.forEach(report => {
+        report.boxNote.forEach(element => {
+          stockTakeItem.push({
+            id: report.id,
+            boxNote: element
+          })
+        })
       })
     }
+    this.isDeleteReport = this.selectedReportes.length>0
+    this.isStockTake = stockTakeItem.length >0 
   }
+
 }
 export default ReportList
 </script>
@@ -665,4 +735,8 @@ export default ReportList
     .p-datatable-tbody
       & > tr
         height: 3.5rem !important
+.orders-subtable
+  ::v-deep.p-column-header-content
+    .p-checkbox
+      display: none !important
 </style>

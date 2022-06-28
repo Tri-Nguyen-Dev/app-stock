@@ -7,7 +7,6 @@
       .pagination__delete.mr-2(@click="$emit('onDelete')")
         .icon.icon-btn-delete
         span {{title}} {{ deletedList.length }} {{type}}
-      slot(name="action")
     Paginator(
       :rows="paging.pageSize"
       :totalRecords="total"
