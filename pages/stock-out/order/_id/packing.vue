@@ -87,7 +87,7 @@ class DeliveryOrderPacking extends Vue {
   noteText: string = ''
   isShowModalReport: boolean = false
   loadingSubmit: boolean = false
-  valueReportNote: string = ''
+  valueReportNote: any = null
   listOutGoingBox: any = [
     {
       boxCode: 'EX1',
@@ -352,6 +352,7 @@ class DeliveryOrderPacking extends Vue {
           detail: 'Add report successfully!',
           life: 3000
         })
+        this.valueReportNote = null
       }
       else {
         this.isShowModalReport = false
@@ -362,6 +363,7 @@ class DeliveryOrderPacking extends Vue {
           life: 3000
         })
         this.isShowModalReport = false
+        this.valueReportNote = null
       }
     }
   }
