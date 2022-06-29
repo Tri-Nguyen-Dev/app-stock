@@ -10,7 +10,7 @@
       :loading="loadingSubmit"
     )
       template(v-slot:message)
-        p Do you want to report the quantity discrepancy  in the box {{ originalBoxActive.boxCode }}?
+        p Do you want to report the box {{ originalBoxActive.boxCode }}?
       template(v-slot:content)
         h3.text-left.text-900 NOTE:
         Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
@@ -48,7 +48,7 @@
               .icon--large.icon-note
             .col
               div(style="padding-left: 10.5px") Note:
-              //- InputText.inputSearchCode.w-full(v-model="noteText" rows="1" cols="40" placeholder='Write something...')
+              InputText.inputSearchCode.w-full(v-model="noteText" rows="1" cols="40" placeholder='Write something...')
         .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
@@ -66,7 +66,6 @@
         .col-2.flex.justify-content-end.p-1
           Button.btn.btn-primary.ml-3(@click="handleSubmit" :disabled="isDisabled") Save
 </template>
-
 <script lang="ts">
 import { Component, Vue, namespace, ProvideReactive, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
@@ -400,4 +399,11 @@ export default DeliveryOrderPacking
   border-radius: 10px
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
   background-color: #979AA4
+.p-inputtext:enabled:focus
+  box-shadow: none
+.p-inputtext::placeholder
+    font-family: $font-family-primary !important
+    color: $text-color-700 !important
+    line-height: calc(24 / 14)
+    font-size: 12px
 </style>
