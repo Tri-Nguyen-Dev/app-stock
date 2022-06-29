@@ -8,7 +8,6 @@
         .header__action.flex
           Button.btn.btn-primary.border-0.mr-2(
             @click='handleApplyFilter'
-            :disabled='checkIsFilter ? null : "disabled"'
           ) Apply
           .btn__filter(:class="{'active': isShowFilter}")
             .btn-toggle(@click="isShowFilter = !isShowFilter")

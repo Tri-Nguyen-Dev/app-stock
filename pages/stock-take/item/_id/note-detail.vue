@@ -66,7 +66,7 @@
                 template(#body='{data}' )
                   Button.btn.btn-primary.border-0( @click='handleReport(data)') Report
             template(#footer)
-              .grid.grid-nogutter.stock__footer(v-if='isDetail')
+              .grid.grid-nogutter.stock__footer(v-if='isDetail && !isCheckAssignee')
                 .col.stock__note
                   div(style="padding-left: 10.5px") Note:
                   InputText.inputSearchCode.w-full(v-model="submitNote" rows="1" cols="40" placeholder='Write something...')
@@ -316,7 +316,20 @@ class stockTakeItemsDetail extends Vue {
   async handleApprove() {
     const result = await this.actApproveStockTake({ id: this.$route.params.id })
     if(result?.data) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Save approve stock take successfully!',
+        life: 3000
+      })
       await this.$router.push(`/stock-take/item/${this.$route.params.id}/approve`)
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Save approve stock take failed!',
+        life: 3000
+      })
     }
   }
 

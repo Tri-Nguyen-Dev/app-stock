@@ -205,14 +205,21 @@ class stockTakeItemsDetail extends Vue {
       approveNote: this.approveNote
     }
     const result = await this.actApproveSubmit({ id: this.$route.params.id, data })
-    if(result) {
+    if(result?.data) {
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
-        detail: 'Approving Stock-take Note successfully!',
+        detail: 'Save approve stock take successfully!',
         life: 3000
       })
       await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Save approve stock take failed!',
+        life: 3000
+      })
     }
   }
 
