@@ -26,7 +26,7 @@
               .icon--large.icon-note
             .col
               div Note:
-              span {{packingDetail.note || 'Note is empty'}}
+              span {{packingDetail.packingNote || 'Note is empty'}}
         .col-2.border-right-1.border-gray-300.p-1
           .grid.justify-content-center
             .col-3.flex

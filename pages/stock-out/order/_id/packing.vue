@@ -48,7 +48,7 @@
               .icon--large.icon-note
             .col
               div(style="padding-left: 10.5px") Note:
-              InputText.inputSearchCode.w-full(v-model="noteText" rows="1" cols="40" placeholder='Write something...')
+              //- InputText.inputSearchCode.w-full(v-model="noteText" rows="1" cols="40" placeholder='Write something...')
         .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
@@ -268,7 +268,7 @@ class DeliveryOrderPacking extends Vue {
         listStockWithAmount: this.getStocks(items),
         airtag
       })),
-      note: this.noteText
+      packingNote: this.noteText
     }
     const { id } = this.$route.params
     const result = await this.actSavePackingDetail({ data, id })
