@@ -16,9 +16,9 @@ export namespace StockTakeConstants {
   ]
 
   export const RESULT_STOCK_TAKE_OPTIONS = [
-    { name: 'Ng', value: 'NG' },
-    { name: 'Ok', value: 'OK' },
-    { name: 'Waiting', value: 'WAITING' }
+    { name: 'NG', value: 'NG' },
+    { name: 'OK', value: 'OK' },
+    { name: 'N/A', value: 'WAITING' }
   ]
 
   export const RESULT_ITEM_STOCK_OPTIONS = [
