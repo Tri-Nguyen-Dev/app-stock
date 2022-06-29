@@ -227,6 +227,7 @@ class ItemListModel extends Vue {
       if(role === 'admin') {
         await this.actWarehouseList()
         this.warehouseOption = _.cloneDeep(this.warehouseList)
+        this.filter.warehouse = this.warehouseList[0]
       } else {
         this.warehouseOption = [warehouse]
         this.filter.warehouse = warehouse
@@ -373,6 +374,21 @@ class ItemListModel extends Vue {
   }
 
   handleApply() {
+    if(_.size(this.selectedBoxeSsatisfy) > 1) {
+      const warehouseFirstItem = _.get(this.selectedBoxeSsatisfy[0], 'box.request.warehouse.id', null)
+      const unsatisfactoryItem =  _.find(this.selectedBoxeSsatisfy, function({ box }) {
+        return box?.request?.warehouse?.id !== warehouseFirstItem
+      })
+      if(unsatisfactoryItem) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Please add items from 1 warehouse',
+          life: 3000
+        })
+        return
+      }
+    }
     this.$emit('onApply', this.selectedBoxeSsatisfy)
   }
 

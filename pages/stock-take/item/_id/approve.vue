@@ -46,11 +46,10 @@
               template.text-center(#body='{data}' class="text-center")
                 .text-center(v-if='data.approvedQuantity !== null') {{ data.approvedQuantity - data.inventoryQuantity }}
             template(#footer)
-              .grid.grid-nogutter.stock-takeItem__footer
+              .grid.grid-nogutter.stock-takeItem__footer(v-if="isApproving")
                 .col-12.stock-takeItem__note
                   div(style="padding-left: 10.5px") Note:
-                  span.font-normal(v-if="!isApproving" style="padding-left: 10.5px") {{ noteText }}
-                  InputText.inputSearchCode.w-full(v-else v-model="approveNote" rows="1" cols="40" placeholder='Write something...')
+                  InputText.inputSearchCode.w-full(v-model="approveNote" rows="1" cols="40" placeholder='Write something...')
 </template>
 
 <script lang="ts">
@@ -105,22 +104,18 @@ class stockTakeItemsDetail extends Vue {
     return this.boxStockTakeDetail?.totalStockTakeItem
   }
 
-  // get sellerInfo() {
-  //   const { stockTakeItem } = this.boxStockTakeDetail
-  //   if(stockTakeItem) {
-  //     const sumStockTakeItem = _.size(stockTakeItem)
-  //     const firstStock: any = stockTakeItem[0]
-  //     if(firstStock) {
-  //       const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
-  //       if(_.size(stockSame) === sumStockTakeItem) {
-  //         return firstStock
-  //       }
-  //     }
-  //   }
-  // }
-
   get noteInfor() {
-    const { createdAt, createdBy, approver, assignee, seller } = this.boxStockTakeDetail
+    const { createdAt, createdBy, approver, assignee, seller, note, submitNote, approveNote } = this.boxStockTakeDetail
+    const notes: any = []
+    if(note) {
+      notes.push({ position: 'Creator', author: createdBy?.staffId, value: note })
+    }
+    if(submitNote) {
+      notes.push({ position: 'PIC', author: assignee?.staffId, value: submitNote })
+    }
+    if(approveNote) {
+      notes.push({ position: 'Approver', author: approver?.staffId, value: approveNote })
+    }
     return {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
@@ -137,12 +132,15 @@ class stockTakeItemsDetail extends Vue {
       sellerInfo: [
         { title:'Name', value: function(seller) {
           if(!seller) return null
-          const name = seller.displayName || seller.firstName + ' ' + seller.lastName
-          return name || 'N/A'
+          if(!seller.displayName && !seller.firstName && !seller.lastName) {
+            return 'N/A'
+          }
+          return seller.displayName || seller.firstName + ' ' + seller.lastName
         }(seller), icon: 'icon-sender-name' },
         { title:'Email', value: seller?.email, icon: 'icon-sender-email' },
         { title:'Phone', value: seller?.phoneNumber, icon: 'icon-sender-phone' }
-      ]
+      ],
+      notes
     }
   }
 

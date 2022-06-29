@@ -12,24 +12,32 @@
       .col(v-if="noteInfor.id")
         span.p-2.font-bold NOTE ID: {{ noteInfor.id }}
       .col
-        span.p-2.table__status.table__status--available {{ noteInfor.status }}
+        span.p-2.table__status.table__status--available {{ noteInfor.status | trimUnderShift }}
       .col.border-bottom-1.border-gray-300
-    div.sub--scroll
-      .grid.stock--info.p-2.m-0
-        .col-12.flex
-          .col.flex.align-items-center
+    .sub--scroll
+      .grid.w-full
+        .col-12.stock--info.p-2.m-0
+          .col-12.flex.align-items-center
             .icon-sender-info.icon.bg-primary.mr-2
             span.font-bold.text-800.uppercase ID Information
-        .col-12(v-for="creator of noteInfor.creatorInfo" v-if="creator")
-          StockUnit.m-0(:title="creator.title" :value='creator.value || "N/A"' :icon='creator.icon')
-        .col.border-bottom-1.border-gray-300
-      .grid.stock--contact.p-2.m-0(v-if="noteInfor.sellerInfo")
-        .col-12.flex
-          .col.flex.align-items-center
+          .col-12(v-for="creator of noteInfor.creatorInfo" v-if="creator")
+            StockUnit.m-0(:title="creator.title" :value='creator.value || "N/A"' :icon='creator.icon')
+          .col.border-bottom-1.border-gray-300
+        .col-12.stock--contact.p-2.m-0(v-if="noteInfor.sellerInfo")
+          .col-12.flex.align-items-center
             .icon-sender-info.icon.bg-primary.mr-2
             span.font-bold.text-800.uppercase Seller Information
-        .col-12(v-for="seller of noteInfor.sellerInfo")
-          StockUnit.m-0(:title="seller.title" :value='seller.value || "N/A"' :icon="seller.icon")
+          .col-12(v-for="seller of noteInfor.sellerInfo")
+            StockUnit.m-0(:title="seller.title" :value='seller.value || "N/A"' :icon="seller.icon")
+          .col.border-bottom-1.border-gray-300
+        .col-12.stock--contact.p-2.m-0(v-if="noteInfor.notes && noteInfor.notes.length > 0")
+          .col-12.flex.align-items-center
+            .icon.icon-note.icon.bg-primary.mr-2
+            span.font-bold.text-800.uppercase Note
+          .col-12(v-for="note of noteInfor.notes" v-if="note")
+            .grid.grid-nogutter.wapprer-note.m-0
+              .col-12.font-semibold {{ `${note.position}: ${note.author}` }}
+              .col-12 Note: {{ note.value }}
 </template>
 
 <script lang="ts">
@@ -40,10 +48,6 @@ class NoteInfo extends Vue {
   @Prop({ default: null }) noteInfor: any
   @Prop({ default: null }) homeItem: any
   @Prop({ default: null }) breadcrumbItem: any
-
-  get noteLabel() {
-    return _.last(this.breadcrumbItem).label
-  }
 }
 
 export default NoteInfo
@@ -52,4 +56,10 @@ export default NoteInfo
 ::v-deep.sub-tab
   .p-menuitem-link
     display: flex !important
+  .wapprer-note
+    width: 100%
+    min-height: 72px
+    border-radius: 4px
+    background-color: $text-color-200
+    padding: 12px
 </style>
