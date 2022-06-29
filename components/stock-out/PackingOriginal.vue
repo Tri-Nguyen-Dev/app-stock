@@ -64,7 +64,7 @@
           div.ml-2(v-if='isOutgoing && tab.checked')
             span.p-input-icon-right
               .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-              InputText.inputSearchCode(
+              InputText.inputSearchCode.input-border(
                 @change='addTagByBarCode'
                 v-model="tagCodeText"
                 ref="inputScanTag"
