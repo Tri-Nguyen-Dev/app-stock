@@ -15,16 +15,16 @@
               )
               .input-errors(
                 v-if='$v.information.warehouse.$each[0].value.$dirty && $v.information.warehouse.$each[0].value.$invalid '
-                style='text-align: center')
-                .error-message Please, select Warehouse
+                )
+                .error-message Please, select name in the correct Warehouse Information
               .input-errors(
                 v-else-if='$v.information.warehouse.$each[1].value.$dirty && $v.information.warehouse.$each[1].value.$invalid '
-                style='text-align: center')
-                .error-message Please, fill in Email
+                )
+                .error-message {{errorMessage.errorName}} Warehouse Information
               .input-errors(
                 v-else-if='$v.information.warehouse.$each[2].value.$dirty && $v.information.warehouse.$each[2].value.$invalid  '
-                style='text-align: center')
-                .error-message Please, fill in Phone
+                )
+                .error-message {{errorMessage.errorPhone}} Warehouse Information
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
             .grid.grid-nogutter.align-items-center.mb-4
@@ -37,18 +37,18 @@
                 @paramSeller='paramSeller'
                 :sellerList='sellerList'
               )
-                .input-errors(
-                  v-if='$v.information.seller.$each[0].value.$dirty && $v.information.seller.$each[0].value.$invalid '
-                  style='text-align: center')
-                  .error-message Please, select email
-                .input-errors(
-                  v-else-if='$v.information.seller.$each[1].value.$dirty && $v.information.seller.$each[1].value.$invalid '
-                  style='text-align: center')
-                  .error-message Please, fill in name
-                .input-errors(
-                  v-else-if='$v.information.seller.$each[2].value.$dirty && $v.information.seller.$each[2].value.$invalid  '
-                  style='text-align: center')
-                  .error-message Please, fill in phone
+              .input-errors(
+                v-if=' $v.information.seller.$each[0].value.$invalid && $v.information.seller.$each[0].value.$dirty '
+                )
+                .error-message Seller not found, please select seller email
+              .input-errors(
+                v-else-if='$v.information.seller.$each[1].value.$dirty && $v.information.seller.$each[1].value.$invalid '
+                )
+                .error-message {{errorMessage.errorName}} Seller Information
+              .input-errors(
+                v-else-if='$v.information.seller.$each[2].value.$dirty && $v.information.seller.$each[2].value.$invalid  '
+                )
+                .error-message {{errorMessage.errorPhone}} Seller Information
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
             .grid.grid-nogutter.align-items-center.mb-4
@@ -61,20 +61,20 @@
               )
               .input-errors(
                 v-if='$v.information.receiver.$each[0].value.$dirty && $v.information.receiver.$each[0].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill Address
+                )
+                .error-message {{errorMessage.errorAddress}} Receiver Information
               .input-errors(
                 v-else-if='$v.information.receiver.$each[1].value.$dirty && $v.information.receiver.$each[1].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Email
+                )
+                .error-message {{errorMessage.errorEmail}} Receiver Information
               .input-errors(
                 v-else-if='$v.information.receiver.$each[2].value.$dirty && $v.information.receiver.$each[2].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Name
+                )
+                .error-message {{errorMessage.errorName}} Receiver Information
               .input-errors(
-                v-else-if='$v.information.receiver.$each[2].value.$dirty && $v.information.receiver.$each[3].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Phone
+                v-else-if='$v.information.receiver.$each[3].value.$dirty && $v.information.receiver.$each[3].value.$invalid'
+                )
+                .error-message {{errorMessage.errorPhone}} Receiver Information
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
             .grid.grid-nogutter.align-items-center.mb-4
@@ -100,20 +100,21 @@
               StockOutItemInput( :listInfor='information.creator')
               .input-errors(
                 v-if='$v.information.creator.$each[0].value.$dirty && $v.information.creator.$each[0].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill ID
+                )
+                .error-message Please, fill in id in the correct Creator Information
               .input-errors(
                 v-else-if='$v.information.creator.$each[1].value.$dirty && $v.information.creator.$each[1].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Email
+                )
+                .error-message {{errorMessage.errorEmail}} Creator Information
               .input-errors(
                 v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[2].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Name
+                )
+                .error-message {{errorMessage.errorName}} Creator Information
               .input-errors(
                 v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[3].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Phone
+                )
+                .error-message {{errorMessage.errorPhone}} Creator Information
+
     .inventory.flex.flex-column.flex-1(class="lg:col-7 md:col-12 ")
       .inventory__header
         div
@@ -137,7 +138,7 @@
             .flex.align-items-center.justify-content-center.flex-column
               img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
               p.text-900.font-bold.mt-3 List is empty!, Click
-                span.text-primary.underline.cursor-pointer &nbsp;here
+                span.text-primary.underline.cursor-pointer(@click='createStockOut') &nbsp;here
                 span &nbsp;to add item.
           column(field='no', header='NO')
             template(#body='slotProps')
@@ -289,10 +290,17 @@ class createOrder extends Vue {
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
   valueDelete: any
-  deliveryDate: string | any = 'Fill receiver information'
-  estimatedDate: string | any = 'Fill receiver information'
+  deliveryDate: string | any = 'Due Date Time'
+  estimatedDate: string | any = 'Estimated Delivery Time'
   information = INFORMATION
   isDisableSubmit: boolean = false
+  emailInvalid: boolean = false
+  errorMessage: any = {
+    errorPhone  :'*Please, fill in phone in the correct',
+    errorName : '*Please, fill in name in the correct',
+    errorEmail : '*Please, fill in email in the correct',
+    errorAddress : '*Please, fill in email in the correct'
+  }
 
   // -- [ State ] ------------------------------------------------------------
 
@@ -320,7 +328,7 @@ class createOrder extends Vue {
   actDeliveryOrder!: (params: any) => Promise<void>
 
   @nsStoreWarehouse.Action
-  actWarehouseList!: (params: any) => Promise<void>
+  actWarehouseList!: () => Promise<void>
 
   @nsStoreSeller.Action
   actSellerList!: (params: any) => Promise<void>
@@ -339,7 +347,8 @@ class createOrder extends Vue {
 
     if(this.user.role === 'staff'){
       this.warehouseByStaff()
-    }else {
+    }
+    else {
       this.actWarehouseList()
     }
   }
@@ -513,6 +522,12 @@ class createOrder extends Vue {
 
   paramSeller(event: any) {
     this.actSellerList({ email: event })
+    if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(event.value))
+    {
+      return true
+    }
+    return this.$v.information.seller?.$each?.$touch()
+
   }
 
   handleReceiver(event: any) {
@@ -726,7 +741,9 @@ export default createOrder
     text-align: right !important
     .p-column-header-content
       justify-content: end !important
-.error-message
-  color: #ff0000
+::v-deep.input-errors
+  text-align: start !important
+  .error-message
+    color: #ff0000
 </style>
 

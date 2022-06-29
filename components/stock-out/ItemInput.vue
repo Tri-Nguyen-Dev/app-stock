@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   .grid.flex.grid-nogutter.align-items-center.my-2(
-    v-for="(item, index) in listInfor"
+    v-for="(item) in listInfor"
     :key='item.key'
   )
     .col-3
@@ -75,6 +75,7 @@ class ItemInput extends Vue {
 
   searchSeller(event: any) {
     this.$emit('paramSeller' , event.query)
+
   }
 }
 
