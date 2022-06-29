@@ -71,13 +71,43 @@ DataTable.w-full.flex.flex-column.bg-white.box-page-container(
     template(#body='{ data }')
       .grid-cell-center
         Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='isDetail')
+  template( #footer )
+    Pagination(
+      title="Cancel"
+      type="D/O selected"
+      :paging="paging"
+      :total="total"
+      @onPage="onPage")
+  template(#empty)
+    div.flex.align-items-center.justify-content-center.flex-column
+      img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
+      img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
+      p.text-900.font-bold.mt-3(v-if="!checkIsFilter") List is empty!, Click
+        span.text-primary.underline  &nbsp;here&nbsp;
+        span to add item.
+      p.text-900.font-bold.mt-3(v-else) Item not found!
+
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'nuxt-property-decorator'
+import { Component, Prop, Vue, Watch, namespace } from 'nuxt-property-decorator'
 import { STOCK_OUT_ACTION } from '~/utils/constants/stock-out'
-@Component
+import { Paging } from '~/models/common/Paging'
+import Pagination from '~/components/common/Pagination.vue'
+import { OrderDetail } from '~/models/OrderDetail'
+import { 
+  LIMIT_PAGE_OPTIONS,
+  PAGINATE_DEFAULT,
+  calculateIndex 
+} from '~/utils'
+const nsStoreOrder = namespace('stock-out/order-detail')
+@Component({ 
+  components: {
+    Pagination 
+  }
+})
 class ItemList extends Vue {
+  [x: string]: any
   @Prop() listItems!: any[]
   @Prop() getParam: () => any
   @Prop({ default: false }) isDetail!: boolean
@@ -86,6 +116,40 @@ class ItemList extends Vue {
   isPack = false
   selectedItem: any[] = []
   enablePack = false
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  
+  limitOptions = LIMIT_PAGE_OPTIONS
+
+  // -- [ State ] ------------------------------------------------------------
+  paginate: any = {
+    pageNumber: 0,
+    pageSize: 10
+  }
+  
+  @nsStoreOrder.State
+  orderDetail!: OrderDetail.Model
+
+  @nsStoreOrder.Action
+  actGetOrderDetail!: (obj: any) => Promise<void>
+
+  // -- [ Getters ] -------------------------------------------------------------
+  get total(){
+    return this.orderDetail.deliveryItemList?.length
+  }
+
+  onPage(event: any) {
+    this.paginate.pageSize = event.rows
+    this.paginate.pageNumber = event.page
+  }
+
+  getIndexPaginate(index: number) {
+    return calculateIndex(
+      index,
+      this.paging.pageNumber,
+      this.paging.pageSize
+    )
+  }
+
   get dataRenderItems() {
     return this.listItems
   }
