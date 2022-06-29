@@ -1,7 +1,7 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-      StockTakeNoteInfo(:info='stockTakeInfo')
+      StockTakeNoteInfo(:info='stockTakeInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
       .grid.wapprer-unit.ml-4.mr-4
         .col-2.flex.align-items-center.justify-content-center
           .icon--large.bg-blue-700(class='icon-note')
@@ -133,12 +133,6 @@ class DeliveryOrder extends Vue {
   @nsStoreReportList.Action
   actResetStockTake
 
-  get breadcrumbItem() {
-    return [
-      { label: 'Stock take Box', to: '/stock-take/box/create', icon: 'pi pi-info-circle' }
-    ]
-  }
-
   showModal = false
   addBox() {
     this.showModal = true
@@ -219,6 +213,16 @@ class DeliveryOrder extends Vue {
       _.uniqBy(this.reportList, 'id')
       this.disabledAddBox = true
     }
+  }
+
+  get homeItem() {
+    return { label: 'Note list', to: '/stock-take', icon: 'pi pi-list' }
+  }
+
+  get breadcrumbItem() {
+    return [
+      { label: 'Add new note', to: '/stock-take/box/create' }
+    ]
   }
 }
 

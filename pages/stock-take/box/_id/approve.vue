@@ -1,12 +1,28 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-      StockTakeNoteInfo(:info='noteDetailInfo')
+      StockTakeNoteInfo(:info='noteDetailInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
+      .grid.ml-4.mr-4
+        .icon--large.bg-blue-700(class='icon-note')
+        span.font-normal.text-700.text-base.uppercase Note
+      .grid.wapprer-unit.ml-4.mr-4.mt-2(v-if='boxStockTakeDetail.note')
+        .col.flex.flex-column.justify-content-center
+          div.font-normal.text-base.uppercase.font-bold Creator:
+          Textarea(:value='boxStockTakeDetail.note' disabled rows='2' cols=30)
+      .grid.wapprer-unit.ml-4.mr-4.mt-2(v-if='boxStockTakeDetail.submitNote')
+        .col.flex.flex-column.justify-content-center
+          div.font-normal.text-base.uppercase.font-bold PIC:
+          Textarea.text-lg(:value='boxStockTakeDetail.submitNote' disabled rows='2' cols=30)
+      .grid.wapprer-unit.ml-4.mr-4.mt-2
+        .col.flex.flex-column.justify-content-center
+          div.font-normal.text-base.uppercase.font-bold Approver:
+          Textarea.text-lg(:value='stockTakeInfo.note' rows='2' cols=30)
     .col-9.pl-4.pr-1.flex.flex-column.h-full
       .grid
-        .col-4
-          h1.text-heading Stock-take Note
-        .col-8.btn-right.flex.justify-content-end
+        .col-6
+          h1.text-heading(v-if='this.boxStockTakeDetail.status === "APPROVED"')  Approved Stock-take Note Detail
+          h1.text-heading(v-else)  Approving Stock-take Note Detail
+        .col-6.btn-right.flex.justify-content-end
           .btn.btn-primary.cursor-pointer.mr-2(@click='saveApprove' v-if='!isApproved')
             span.uppercase save
           .btn.btn-primary.cursor-pointer.mr-2(@click='exportNote')
@@ -82,6 +98,7 @@ class ApproveBoxStockTake extends Vue {
     wareHouse?: any
     status?: any
     id?: any
+    note?: any
   } = {
     user: undefined,
     totalBox: 0,
@@ -90,7 +107,8 @@ class ApproveBoxStockTake extends Vue {
     picId: '',
     status: '',
     id: '',
-    approveId: ''
+    approveId: '',
+    note: ''
   }
 
   rowExpaned: any = []
@@ -176,13 +194,14 @@ class ApproveBoxStockTake extends Vue {
   }
 
   async saveApprove() {
-    const submitData = _.flatten(
+    let submitData = _.flatten(
       _.map(this.dataList, ({ stockTakeBoxItem }) => {
         return _.map(stockTakeBoxItem, ({ id, approvedQuantity }) => {
           return { id, approvedQuantity }
         })
       })
     )
+    submitData = { stockTakeItem: [...submitData], approveNote: this.boxStockTakeDetail.note }
     const result = await this.actApproveSubmit({ id: this.$route.params.id , data: submitData })
     if (result) {
       this.$toast.add({
@@ -229,7 +248,18 @@ class ApproveBoxStockTake extends Vue {
     this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
     this.stockTakeInfo.id = this.boxStockTakeDetail?.id
     this.stockTakeInfo.status = this.boxStockTakeDetail?.status
+    this.stockTakeInfo.note = this.boxStockTakeDetail?.approveNote
     return this.stockTakeInfo
+  }
+
+  get homeItem() {
+    return { label: 'Note list', to: '/stock-take', icon: 'pi pi-list' }
+  }
+
+  get breadcrumbItem() {
+    return [
+      { label: 'Stock-take Note Detail Approve' }
+    ]
   }
 }
 

@@ -1,17 +1,23 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-      StockTakeNoteInfo(:info='noteDetailInfo')
-      .grid.wapprer-unit.ml-4.mr-4
-        .col-2.flex.align-items-center.justify-content-center
-          .icon--large.bg-blue-700(class='icon-note')
-        .col-10.flex.flex-column.justify-content-center
-          div.font-normal.text-700.text-base Note
-          Textarea.text-lg(:value='noteDetailInfo.note' :disabled='isComplete' placeholder='Write something...' rows='2' cols=30)
+      StockTakeNoteInfo(:info='noteDetailInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
+      .grid.ml-4.mr-4
+        .icon--large.bg-blue-700(class='icon-note')
+        span.font-normal.text-700.text-base.uppercase Note
+      .grid.wapprer-unit.ml-4.mr-4.mt-2(v-if='boxStockTakeDetail.note')
+        .col.flex.flex-column.justify-content-center
+          div.font-normal.text-base.uppercase.font-bold Creator:
+          Textarea(:value='boxStockTakeDetail.note' disabled rows='2' cols=30)
+      .grid.wapprer-unit.ml-4.mr-4.mt-2
+        .col.flex.flex-column.justify-content-center
+          div.font-normal.text-base.uppercase.font-bold PIC:
+          Textarea.text-lg(:value='noteDetailInfo.submitNote' :disabled='isComplete' placeholder='Write something...' rows='2' cols=30)
     .col-9.pl-4.pr-1.flex.flex-column.h-full
       .grid
         .col-4
-          h1.text-heading Stock-take Note
+          h1.text-heading(v-if='isCheck') Stock-take Note
+          h1.text-heading(v-else) Stock-take Note Detail
         .col-8.btn-right.flex.justify-content-end
           .btn.btn-primary.cursor-pointer.mr-2(@click='checkItems' v-if='isCheck')
             span.uppercase Check
@@ -50,7 +56,7 @@
                 .flex.align-items-center.cursor-pointer
                   span.text-primary.font-bold.font-sm {{data.location}}
                   .icon--small.icon-arrow-up-right.bg-primary(v-if='data.location')
-            Column(field="action" header="ACTION")
+            Column(field="action" header="ACTION" :hidden='isComplete || isCheck')
               template(#body="{data}")
                 Button(@click='reportTakeNote(data)' :disabled="data.isChecking || isComplete")
                   span.uppercase report
@@ -66,16 +72,18 @@
                   :value="slotProps.data.stockTakeBoxItem"
                   responsiveLayout="scroll"
                 )
+                  //- :selection.sync="slotProps.data.stockTakeBoxItem.selectedConfirm"
                   Column(field='no' header='NO' bodyClass='text-bold')
                     template(#body='slotProps') {{ slotProps.index + 1 }}
                   Column(field="barCode" header="Barcode" sortable)
                   Column(field="inventoryQuantity" header="INVENTORY QTY" sortable)
                   Column(field="countedQuantity" header="COUNTED QTY" :styles="{'width': '5%'}")
                     template(#body="{data}")
-                      InputNumber.w-7rem(:disabled='isCheck || isComplete || data.isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity(data)')
+                      InputNumber.w-7rem(:disabled='isCheck || isComplete || data.isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity(data)' :useGrouping="false" mode="decimal")
+                  //- Column(selectionMode="multiple" :headerStyle="{'width': '3em'}")
                   Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}")
                     template(#body="{data}")
-                      span(v-if='data.countedQuantity !== null') {{data.discrepancy}}
+                      span(v-if='data.countedQuantity !== null') {{data.countedQuantity - data.inventoryQuantity}}
                   Column(field="resultStatus" header="STATUS" headerClass='grid-header-center' :styles="{'width': '20%'}" sortable)
                     template(#body="{data}")
                       .text-center
@@ -99,7 +107,16 @@
       template(v-slot:content)
         h3.text-left.text-900 NOTE:
         Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
-
+    ConfirmDialogCustom(
+      title="Submit Warning"
+      :isShow="isShowSubmitWarning"
+      :onOk="okSubmitWarning"
+      :onCancel="cancelSubmitWarning"
+      :loading="loadingSubmit"
+      type='warning'
+    )
+      template(v-slot:message)
+        p Submitting is not allowed until all counted quantity has been filled!
 </template>
 
 <script lang="ts">
@@ -144,6 +161,9 @@ class NoteBoxDetail extends Vue {
   reportData: any = {}
   valueReportNote: string = ''
   loadingSubmit: boolean = false
+  selectedConfirm: any[] = []
+  isShowSubmitWarning: boolean = false
+  checkSubmit: boolean = false
 
   @nsStoreStockTake.State
   boxStockTakeDetail!: any
@@ -196,7 +216,8 @@ class NoteBoxDetail extends Vue {
             return {
               ...item,
               boxCode: element.boxCode,
-              resultStatus: item.resultStatus || 'WAITING'
+              resultStatus: item.resultStatus || 'WAITING',
+              selectedConfirm: []
             }
           })
         }
@@ -214,6 +235,19 @@ class NoteBoxDetail extends Vue {
         ...this.stockTakeInfo,
         picId: this.boxStockTakeDetail?.assignee?.staffId
       }
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Assign stock take box successfully!',
+        life: 3000
+      })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Assign stock take box failed!',
+        life: 3000
+      })
     }
   }
 
@@ -270,13 +304,14 @@ class NoteBoxDetail extends Vue {
   }
 
   async saveDraft() {
-    const submitData = _.flatten(
+    let submitData = _.flatten(
       _.map(this.dataList, ({ stockTakeBoxItem }) => {
         return _.map(stockTakeBoxItem, ({ id, countedQuantity }) => {
           return { id, countedQuantity }
         })
       })
     )
+    submitData = { stockTakeItem: [...submitData] , submitNote: this.boxStockTakeDetail.note }
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: true,
@@ -302,13 +337,15 @@ class NoteBoxDetail extends Vue {
   }
 
   async submitNote() {
-    const submitData = _.flatten(
+    let submitData = _.flatten(
       _.map(this.dataList, ({ stockTakeBoxItem }) => {
         return _.map(stockTakeBoxItem, ({ id, countedQuantity }) => {
           return { id, countedQuantity }
         })
       })
     )
+
+    submitData = { stockTakeItem: [...submitData] , submitNote: this.boxStockTakeDetail.note }
     const checkStatus = _.some(this.dataList, function square(n: any) {
       return n.status === null || n.status === 'WAITING'
     })
@@ -332,12 +369,7 @@ class NoteBoxDetail extends Vue {
         })
       }
     } else {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'Cannot submit if status is waiting or unset!',
-        life: 3000
-      })
+      this.isShowSubmitWarning = true
     }
   }
 
@@ -368,6 +400,7 @@ class NoteBoxDetail extends Vue {
           detail: 'This box has been reported!',
           life: 3000
         })
+        this.isShowModalReport = false
       }
     }
   }
@@ -396,6 +429,16 @@ class NoteBoxDetail extends Vue {
     this.isShowModalReport = false
   }
 
+  okSubmitWarning() {
+    this.isShowSubmitWarning = false
+    this.checkSubmit = true
+  }
+
+  cancelSubmitWarning() {
+    this.isShowSubmitWarning = false
+    this.checkSubmit = true
+  }
+
   get isCheck() {
     const { status, assignee } = this.boxStockTakeDetail
     return status === 'NEW' && assignee === null
@@ -419,12 +462,22 @@ class NoteBoxDetail extends Vue {
     this.stockTakeInfo.wareHouse = this.boxStockTakeDetail?.warehouse?.name
     this.stockTakeInfo.status = this.boxStockTakeDetail?.status
     this.stockTakeInfo.id = this.boxStockTakeDetail?.id
-    this.stockTakeInfo.note = this.boxStockTakeDetail?.note
+    this.stockTakeInfo.note = this.boxStockTakeDetail?.submitNote
     return this.stockTakeInfo
   }
 
   rowClass(data: any) {
     return data.isChecking ? 'row-disable-bg' : ''
+  }
+
+  get homeItem() {
+    return { label: 'Note list', to: '/stock-take', icon: 'pi pi-list' }
+  }
+
+  get breadcrumbItem() {
+    return [
+      { label: 'Stock-take Note Detail' }
+    ]
   }
 }
 
@@ -459,4 +512,6 @@ export default NoteBoxDetail
     font-weight: 600
     box-shadow: none !important
     max-width: 100%
+  .redInput.p-inputtext:enabled:focus
+    box-shadow: 0 0 0 0.2rem rgb(38 143 255 / 50%) !important
 </style>

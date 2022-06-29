@@ -1,9 +1,18 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
     Toast
+    ConfirmDialogCustom(
+      title="Transferring Confirm"
+      :isShow="isShowConfirmPacking"
+      :onOk="handleSavePacking"
+      :onCancel="cancelSavePacking"
+      :loading="loadingSubmit"
+    )
+      template(v-slot:message)
+        p Do you want to save this tranferring box?
     .col-9.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
       .flex.flex-column.flex-1.overflow-hidden
-        StockOutPackingOriginal.mb-2(
+        StockOutPackingOriginal.mb-2.flex-1(
           title='original box'
           icon='icon-info'
           :isOriginal='true'
@@ -11,27 +20,20 @@
           type='originalBox'
           @selectedTab='selectedOriginalBox'
         )
-        .flex.flex-1.flex-column.mb-2.overflow-hidden
-          card.box-transferr
-            template(#content='')
-              h3.tranffer-title.border-bottom-1.border-gray-300.my-0.py-3.px-3.flex.align-items-center
-                .icon.inline-block.mr-2.bg-primary(class='icon-repeat')
-                span.text-sm TRANFFERING BOX
-              div.tranffer-content.border-bottom-1.border-gray-300
-                GeneralInformation(:user="user" :listOriginalBox="listOriginalBox")
-          StockOutPackingOriginal.flex-1(
-            title='Box list'
-            icon='icon-info'
-            :isTranffering='true'
-            :listBox="listTranfferingBox"
-            :location="boxLocation"
-            type='tranferringBox'
-            @selectedTab='selectedTranfferingBox'
-            @addBoxNew="addNewBoxTranferring"
-            @addStockByBarcode='addStockInTranferring'
-            @handelDeteleBoxEmpty='handelDeteleBoxEmpty'
-            :boxSizeList='boxSizeList'
-          )
+        StockOutPackingOriginal.mb-2.flex-1(
+          title='Box list'
+          icon='icon-info'
+          :isTranffering='true'
+          :listBox="listTranfferingBox"
+          :location="boxLocation"
+          type='tranferringBox'
+          @selectedTab='selectedTranfferingBox'
+          @addBoxNew="addNewBoxTranferring"
+          @addStockByBarcode='addStockInTranferring'
+          @handelDeteleBoxEmpty='handelDeteleBoxEmpty'
+          :boxSizeList='boxSizeList'
+          :autoActiveTabOut="autoActiveTabOut"
+        )
       .packing__detail--footer.grid.grid-nogutter.bg-white.border-round.align-items-center
         .col.p-1
           .grid.align-items-center
@@ -39,7 +41,7 @@
               .icon--large.icon-note
             .col
               div(style="padding-left: 10.5px") Note:
-              Textarea.inputSearchCode.w-full(rows="1" cols="40" placeholder='Write something...')
+              Textarea.inputSearchCode.w-full(rows="1" cols="40" placeholder='Write something...' v-model="noteText")
         .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
             .col-3
@@ -58,12 +60,13 @@
           Button.btn.btn-primary.justify-content-center.flex(@click="handleClick" v-if='packingStep === 1' :disabled="isDisabled") Next
           div.flex
             Button.btn.btn-outline.ml-2(@click="handleBack" v-if="packingStep === 2") Back
-            Button.btn.btn-primary.ml-3(@click="handleSubmit" v-if="ishowSave && packingStep === 2") Save
+            Button.btn.btn-primary.ml-3(@click="showDialogSave" v-if="ishowSave && packingStep === 2") Save
 </template>
 
 <script lang="ts">
 import { Component, Vue, namespace, ProvideReactive, Watch } from 'nuxt-property-decorator'
 import GeneralInformation from '~/components/box/GeneralInformation.vue'
+import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { PackingDetail } from '~/models/PackingDetail'
 import { User } from '~/models/User'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
@@ -75,16 +78,30 @@ const nsStoreBoxList = namespace('box/box-list')
 
 @Component({
   components: {
-    GeneralInformation
+    GeneralInformation,
+    ConfirmDialogCustom
   }
 })
 class DeliveryOrderPacking extends Vue {
-  outGoingBoxActive: any = { boxCode: 'EX1', items: [] }
-  tranfferingBoxActive: any = { boxCode: 'EX1', items: [] }
+  tranfferingBoxActive: any = { boxCode: 'TR1', items: [] }
   indexScanBoxCode: number = 0
   autoActiveTabOut: boolean = false
   listOriginalBox: any = []
-  listTranfferingBox: any = []
+  loadingSubmit: boolean = false
+  noteText: string = ''
+  listTranfferingBox: any =  [
+    {
+      boxCode: 'TR1',
+      items: [],
+      airtag: null,
+      checked: false,
+      boxSize: null,
+      location: null,
+      usedCapacityTranffering: 100
+    }
+  ]
+
+  isShowConfirmPacking: boolean = false
 
   @ProvideReactive()
   originalBoxActive: any = {}
@@ -204,8 +221,7 @@ class DeliveryOrderPacking extends Vue {
     boxActive,
     stockOriginal,
     stockPacking,
-    isFullQuantityStock,
-    isOutGoing = false
+    isFullQuantityStock
   ) {
     if (isFullQuantityStock) {
       stockOriginal.quantity--
@@ -221,11 +237,7 @@ class DeliveryOrderPacking extends Vue {
           }
         })
       }
-      if (isOutGoing) {
-        stockOriginal.actualOutGoing++
-      } else {
-        stockOriginal.actualTranffering++
-      }
+      stockOriginal.actualTranffering++
     } else {
       this.$toast.add({
         severity: 'error',
@@ -240,10 +252,9 @@ class DeliveryOrderPacking extends Vue {
     this.listTranfferingBox.push({
       icon: this.originalBoxActive?.icon,
       qrCode: this.originalBoxActive?.qrCode,
-      boxCode: this.genearateBoxCode(this.listTranfferingBox, 'IN'),
+      boxCode: this.genearateBoxCode(this.listTranfferingBox, 'TR'),
       items: [],
       airtag:  this.originalBoxActive.airtag,
-      checked: true,
       boxSize: null,
       inventoryFee: 0,
       location: null,
@@ -253,7 +264,8 @@ class DeliveryOrderPacking extends Vue {
       width: this.originalBoxActive?.boxSize?.width,
       locationStatus: this.originalBoxActive?.locationStatus,
       status: this.originalBoxActive?.status,
-      usedCapacity: this.originalBoxActive?.usedCapacity / 100
+      usedCapacity: this.originalBoxActive?.usedCapacity / 100,
+      usedCapacityTranffering: 100
     })
     if(_.size(this.listTranfferingBox) === 1)
       this.tranfferingBoxActive = this.listTranfferingBox[0]
@@ -265,8 +277,7 @@ class DeliveryOrderPacking extends Vue {
       const tranfferingStock = _.find(this.tranfferingBoxActive.items, {
         barCode, originalBox: this.originalBoxActive.boxCode
       })
-      const { quantity } =
-        stockOriginal
+      const { quantity } = stockOriginal
       const isFullQuantityStock = quantity > 0
       this.addStock(
         this.tranfferingBoxActive,
@@ -333,6 +344,12 @@ class DeliveryOrderPacking extends Vue {
       })
       const locationList = await this.actLocationSuggestion(listBoxLocation)
       if(locationList) {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Please check the location!',
+          life: 3000
+        })
         _.forEach(this.listTranfferingBox, function (obj, index) {
           _.set(obj, 'location', locationList[index])
         })
@@ -341,14 +358,17 @@ class DeliveryOrderPacking extends Vue {
   }
 
   getStocks(stocks) {
-    const result =  _.map(stocks, ({ stock, originalBox, originalLocation, initialQuantity, quantity, sku, id }) => ({
+    const result =  _.map(stocks, ({ stock, originalBox, originalLocation, initialQuantity, quantity, sku, id, validAmount, originalAmount, value }) => ({
       id,
       stock: { id: stock.id },
       originalBox,
       sku,
       originalLocation,
       initialQuantity,
-      amount: quantity
+      amount: quantity,
+      validAmount,
+      originalAmount,
+      value
     }))
     return result
   }
@@ -356,12 +376,13 @@ class DeliveryOrderPacking extends Vue {
   async handleSubmit() {
     const data: any = {}
     data.originalBox = _.map(this.listOriginalBox, 'boxCode')
-    data.transferringBox = _.map(this.listTranfferingBox, ({ boxSize, items, inventoryFee, location, ...rest }) => ({
+    data.transferringBox = _.map(this.listTranfferingBox, ({ boxSize, items, inventoryFee, location, usedCapacityTranffering, ...rest }) => ({
       ...rest,
       boxSize,
       inventoryFee,
       rackLocation: location,
-      listStockWithAmount: this.getStocks(items)
+      listStockWithAmount: this.getStocks(items),
+      usedCapacity: usedCapacityTranffering / 100
     }))
     data.seller = {
       id: this.listOriginalBox[0]?.request?.seller?.id
@@ -369,9 +390,12 @@ class DeliveryOrderPacking extends Vue {
     data.warehouse = {
       id: this.listOriginalBox[0]?.request?.warehouse?.id
     } 
+
+    data.note = this.noteText
     const result = await this.actCombineBox(data)
 
     if(result) {
+      this.$toast.add({ severity:'success', summary: 'Success Message', detail:'Tranffering box successfully!', life: 3000 })
       this.$router.push(`/stock-in/${this.combineBox?.id}/detail`)
     }
   }
@@ -379,7 +403,9 @@ class DeliveryOrderPacking extends Vue {
   get tranferringOutGoing() {
     const tranferringOutGoing = [...this.listTranfferingBox]
     return tranferringOutGoing.reduce((accumulator:any, object:any) => {
-      return accumulator + object.items.length
+      return accumulator + object.items.reduce((accumulator:any, object:any) => {
+        return accumulator + object.quantity
+      },0)
     },0)
   }
 
@@ -428,6 +454,18 @@ class DeliveryOrderPacking extends Vue {
     _.forEach(this.listTranfferingBox, function (obj) {
       _.set(obj, 'location', null)
     })
+  }
+
+  handleSavePacking() {
+    this.handleSubmit()
+  }
+
+  cancelSavePacking() {
+    this.isShowConfirmPacking = false
+  }
+
+  showDialogSave() {
+    this.isShowConfirmPacking = true
   }
 }
 
