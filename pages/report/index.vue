@@ -115,8 +115,8 @@
                   :selection='selectedShowBox[slotProps.index]'
                   )
                   Column(field="box.id" header="BOX CODE" :styles="{width: '7rem'}" bodyClass="font-semibold")
-                  Column(field="box.request.seller.email" :styles="{width: '5rem'}" header="SELLER EMAIL")
-                  Column(field="stockTakeId" header="stock take note id" :styles="{width: '7rem'}" className="uppercase")
+                  Column(field="box.request.seller.email" :styles="{width: '15rem'}" header="SELLER EMAIL")
+                  Column(field="stockTakeId" header="stock take note id" :styles="{width: '10rem'}" className="uppercase")
                   Column(field="note" header="note" )
                   //- Column(field="id" header="action" className="uppercase" :styles="{width: '7rem'}" bodyClass="font-semibold" )
                   //-   template(#body="{data}")
@@ -133,7 +133,7 @@
             img(:src="require('~/assets/icons/filter-left.svg')")
             span.pagination__total {{ showingText }}
           div.flex
-            .pagination__delete.mr-2(v-if='isDeleteReport')
+            .pagination__delete.mr-2(v-if='isDeleteReport' @click='isModalDelete = true')
               .icon.icon-btn-delete
               span Cancel {{ selectedReportes.length }} reportes selected
             Button.btn.btn-primary(@click='createStockTake' style="height: 34px" v-if='isStockTake') Create stock-take note
@@ -179,7 +179,7 @@
       Button.p-button-success(label="Save" icon="pi pi-check" @click="saveReport()" v-if='isConfirm && isUpdate')
       Button.p-button-success(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()" v-if='!isConfirm')
   ConfirmDialogCustom(
-    title="Confirm delete"
+    title="Do you want to cancel reports"
     image="confirm-delete"
     :isShow="isModalDelete"
     :onOk="handleDeleteReport"
@@ -233,6 +233,7 @@ class ReportList extends Vue {
     { name: 'Solved', value: REPORT_STATUS.SOLVED }
   ]
 
+  stockTakeItem : any[] = []
   expandedRows : any[] = []
   selectedShowBox: any[] = [] 
   isConfirm = false
@@ -354,7 +355,7 @@ class ReportList extends Vue {
   }
 
   async handleDeleteReport() {
-    const ids = _.map(this.onEventDeleteList, 'id')
+    const ids = _.map(this.selectedReportes, 'id')
     const result = await this.actDeleteReportById({ ids })
     if (result) {
       this.isModalDelete = false
@@ -544,8 +545,8 @@ class ReportList extends Vue {
   }
 
   createStockTake() { 
-    if (this.selectedReportes.length > 0) {
-      this.setListBoxTakeNote(this.selectedReportes)
+    if (this.stockTakeItem.length > 0) {
+      this.setListBoxTakeNote(this.stockTakeItem)
       this.$router.push('/stock-take/box/create')
     }
   }
@@ -598,16 +599,19 @@ class ReportList extends Vue {
       return 'text-primary bg-blue-100 '
     }
     case REPORT_STATUS.CANCELED:{
-      return 'text-gray-400 bg-gray-100 '
+      return 'table__status--reported'
+    }
+    case REPORT_STATUS.IN_PROGRESS:{
+      return 'text-primary bg-blue-100 '
     }
     }
   }
 
   setReportSelected(reportIndex){
-    const stockTakeItem: any = []
+    this.stockTakeItem= []
     if(reportIndex >-1 ) {
       this.boxSelected[reportIndex].forEach(element => {
-        stockTakeItem.push({
+        this.stockTakeItem.push({
           id: this.reportList[reportIndex].id,
           boxNote: element
         })
@@ -615,7 +619,7 @@ class ReportList extends Vue {
     } else {
       this.selectedReportes.forEach(report => {
         report.boxNote.forEach(element => {
-          stockTakeItem.push({
+          this.stockTakeItem.push({
             id: report.id,
             boxNote: element
           })
@@ -623,7 +627,7 @@ class ReportList extends Vue {
       })
     }
     this.isDeleteReport = this.selectedReportes.length>0
-    this.isStockTake = stockTakeItem.length >0 
+    this.isStockTake = this.stockTakeItem.length >0 
   }
 
 }

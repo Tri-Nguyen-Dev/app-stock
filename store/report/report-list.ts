@@ -8,7 +8,7 @@ import { $api, PathBind } from '~/utils'
 export default class StoreReport extends VuexModule {
   private static readonly STATE_URL = {
     GET_REPORT: '/report/list',
-    DELETE_REPORT: '/report/delete',
+    DELETE_REPORT: '/report/list/delete',
     CREATE_REPORT: '/report/create'
   }
 
@@ -49,7 +49,7 @@ export default class StoreReport extends VuexModule {
   @Action({ rawError: true })
   async actDeleteReportById({ ids }): Promise<string | undefined> {
     const url = PathBind.transform(this.context, StoreReport.STATE_URL.DELETE_REPORT, ids)
-    const response: any = await $api.post(url, { ids })
+    const response: any = await $api.post(url, ids)
     return response.data
   }
 
