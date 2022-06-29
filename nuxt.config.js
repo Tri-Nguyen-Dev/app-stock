@@ -73,7 +73,8 @@ export default {
       'FileUpload',
       'Breadcrumb',
       'Toast',
-      'Textarea'
+      'Textarea',
+      'Chart'
     ],
     directives: ['Tooltip', 'Badge']
   },
@@ -88,19 +89,15 @@ export default {
       keycloak: {
         scheme: 'oauth2',
         endpoints: {
-          authorization:
-            process.env.KEYCLOAK_API_URL +
-            '/realms/airtag/protocol/openid-connect/auth',
-          token:
-            process.env.KEYCLOAK_API_URL +
-            '/realms/airtag/protocol/openid-connect/token',
-          userInfo:
-            process.env.KEYCLOAK_API_URL +
-            '/realms/airtag/protocol/openid-connect/userinfo',
-          logout:
-            process.env.KEYCLOAK_API_URL +
-            '/realms/airtag/protocol/openid-connect/logout?redirect_uri=' +
-              encodeURIComponent(process.env.HOME_URL || '/')
+          authorization: process.env.KEYCLOAK_API_URL +
+                        '/realms/airtag/protocol/openid-connect/auth',
+          token: process.env.KEYCLOAK_API_URL +
+                        '/realms/airtag/protocol/openid-connect/token',
+          userInfo: process.env.KEYCLOAK_API_URL +
+                        '/realms/airtag/protocol/openid-connect/userinfo',
+          logout: process.env.KEYCLOAK_API_URL +
+                        '/realms/airtag/protocol/openid-connect/logout?redirect_uri=' +
+                        encodeURIComponent(process.env.HOME_URL || '/')
         },
         token: {
           property: 'access_token',

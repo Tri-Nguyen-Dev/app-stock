@@ -80,7 +80,6 @@
       @row-unselect="rowUnselect"
       groupRowsBy="id"
       rowGroupMode="rowspan"
-      showGridlines
       @row-dblclick="rowClick"
       )
       Column(selectionMode="multiple" :styles="{width: '3rem'}")
@@ -94,17 +93,15 @@
       Column(field="boxNote.box.request.seller.email" :sortable="true" header="SELLER EMAIL" className="w-3" sortField="_sellerEmail")
       Column(field="boxNote.stockTakeId" header="stock take note id" className="uppercase")
       Column(field="boxNote.note" header="note" className="uppercase" bodyClass="font-semibold" )
-      Column(field="createId" header="create id" className="uppercase" bodyClass="font-semibold" )
-      Column(field="status" header="STATUS"  className="text-center")
+      Column(field="createId" header="creator id" className="uppercase" bodyClass="font-semibold" )
+      Column(field="id" header="STATUS"  className="text-right")
         template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
-                :class="checkStatus(data.boxNote.status)")
-                | {{ data.boxNote.status | reportStatus }}
-      Column(:exportable="false" header="ACTION" className="text-center")
+                :class="checkStatus(data.status)")
+                | {{ data.status | reportStatus }}
+      Column( field="id" :exportable="false" header="ACTION" className="text-center")
         template(#body="{data}")
           .table__action(:class="{'action-disabled': checkDisabledAction(data)}" style= 'justify-content: center')
-            //- span.action-item(@click="handleEditReport(data.id)")
-            //-   .icon.icon-edit-btn
             span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
               .icon.icon-btn-delete
       template(#footer)
@@ -126,6 +123,11 @@
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "50vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
+    template(#header)
+      div.table__status.table__status--available {{ reportDetail.reportStatus  }}
+      div.text-center
+        h3.my-1 Report Detail
+        h3.my-0 ID {{ reportDetail.id }}
     ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
@@ -249,6 +251,7 @@ class ReportList extends Vue {
   @nsStoreReport.Action
   actAddTransferReport!: (params: { ids: string[] }) => Promise<any>
 
+  @nsStoreReport.Action
   actCreateReport!: (data: any) => Promise<any>
 
   @nsStoreReportDetail.Action
@@ -288,7 +291,8 @@ class ReportList extends Vue {
           id: report.id,
           boxNote,
           createdAt: report.createdAt,
-          createId: report.createdBy.staffId
+          createId: report.createdBy.staffId,
+          status:'REPORT_NEW'
         })
       })
     })
@@ -350,7 +354,11 @@ class ReportList extends Vue {
   }
 
   rowClass({ boxNote }) {
-    return boxNote? '': ''
+    if(boxNote.status === REPORT_STATUS.NEW) {
+      return ''
+    } else {
+      return 'row-disable'
+    }
   }
 
   validateText = _.debounce(this.handleFilter, 500)
@@ -607,51 +615,12 @@ export default ReportList
       flex-direction: row
       margin-top: 0
 ::v-deep.report-detail
-  .p-dialog
-    overflow: hidden
-  .p-dialog-header
-    display: none
-  .report-heading
-    .report-title
-      display: flex
-      flex-direction: column
-      align-items: center
-    .report-title h3
-      margin: 0
-      font-size: 20px
-  .report-status
-    position: absolute
-    left: 10px
-  .report-close
-    cursor: pointer
-    position: absolute
-    right: 10px
-    &:hover
-      i
-        color: red !important
-    i
-      transition: 0.25s all ease
-      font-size: 1.2rem
-  .info-box
-    .info-box-item
-      display: flex
-      .box-code
-        flex: 1
-      .box-note
-        flex: 1
-      .box-note-id
-        flex: 1
-      .info-item
-        margin-top: 6px
-      .info-content
-        margin-left: 4px
   .p-dialog-footer
     display: flex
     justify-content: center
   .main-info
     margin: 24px 0
     .info-item
-      color: $text-color-base
       margin-top: 10px
       font-size: 14px
       font-weight: 400
