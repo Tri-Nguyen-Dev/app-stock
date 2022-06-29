@@ -154,6 +154,11 @@
           p.text-900.font-bold.mt-3(v-else) Item not found!
   
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "50vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
+    template(#header)
+      div.table__status.table__status--available {{ reportDetail.reportStatus  }}
+      div.text-center
+        h3.my-1 Report Detail
+        h3.my-0 ID {{ reportDetail.id }}
     ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
   Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
     template(#header)
@@ -684,51 +689,12 @@ export default ReportList
       flex-direction: row
       margin-top: 0
 ::v-deep.report-detail
-  .p-dialog
-    overflow: hidden
-  .p-dialog-header
-    display: none
-  .report-heading
-    .report-title
-      display: flex
-      flex-direction: column
-      align-items: center
-    .report-title h3
-      margin: 0
-      font-size: 20px
-  .report-status
-    position: absolute
-    left: 10px
-  .report-close
-    cursor: pointer
-    position: absolute
-    right: 10px
-    &:hover
-      i
-        color: red !important
-    i
-      transition: 0.25s all ease
-      font-size: 1.2rem
-  .info-box
-    .info-box-item
-      display: flex
-      .box-code
-        flex: 1
-      .box-note
-        flex: 1
-      .box-note-id
-        flex: 1
-      .info-item
-        margin-top: 6px
-      .info-content
-        margin-left: 4px
   .p-dialog-footer
     display: flex
     justify-content: center
   .main-info
     margin: 24px 0
     .info-item
-      color: $text-color-base
       margin-top: 10px
       font-size: 14px
       font-weight: 400

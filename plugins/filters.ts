@@ -73,3 +73,8 @@ Vue.filter('trimUnderShift', (value) => {
   if(!value) return ''
   return value.replace('_', ' ')
 })
+
+Vue.filter('sellerName', (value) => {
+  if(!value) return ''
+  return value.displayName || `${value.firstName} ${value.lastName}`
+})
