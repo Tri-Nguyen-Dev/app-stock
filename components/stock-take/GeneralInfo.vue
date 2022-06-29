@@ -27,18 +27,9 @@ import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
 class StockTakeNoteInfo extends Vue {
-
   @Prop() info!: any
-  get homeItem() {
-    return { label: 'Note list', to: '/stock-take', icon: 'pi pi-list' }
-  }
-
-  get breadcrumbItem() {
-    return [
-      { label: 'Add new note', to: '/stock-take/box/create' }
-    ]
-  }
-
+  @Prop() homeItem!:any
+  @Prop() breadcrumbItem!:any
 }
 
 export default StockTakeNoteInfo
