@@ -124,7 +124,7 @@
               Column(field='receiverAddress' header='Receiver Address' :sortable='true' bodyClass='font-semibold' sortField='_receiverAddress')
               Column(field='completeTime' header='Complete time' :sortable='true' className="text-right" sortField='_receivedDate')
                 template(#body='{data}')
-                  span {{data.completeTime | dateTimeHour12 }}
+                  span {{data.completeTime | dateTimeHour24 }}
               Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_warehouse.id')
                 template(#body='{data}')
                   span.text-primary {{data.warehouse.name}}

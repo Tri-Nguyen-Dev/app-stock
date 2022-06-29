@@ -126,7 +126,7 @@
         template(#body='{data}')
           span.text-primary {{data.box.request.id}}
       Column(field='createdAt' header='STOCK-IN-TIME' :sortable='true' className="text-right" sortField='_stock.createdAt')
-        template(#body='{ data }') {{ data.stock.createdAt | dateTimeHour12 }}
+        template(#body='{ data }') {{ data.stock.createdAt | dateTimeHour24 }}
       template(#footer)
         Pagination(
           :paging="paging"

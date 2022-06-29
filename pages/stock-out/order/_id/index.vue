@@ -51,7 +51,6 @@
           @click='setDelivery()'
         )
     ItemList(
-      :isDetail='true',
       :action='action',
       @selectRow='selectItem($event)',
       @enablePack='checkEnablePack($event)',
