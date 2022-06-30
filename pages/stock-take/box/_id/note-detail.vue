@@ -471,12 +471,12 @@ class NoteBoxDetail extends Vue {
   }
 
   get homeItem() {
-    return { label: 'Note list', to: '/stock-take', icon: 'pi pi-list' }
+    return { label: '', to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Stock-take Note Detail' }
+      { label: `${this.isCheck ? 'Stock-take Note' : 'Stock-take Note Detail'}` }
     ]
   }
 }

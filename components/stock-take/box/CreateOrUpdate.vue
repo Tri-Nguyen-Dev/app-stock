@@ -216,7 +216,7 @@ class DeliveryOrder extends Vue {
   }
 
   get homeItem() {
-    return { label: 'Note list', to: '/stock-take', icon: 'pi pi-list' }
+    return { label: '', to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
