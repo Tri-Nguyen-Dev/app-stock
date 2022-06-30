@@ -1,24 +1,26 @@
+import { Warehouse }  from '~/models/Warehouse'
+
 export namespace User {
 
   export interface Model {
-    id: number,
-    email: string,
-    role: number,
-    status: number,
-    userDetail: User.Detail
+    id?: string,
+    email?: string,
+    username?: string,
+    firstName?: string,
+    lastName?: string,
+    displayName?: string,
+    phoneNumber?: string,
+    avatarUrl?: string,
+    role?: string
+    warehouse:Warehouse.Model
   }
 
-  export interface Detail {
-    firstName: string,
-    lastName: string,
-    displayName: string,
-    phoneNumber: string
-    pictureUrl: string
-  }
-
-  export interface Token {
-    userId: string
-    token: string
-    user?: User.Model
+  export interface KeyCloak {
+    'email_verified': boolean
+    'family_name': string,
+    'given_name': string,
+    'name': string,
+    'preferred_username': string,
+    'sub': string,
   }
 }

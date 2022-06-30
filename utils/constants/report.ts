@@ -1,0 +1,6 @@
+export enum REPORT_STATUS {
+  NEW = 'NEW',
+  SOLVED = 'SOLVED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  CANCELED = 'CANCELLED',
+}

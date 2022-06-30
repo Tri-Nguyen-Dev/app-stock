@@ -6,11 +6,17 @@
                 h3.confirm-dialog__title  {{ title }}
                 p.confirm-dialog__des
                     slot(name="message")
-                div.confirm-dialog__footer
-                    Button.confirm-dialog__btn.btn--discard(@click="onCancel()") No
-                    Button.confirm-dialog__btn.btn--agree(@click="onOk()" :disabled="loadingBtn")
-                       .pi.pi-spin.pi-spinner(v-if="loading")
-                       span(v-else) Yes
+                    slot(name="content")
+                div.confirm-dialog__footer(v-if='type === "warning"')
+                  Button.confirm-dialog__btn.btn--discard(@click="onCancel()") Cancel
+                  Button.confirm-dialog__btn.btn--agree(@click="onOk()" :disabled="loadingBtn")
+                      .pi.pi-spin.pi-spinner(v-if="loading")
+                      span(v-else) OK
+                div.confirm-dialog__footer(v-else)
+                  Button.confirm-dialog__btn.btn--discard(@click="onCancel()") No
+                  Button.confirm-dialog__btn.btn--agree(@click="onOk()" :disabled="loadingBtn")
+                      .pi.pi-spin.pi-spinner(v-if="loading")
+                      span(v-else) Yes
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
@@ -22,6 +28,8 @@ class ConfirmDialogCustom extends Vue {
   @Prop() onOk!: () => void
   @Prop() onCancel!: () => void
   @Prop({ default: false }) loading!: boolean
+  @Prop() type!: any
+
   get visible() {
     return this.isShow
   }

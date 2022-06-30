@@ -17,7 +17,7 @@ export default {
     link: []
   },
 
-  plugins: ['~/plugins/vuelidate.ts', '~/plugins/toast.ts', '~/plugins/filters.ts'],
+  plugins: ['~/plugins/vuelidate.ts', '~/plugins/filters.ts'],
 
   components: true,
 
@@ -71,7 +71,10 @@ export default {
       'Sidebar',
       'InputNumber',
       'FileUpload',
-      'Breadcrumb'
+      'Breadcrumb',
+      'Toast',
+      'Textarea',
+      'Chart'
     ],
     directives: ['Tooltip', 'Badge']
   },
@@ -81,26 +84,44 @@ export default {
   },
 
   auth: {
-    rewriteRedirects: true,
     strategies: {
-      local: {
-        token: {
-          property: 'token',
-          global: true,
-          required: false
-        },
-        user: {
-          property: '',
-          autoFetch: true
-        },
+      local: false,
+      keycloak: {
+        scheme: 'oauth2',
         endpoints: {
-          login: { url: '/api/auth/login', method: 'post' },
-          logout: { url: '/api/auth/logout', method: 'post' },
-          user: { url: '/api/auth/user', method: 'get' }
-        }
+          authorization: process.env.KEYCLOAK_API_URL +
+                        '/realms/airtag/protocol/openid-connect/auth',
+          token: process.env.KEYCLOAK_API_URL +
+                        '/realms/airtag/protocol/openid-connect/token',
+          userInfo: process.env.KEYCLOAK_API_URL +
+                        '/realms/airtag/protocol/openid-connect/userinfo',
+          logout: process.env.KEYCLOAK_API_URL +
+                        '/realms/airtag/protocol/openid-connect/logout?redirect_uri=' +
+                        encodeURIComponent(process.env.HOME_URL || '/')
+        },
+        token: {
+          property: 'access_token',
+          type: 'Bearer',
+          name: 'Authorization',
+          maxAge: 300
+        },
+        refreshToken: {
+          property: 'refresh_token',
+          maxAge: 60 * 60 * 24 * 30
+        },
+        responseType: 'code',
+        grantType: 'authorization_code',
+        clientId: 'airtag-web',
+        scope: ['openid', 'profile', 'email'],
+        codeChallengeMethod: 'S256'
       }
     },
-    plugins: ['~/plugins/auth.ts']
+    plugins: ['~/plugins/auth.ts'],
+    redirect: {
+      login: '/',
+      logout: '/login',
+      home: '/stock'
+    }
   },
 
   styleResources: {

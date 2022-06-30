@@ -1,34 +1,40 @@
 <template lang="pug">
-  .receipt__header
-    .grid.justify-content-between
-      .col-fixed
+  .receipt
+    .receipt__header
+      div
         h1.text-heading Receipt note list
         span.text-subheading {{ total }} products found
-      .col-fixed
-        .grid
-          .col-fixed
-            .btn__filter(:class="{'active': isShowFilter}")
-              .btn-toggle(@click="isShowFilter = !isShowFilter")
-                .icon.icon-filter(v-if="!isShowFilter")
-                .icon.icon-chevron-up.bg-primary(v-else)
-                span Filter
-              .btn-refresh(@click="refreshFilter")
-                .icon.icon-rotate-left.bg-white
-          .col-fixed
-            .btn.btn-primary(@click='createStockIn')
-                .icon.icon-add-items.surface-900.bg-white
-                span.text-900.text-white.mr-3 Add recepit note
-          .col-fixed
-            .btn__filter(class='active' @click="handleExportReceipt")
-              .btn.btn-toggle.bg-white
-                .icon-download.icon--large.bg-primary
-                span.text-900.text-primary Export file
+      .header__action
+        .btn__filter(:class="{'active': isShowFilter}")
+          .btn-toggle(@click="isShowFilter = !isShowFilter")
+            .icon.icon-filter(v-if="!isShowFilter")
+            .icon.icon-chevron-up.bg-primary(v-else)
+            span Filter
+          .btn-refresh(@click="refreshFilter")
+            .icon.icon-rotate-left.bg-white
+        .btn.btn-primary(@click='createStockIn')
+            .icon.icon-add-items.surface-900.bg-white
+            span.text-900.text-white.mr-3 Add recepit note
+        .btn__filter(class='active' @click="handleExportReceipt")
+          .btn.btn-toggle.bg-white
+            .icon-download.icon--large.bg-primary
+            span.text-900.text-primary Export file
+      div.col-12(class="lg:col-6")
+        TabView(@tab-click="handleTab($event)")
+          TabPanel
+            template(#header)
+              .icon.icon-truck.mr-2.surface-600
+              span Incoming
+          TabPanel
+            template(#header)
+              .icon.icon-horiz.mr-2.surface-600
+              span Transferring
     .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
-      .col-4
+      div(class="col-12 lg:col-12 xl:col-4")
         .grid
-          .col-3
-            FilterTable(title="ID" :value="filter.id" placeholder="Enter ID" name="id" :searchText="true" @updateFilter="handleFilter")
-          .col-9
+          div(class="col-12 md:col-3")
+            FilterTable(title="ID" :value="filter.id" placeholder="Enter ID" name="id" :searchText="true" @updateFilter="handleFilter" :isShowFilter="isShowFilter")
+          div(class="col-12 md:col-9")
             .grid.grid-nogutter
               .col
                   FilterCalendar(
@@ -50,14 +56,14 @@
                   dateFormat="dd-mm-yy"
                   :showIcon="true"
                   @updateFilter="handleFilter")
-      .col-2
+      div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
           :options="warehouseList"
           name="warehouse"
           @updateFilter="handleFilter")
-      .col-2
+      div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Seller Email"
           placeholder="Enter Seller Email"
@@ -65,7 +71,7 @@
           :value="filter.sellerEmail"
           :searchText="true"
           @updateFilter="handleFilter")
-      .col-2
+      div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Creator ID"
           placeholder="Enter ID"
@@ -73,9 +79,9 @@
           :value="filter.creatorId"
           :searchText="true"
           @updateFilter="handleFilter")
-      .col-2
+      div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(title="Status" :value="filter.status" :options="statusRequest" name="status" @updateFilter="handleFilter")
-    .grid.grid-nogutter.flex-1.relative.overflow-hidden
+    .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
           v-if="stockIn" :value="stockIn"
@@ -86,7 +92,6 @@
           :scrollable="false"
           @sort="sortData($event)"
           @row-select="rowSelect"
-          @row-click="onRowClick"
           :class="{ 'table-wrapper-empty': !stockIn || stockIn.length <= 0 }"
           @row-select-all="rowSelectAll"
           @row-unselect-all="rowUnSelectAll" @row-unselect='rowUnselect'
@@ -97,30 +102,32 @@
               span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
           Column(field='id' header='ID' :sortable="true" sortField="_id" )
             template(#body='{ data }')
-              span.text-white-active.text-900.font-bold {{ data.id }}
+              NuxtLink.text-white-active.text-900.font-bold(v-if="data.status === 'REQUEST_STATUS_SAVED'"
+              :to="`/stock-in/${data.id}/detail`" class="no-underline hover:underline") {{ data.id }}
+              NuxtLink.text-white-active.text-900.font-bold(v-else
+              :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }}
           Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
-            template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
+            template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
             template(#body='{ data }') {{ data.sellerName }}
           Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_seller.email")
             template(#body='{ data }') {{ data.sellerEmail }}
-          Column(field="warehouse.name" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" :styles="{'width': '1%'}")
+          Column(field="warehouse" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" className="text-right")
             template(#body="{data}")
-              .flex.align-items-center.cursor-pointer.justify-content-end
-                span.text-primary.font-bold.text-white-active {{ data.warehouse.name }}
-                .icon.icon-arrow-up-right.bg-primary.bg-white-active
-          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" :styles="{'width': '1%'}")
+              div(v-if='data.warehouse')
+                .flex.align-items-center.cursor-pointer.justify-content-end
+                  span.text-primary.font-bold.text-white-active(v-if='data.warehouse' ) {{ data.warehouse.name }}
+                  .icon.icon-arrow-up-right.bg-primary.bg-white-active
+          Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" className="text-right")
             template(#body='{ data }')
-              .flex.align-items-center.cursor-pointer.justify-content-end
                   span.text-white-active {{ data.creatorId }}
           Column(
-          header='CREATOR NAME' 
-          field='data.creatorName' 
-          :sortable="true" 
-          sortField="_createdBy.displayName" 
-          :styles="{'width': '1%'}")
+          header='CREATOR NAME'
+          field='data.creatorName'
+          :sortable="true"
+          sortField="_createdBy.displayName"
+          className="text-right")
             template(#body='{ data }')
-              .flex.align-items-center.cursor-pointer.justify-content-end
                   span.text-white-active {{ data.creatorName }}
           Column(header='STATUS' field=' data.status' :sortable="true" sortField="_status")
             template(#body='{ data }')
@@ -132,11 +139,12 @@
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
               p.empty__text(v-if="!isFilter") List is empty!, Click
-                span &nbsp;here
+                span(@click='createStockIn') &nbsp;here
                 span &nbsp;to add item.
               p.notfound__text(v-else) Item not found!
           template(#footer)
             Pagination(
+              type="note selected"
               :paging="paging"
               :total="total"
               :deleted-list="itemsBoxDelete"
@@ -151,7 +159,7 @@
         :loading="loadingSubmit"
       )
         template(v-slot:message)
-          p {{ deleteMessage }}  
+          p {{ deleteMessage }}
     Toast
 
 </template>
@@ -160,7 +168,7 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/RequestList'
-import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage } from '~/utils'
+import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage, resetScrollTable } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
@@ -186,6 +194,7 @@ class StockIn extends Vue {
   isDescending: boolean | null = null
   boxCodeDelete: string = ''
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  activeTab: number = 0
   filter: any = {
     id: null,
     dateFrom: null,
@@ -222,16 +231,19 @@ class StockIn extends Vue {
 
   getParamApi() {
     return {
-      pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
-      'id': this.filter.id || null,
-      'sellerEmail': this.filter.sellerEmail || null,
-      'creatorId': this.filter.creatorId || null ,
-      'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
-      'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
-      'sortBy': this.sortByColumn || null,
-      'desc': this.isDescending,
-      'status': this.filter.status?.value,
-      'warehouseId': this.filter.warehouse?.id
+      params: {
+        pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
+        'id': this.filter.id || null,
+        'sellerEmail': this.filter.sellerEmail || null,
+        'creatorId': this.filter.creatorId || null ,
+        'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
+        'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
+        'sortBy': this.sortByColumn || null,
+        'desc': this.isDescending,
+        'status': this.filter.status?.value,
+        'warehouseId': this.filter.warehouse?.id
+      },
+      type: this.activeTab
     }
   }
 
@@ -244,6 +256,7 @@ class StockIn extends Vue {
   }
 
   async onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     await this.actGetStockIn(this.getParamApi())
@@ -261,14 +274,6 @@ class StockIn extends Vue {
     )
   }
 
-  onRowClick({ data }) {
-    if(data.status === 'REQUEST_STATUS_SAVED') {
-      this.$router.push(`/stock-in/${data.id}/detail`)
-    } else {
-      this.$router.push(`/stock-in/${data.id}/update`)
-    }
-  }
-
   async handleDeleteStockIn() {
     let result : any = []
     result  = await this.actDeleteStockInByIds({ ids: _.map(this.onEventDeleteList, 'id') })
@@ -281,15 +286,15 @@ class StockIn extends Vue {
         detail: 'Successfully deleted box',
         life: 3000
       })
-      this.paging.first = 1
-      this.paging.pageNumber = 1
+      this.paging.first = 0
+      this.paging.pageNumber = 0
       await this.actGetStockIn({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
     }
   }
 
   async mounted() {
     await this.actGetStockIn({
-      pageNumber: this.paging.pageNumber,pageSize: this.paging.pageSize
+      params: { pageNumber: this.paging.pageNumber,pageSize: this.paging.pageSize }
     })
     this.actWarehouseList()
   }
@@ -337,6 +342,7 @@ class StockIn extends Vue {
   }
 
   async sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
@@ -349,14 +355,18 @@ class StockIn extends Vue {
   }
 
   createStockIn() {
-    this.$router.push('stock-in/create-receipt')
+    if(this.activeTab) {
+      this.$router.push('box')
+    } else {
+      this.$router.push('stock-in/create-receipt')
+    }
   }
 
   handleExportReceipt() {
     _.forEach(this.selectedStockIn, async({ id }) => {
       const result = await this.actGetReceiptLable({ id })
       if(result) {
-        exportFileTypePdf(result, `receipt-${id}`)
+        exportFileTypePdf(result, `receipt-${ id }`)
       }
     })
   }
@@ -364,15 +374,22 @@ class StockIn extends Vue {
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'receipt note')
   }
+
+  async handleTab({ index }: any) {
+    this.activeTab = index
+    refreshAllFilter(this.filter)
+    this.selectedStockIn = []
+    await this.actGetStockIn(this.getParamApi())
+  }
 }
 
 export default StockIn
 </script>
 
 <style lang="sass" scoped>
-.receipt__header
+.receipt
   @include flex-column
-  height: calc(100vh - 32px)
+  min-height: calc(100vh - 32px)
   margin-bottom: 24px
   ::v-deep.p-component
     font-family: $font-family-primary
@@ -382,5 +399,51 @@ export default StockIn
     .p-button
       background: none
       border: none
-
+  ::v-deep.text-right
+    text-align: right !important
+    .p-column-header-content
+      justify-content: end !important
+.receipt__header
+  flex-direction: column
+  flex-wrap: wrap
+  margin-bottom: 24px
+  @include desktop
+    flex-direction: row
+    @include flex-center-space-between
+  ::v-deep.p-tabview .p-tabview-nav li:not(.p-highlight):not(.p-disabled)
+    &:hover
+      .p-tabview-nav-link
+        background-color: transparent !important
+        color: #000 !important
+      .icon
+        background-color: var(--primary-color) !important
+  ::v-deep.p-tabview .p-tabview-nav li
+    .p-tabview-nav-link
+      background: var(--bg-body-bas)
+      border: none
+      box-shadow: none !important
+      color: $text-color-700
+  ::v-deep.p-tabview .p-tabview-panels
+    background: var(--bg-body-bas)
+    padding: 1.25rem 0 0 0
+    display: none
+  ::v-deep.p-highlight .p-tabview-nav-link
+    color: #000 !important
+    border-bottom: 2px solid #486AE2 !important
+    .icon
+      background-color: var(--primary-color) !important
+.header__action
+    margin-top: 12px
+    display: flex
+    @include flex-column
+    flex-wrap:  wrap
+    gap: 10px 16px
+    @include desktop
+      @include flex-center
+      flex-direction: row
+      margin-top: 0
+.btn__filter
+  width: 100%
+  @include desktop
+    width: 166px
 </style>

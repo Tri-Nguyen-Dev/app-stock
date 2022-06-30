@@ -9,14 +9,21 @@ import { $api } from '~/utils'
 
 export default class Warehouse extends VuexModule {
   private static readonly STATE_URL = {
-    GET_WAREHOUSE: '/warehouse/list'
+    GET_WAREHOUSE: '/warehouse/list',
+    GET_WAREHOUSE_SELLER: '/warehouse/list/by-seller-email'
   }
 
   public warehouseList: [] = []
+  public warehouseBySeller: [] = []
 
   @Mutation
   setWarehouseList(data: any) {
     this.warehouseList = data.items
+  }
+
+  @Mutation
+  setWarehouseBySeller(data: any) {
+    this.warehouseBySeller = data.items
   }
 
   @Action({ commit: 'setWarehouseList', rawError: true })
@@ -30,4 +37,17 @@ export default class Warehouse extends VuexModule {
       return response.data
     } catch (error) {}
   }
+
+  @Action({ commit: 'setWarehouseBySeller', rawError: true })
+  async actWarehouseBySeller( params? : any  ): Promise<string | undefined> {
+    try {
+      const url = PathBind.transform(
+        this.context,
+        Warehouse.STATE_URL.GET_WAREHOUSE_SELLER
+      )
+      const response = await $api.get(url, { params })
+      return response.data
+    } catch (error) {}
+  }
+
 }

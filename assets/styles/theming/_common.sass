@@ -2,12 +2,21 @@
   padding: $space-size-20
 
 // global
+.m-h-700 
+  @include tablet 
+    min-height: 700px
+  @include mobile
+    min-height: 500px
+.p-sidebar-header 
+  z-index: 11111111
 .text-heading
-  font-size: 30px
+  font-size: 20px
   color: $text-color-900
   font-weight: $font-weight-bold
   line-height: calc(38 / 30)
   margin: 0
+  @include desktop
+    font-size: 30px
 
 .text-subheading
   font-size: $font-size-small
@@ -22,13 +31,18 @@
     color: red
 .header__search
   position: relative
-
+  flex: 1
+  @include desktop
+    flex: auto
   input
-    @include size(300px, 48px)
+    @include size(100%, 38px)
     border-radius: 4px
     padding: 0 0 0 50px
     border: none
     outline: none
+    width: 100%
+    @include desktop
+      @include size(300px, 48px)
 
     &::placeholder
       font-size: $font-size-base
@@ -40,9 +54,11 @@
       box-shadow: none
 
 .btn__filter
-    @include size(166px, 48px)
-    @include flex-center-space-between
     cursor: pointer
+    @include size(100%, 38px)
+    @include flex-center-space-between
+    @include desktop
+      @include size(166px, 48px)
     .btn-toggle
         @include flex-center
         gap: 0 18px
@@ -51,6 +67,7 @@
         height: 100%
         border-top-left-radius: 4px
         border-bottom-left-radius: 4px
+        border: 1.5px solid $primary
         padding: 0 20px
     &.active .btn-toggle
         color: $primary
@@ -96,3 +113,76 @@
   background-color: $text-color-700
 .icon-status-success
   background-color: $text-color-status !important
+.content-center
+  align-self: center
+
+@media screen and (min-width: 1900px) 
+  .xxl\:col 
+    flex-grow: 1
+    flex-basis: 0
+    padding: 0.5rem
+  
+  .xxl\:col-fixed 
+    flex: 0 0 auto
+    padding: 0.5rem
+  
+  .xxl\:col-1 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 8.3333%
+  
+  .xxl\:col-2 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 16.6667%
+  
+  .xxl\:col-3 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 25%
+  
+  .xxl\:col-4 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 33.3333%
+  
+  .xxl\:col-5 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 41.6667%
+  
+  .xxl\:col-6 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 50%
+  
+  .xxl\:col-7 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 58.3333%
+  
+  .xxl\:col-8 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 66.6667%
+  
+  .xxl\:col-9 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 75%
+  
+  .xxl\:col-10 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 83.3333%
+  
+  .xxl\:col-11 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 91.6667%
+  
+  .xxl\:col-12 
+    flex: 0 0 auto
+    padding: 0.5rem
+    width: 100%
+  

@@ -41,7 +41,7 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		)
 			template(#body="{ data }")
 				span(v-if="isActive !== data.stock.barCode").text-center {{data.sku}}
-				InputText(v-model='data.sku' autofocus v-else)
+				InputText(v-model='data.sku' ref='inputSku' autofocus v-else)
 		column(
 			field='stock.name'
 			header='NAME'
@@ -57,7 +57,7 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		)
 			template(#body="{ data }").font-bold
 				span(v-if="isActive !== data.stock.barCode").text-center {{data.amount}}
-				InputNumber(v-model='data.amount' autofocus v-else)
+				InputNumber(v-model='data.amount' :step="0.1" :minFractionDigits="1" autofocus v-else)
 		column(
 			field='unit.name',
 			header='UNIT',
@@ -90,7 +90,7 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		)
 			template(#body="{ data }")
 				span(v-if="isActive !== data.stock.barCode") {{data.value}}
-				InputNumber(v-model='data.value' autofocus v-else)
+				InputNumber(v-model='data.value' :step="0.1" :minFractionDigits="1" autofocus v-else)
 		column(
 			field='category.name',
 			header='CATEGORY',
@@ -113,7 +113,7 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 						.icon.pi.pi-times
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Vue, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Item as ItemModel } from '~/models/Item'
 @Component({
@@ -123,6 +123,7 @@ class ItemDataTable extends Vue {
   @Prop() sku!: string
   @Prop() listItemInBox!: ItemModel.Model[]
   @Prop() getParam: () => any
+  @Prop() activeInputSku!: string
   selectedItem: ItemModel.Model[] = []
   deleteItemList = []
   isModalDelete: boolean = false
@@ -134,9 +135,9 @@ class ItemDataTable extends Vue {
 
   onEventEditItem: {
     stock: any,
-    sku: ''
-    amount: '',
-    value: ''
+    sku: any,
+    amount: any,
+    value: any
   }
 
   isActive: string = ''
@@ -151,7 +152,6 @@ class ItemDataTable extends Vue {
   }
 
   cancelItemValue() {
-    this.isActive = ''
     const valueItemCancel = this.onEventEditItem
     const _array = [...this.listItemInBox]
     _.forEach(_array, function(item) {
@@ -161,10 +161,34 @@ class ItemDataTable extends Vue {
         item.sku = valueItemCancel.sku
       }
     })
+    this.isActive = ''
   }
 
   deleteItem(data:any) {
     this.listItemInBox.splice(this.listItemInBox.indexOf(data),1)
+  }
+
+  @Watch('activeInputSku')
+  inputSku() {
+    this.isActive = this.activeInputSku
+    const itemActive = this.listItemInBox.find(element=> {
+      return element.stock.barCode === this.isActive
+    })
+    this.onEventEditItem = {
+      stock: itemActive?.stock,
+      sku: itemActive?.sku,
+      amount: itemActive?.amount,
+      value: itemActive?.value
+    }
+  }
+
+  @Watch('isActive')
+  async inputChange() {
+    await this.$nextTick()
+    if(this.$refs.inputSku) {
+      const inputRef = this.$refs.inputSku as any
+      await this.$nextTick(() =>  inputRef?.$el.focus())
+    }
   }
 }
 export default ItemDataTable

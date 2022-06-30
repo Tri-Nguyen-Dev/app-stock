@@ -3,10 +3,17 @@
     div.pagination__info(v-if="!showDeleteBtn")
       img(:src="require('~/assets/icons/filter-left.svg')")
       span.pagination__total {{ showingText }}
-    .pagination__delete(v-else @click="$emit('onDelete')")
-      .icon.icon-btn-delete
-      span Delete {{ deletedList.length }} items selected
-    Paginator(:rows="paging.pageSize" :totalRecords="total" @page="$emit('onPage', $event)" :first.sync="paging.first" :rowsPerPageOptions="pageOption").p-0
+    div.flex.align-items-center(v-else)
+      .pagination__delete.mr-2(@click="$emit('onDelete')")
+        .icon.icon-btn-delete
+        span {{title}} {{ deletedList.length }} {{type}}
+    Paginator(
+      :rows="paging.pageSize"
+      :totalRecords="total"
+      @page="$emit('onPage', $event)"
+      :first.sync="paging.first"
+      :rowsPerPageOptions="pageOption"
+    ).p-0
 </template>
 
 <script lang="ts">
@@ -18,9 +25,11 @@ import { LIMIT_PAGE_OPTIONS } from '~/utils'
 class Pagination extends Vue {
   pageOption = LIMIT_PAGE_OPTIONS
   // -- [ Props ] -------------------------------------------------------------
+  @Prop({ default: 'Delete' }) readonly title!: string
   @Prop() paging!: Paging.Model
   @Prop() total!: number
   @Prop() deletedList!: any[] | undefined
+  @Prop() type!: any
 
   // -- [ Getters ] -----------------------------------------------------------
   get showingText() {

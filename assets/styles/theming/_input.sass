@@ -1,5 +1,6 @@
 .p-inputtext
   line-height: inherit
+  font-family: $font-family-primary !important
 // custom checkbox
 .p-checkbox
   .p-checkbox-box
@@ -132,7 +133,7 @@
   .p-multiselect-close
     display: none !important
 // custom input seach code stock
-#inputSearchCode
+.inputSearchCode
   border: none
   font-family: $font-family-primary !important
   color: $text-color-900 !important
@@ -143,7 +144,7 @@
 
   &:focus
     box-shadow: none !important
-    border: 1.5px solid #486AE2
+    border: 1.5px solid $primary
     border-radius: 4px
 
   & + i
@@ -158,6 +159,15 @@
     color: $text-color-700 !important
     line-height: calc(24 / 14)
     font-size: 14px
+
+.inputNumber
+  .p-inputtext:enabled:focus
+    box-shadow: none !important
+    border: 1.5px solid $primary
+  .p-inputnumber-button
+    background-color: $primary !important
+    .p-button-icon
+      font-size: $font-size-small !important
 //input search stock
 #inputSearch
   height: 48px

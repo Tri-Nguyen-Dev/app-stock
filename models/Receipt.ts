@@ -17,9 +17,10 @@ export namespace Receipt {
   }
 
   export interface BoxLocation {
-    id?: string,
+    id?: number,
     name: string
     index: number
+    isSuggested?:boolean
   }
 
   export class Box {
@@ -32,28 +33,28 @@ export namespace Receipt {
         index: 0
       }
       this.boxSize = {
-        id: 0
+        id: undefined
       }
     }
 
-    qrCode?:string
+    qrCode?: string
     index: number
     listItemInBox: ItemModel.Model[]
     inventoryFee?: number
     boxSize?: {
-      id: number
-      name?:string
-      height?:number,
+      id?: number
+      name?: string
+      height?: number,
       width?: number,
       length?: number
     }
 
-    id?:string
+    id?: string
     status: string
     location?: BoxLocation
-    amount?:number
-    sku?:string
-    value?:number
+    amount?: number
+    sku?: string
+    value?: number
   }
 
   export class ItemDraft {
@@ -78,51 +79,45 @@ export namespace Receipt {
       this.rackLocation = {
         id: undefined
       }
-      this.boxSize = {
-        id: undefined
-      }
     }
 
     inventoryFee?: number
     listStockWithAmount?: ItemDraft[]
-    boxSize: {
+    boxSize?: {
       id?: number
     }
 
     status?: string
     rackLocation: {
-      id?: string
+      id?: number
     }
   }
 
   export class CreateReceiptDraft {
     constructor() {
       this.boxList = []
-      this.seller = { id: 1 }
-      this.airtagE = { id: 1 }
-      this.driver = { id: 2 }
-      this.warehouse = { id: 1 }
+      this.seller = { id: undefined }
     }
 
-    id:string
-    note:string;
+    id: string
+    note: string;
     action: string;
     status: string;
     boxList: BoxDraft[]
     seller: {
+      id?: string
+    };
+
+    airtagE?: {
       id: number
     };
 
-    airtagE: {
+    driver?: {
       id: number
     };
 
-    driver: {
-      id: number
-    };
-
-    warehouse: {
-      id: number
+    warehouse?: {
+      id: string
     }
   }
 }

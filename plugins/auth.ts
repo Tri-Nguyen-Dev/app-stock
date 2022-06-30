@@ -1,21 +1,21 @@
 import { Plugin } from '@nuxt/types'
 import axios from 'axios'
+import { ToastServiceMethods } from 'primevue/toastservice'
 import { ErrorResponse, initializeAxios } from '~/utils'
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $bvToast: {
-      toast(message: string, options: any): void
-    }
-    $bvModal: {
-      show(id: string): void
-      hide(id: string): void
-    }
+    $toast: ToastServiceMethods
   }
 }
-const auth: Plugin = ({ store }) => {
+const auth: Plugin = ({ app, $auth, store }) => {
   const axiosInstance = axios.create()
+
   axiosInstance.interceptors.request.use((config) => {
+    const token = app.$cookies.get('auth._token.keycloak')
+    if ($auth.loggedIn && token) {
+      config.headers.Authorization = token
+    }
     if (process.env.NODE_ENV !== 'development') {
       config.baseURL = process.env.BE_API_URL
     } else {

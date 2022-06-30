@@ -1,38 +1,37 @@
 <template lang="pug">
 .box-page-container.flex.flex-column
-  .grid.justify-content-between
-    .col-fixed
+  .box__header
+    div
       h1.text-heading Box list
       span.text-subheading(v-if="boxList") {{ totalBoxRecords }} products found
-    .col-fixed
+    .header__action
+      .header__search
+        .icon.icon--left.icon-search
+        InputText(type="text" placeholder="Enter seller email" v-model="filter.sellerEmail" v-on:input="validateText")
+      .btn__filter
+        .btn-toggle(@click="isShowFilter = !isShowFilter")
+          .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
+          span Filter
+        Button.btn-refresh(@click="handleRefeshFilter")
+          .icon.icon-rotate-left.bg-white
+      Button.btn.btn-primary(@click='routeLinkAddBox')
+        .icon.icon-add-items
+        span Add box
+      Button.btn.btn-primary(@click='handleTransferBox')
+        span Transfer box
+  .grid.header__filter(:class='{ "active": isShowFilter }')
+    div(class="md:col-12 lg:col-8 col-12")
       .grid
-        .col-fixed
-          .header__search
-            .icon.icon--left.icon-search
-            InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
-        .col-fixed
-          .btn__filter
-            .btn-toggle(@click="isShowFilter = !isShowFilter")
-              .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
-              span Filter
-            .btn-refresh(@click="handleRefeshFilter")
-              .icon.icon-rotate-left.bg-white
-        .col-fixed
-          .btn.btn-primary
-            .icon.icon-add-items
-            span Add box
-  .grid(v-if="isShowFilter")
-    .col-8
-      .grid
-        .col
+        div(class="col-12 md:col-4")
           FilterTable(
             title="Warehouse"
             :value="filter.warehouse"
-            :options="warehouseList"
+            :options="warehouseOption"
             name="warehouse"
             @updateFilter="handleFilterBox"
+            :isClear="user.role === 'admin'"
           )
-        .col
+        div(class="col-12 md:col-4")
           FilterTable(
             title="Location"
             :value="filter.location"
@@ -41,7 +40,7 @@
             :searchText="true"
             @updateFilter="handleFilterBox"
           )
-        .col
+        div(class="col-12 md:col-4")
           FilterTable(
             title="Box Code"
             :value="filter.barCode"
@@ -49,13 +48,13 @@
             name="barCode"
             :searchText="true"
             @updateFilter="handleFilterBox"
+            :isShowFilter="isShowFilter"
           )
-    .col-4
-      .grid.grid-nogutter
+    div(class="col-12 lg:col-4")
+      .grid
         .col
           FilterCalendar(
             title="From"
-            border="left"
             :value="filter.dateFrom"
             name="dateFrom"
             inputClass="border-0"
@@ -63,7 +62,7 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-        .col.ml-1
+        .col
           FilterCalendar(
             title="To"
             border="right"
@@ -74,35 +73,46 @@
             :showIcon="true"
             @updateFilter="handleFilterBox"
           )
-  .grid.grid-nogutter.flex-1.relative.overflow-hidden
+  .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll"
       :selection="selectedBoxes" removableSort dataKey="id" :resizableColumns="true" :rows="20" :scrollable="false"
-      :rowClass="rowClass" @sort="sortData($event)" @row-click="onRowClick"
+      :rowClass="rowClass" @sort="sortData($event)"
       :class="{ 'table-wrapper-empty': !boxList || boxList.length <= 0 }" @row-select-all="rowSelectAll"
       @row-unselect-all="rowUnSelectAll" @row-select="rowSelect" @row-unselect="rowUnselect")
-        Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false")
+        Column(selectionMode="multiple" :styles="{width: '3rem'}" :exportable="false" :headerClass="classHeaderMuti")
         Column(field="no" header="NO")
           template(#body="slotProps")
             span.font-semibold {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-        Column(field="id" header="CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
+        Column(field="id" header="BOX CODE" :sortable="true" bodyClass="font-semibold" sortField="_id")
+          template(#body="{data}")
+            NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/box/${data.id}`"
+            class="no-underline hover:underline") {{ data.id }}
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
-          template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
-        Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold")
-          template(#body="{data}") {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
+          template(#body="{data}") {{ data.createdAt | dateTimeHour24 }}
+        Column(field="usedCapacity" header="USED CAPACITY" className="text-right")
+          template(#body="{data}") {{ data.usedCapacity | capacityPercent}}
+        Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold" )
+          template(#body="{data}")
+            div(v-if='data.boxSize') {{ data.boxSize.length }} * {{ data.boxSize.width }} * {{ data.boxSize.height }}
+        Column(field="TYPE" header="TYPE" className="text-right" bodyClass="font-semibold" )
+          template(#body="{data}")
+            div(v-if='data.boxSize') {{ data.boxSize.name }}
         Column(field="weight" header="WEIGHT(KG)" className="text-right" bodyClass="font-semibold")
           template(#body="{data}") {{ data.weight }}
         Column(field="warehouse" header="WAREHOUSE" :sortable="true" className="text-right" sortField="_request.warehouse.name")
           template(#body="{data}")
-            .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
-              .icon.icon-arrow-up-right.bg-primary.bg-white-active
+            div(v-if="data.warehouseName")
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
+                .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(field="rackLocation.name" header="LOCATION" :sortable="true" className="text-right" sortField="_rackLocation.name")
           template(#body="{data}")
-            .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
-              .icon.icon-arrow-up-right.bg-primary.bg-white-active
+            div(v-if="data.location")
+              .flex.align-items-center.cursor-pointer.justify-content-end
+                span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
+                .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(field="status" header="STATUS" :sortable="true" className="text-right" sortField="_status")
           template(#body="{data}")
             .flex.justify-content-end
@@ -112,16 +122,20 @@
               span.table__status.table__status--disable(
                 v-else-if="data.status === 'BOX_STATUS_DISABLE'"
               ) {{ data.status | boxStatus }}
-              span.table__status.table__status--draft(v-else) {{ data.status | boxStatus }}
+              span.table__status.table__status--draft(
+                v-else-if="data.status === 'BOX_STATUS_DRAFT'"
+                ) {{ data.status | boxStatus }}
+              span.table__status.table__status--outgoing(v-else) {{ data.status | boxStatus }}
         Column(:exportable="false" header="ACTION" className="text-right")
           template(#body="{data}")
-            .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
-              span(@click="handleEditBox(data.id)")
+            .table__action(:class="{'action-disabled': (data.status === 'BOX_STATUS_DISABLE' || data.status === 'BOX_STATUS_OUTGOING')}")
+              span.action-item(@click="handleEditBox(data.id)")
                 .icon.icon-edit-btn
-              span(:class="{'disable-button': selectedBoxFilter.length > 0}" @click="showModalDelete([data])")
+              span.action-item(:class="{'disable-button': selectedBoxFilter.length > 0}" @click="showModalDelete([data])")
                 .icon.icon-btn-delete
         template(#footer)
           Pagination(
+            type="boxes selected"
             :paging="paging"
             :total="totalBoxRecords"
             :deleted-list="selectedBoxFilter"
@@ -132,7 +146,7 @@
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!isFilter")
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
             p.text-900.font-bold.mt-3(v-if="!isFilter") List is empty!, Click
-              span.text-primary.underline.cursor-pointer &nbsp;here
+              span.text-primary.underline.cursor-pointer(@click='routeLinkAddBox') &nbsp;here
               span &nbsp;to add item.
             p.text-900.font-bold.mt-3(v-else) Item not found!
 
@@ -155,9 +169,10 @@ import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-import { getDeleteMessage, PAGINATE_DEFAULT } from '~/utils'
+import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreUser = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
 @Component({
@@ -176,6 +191,7 @@ class BoxList extends Vue {
   sortByColumn: string = ''
   isDescending: boolean|null = null
   boxCodeDelete: string = ''
+  warehouseOption: any = []
   filter: any = {
     sellerEmail:  '',
     warehouse: null,
@@ -194,6 +210,9 @@ class BoxList extends Vue {
   @nsStoreWarehouse.State
   warehouseList!: any
 
+  @nsStoreUser.State
+  user: any | undefined
+
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
 
@@ -203,25 +222,46 @@ class BoxList extends Vue {
   @nsStoreBox.Action
   actDeleteBoxById!: (params: {ids: string[]}) => Promise<any>
 
+  @nsStoreBox.Action
+  actAddTransferBox!: (params: {ids: string[]}) => Promise<any>
+
   async mounted() {
-    await this.actGetBoxList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
-    await this.actWarehouseList()
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
+    await this.actGetBoxList(this.getParamAPi())
   }
 
   // -- [ Getters ] -------------------------------------------------------------
   get isFilter(){
-    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize'])
+    const paramsDefault = ['pageNumber', 'pageSize']
+    if(this.user.role === 'staff') {
+      paramsDefault.push('warehouseId')
+    }
+    const params = _.omit(this.getParamAPi(), paramsDefault)
     return Object.values(params).some((item) => item)
   }
 
   get selectedBoxFilter() {
-    return  _.filter(this.selectedBoxes, (box: any) => {
-      return box.status !== 'BOX_STATUS_DISABLE'
+    return  _.filter(this.selectedBoxes, ({ status }) => {
+      return status !== 'BOX_STATUS_DISABLE' && status !== 'BOX_STATUS_OUTGOING'
     })
   }
 
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'box')
+  }
+
+  get classHeaderMuti() {
+    return !this.boxList ||
+      this.boxList.length <= 0
+      ? 'checkbox-disable'
+      : ''
   }
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -246,6 +286,7 @@ class BoxList extends Vue {
   }
 
   async onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     await this.actGetBoxList(this.getParamAPi())
@@ -278,13 +319,16 @@ class BoxList extends Vue {
     this.isModalDelete = true
   }
 
-  rowClass(data: any) {
-    return data.status === 'BOX_STATUS_DISABLE' && 'row-disable'
+  rowClass({ status }) {
+    if(status === 'BOX_STATUS_DISABLE' || status === 'BOX_STATUS_OUTGOING') {
+      return 'row-disable'
+    }
   }
 
   validateText =  _.debounce(this.handleFilter, 500);
 
   async sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if(sortOrder){
       this.isDescending = sortOrder !== 1
@@ -294,10 +338,6 @@ class BoxList extends Vue {
       this.sortByColumn = ''
     }
     await this.actGetBoxList(this.getParamAPi())
-  }
-
-  onRowClick({ data }){
-    this.$router.push(`/box/${data.id}`)
   }
 
   handleEditBox(id: any) {
@@ -310,7 +350,9 @@ class BoxList extends Vue {
   }
 
   async handleRefeshFilter() {
-    this.filter.warehouse = null
+    if(this.user.role === 'admin') {
+      this.filter.warehouse = null
+    }
     this.filter.location = ''
     this.filter.sellerEmail = ''
     this.filter.barCode = ''
@@ -320,7 +362,7 @@ class BoxList extends Vue {
   }
 
   rowSelectAll({ data }) {
-    this.selectedBoxes = _.union(this.selectedBoxes, data)
+    this.selectedBoxes = _.unionWith(this.selectedBoxes, data, _.isEqual)
   }
 
   rowUnSelectAll() {
@@ -335,13 +377,42 @@ class BoxList extends Vue {
     originalEvent.originalEvent.stopPropagation()
     this.selectedBoxes = _.filter(this.selectedBoxes, (box: Box.Model) => box.id !== data.id)
   }
+
+  routeLinkAddBox() {
+    this.$router.push({ path: '/stock-in/create-receipt' })
+  }
+
+  handleTransferBox() {
+    const selectedBox = [...this.selectedBoxFilter]
+    if(!_.size(selectedBox)) return
+    const firstSelect = selectedBox[0]
+    const satisfyBox =_.filter(selectedBox, ({ status, sellerEmail  }) => {
+      return sellerEmail && status === 'BOX_STATUS_AVAILABLE' && sellerEmail === firstSelect.sellerEmail
+    })
+    if(_.size(selectedBox) === _.size(satisfyBox)) {
+      this.actAddTransferBox(_.map(satisfyBox, 'id'))
+      this.$router.push({ path: '/box/transferring' })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Boxes of diffrent sellers can not be transferred',
+        life: 3000
+      })
+    }
+  }
 }
 export default BoxList
 </script>
 
 <style lang="sass" scoped>
 .box-page-container
-  height: calc(100vh - 32px)
+  @include mobile
+    min-height: calc(100vh - 32px)
+  @include tablet
+    min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 32px)
   ::v-deep.p-component
     font-family: $font-family-primary
   ::v-deep.pi-calendar:before
@@ -359,4 +430,26 @@ export default BoxList
     background-color: $text-color-300
     .icon
       background-color: $text-color-500
+.box__header
+  flex-direction: column
+  flex-wrap: wrap
+  margin-bottom: 16px
+  @include desktop
+    flex-direction: row
+    @include flex-center-space-between
+.header__action
+    margin-top: 12px
+    display: flex
+    @include flex-column
+    flex-wrap:  wrap
+    gap: 10px 16px
+    @include desktop
+      @include flex-center
+      flex-direction: row
+      margin-top: 0
+    .btn__filter
+      .btn-refresh
+        border-top-left-radius: 0 !important
+        border-bottom-left-radius: 0 !important
+        border: none
 </style>

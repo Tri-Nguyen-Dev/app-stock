@@ -2,14 +2,23 @@
   .bg-white.wrapper-filter(:class="`border-round-${border}`")
     div.pt-2.pb-1.title
       span.text-600.font-sm {{title}}
-    Calendar.w-full.pl-2.mb-1(@date-select="handleFilter" :value="value" :showIcon="showIcon" :inputClass="inputClass" :placeholder="placeholder || 'Select'" :dateFormat="dateFormat || 'dd-mm-yy'")
+    span.p-input-icon-right.w-full
+      i(v-if="value" class="pi pi-times clear" @click.stop="clearValue")
+    Calendar.w-full.pl-2.mb-1(
+      @date-select="handleFilter"
+      :value="value"
+      :showIcon="showIcon"
+      :inputClass="inputClass"
+      :dateFormat="dateFormat || 'dd-mm-yy'"
+      :minDate="minDate"
+      :maxDate="maxDate"
+    )
 </template>
 <script lang='ts'>
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
 
 @Component
 class FilterTable extends Vue {
-
   @Prop() value!: any | undefined
   @Prop() readonly title!: any | undefined
   @Prop() readonly searchText!: boolean | false
@@ -18,27 +27,33 @@ class FilterTable extends Vue {
   @Prop() readonly name!: any | undefined
   @Prop() readonly dateFormat!: any | undefined
   @Prop() readonly inputClass!: any | undefined
-  @Prop() readonly showIcon!: Boolean | false  
-  @Prop() readonly border!: string | undefined  
+  @Prop() readonly showIcon!: Boolean | false
+  @Prop() readonly border!: string | undefined
+  @Prop() readonly minDate!: any
+  @Prop() readonly maxDate!: any
 
   handleFilter(e :any){
     this.$emit('updateFilter', e, this.name)
   }
   
+  clearValue() {
+    this.$emit('updateFilter', null, this.name)
+  }
 }
 
 export default FilterTable
 </script>
-<style scoped lang="sass"> 
-  ::placeholder 
+<style scoped lang="sass">
+  ::placeholder
     color: $text-color-700
   .wrapper-filter
+    position: relative
     @include flex-column
     height: 82px
     justify-content: center
-    .title 
+    .title
         margin-left: 12px
-    ::v-deep.p-inputtext 
+    ::v-deep.p-inputtext
       color: $text-color-900
       border-radius: 4px !important
       font-weight: 500
@@ -49,6 +64,7 @@ export default FilterTable
         color: $text-color-700
     .pi-times.clear
       z-index: 1
+      top: 18px !important
       right: 2.5rem  !important
       cursor: pointer
     ::v-deep.p-input-icon-right .p-inputtext

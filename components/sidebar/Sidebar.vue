@@ -2,13 +2,13 @@
   .sidebar(:style="{ width: sidebarWidth }")
     .menu-section.sidebar-head
       template(v-if="!collapsed")
-        img.user-avatar(:src="userImageUrl")
+        img.user-avatar(:src="user.avatarUrl | getThumbnailUrl")
         .user-info
           span.user-name {{ userDisplayName }}
-          span.user-role Role Ex
-      .icon.icon--xlarge.icon-menu-toggle.surface-500(:class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
+          span.user-role {{ userRole }}
+      .icon.icon--xlarge.icon-menu-toggle.surface-500(v-if="widthScreen > 1024" :class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
     .menu-section.sidebar-menu
-      SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
+      SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)" @toggleMenu="toggleMenu")
     .menu-section.sidebar-foot
       SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
 </template>
@@ -16,21 +16,27 @@
 <script lang='ts'>
 import { Component, namespace, ProvideReactive, Vue, Watch } from 'nuxt-property-decorator'
 import { User } from '~/models/User'
-import { PAGE_MENU, SETTING_MENU } from '~/utils'
+import { MENU_ACTION, PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
+const nsUser = namespace('user-auth/store-user')
 
 @Component
 class MenuSidebar extends Vue {
   // -- [ Statement Properties ] ------------------------------------------------
-
+  @nsSidebar.State
+  widthScreen!: number
+  
   @nsSidebar.Getter('sidebarWidth')
   sidebarWidth!: string
-
+  
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
   @nsSidebar.Mutation('toggleSidebar')
   toggleSidebar
+
+  @nsUser.State('user')
+  user!: User.Model | undefined
 
   // -- [ Properties ] ----------------------------------------------------------
   @ProvideReactive()
@@ -42,35 +48,41 @@ class MenuSidebar extends Vue {
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
   // -- [ Getters ] -------------------------------------------------------------
-  get user() {
-    return this.$auth.user as unknown as User.Model
-  }
-
-  get userImageUrl() {
-    return this.user?.userDetail.pictureUrl || null
-  }
 
   get userDisplayName() {
-    return this.user?.userDetail.displayName || 'Unknown'
+    return this.user?.displayName || 'Unknown'
+  }
+
+  get userRole() {
+    return this.user?.role?.toUpperCase() || ''
   }
   // -- [ Methods ] ------------------------------------------------------------
+  
+  toggleMenu() {
+    this.$emit('toggleMenu')
+  }
 
   onSelectMenu(item) {
     this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
     if(!item.parentId) {
       this.parentItems = this.pageMenu.filter(value => value.parentId === item.id)
     }
-  }
-
-  @Watch('$route.path',{ immediate: true, deep: true })
-  handleSelect (){
-    if( _.isEmpty(this.$route.params)){
-      this.selectedItem = this.pageMenu.filter((item)=> this.$route.path === item.to )[0]
-    }else {
-      this.selectedItem = this.pageMenu.filter((item)=> this.$route.path.slice(0, item.to?.length) === item.to )[0]
+    // handle specific actions
+    if (item.action === MENU_ACTION.LOGOUT) {
+      this.$auth.logout()
     }
   }
 
+  @Watch('$route.path', { immediate: true, deep: true })
+  handleSelect(path) {
+    const rootRoute = _.trim(path, '/').split('/')[0]
+    if (rootRoute) {
+      this.selectedItem = this.pageMenu.find(item => {
+        const menuRoute = item.root || item.to
+        return _.trim(menuRoute, '/') === rootRoute
+      })
+    }
+  }
 }
 
 export default MenuSidebar
@@ -81,7 +93,7 @@ export default MenuSidebar
   @include flex-column
   float: left
   position: fixed
-  z-index: 1
+  z-index: 11
   top: 0
   left: 0
   bottom: 0
@@ -111,10 +123,16 @@ export default MenuSidebar
     padding-top: $space-size-16
 
   &-foot
+    padding-top: $space-size-4
     border-top: 1px solid $text-color-400
-    height: 130px
+    min-height: 130px
     margin-top: auto
 
   .menu-section
     position: relative
+
+.user-role
+  font-size: $font-size-small
+  font-weight: $font-weight-light
+  color: $text-color-700
 </style>

@@ -15,24 +15,39 @@
             span Filter
           .btn-refresh(@click="handleRefreshFilter")
             .icon.icon-rotate-left.bg-white
-        .btn.btn-primary(@click="handleAddStock")
+        Button.btn.btn-primary(@click="handleAddStock")
           .icon.icon-add-items
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      .col
+      .div(class="col-12 md:col-4")
         FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
           template(v-slot:multi-select)
-            MultiSelect.filter__multiselect(v-model='filter.categories' @change="handleChangeFilter" :options='categoryList' optionLabel="name" placeholder='Select' :filter='true')
-      .col
-        FilterTable(title="Barcode" placeholder="Search barcode" name="barCode" :value="filter.barCode" :searchText="true" @updateFilter="handleFilter")
-      .col
+            MultiSelect.filter__multiselect(
+              v-model='filter.categories'
+              @change="handleChangeFilter"
+              :options='categoryList'
+              optionLabel="name"
+              placeholder='Select'
+              :filter='true'
+            )
+      .div(class="col-12 md:col-4")
+        FilterTable(
+          title="Barcode"
+          placeholder="Search barcode"
+          name="barCode"
+          :value="filter.barCode"
+          :searchText="true"
+          @updateFilter="handleFilter"
+          :isShowFilter="isShowFilter"
+        )
+      .div(class="col-12 md:col-4")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
-    .stock__table
+    .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
+      .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable(
           @sort="sortData($event)"
           :class="{ 'table-wrapper-empty': !stockList || stockList.length <= 0 }"
           :rowClass="rowClass" :value='stockList' responsiveLayout="scroll"
-          @row-click='rowdbClick'
           :selection='selectedStock'
           dataKey='id'
           :rows='10'
@@ -45,27 +60,26 @@
           Column(
             selectionMode='multiple'
             :styles="{'width': '1%'}"
-            :headerClass="classHeaderMuti")
+            :headerClass="classHeaderMuti"
+          )
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(field='imageUrl' header='Image' headerClass="grid-header-center")
             template(#body='{ data }')
               .stock__table__image.overflow-hidden.grid-cell-center
-                img.h-2rem.w-2rem.border-round(
-                  :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
+                NuxtLink(:to="`/stock/${data.id}`")
+                  img.h-2rem.w-2rem.border-round(
+                    :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
-              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.name }}
+              NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/stock/${data.id}`" class="no-underline hover:underline") {{ data.name }}
           Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
             template(#body='{ data }')
               .stock__table-barcode.grid-cell-right {{ data.barCode }}
           Column(header='Category' :sortable="true" field='category' sortField="_category" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right {{ data.categoryName }}
-          Column(header='Type' :sortable="true" field='type' sortField="_type" headerClass="grid-header-right")
-              template(#body='{ data }')
-                div.grid-cell-right {{ data.typeName }}
           Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
@@ -74,12 +88,13 @@
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
-                span(@click="handleEditStock(data.id)")
+                span.action-item(@click.stop="handleEditStock(data.id)" :class="{'disable-button': selectedStockFilter.length > 0}")
                   .icon.icon-edit-btn
-                span(@click="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
+                span.action-item(@click.stop="showModalDelete([data])" :class="{'disable-button': selectedStockFilter.length > 0}")
                   .icon.icon-btn-delete
           template(#footer)
             Pagination(
+              type="items selected"
               :paging="paging"
               :total="total"
               :deleted-list="selectedStockFilter"
@@ -102,7 +117,7 @@
       :loading="loadingSubmit"
     )
       template(v-slot:message)
-        p {{ deleteMessage }} 
+        p {{ deleteMessage }}
 
     Toast
 </template>
@@ -115,7 +130,8 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   StockConstants,
-  getDeleteMessage
+  getDeleteMessage,
+  resetScrollTable
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
@@ -173,14 +189,6 @@ class Stock extends Vue {
     })
   }
 
-  get classHeaderMuti() {
-    return !this.stockList ||
-      this.stockList.length <= 0 ||
-      this.checkStockDisable
-      ? 'checkbox-disable'
-      : ''
-  }
-
   get checkStockDisable() {
     return this.stockList.every(
       (item) => item.stockStatus === 'STOCK_STATUS_DISABLE'
@@ -191,11 +199,19 @@ class Stock extends Vue {
     const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
-  
+
   get deleteMessage() {
     return getDeleteMessage(this.onEventDeleteList, 'stock')
   }
-  
+
+  get classHeaderMuti() {
+    return !this.stockList ||
+      this.stockList.length <= 0 ||
+      this.checkStockDisable
+      ? 'checkbox-disable'
+      : ''
+  }
+
   // -- [ Functions ] ------------------------------------------------------------
   getParamApi() {
     const categoryIds = this.filter.categories
@@ -232,6 +248,7 @@ class Stock extends Vue {
   handleFilter(e: any, name: string){
     this.filter[name] = e
     this.getProductList()
+    this.selectedStock = []
   }
 
   async getProductList() {
@@ -244,9 +261,15 @@ class Stock extends Vue {
 
   handleChangeFilter() {
     this.getProductList()
+    if(this.filter.categories.length === 0) {
+      this.filter.categories = ''
+      this.getProductList()
+    }
+    this.selectedStock = []
   }
 
   onPage(event: any) {
+    resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getProductList()
@@ -285,11 +308,8 @@ class Stock extends Vue {
     this.$router.push({ path: `/stock/${id}`, query: { plan: 'edit' } })
   }
 
-  rowdbClick({ data }) {
-    this.$router.push(`/stock/${data.id}`)
-  }
-
   sortData(e: any) {
+    resetScrollTable()
     const { sortField, sortOrder } = e
     if (sortOrder) {
       this.filter.desc = sortOrder !== 1
@@ -352,13 +372,29 @@ export default Stock
 <style lang="sass" scoped>
 .stock
   @include flex-column
-  height: 100%
+  @include mobile
+    min-height: calc(100vh - 32px)
+  @include tablet
+    min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 32px)
   &__header
-    @include flex-center-space-between
+    flex-direction: column
+    flex-wrap: wrap
     margin-bottom: 24px
+    @include desktop
+      flex-direction: row
+      @include flex-center-space-between
   .header__action
+    display: flex
+    margin-top: 12px
+    @include flex-column
+    flex-wrap:  wrap
+    gap: 10px 16px
+    @include desktop
       @include flex-center
-      gap: 0 16px
+      flex-direction: row
+      margin-top: 0
 .stock__table
   border-radius: 4px
   flex: 1
