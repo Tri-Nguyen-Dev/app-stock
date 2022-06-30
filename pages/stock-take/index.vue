@@ -58,7 +58,8 @@
           :value="filter.warehouse"
           :options="warehouseList"
           name="warehouse"
-          @updateFilter="handleFilter")
+          @updateFilter="handleFilter"
+          :isClear="user.role === 'admin'")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Check Type"
