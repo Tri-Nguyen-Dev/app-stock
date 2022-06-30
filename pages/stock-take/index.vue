@@ -244,8 +244,9 @@ class StockTake extends Vue {
 
   // -- [ Getters ] -------------------------------------------------------------
   get selectedStockTakeFilter() {
+    const user = this.user?.staffId
     const isCheckDeleteOther = _.find(this.selectedStockTake, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
-    const isCheckDeletePIC = _.find(this.selectedStockTake, function(o) { return o.status === 'IN_PROGRESS' && !o?.assignee?.staffId })
+    const isCheckDeletePIC = _.find(this.selectedStockTake, function(o) { return o.status === 'IN_PROGRESS' && o.assignee?.staffId !== user })
     if(isCheckDeleteOther || isCheckDeletePIC) {
       return []
     }
