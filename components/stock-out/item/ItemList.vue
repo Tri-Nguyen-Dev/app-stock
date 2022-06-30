@@ -47,6 +47,11 @@ div
       template(#body='{ data }')
         .grid-cell-center
           Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='isDetail')
+    template( #footer )
+      Pagination(
+        :paging="paging"
+        :total="total"
+        @onPage="onPage")
   DataTable.w-full.flex.flex-column.bg-white.box-page-container(
     :value='dataRenderItems',
     dataKey='id',
@@ -110,13 +115,29 @@ div
       template(#body='{ data }')
         .grid-cell-center
           Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='isDetail')
+    template( #footer )
+      Pagination(
+        :paging="paging"
+        :total="total"
+        @onPage="onPage")
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'nuxt-property-decorator'
 import { STOCK_OUT_ACTION } from '~/utils/constants/stock-out'
-@Component
+import { Paging } from '~/models/common/Paging'
+import Pagination from '~/components/common/Pagination.vue'
+import { 
+  PAGINATE_DEFAULT,
+  calculateIndex 
+} from '~/utils'
+@Component({ 
+  components: {
+    Pagination 
+  }
+})
 class ItemList extends Vue {
+  [x: string]: any
   @Prop() listItems!: any[]
   @Prop() getParam: () => any
   @Prop({ default: false }) isDetail!: boolean
@@ -125,6 +146,32 @@ class ItemList extends Vue {
   isPack = false
   selectedItem: any[] = []
   enablePack = false
+  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  
+  // -- [ State ] ------------------------------------------------------------
+  paginate: any = {
+    pageNumber: 0,
+    pageSize: 10
+  }
+  
+  // -- [ Getters ] -------------------------------------------------------------
+  get total(){
+    return this.listItems.length
+  }
+
+  onPage(event: any) {
+    this.paginate.pageSize = event.rows
+    this.paginate.pageNumber = event.page
+  }
+
+  getIndexPaginate(index: number) {
+    return calculateIndex(
+      index,
+      this.paging.pageNumber,
+      this.paging.pageSize
+    )
+  }
+
   get dataRenderItems() {
     return this.listItems
   }
