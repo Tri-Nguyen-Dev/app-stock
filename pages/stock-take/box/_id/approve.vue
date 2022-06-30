@@ -196,8 +196,8 @@ class ApproveBoxStockTake extends Vue {
   async saveApprove() {
     let submitData = _.flatten(
       _.map(this.dataList, ({ stockTakeBoxItem }) => {
-        return _.map(stockTakeBoxItem, ({ id, approvedQuantity }) => {
-          return { id, approvedQuantity }
+        return _.map(stockTakeBoxItem, ({ id, approvedQuantity, inventoryQuantity }) => {
+          return { id, approvedQuantity, inventoryQuantity }
         })
       })
     )
