@@ -1,83 +1,72 @@
 <template lang="pug">
-  .grid.grid-nogutter.packing__detail--container
-    .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
-      StockTakeNoteInfo(:info='stockTakeInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
-      .grid.wapprer-unit.ml-4.mr-4
-        .col-2.flex.align-items-center.justify-content-center
-          .icon--large.bg-blue-700(class='icon-note')
-        .col-10.flex.flex-column.justify-content-center
-          div.font-normal.text-700.text-base Note
-          Textarea.text-lg(v-model='note' placeholder='Write something...' rows='2' cols=30)
-    .col-9.packing__detail--left.pl-4.pr-1.flex-1
-      .grid
-        .col-4
-          h2.text-heading List box
-        .col-8.btn-right
-          Button.p-button-outlined.p-button-primary.bg-white.w-25(
-            type='button',
-            label='Add box',
-            @click='addBox'
-            :disabled ='disabledAddBox'
-          )
-          Button.p-button-outlined.p-button-primary.bg-white.w-25(
-            type='button',
-            label='Save',
-            @click='saveStockTake'
-          )
-      .col-12(style='height: 90vh')
-        DataTable(
-        :value='boxShow',
-        responsiveLayout='scroll',
-        dataKey='id',
-        @sort='sortData($event)',
-        :rows="10"
-      )
-          Column(field='no', header='NO'  :styles="{'width': '6%'}")
-            template(#body='slotProps')
-              .align-items-center
-                span.font-semibold {{ slotProps.index + 1 }}
-          Column(
-            field='id',
-            header='BOX CODE',
-            :sortable='true',
-            bodyClass='font-semibold',
-            sortField='_id'
-          )
-          Column(
-            field='sellerEmail',
-            header='SELLER EMAIL',
-            className='w-3',
-          )
-          Column(
-            field='rackLocation.name',
-            header='LOCATION',
-            :sortable='true',
-            sortField='_rackLocation.name'
-          )
-            template(#body='{ data }')
-              div(v-if='data.location')
-                .flex.align-items-center.cursor-pointer
-                  span.font-bold {{ data.location }}
-          Column(
-            field='id',
-            header='ACTION',
-            :styles="{'width': '2%'}"
-          )
-            template(#body='{ data}')
-              .table__action.justify-content-center
-                span.action-item(@click.stop="removeBox(data)")
-                  .icon.icon-btn-delete
-          template(#empty)
-            .flex.align-items-center.justify-content-center.flex-column
-              img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
-              p.text-900.font-bold.mt-3 Add box!
-    Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
-        template(#header)
-          h1.text-heading Select Box
+  .grid.flex.grid-nogutter.stock
+    StockTakeNoteInfo(:info='stockTakeInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
+    div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
+      .stock-takeItem.flex.flex-column
+        .stock-takeItem__header
+          div
+            h1.text-heading Stock-take Note
+            span.text-subheading {{ totalItem }} total
+          .stock-takeItem__header--action.flex
+            Button.btn.btn-primary.border-0(@click='addBox') Add Box
+            Button.btn.btn-primary.border-0(@click='saveStockTake') Save
+        .stock-takeItem__content
+          DataTable(
+          :value='boxShow',
+          responsiveLayout='scroll',
+          dataKey='id',
+          @sort='sortData($event)',
+          :rows="10"
+        )
+            Column(field='no', header='NO'  :styles="{'width': '6%'}")
+              template(#body='slotProps')
+                .align-items-center
+                  span.font-semibold {{ slotProps.index + 1 }}
+            Column(
+              field='id',
+              header='BOX CODE',
+              :sortable='true',
+              bodyClass='font-semibold',
+              sortField='_id'
+            )
+            Column(
+              field='sellerEmail',
+              header='SELLER EMAIL',
+              className='w-3',
+            )
+            Column(
+              field='rackLocation.name',
+              header='LOCATION',
+              :sortable='true',
+              sortField='_rackLocation.name'
+            )
+              template(#body='{ data }')
+                div(v-if='data.location')
+                  .flex.align-items-center.cursor-pointer
+                    span.font-bold {{ data.location }}
+            Column(
+              field='id',
+              header='ACTION',
+              :styles="{'width': '2%'}"
+            )
+              template(#body='{ data}')
+                .table__action.justify-content-center
+                  span.action-item(@click.stop="removeBox(data)")
+                    .icon.icon-btn-delete
+            template(#footer)
+                .grid.grid-nogutter.stock-takeItem__footer
+                  .col
+                    div(style="padding-left: 10.5px") Note:
+                    InputText.inputSearchCode.w-full(v-model='note' rows="1" cols="40" placeholder='Write something...')
+            template(#empty)
+              .flex.align-items-center.justify-content-center.flex-column
+                img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
+                p.text-900.font-bold.mt-3 Add box!
+    Dialog.item-list-dialog(:visible.sync='showModal', :modal='true' :showHeader='false' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
         BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
         template(#footer)
           Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
-          Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()")
+          Button.p-button-primary(:label="lableBtnAddStock" icon="pi pi-check" @click="applyBox()" v-if="lableBtnAddStock.length>0")
 </template>
 
 <script lang="ts">
@@ -118,6 +107,8 @@ class DeliveryOrder extends Vue {
     status:string
   } = { user: undefined ,totalBox:0,wareHouse: undefined, status: 'NEW' }
 
+  lableBtnAddStock = ''
+  totalItem = 0
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
 
@@ -151,7 +142,7 @@ class DeliveryOrder extends Vue {
       note: this.note,
       checkType: 'BOX',
       stockTakeBox: listBox,
-      wareHouse: this.user?.warehouse? { id: this.user?.warehouse.id } : undefined,
+      warehouse: this.user?.warehouse? { id: this.user?.warehouse.id } : undefined,
       status: STOCK_TAKE_STATUS.NEW,
       reportList: this.reportList
     }
@@ -169,11 +160,12 @@ class DeliveryOrder extends Vue {
   }
 
   selectBox(event){
-    this.boxSelected = event
+    this.boxSelected = _.cloneDeep(event)
     if(this.boxSelected.length>0){
-      this.disabledApply = false
+      this.prepareLableBtnAddStock()
+      
     } else {
-      this.disabledApply = true
+      this.lableBtnAddStock = ''
     }
   }
 
@@ -190,7 +182,7 @@ class DeliveryOrder extends Vue {
   applyBox(){
     this.showModal = false
     this.boxShow = _.cloneDeep(this.boxSelected)
-    this.$forceUpdate()
+    this.totalItem= _.size(this.boxSelected)
   }
 
   mounted() {
@@ -224,33 +216,108 @@ class DeliveryOrder extends Vue {
       { label: 'Add new note', to: '/stock-take/box/create' }
     ]
   }
+
+  prepareLableBtnAddStock() {
+    const length = _.size(this.boxSelected)
+    let stockQuantity = ''
+    if(length === 1 ) {
+      stockQuantity = length + ' stock'
+    } else if(length > 1) {
+      stockQuantity = length + ' stocks'
+    }
+    this.lableBtnAddStock = `Add ${stockQuantity || 'stock'} to stock-take note`
+  }
+
 }
 
 export default DeliveryOrder
 </script>
 <style lang="sass" scoped>
-.btn-right
-  height: 70%
-  text-align: right
-.packing__detail--container
-  height: calc(100vh - 32px)
-.packing__detail--left
-  height: calc( 100vh - 32px) !important
-.w-25
-  width: 25%
-  margin-left: 7px
-.wapprer-unit
-  min-height: 72px
-  border-radius: 4px
-  background-color: $text-color-200
-  .text-wrap
-    word-break: break-all
-  ::v-deep.p-inputtext
-    border: none
-    background: transparent
-    padding: 0
-    color: #000
-    font-weight: 600
-    box-shadow: none !important
-    max-width: 100%
+.stock
+  @include tablet
+  ::v-deep.sub-tab
+    height: calc(100vh - 150px)
+    overflow: hidden
+    display: flex
+    flex-direction: column
+    @include desktop
+      height: calc(100vh - 32px)
+      max-width: 23rem
+      overflow: hidden
+    .sub--scroll
+      display: flex
+      align-items: center
+      flex-direction: column
+      flex: 1
+      overflow: auto
+      @include desktop
+        overflow: auto
+      @include tablet
+        flex-direction: row
+        justify-content: center
+        align-items: baseline
+        overflow: hidden
+
+  ::-webkit-input-placeholder
+    font-weight: normal
+
+  ::-webkit-scrollbar
+    width: 7px
+    height: 7px
+    background-color: #F5F5F5
+
+  ::-webkit-scrollbar-track
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+    border-radius: 10px
+    background-color: #F5F5F5
+
+  ::-webkit-scrollbar-thumb
+    border-radius: 10px
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
+    background-color: #979AA4
+
+.wrap-unit
+  width: 300px
+  margin-bottom: 16px
+
+::v-deep.stock-takeItem
+  min-height: calc(100vh - 32px)
+  margin-top: 3rem
+  @include desktop
+    margin-top: 0px
+    margin-left: 2rem
+    height: calc(100vh - 32px)
+  &__header
+    flex-direction: column
+    flex-wrap: wrap
+    margin-bottom: 16px
+    @include desktop
+      flex-direction: row
+      @include flex-center-space-between
+    &--action
+      margin-top: 12px
+      display: flex
+      @include flex-column
+      flex-wrap:  wrap
+      gap: 10px 16px
+      @include desktop
+        @include flex-center
+        flex-direction: row
+        margin-top: 0
+  &__filter
+    margin-bottom: $space-size-24
+  &__content
+    flex: 1
+    border-radius: 4px
+    position: relative
+    overflow: hidden
+  &__footer
+    background: $color-white
+    display: flex
+    justify-content: space-between
+    padding: 6px 8px
+    align-items: center
+.item-list-dialog
+  ::v-deep.p-dialog-content
+    background-color: #E8EAEF
 </style>
