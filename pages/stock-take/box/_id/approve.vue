@@ -234,6 +234,10 @@ class ApproveBoxStockTake extends Vue {
     return (data.countedQuantity !== data.approvedQuantity || data.countedQuantity !== data.inventoryQuantity) && 'red-row'
   }
 
+  get isApproving() {
+    return this.boxStockTakeDetail.status === 'APPROVING'
+  }
+
   get isApproved () {
     const { status } = this.boxStockTakeDetail
     return status === 'APPROVED'
@@ -253,12 +257,14 @@ class ApproveBoxStockTake extends Vue {
   }
 
   get homeItem() {
-    return { label: 'Note list', to: '/stock-take', icon: 'pi pi-list' }
+    return { label: '', to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Stock-take Note Detail Approve' }
+      { label: `${this.isApproving ? 'Approving' : 'Approved'}  Stock-take Note Detail`,
+        to: `/stock-take/item/${this.$route.params.id}/approve`
+      }
     ]
   }
 }
