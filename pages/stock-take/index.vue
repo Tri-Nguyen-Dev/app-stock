@@ -248,7 +248,7 @@ class StockTake extends Vue {
     if(isCheckDeleteOther || isCheckDeletePIC) {
       return []
     }
-    else { 
+    else {
       return _.filter(this.selectedStockTake, (item: any) => {
         return item.status !== 'CANCELLED'
       })
@@ -410,11 +410,8 @@ class StockTake extends Vue {
   }
 
   disableButtonDetete(data) {
-    if(data.status !== 'IN_PROGRESS' && data.status !== 'NEW') {
-      return true
-    } else if(data.status === 'IN_PROGRESS' && !(data.assignee?.staffId === this.user?.staffId)) {
-      return true
-    } else return false
+    return (data.status === 'IN_PROGRESS' && data.assignee?.staffId !== this.user?.staffId)
+      || !['IN_PROGRESS', 'NEW'].includes(data.status)
   }
 
   mounted() {
@@ -482,7 +479,7 @@ export default StockTake
 
       .option-item
         border-bottom: 1px solid #dee2e6
-        transition: all 0.25 ease
+        transition: all 0.25s ease
         &:hover
           background-color: $primary
           a
