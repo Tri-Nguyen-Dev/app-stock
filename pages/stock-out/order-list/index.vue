@@ -47,6 +47,7 @@
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
+              :maxDate="filter.createTimeTo"
             )
           .col.ml-1
             FilterCalendar(
@@ -58,6 +59,7 @@
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
+              :minDate="filter.createTimeFrom"
             )
       div(class='col-12 md:col-8 lg:col-8 xl:col-5')
         .grid.grid-nogutter
@@ -71,6 +73,7 @@
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
+              :maxDate="filter.dueDeliveryDateTo"
             )
           .col.ml-1
             FilterCalendar(
@@ -82,14 +85,16 @@
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
+              :minDate="filter.dueDeliveryDateFrom"
             )
       div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
           title="Warehouse"
           :value="filter.warehouseId"
-          :options="warehouseList"
+          :options="warehouseOption"
           name="warehouseId"
           @updateFilter="handleFilter"
+          :isClear="user.role === 'admin'"
         )
       div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
@@ -102,7 +107,7 @@
         )
       div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
-          title="Assignee"
+          title="PIC"
           placeholder="Search"
           :value="filter.assigneeId"
           :searchText="true"
@@ -217,7 +222,7 @@
           div.table__empty
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-            p.text-900.font-bold.mt-3 D/O not found!
+            p.text-900.font-bold.mt-3 Item not found!
     ConfirmDialogCustom(
       title="Cancel Confirm"
       image="confirm-delete"
@@ -243,7 +248,6 @@ import {
   DeliveryConstants,
   getCancelMessage,
   exportFileTypePdf,
-  refreshAllFilter,
   resetScrollTable
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
@@ -285,6 +289,8 @@ class DeliveryOrderList extends Vue {
     sellerEmail: null,
     warehouseId: null
   }
+
+  warehouseOption: any = []
 
   @nsStoreDelivery.State
   total!: number
@@ -393,14 +399,21 @@ class DeliveryOrderList extends Vue {
     return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
-  mounted() {
+  async mounted() {
     // this.getProductList()
-    this.actWarehouseList()
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouseId = warehouse
+    }
   }
 
-  handleFilter(e: any, name: string) {
+  async handleFilter(e: any, name: string) {
     this.filter[name] = e
-    this.getProductList()
+    await this.getProductList()
     this.selectedDelivery = []
   }
 
@@ -466,7 +479,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowdbClick({ data }) {
-    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
+    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && data.assigneeId === this.user.id) {
       this.$router.push(`/stock-out/order/${data.id}`)
     }
   }
@@ -485,7 +498,8 @@ class DeliveryOrderList extends Vue {
   }
 
   handleRefreshFilter() {
-    refreshAllFilter(this.filter)
+    const adminFilter = _.omit(_.cloneDeep(this.filter), this.user.role !== 'admin' ? 'warehouseId' : '')
+    for (const items in adminFilter) this.filter[items] = null
     this.getProductList()
   }
 
