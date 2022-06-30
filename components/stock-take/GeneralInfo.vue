@@ -1,5 +1,5 @@
 <template lang="pug">
-.order__packing--detail
+.bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
   .packing__detail--header.border-bottom-1.border-gray-300
     Breadcrumb(:home='homeItem', :model='breadcrumbItem')
   .packing__detail--content.pl-4.pr-4
@@ -60,4 +60,13 @@ export default StockTakeNoteInfo
     .p-highlight .p-tabview-nav-link
       color: #000 !important
       border-bottom: 2px solid #486AE2 !important
+::v-deep.sub-tab
+  .p-menuitem-link
+    display: flex !important
+  .wapprer-note
+    width: 100%
+    min-height: 72px
+    border-radius: 4px
+    background-color: $text-color-200
+    padding: 12px
 </style>
