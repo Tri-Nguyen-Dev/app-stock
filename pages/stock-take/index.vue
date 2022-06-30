@@ -317,7 +317,9 @@ class StockTake extends Vue {
   showModalDelete(data: any) {
     this.onEventDeleteList = data || this.selectedStockTakeFilter
     this.isModalDelete = true
-    this.selectedStockTake = []
+    if(data) {
+      this.selectedStockTake = []
+    }
   }
 
   getParamApi() {

@@ -19,7 +19,7 @@
           .icon.icon-add-items
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      .div(class="col-12 md:col-4")
+      .div(class="col-12 md:col-3")
         FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(
@@ -30,7 +30,7 @@
               placeholder='Select'
               :filter='true'
             )
-      .div(class="col-12 md:col-4")
+      .div(class="col-12 md:col-3")
         FilterTable(
           title="Barcode"
           placeholder="Search barcode"
@@ -40,7 +40,15 @@
           @updateFilter="handleFilter"
           :isShowFilter="isShowFilter"
         )
-      .div(class="col-12 md:col-4")
+      .div(class="col-12 md:col-3")
+        FilterTable(
+          title="Warehouse"
+          :value="filter.warehouse"
+          :options="warehouseList"
+          name="warehouse"
+          @updateFilter="handleFilter"
+          :isClear="user.role === 'admin'")
+      .div(class="col-12 md:col-3")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
@@ -137,6 +145,8 @@ import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 const nsCategoryStock = namespace('category/category-list')
 const nsStoreStock = namespace('stock/stock-list')
+const nsWarehouseStock = namespace('warehouse/warehouse-list')
+const nsStoreUser = namespace('user-auth/store-user')
 @Component({
   components: {
     ConfirmDialogCustom,
@@ -172,6 +182,15 @@ class Stock extends Vue {
 
   @nsCategoryStock.State
   categoryList!: any
+
+  @nsWarehouseStock.State
+  warehouseList!: any
+
+  @nsStoreUser.State
+  user!: any
+
+  @nsWarehouseStock.Action
+  actWarehouseList!: () => Promise<void>
 
   @nsStoreStock.Action
   actGetStockList!: (params?: any) => Promise<void>
@@ -243,6 +262,7 @@ class Stock extends Vue {
   mounted() {
     this.getProductList()
     this.actCategoryList()
+    this.actWarehouseList()
   }
 
   handleFilter(e: any, name: string){
