@@ -26,7 +26,7 @@
               .icon--large.icon-note
             .col
               div Note:
-              span {{packingDetail.note || 'Note is empty'}}
+              span {{packingDetail.packingNote || 'Note is empty'}}
         .col-2.border-right-1.border-gray-300.p-1
           .grid.justify-content-center
             .col-3.flex
@@ -73,8 +73,8 @@ class DeliveryOrderPackingDetail extends Vue {
       this.actGetPackingDetailById(this.$route.params.id)
     ])
     this.listOriginalBox = this.packingDetail?.originalBox
-    this.listOutGoingBox = _.map(this.packingDetail.outGoingBox, ({ id, inventoryFee, listStockWithAmount, boxSize, airtag }) => ({
-      boxCode: this.genearateBoxCode(this.listOutGoingBox, 'EX'),
+    this.listOutGoingBox = _.map(this.packingDetail.outGoingBox, ({ id, inventoryFee, listStockWithAmount, boxSize, airtag }, index) => ({
+      boxCode: `EX${index + 1}`,
       newBoxCode: id,
       locationId: listStockWithAmount.id,
       inventoryFee,
@@ -94,7 +94,9 @@ class DeliveryOrderPackingDetail extends Vue {
   get totalItem() {
     const totalItem = [...this.listOutGoingBox]
     return totalItem.reduce((accumulator:any, object:any) => {
-      return accumulator + object.items.length
+      return accumulator + object.items.reduce((accumulator:any, object:any) => {
+        return accumulator + object.quantity
+      },0)
     },0)
   }
 
