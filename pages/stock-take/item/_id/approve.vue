@@ -5,7 +5,7 @@
       .stock-takeItem.flex.flex-column
         .stock-takeItem__header
           div
-            h1.text-heading Approving Stock-take Note Detail
+            h1.text-heading {{ isApproving ? 'Approving' : 'Approved' }} Stock-take Note Detail
             span.text-subheading {{ total }} total items
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='handleSubmit' v-if='isApproving' :disabled='isDisabled') Save
@@ -45,6 +45,11 @@
             Column(field='countedQuantity' header='APPROVED VARIANT' :sortable='true' className="text-center")
               template.text-center(#body='{data}' class="text-center")
                 .text-center(v-if='data.approvedQuantity !== null') {{ data.approvedQuantity - data.inventoryQuantity }}
+            template(#footer)
+              .grid.grid-nogutter.stock-takeItem__footer(v-if="isApproving")
+                .col-12.stock-takeItem__note
+                  div(style="padding-left: 10.5px") Note:
+                  InputText.inputSearchCode.w-full(v-model="approveNote" rows="1" cols="40" placeholder='Write something...')
 </template>
 
 <script lang="ts">
@@ -63,6 +68,7 @@ const dayjs = require('dayjs')
 class stockTakeItemsDetail extends Vue {
   stockTakeItems: any = []
   items: [] = []
+  approveNote: string =''
 
   // -- [ State ] ------------------------------------------------------------
   @nsStoreItems.State
@@ -98,22 +104,18 @@ class stockTakeItemsDetail extends Vue {
     return this.boxStockTakeDetail?.totalStockTakeItem
   }
 
-  get sellerInfo() {
-    const { stockTakeItem } = this.boxStockTakeDetail
-    if(stockTakeItem) {
-      const sumStockTakeItem = _.size(stockTakeItem)
-      const firstStock: any = stockTakeItem[0]
-      if(firstStock) {
-        const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
-        if(_.size(stockSame) === sumStockTakeItem) {
-          return firstStock
-        }
-      }
-    }
-  }
-
   get noteInfor() {
-    const { createdAt, createdBy, approver, assignee } = this.boxStockTakeDetail
+    const { createdAt, createdBy, approver, assignee, seller, note, submitNote, approveNote } = this.boxStockTakeDetail
+    const notes: any = []
+    if(note) {
+      notes.push({ position: 'Creator', author: createdBy?.staffId, value: note })
+    }
+    if(submitNote) {
+      notes.push({ position: 'PIC', author: assignee?.staffId, value: submitNote })
+    }
+    if(approveNote) {
+      notes.push({ position: 'Approver', author: approver?.staffId, value: approveNote })
+    }
     return {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
@@ -128,21 +130,28 @@ class stockTakeItemsDetail extends Vue {
         { title:'Items', value: this.total, icon: 'icon-frame' }
       ],
       sellerInfo: [
-        { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },
-        { title:'Email', value: this.sellerInfo?.sellerEmail, icon: 'icon-sender-email' },
-        { title:'Phone', value: this.sellerInfo?.sellerPhone, icon: 'icon-sender-phone' }
-      ]
+        { title:'Name', value: function(seller) {
+          if(!seller) return null
+          if(!seller.displayName && !seller.firstName && !seller.lastName) {
+            return 'N/A'
+          }
+          return seller.displayName || seller.firstName + ' ' + seller.lastName
+        }(seller), icon: 'icon-sender-name' },
+        { title:'Email', value: seller?.email, icon: 'icon-sender-email' },
+        { title:'Phone', value: seller?.phoneNumber, icon: 'icon-sender-phone' }
+      ],
+      notes
     }
   }
 
   get homeItem() {
-    return { label: 'Stock Take', to: '/stock-take' }
+    return { to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Note Take Detail',
-        to: `/stock-take/item/${this.$route.params.id}/approved`
+      { label: `${this.isApproving ? 'Approving' : 'Approved'}  Stock-take Note Detail`,
+        to: `/stock-take/item/${this.$route.params.id}/approve`
       }
     ]
   }
@@ -182,21 +191,35 @@ class stockTakeItemsDetail extends Vue {
     return this.items
   }
 
+  get noteText() {
+    return this.boxStockTakeDetail.approveNote
+  }
+
   rowClass({ inventoryQuantity, countedQuantity, approvedQuantity }) {
     return (inventoryQuantity !== countedQuantity || countedQuantity !== approvedQuantity)  && 'row__statusNG'
   }
 
   async handleSubmit(){
-    const data = _.map(this.items, ({ id, approvedQuantity }) => ({ id, approvedQuantity }))
+    const data = {
+      stockTakeItem: _.map(this.items, ({ id, approvedQuantity }) => ({ id, approvedQuantity })),
+      approveNote: this.approveNote
+    }
     const result = await this.actApproveSubmit({ id: this.$route.params.id, data })
-    if(result) {
+    if(result?.data) {
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
-        detail: 'Approving Stock-take Note successfully!',
+        detail: 'Save approve stock take successfully!',
         life: 3000
       })
       await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Save approve stock take failed!',
+        life: 3000
+      })
     }
   }
 
@@ -297,4 +320,7 @@ export default stockTakeItemsDetail
       color: red
       input
         color: red
+  &__footer
+    background: $color-white
+    padding: 6px 8px
 </style>
