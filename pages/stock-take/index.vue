@@ -10,7 +10,7 @@
             .icon.icon-filter(v-if="!isShowFilter")
             .icon.icon-chevron-up.bg-primary(v-else)
             span Filter
-          .btn-refresh()
+          .btn-refresh(@click="handleRefeshFilter")
             .icon.icon-rotate-left.bg-white
         Button.btn.btn-primary(class="drop-option" @click="isShowOptionAddNote = !isShowOptionAddNote")
           .icon.icon-add-items
@@ -56,9 +56,10 @@
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
-          :options="warehouseList"
+          :options="warehouseOption"
           name="warehouse"
-          @updateFilter="handleFilter")
+          @updateFilter="handleFilter"
+          :isClear="user.role === 'admin'")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Check Type"
@@ -201,6 +202,7 @@ class StockTake extends Vue {
   resultList = StockTakeConstants.RESULT_STOCK_TAKE_OPTIONS
   typeList = StockTakeConstants.TYPE_STOCK_TAKE_OPTIONS
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  warehouseOption: any = []
   filter: any = {
     id: null,
     dateFrom: null,
@@ -243,8 +245,9 @@ class StockTake extends Vue {
 
   // -- [ Getters ] -------------------------------------------------------------
   get selectedStockTakeFilter() {
+    const user = this.user?.staffId
     const isCheckDeleteOther = _.find(this.selectedStockTake, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
-    const isCheckDeletePIC = _.find(this.selectedStockTake, function(o) { return o.status === 'IN_PROGRESS' && !o?.assignee?.staffId })
+    const isCheckDeletePIC = _.find(this.selectedStockTake, function(o) { return o.status === 'IN_PROGRESS' && o.assignee?.staffId !== user })
     if(isCheckDeleteOther || isCheckDeletePIC) {
       return []
     }
@@ -317,7 +320,9 @@ class StockTake extends Vue {
   showModalDelete(data: any) {
     this.onEventDeleteList = data || this.selectedStockTakeFilter
     this.isModalDelete = true
-    this.selectedStockTake = []
+    if(data) {
+      this.selectedStockTake = []
+    }
   }
 
   getParamApi() {
@@ -414,7 +419,21 @@ class StockTake extends Vue {
       || !['IN_PROGRESS', 'NEW'].includes(data.status)
   }
 
-  mounted() {
+  async handleRefeshFilter() {
+    const adminFilter = _.omit(_.cloneDeep(this.filter), this.user.role !== 'admin' ? 'warehouse' : '')
+    for (const items in adminFilter) this.filter[items] = null
+    await this.getStockTakeList()
+  }
+
+  async mounted() {
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
     this.actWarehouseList()
     this.getStockTakeList()
   }
