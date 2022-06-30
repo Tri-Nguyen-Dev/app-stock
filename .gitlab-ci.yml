@@ -12,8 +12,6 @@ image: node:latest
 prep:
   stage: prep
   script:
-    - npm cache clean --force
-    - npm i --unsafe-perm node-sass
     - npm install
   cache:
     paths:
@@ -24,7 +22,7 @@ prep:
 build staging:
   stage: build
   script:
-    - npm run build:staging
+    - yarn build
   cache:
     paths:
       - node_modules
