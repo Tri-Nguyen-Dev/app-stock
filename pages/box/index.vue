@@ -90,7 +90,7 @@
             class="no-underline hover:underline") {{ data.id }}
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
         Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
-          template(#body="{data}") {{ data.createdAt | dateTimeHour12 }}
+          template(#body="{data}") {{ data.createdAt | dateTimeHour24 }}
         Column(field="usedCapacity" header="USED CAPACITY" className="text-right")
           template(#body="{data}") {{ data.usedCapacity | capacityPercent}}
         Column(field="attributes" header="SIZE(CM)" className="text-right" bodyClass="font-semibold" )

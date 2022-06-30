@@ -12,7 +12,7 @@ DataTable(
       span.font-bold  {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
   Column(field="createdAt" header="TIME" sortable bodyClass="font-semibold"  :styles="{width: '900px'}"  )
     template(#body='{data}')
-      span.font-bold {{ data.createdAt | dateTimeHour12 }}
+      span.font-bold {{ data.createdAt | dateTimeHour24 }}
   Column(field="originalLocation" header="ORIGINAL LOCATION" className="text-right" sortable)
     template(#body="{data}")
       div(v-if='data.originalLocation')

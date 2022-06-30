@@ -150,7 +150,7 @@
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
         Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
-            div {{ data.createTime | dateTimeHour12 }}
+            div {{ data.createTime | dateTimeHour24 }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" )
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.sellerEmail }}
@@ -163,7 +163,7 @@
               div.text-end Due
               div Delivery Date
           template(#body='{ data }')
-            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour12 }}
+            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour24 }}
         Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#header)
             div
@@ -177,7 +177,7 @@
               div.text-end Latest
               div update time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour12 }}
+            div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour24 }}
         Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.name" headerClass="grid-header-right")
           template(#body='{ data }')
             .flex.align-items-center.cursor-pointer.justify-content-end
