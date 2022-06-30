@@ -92,7 +92,7 @@
         :styles='{ width: "3rem" }',
         :selection='selectedBoxes'
       )
-      Column(field='no', header='NO')
+      Column(field='no', header='NO' :styles='{ width: "3rem" }')
         template(#body='slotProps')
           span.font-semibold {{ paging.pageNumber * paging.pageSize + slotProps.index + 1 }}
       Column(
@@ -101,22 +101,22 @@
         :sortable='true',
         bodyClass='font-semibold',
         sortField='_id'
+        :styles='{ width: "15rem" }'
       )
       Column(
         field='sellerEmail',
         header='SELLER EMAIL',
         :sortable='true',
-        className='w-3',
         sortField='_request.seller.email'
       )
-      Column(field='usedCapacity', header='USED CAPACITY', className='text-right')
+      Column(field='usedCapacity' header='USED CAPACITY' :styles='{ width: "10rem" }' className="text-right")
         template(#body='{ data }') {{ data.usedCapacity | capacityPercent }}
       Column(
         field='location',
         header='LOCATION',
         :sortable='true',
-        className='text-right',
         sortField='_rackLocation.name'
+        :styles='{ width: "10rem" }'
       )
         template(#body='{ data }')
           div(v-if='data.location')
@@ -128,6 +128,7 @@
         :sortable='true',
         className='text-center'
         headerClass="grid-header-center"
+        :styles='{ width: "10rem" }'
       )
         template(#body='{ data }')
           .flex.justify-content-center
