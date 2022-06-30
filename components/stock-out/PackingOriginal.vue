@@ -11,8 +11,10 @@
       ref="inputScanBoxCode"
       :disabled="disableEditQty"
     )
-  Button.btn-print.font-semibold.btn.btn-primary(label="Print" v-if='isPackingDetail' @click='isShowLabel = true')
-  TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
+  Button.btn-print.font-semibold.btn.btn-primary(label="Print" v-if='isPackingDetail && listBox.length > 0' @click='isShowLabel = true')
+  TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" 
+    :class='classTabView'
+  )
     TabPanel(:disabled="true")
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
@@ -382,6 +384,11 @@ class PackingOriginal extends Vue {
     } else {
       return _.map(this.listBox, 'newBoxCode')
     }
+  }
+
+  get classTabView() {
+    if(this.listBox.length <= 0) return '' 
+    return this.isOriginal ? 'originalTable' : 'outGoingTable'
   }
 }
 
