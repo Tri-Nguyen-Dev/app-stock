@@ -140,17 +140,19 @@
                 div.grid-cell-right {{ data.checkType }}
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
-              .table__action.grid-cell-center(:class="{'action-disabled': data.status === 'CANCELLED'}")
+              .table__action.grid-cell-center(:class="{'action-disabled': disableButtonDetete(data)}")
                 span.action-item(@click.stop="showModalDelete([data])" :class="{'disable-button': selectedStockTakeFilter.length > 0}")
                   .icon.icon-btn-delete
           template(#footer)
             Pagination(
-              type="items selected"
+              type="ST note selected"
               :paging="paging"
               :total="total"
               :deleted-list="selectedStockTakeFilter"
               @onDelete="showModalDelete"
-              @onPage="onPage")
+              @onPage="onPage"
+              title="Cancel"
+            )
           template(#empty)
             div.table__empty
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
@@ -158,7 +160,7 @@
               p.empty__text(v-if="!checkIsFilter") List is empty!
               p.notfound__text(v-else) Item not found!
     ConfirmDialogCustom(
-      title="Confirm delete"
+      title="Cancel confirm"
       image="confirm-delete"
       :isShow="isModalDelete"
       :onOk="handleDeleteStock"
@@ -171,7 +173,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getDeleteMessage, resetScrollTable } from '~/utils'
+import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getCancelMessage, resetScrollTable } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
@@ -241,9 +243,16 @@ class StockTake extends Vue {
 
   // -- [ Getters ] -------------------------------------------------------------
   get selectedStockTakeFilter() {
-    return _.filter(this.selectedStockTake, (stock: any) => {
-      return stock.stockStatus !== 'STOCK_STATUS_DISABLE'
-    })
+    const isCheckDeleteOther = _.find(this.selectedStockTake, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
+    const isCheckDeletePIC = _.find(this.selectedStockTake, function(o) { return o.status === 'IN_PROGRESS' && !o?.assignee?.staffId })
+    if(isCheckDeleteOther || isCheckDeletePIC) {
+      return []
+    }
+    else {
+      return _.filter(this.selectedStockTake, (item: any) => {
+        return item.status !== 'CANCELLED'
+      })
+    }
   }
 
   get checkIsFilter() {
@@ -277,7 +286,7 @@ class StockTake extends Vue {
   }
 
   get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'stock')
+    return getCancelMessage(this.onEventDeleteList, 'ST note selected')
   }
 
   handleExportReceipt() {
@@ -308,6 +317,7 @@ class StockTake extends Vue {
   showModalDelete(data: any) {
     this.onEventDeleteList = data || this.selectedStockTakeFilter
     this.isModalDelete = true
+    this.selectedStockTake = []
   }
 
   getParamApi() {
@@ -380,30 +390,6 @@ class StockTake extends Vue {
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      const isCheckDelete = _.find(this.onEventDeleteList, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
-      const isCheckDelete2 = _.find(this.onEventDeleteList, function(o) { return o.status === 'IN_PROGRESS' && !o?.assignee?.staffId })
-      if(isCheckDelete) {
-        this.loadingSubmit = false
-        this.isModalDelete = false
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Error Message',
-          detail: 'Only new and in progress status can be delete!',
-          life: 3000
-        })
-        return
-      }
-      if(isCheckDelete2) {
-        this.loadingSubmit = false
-        this.isModalDelete = false
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Error Message',
-          detail: 'Can not delete stock take with status inprogess without pic!',
-          life: 3000
-        })
-        return
-      }
       const stockTakeIds = _.map(this.onEventDeleteList, 'id')
       const data = await this.actDeleteStockTakeList(stockTakeIds)
       if (data) {
@@ -417,9 +403,15 @@ class StockTake extends Vue {
         })
         await this.getStockTakeList()
       }
+      this.selectedStockTake = []
     } catch (error) {
       this.loadingSubmit = false
     }
+  }
+
+  disableButtonDetete(data) {
+    return (data.status === 'IN_PROGRESS' && data.assignee?.staffId !== this.user?.staffId)
+      || !['IN_PROGRESS', 'NEW'].includes(data.status)
   }
 
   mounted() {
@@ -487,7 +479,7 @@ export default StockTake
 
       .option-item
         border-bottom: 1px solid #dee2e6
-        transition: all 0.25 ease
+        transition: all 0.25s ease
         &:hover
           background-color: $primary
           a
