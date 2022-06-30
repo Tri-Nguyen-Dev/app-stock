@@ -381,13 +381,13 @@ class DeliveryOrderList extends Vue {
   handleExportReceipt() {
     _.forEach(this.selectedDelivery, async ({ id }) => {
       const result = await this.actGetReceiptLable({ id })
-      if (result) {
+      if ( result ) {
         exportFileTypePdf(result, `receipt-${id}`)
       }
     })
   }
 
-  getIndexPaginate(index: number) {
+  getIndexPaginate( index: number ) {
     return calculateIndex(
       index,
       this.paging.pageNumber,
@@ -411,7 +411,7 @@ class DeliveryOrderList extends Vue {
     }
   }
 
-  async handleFilter(e: any, name: string) {
+  async handleFilter( e: any, name: string ) {
     this.filter[name] = e
     await this.getProductList()
     this.selectedDelivery = []
@@ -435,14 +435,14 @@ class DeliveryOrderList extends Vue {
     })
   }
 
-  onPage(event: any) {
+  onPage( event: any ) {
     resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getProductList()
   }
 
-  showModalDelete(data: DeliveryList.Model[]) {
+  showModalDelete( data: DeliveryList.Model[] ) {
     this.onEventDeleteList = data || this.selectedDeliveryFilter
     this.isModalDelete = true
   }
@@ -451,7 +451,7 @@ class DeliveryOrderList extends Vue {
     try {
       this.loadingSubmit = true
       const data = await this.actDeleteDeliveryByIds(_.map(this.onEventDeleteList, 'id'))
-      if (data) {
+      if ( data ) {
         this.isModalDelete = false
         this.$toast.add({
           severity: 'success',
