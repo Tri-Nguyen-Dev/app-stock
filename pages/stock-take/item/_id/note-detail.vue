@@ -207,11 +207,18 @@ class stockTakeItemsDetail extends Vue {
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
-        detail: 'Successfully Save Draft',
+        detail: 'Save draft successfully!',
         life: 3000
       })
       await this.$router.push({ path: '/stock-take' })
       this.isDetail = !this.isDetail
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Save draft take note failed!',
+        life: 3000
+      })
     }
   }
 
@@ -234,11 +241,18 @@ class stockTakeItemsDetail extends Vue {
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
-        detail: 'Successfully submit items',
+        detail: 'Submit stock take successfully!',
         life: 3000
       })
       this.isDetail = !this.isDetail
       await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Submit stock take box failed!',
+        life: 3000
+      })
     }
   }
 

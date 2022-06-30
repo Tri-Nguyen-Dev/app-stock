@@ -1,8 +1,6 @@
 <template lang="pug">
   .bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
-    .border-bottom-1.border-gray-300.flex.pl-3
-      Button(@click='$router.go(-1)').p-button-link.p-0
-        .icon-arrow-left.icon.bg-primary.align-items-center
+    .border-bottom-1.border-gray-300.flex
       Breadcrumb(:home='homeItem', :model='breadcrumbItem')
     .border-bottom-1.border-gray-300
     .grid.flex.flex-column.p-2.m-0
