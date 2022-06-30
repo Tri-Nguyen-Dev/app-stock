@@ -23,10 +23,11 @@ build staging:
   stage: build
   script:
     - yarn build
+    - yarn generate
   cache:
     paths:
       - node_modules
-      - build
+      - dist
   only:
     - staging
 
@@ -39,9 +40,9 @@ deploy to staging:
   cache:
     paths:
       - node_modules
-      - build
+      - dist
   script:
-    - cd build
+    - cd dist
     - aws s3 rm s3://$S3_BUCKET_STAGING_NAME --recursive
     - aws s3 cp ./ s3://$S3_BUCKET_STAGING_NAME/ --recursive --include "*"
     - aws cloudfront create-invalidation --distribution-id EGR9SY7RO24RK --paths "/*"
