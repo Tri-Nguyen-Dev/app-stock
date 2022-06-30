@@ -44,7 +44,7 @@
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
-          :options="warehouseList"
+          :options="warehouseOption"
           name="warehouse"
           @updateFilter="handleFilter"
           :isClear="user.role === 'admin'")
@@ -164,6 +164,7 @@ class Stock extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList = StockConstants.STOCK_STATUS_OPTIONS
   limitOptions = LIMIT_PAGE_OPTIONS
+  warehouseOption: any = []
   filter: any = {
     name: null,
     barCode: null,
@@ -259,7 +260,15 @@ class Stock extends Vue {
     return data.stockStatus === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
   }
 
-  mounted() {
+  async mounted() {
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
     this.getProductList()
     this.actCategoryList()
     this.actWarehouseList()
@@ -352,10 +361,8 @@ class Stock extends Vue {
   }, 500)
 
   handleRefreshFilter() {
-    this.filter.name = null
-    this.filter.barCode = null
-    this.filter.categories = null
-    this.filter.status = null
+    const adminFilter = _.omit(_.cloneDeep(this.filter), this.user.role !== 'admin' ? 'warehouse' : '')
+    for (const items in adminFilter) this.filter[items] = null
     this.getProductList()
   }
 

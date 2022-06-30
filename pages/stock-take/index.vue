@@ -10,7 +10,7 @@
             .icon.icon-filter(v-if="!isShowFilter")
             .icon.icon-chevron-up.bg-primary(v-else)
             span Filter
-          .btn-refresh()
+          .btn-refresh(@click="handleRefeshFilter")
             .icon.icon-rotate-left.bg-white
         Button.btn.btn-primary(class="drop-option" @click="isShowOptionAddNote = !isShowOptionAddNote")
           .icon.icon-add-items
@@ -56,7 +56,7 @@
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
-          :options="warehouseList"
+          :options="warehouseOption"
           name="warehouse"
           @updateFilter="handleFilter"
           :isClear="user.role === 'admin'")
@@ -202,6 +202,7 @@ class StockTake extends Vue {
   resultList = StockTakeConstants.RESULT_STOCK_TAKE_OPTIONS
   typeList = StockTakeConstants.TYPE_STOCK_TAKE_OPTIONS
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  warehouseOption: any = []
   filter: any = {
     id: null,
     dateFrom: null,
@@ -418,7 +419,21 @@ class StockTake extends Vue {
       || !['IN_PROGRESS', 'NEW'].includes(data.status)
   }
 
-  mounted() {
+  async handleRefeshFilter() {
+    const adminFilter = _.omit(_.cloneDeep(this.filter), this.user.role !== 'admin' ? 'warehouse' : '')
+    for (const items in adminFilter) this.filter[items] = null
+    await this.getStockTakeList()
+  }
+
+  async mounted() {
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
     this.actWarehouseList()
     this.getStockTakeList()
   }
