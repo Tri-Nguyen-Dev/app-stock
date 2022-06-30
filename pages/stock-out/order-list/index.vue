@@ -102,7 +102,7 @@
         )
       div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
-          title="Assignee"
+          title="PIC"
           placeholder="Search"
           :value="filter.assigneeId"
           :searchText="true"
@@ -390,7 +390,13 @@ class DeliveryOrderList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
+    if(data.status === 'DELIVERY_ORDER_STATUS_CANCELLED') {
+      return 'row-disable'
+    } else {
+      return ''
+    }
+    
+    // return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
   mounted() {
