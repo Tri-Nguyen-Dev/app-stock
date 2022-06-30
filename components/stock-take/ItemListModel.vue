@@ -8,7 +8,6 @@
         .header__action.flex
           Button.btn.btn-primary.border-0.mr-2(
             @click='handleApplyFilter'
-            :disabled='checkIsFilter ? null : "disabled"'
           ) Apply
           .btn__filter(:class="{'active': isShowFilter}")
             .btn-toggle(@click="isShowFilter = !isShowFilter")
@@ -24,9 +23,10 @@
               FilterTable(
                 title="Warehouse"
                 :value="filter.warehouse"
-                :options="warehouseList"
+                :options="warehouseOption"
                 name="warehouse"
                 @updateFilter="handleFilter"
+                :isClear="user.role === 'admin'"
               )
             .div(class="col-12 md:col-3")
               FilterTable(
@@ -167,6 +167,7 @@ import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreOrder = namespace('stock-out/create-order')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreUser = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
 @Component({
@@ -181,6 +182,7 @@ class ItemListModel extends Vue {
   isFilter: boolean = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList = StockTakeConstants.RESULT_ITEM_STOCK_OPTIONS
+  warehouseOption: any = []
   filter: any = {
     warehouse: null,
     email: null,
@@ -203,6 +205,9 @@ class ItemListModel extends Vue {
   @nsStoreWarehouse.State
   warehouseList!: any
 
+  @nsStoreUser.State
+  user: any | undefined
+
   // -- [ Action ] ------------------------------------------------------------
   @nsStoreOrder.Action
   actGetInventoryList!: (params: any) => Promise<void>
@@ -214,17 +219,29 @@ class ItemListModel extends Vue {
   @Prop({ default: [] }) itemSelected!: any
 
   @Watch('isShow')
-  getStockList() {
+  async getStockList() {
     if(this.isShow) {
-      this.getProductList()
-      this.actWarehouseList()
       this.selectedStock = _.cloneDeep(this.itemSelected)
+      const { role, warehouse } = this.user
+      if(role === 'admin') {
+        await this.actWarehouseList()
+        this.warehouseOption = _.cloneDeep(this.warehouseList)
+        this.filter.warehouse = this.warehouseList[0]
+      } else {
+        this.warehouseOption = [warehouse]
+        this.filter.warehouse = warehouse
+      }
+      this.getProductList()
     }
   }
 
   // -- [ Getters ] -------------------------------------------------------------
   get checkIsFilter() {
-    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
+    const paramsDefault = ['pageNumber', 'pageSize']
+    if(this.user.role === 'staff') {
+      paramsDefault.push('warehouseId')
+    }
+    const params = _.omit(this.getParamApi(), paramsDefault)
     return Object.values(params).some((item) => item)
   }
   
@@ -319,7 +336,9 @@ class ItemListModel extends Vue {
   }
 
   handleRefreshFilter() {
-    this.filter.warehouse = null
+    if(this.user.role === 'admin') {
+      this.filter.warehouse = null
+    }
     this.filter.email = null
     this.filter.status = null
     this.filter.barCode = null
@@ -354,6 +373,21 @@ class ItemListModel extends Vue {
   }
 
   handleApply() {
+    if(_.size(this.selectedBoxeSsatisfy) > 1) {
+      const warehouseFirstItem = _.get(this.selectedBoxeSsatisfy[0], 'box.request.warehouse.id', null)
+      const unsatisfactoryItem =  _.find(this.selectedBoxeSsatisfy, function({ box }) {
+        return box?.request?.warehouse?.id !== warehouseFirstItem
+      })
+      if(unsatisfactoryItem) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Please add items from 1 warehouse',
+          life: 3000
+        })
+        return
+      }
+    }
     this.$emit('onApply', this.selectedBoxeSsatisfy)
   }
 

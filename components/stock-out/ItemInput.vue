@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   .grid.flex.grid-nogutter.align-items-center.my-2(
-    v-for="(item, index) in listInfor"
+    v-for="(item) in listInfor"
     :key='item.key'
   )
     .col-3
@@ -11,23 +11,23 @@ div
         v-if='item.type === INPUT_TYPE.AutoComplete'
         field='email'
         forceSelection
-        v-model='selectedSeller'
+        v-model='item.value'
         :disabled='item.disabled'
         :suggestions='sellerList'
         @item-select='changeItem($event)'
         @complete="searchSeller($event)"
       )
       InputText.w-full(
-        v-else-if='item.type === INPUT_TYPE.Text'
+        v-else-if='item.type === INPUT_TYPE.Text || item.type === INPUT_TYPE.Dropdown && checkRole === "staff"'
         v-model='item.value'
-        :disabled='item.disabled'
+        :disabled=`checkRole === 'staff'? item.staffDisable : item.disabled `
         @change='receiverChange',
       )
 
       Dropdown.w-full(
-        v-else-if='item.type === INPUT_TYPE.Dropdown'
+        v-else-if='item.type === INPUT_TYPE.Dropdown && checkRole === "admin" '
         :disabled='item.disabled'
-        :options="warehouseBySeller"
+        :options="warehouseList"
         optionLabel="name"
         v-model='item.value'
         @change='selectedItems($event)'
@@ -38,6 +38,7 @@ div
 import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
 import { INPUT_TYPE } from '~/utils/constants/stock-out'
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreUserDetail = namespace('user-auth/store-user')
 
 @Component({
 })
@@ -48,12 +49,13 @@ class ItemInput extends Vue {
   @Prop() validations :any
   @Prop() invalid: any | undefined
   INPUT_TYPE : any  = INPUT_TYPE
-  filedWarehouse: any = null
-  selectedSeller: any = null
   name: any | string
 
   @nsStoreWarehouse.State
-  warehouseBySeller!: any
+  warehouseList!: any
+
+  @nsStoreUserDetail.State
+  user!: any
 
   selectedItems( event : any  ) {
     this.$emit('fieldWarehouse', event.value)
@@ -63,22 +65,17 @@ class ItemInput extends Vue {
     this.$emit('fieldReceiver', event.target.value)
   }
 
-  mounted() {
-    const infoObj = this.listInfor[0]
-    if(infoObj.label === 'Email' && infoObj.value !== ''  ) {
-      this.selectedSeller = infoObj.value
-    }
-    else if ( this.listInfor[0].label === 'Name'){
-      this.filedWarehouse = infoObj.value
-    }
+  get checkRole (){
+    return this.user.role
   }
 
   changeItem( event : any ) {
     this.$emit('sellerInfor' , event.value)
   }
 
-  searchSeller() {
-    this.$emit('paramSeller' , this.selectedSeller)
+  searchSeller(event: any) {
+    this.$emit('paramSeller' , event.query)
+
   }
 }
 
@@ -86,7 +83,7 @@ export default ItemInput
 </script>
 <style lang="sass" scoped>
 .text-label::after
-  content: ':'
+  content: ' *:'
 ::v-deep.p-inputwrapper
   .p-autocomplete-input
     width: 100%

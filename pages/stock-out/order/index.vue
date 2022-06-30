@@ -6,6 +6,28 @@
         .border-top-1.border-gray-300.grid-nogutter
           .col.p-4.border-tab
             .grid.grid-nogutter.align-items-center.mb-4
+              .icon.bg-primary.surface-900.mr-3.icon-warehouse-info
+              span.uppercase.text-800.font-bold warehouse contact
+            div
+              StockOutItemInput(
+                :listInfor='information.warehouse'
+                @fieldWarehouse='handleWarehouse'
+              )
+              .input-errors(
+                v-if='$v.information.warehouse.$each[0].value.$dirty && $v.information.warehouse.$each[0].value.$invalid '
+                )
+                .error-message Please, select name in the correct Warehouse Information
+              .input-errors(
+                v-else-if='$v.information.warehouse.$each[1].value.$dirty && $v.information.warehouse.$each[1].value.$invalid '
+                )
+                .error-message {{errorMessage.errorName}} Warehouse Information
+              .input-errors(
+                v-else-if='$v.information.warehouse.$each[2].value.$dirty && $v.information.warehouse.$each[2].value.$invalid  '
+                )
+                .error-message {{errorMessage.errorPhone}} Warehouse Information
+          .border-top-1.border-gray-300.grid-nogutter
+          .col.p-4
+            .grid.grid-nogutter.align-items-center.mb-4
               .icon.bg-primary.surface-900.mr-3.icon-sender-info
               span.uppercase.text-800.font-bold seller information
             div
@@ -16,40 +38,17 @@
                 :sellerList='sellerList'
               )
               .input-errors(
-                v-if='$v.information.seller.$each[0].value.$dirty && $v.information.seller.$each[0].value.$invalid '
-                style='text-align: center')
-                .error-message Please, select email
+                v-if=' $v.information.seller.$each[0].value.$invalid && $v.information.seller.$each[0].value.$dirty '
+                )
+                .error-message Seller not found, please select seller email
               .input-errors(
                 v-else-if='$v.information.seller.$each[1].value.$dirty && $v.information.seller.$each[1].value.$invalid '
-                style='text-align: center')
-                .error-message Please, fill in name
+                )
+                .error-message {{errorMessage.errorName}} Seller Information
               .input-errors(
                 v-else-if='$v.information.seller.$each[2].value.$dirty && $v.information.seller.$each[2].value.$invalid  '
-                style='text-align: center')
-                .error-message Please, fill in phone
-          .border-top-1.border-gray-300.grid-nogutter
-          .col.p-4
-            .grid.grid-nogutter.align-items-center.mb-4
-              .icon.bg-primary.surface-900.mr-3.icon-warehouse-info
-              span.uppercase.text-800.font-bold warehouse contact
-            div
-              StockOutItemInput(
-                :listInfor='information.warehouse'
-                @fieldWarehouse='handleWarehouse'
-              )
-              .input-errors(
-                v-if='$v.information.warehouse.$each[0].value.$dirty && $v.information.warehouse.$each[0].value.$invalid '
-                style='text-align: center')
-                .error-message Please, select Warehouse
-              .input-errors(
-                v-else-if='$v.information.warehouse.$each[1].value.$dirty && $v.information.warehouse.$each[1].value.$invalid '
-                style='text-align: center')
-                .error-message Please, fill in Email
-              .input-errors(
-                v-else-if='$v.information.warehouse.$each[2].value.$dirty && $v.information.warehouse.$each[2].value.$invalid  '
-                style='text-align: center')
-                .error-message Please, fill in Phone
-
+                )
+                .error-message {{errorMessage.errorPhone}} Seller Information
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
             .grid.grid-nogutter.align-items-center.mb-4
@@ -62,20 +61,20 @@
               )
               .input-errors(
                 v-if='$v.information.receiver.$each[0].value.$dirty && $v.information.receiver.$each[0].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill Address
+                )
+                .error-message {{errorMessage.errorAddress}} Receiver Information
               .input-errors(
                 v-else-if='$v.information.receiver.$each[1].value.$dirty && $v.information.receiver.$each[1].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Email
+                )
+                .error-message {{errorMessage.errorEmail}} Receiver Information
               .input-errors(
                 v-else-if='$v.information.receiver.$each[2].value.$dirty && $v.information.receiver.$each[2].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Name
+                )
+                .error-message {{errorMessage.errorName}} Receiver Information
               .input-errors(
-                v-else-if='$v.information.receiver.$each[2].value.$dirty && $v.information.receiver.$each[3].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Phone
+                v-else-if='$v.information.receiver.$each[3].value.$dirty && $v.information.receiver.$each[3].value.$invalid'
+                )
+                .error-message {{errorMessage.errorPhone}} Receiver Information
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
             .grid.grid-nogutter.align-items-center.mb-4
@@ -101,20 +100,21 @@
               StockOutItemInput( :listInfor='information.creator')
               .input-errors(
                 v-if='$v.information.creator.$each[0].value.$dirty && $v.information.creator.$each[0].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill ID
+                )
+                .error-message Please, fill in id in the correct Creator Information
               .input-errors(
                 v-else-if='$v.information.creator.$each[1].value.$dirty && $v.information.creator.$each[1].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Email
+                )
+                .error-message {{errorMessage.errorEmail}} Creator Information
               .input-errors(
                 v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[2].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Name
+                )
+                .error-message {{errorMessage.errorName}} Creator Information
               .input-errors(
                 v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[3].value.$invalid'
-                style='text-align: center')
-                .error-message Please, fill in Phone
+                )
+                .error-message {{errorMessage.errorPhone}} Creator Information
+
     .inventory.flex.flex-column.flex-1(class="lg:col-7 md:col-12 ")
       .inventory__header
         div
@@ -138,7 +138,7 @@
             .flex.align-items-center.justify-content-center.flex-column
               img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
               p.text-900.font-bold.mt-3 List is empty!, Click
-                span.text-primary.underline.cursor-pointer &nbsp;here
+                span.text-primary.underline.cursor-pointer(@click='createStockOut') &nbsp;here
                 span &nbsp;to add item.
           column(field='no', header='NO')
             template(#body='slotProps')
@@ -165,12 +165,13 @@
             template(#body='{data}')
               span(v-if='isActive !== data.id ') {{ data.delivery }}
               InputNumber(
-              v-model="data.delivery"
+              :value='data.delivery'
               mode="decimal"
-              :min="1"
-              :max="data.amount"
+              :min="0"
               inputClass="w-full"
-              v-else ).w-7rem
+              v-else
+              @input='deliveryChange($event, data)'
+              :class='data.amount < data.delivery && "p-invalid"').w-7rem
           column(field='tag', header='TAG', headerClass='grid-header-center')
             template(#body='{ data }')
               .grid-cell-center
@@ -180,18 +181,21 @@
             header='ACTION',
           )
             template(#body='{ data}')
-              .table__action(v-if='isActive !== data.id')
+              .table__action(v-if='isActive !== data.id' :class="{'action-disabled': (data.id !== isActive)}")
                   Button.btn-action(
                     @click='editItem(data)'
+                    :disabled="data.id !== isActive && isActive !==''"
                   )
                     .icon--small.icon-btn-edit
                   Button.btn-action(
-                    @click='showModalDelete( [data] )',
+                    @click='showModalDelete( [data] )'
+                    :disabled="data.id !== isActive && isActive !==''"
                   )
                     .icon--small.icon-btn-delete
               .table__action(v-else)
-                Button.btn-action(
-                  @click='saveEditItem()'
+                Button.btn-action( :disabled="isDisableSubmit"
+
+                  @click='saveEditItem( data )'
                 )
                   .icon--small.pi.pi-check.text-primary
                 Button.btn-action(
@@ -286,9 +290,17 @@ class createOrder extends Vue {
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
   valueDelete: any
-  deliveryDate: string | any = 'Fill receiver information'
-  estimatedDate: string | any = 'Fill receiver information'
+  deliveryDate: string | any = 'Due Date Time'
+  estimatedDate: string | any = 'Estimated Delivery Time'
   information = INFORMATION
+  isDisableSubmit: boolean = false
+  emailInvalid: boolean = false
+  errorMessage: any = {
+    errorPhone  :'*Please, fill in phone in the correct',
+    errorName : '*Please, fill in name in the correct',
+    errorEmail : '*Please, fill in email in the correct',
+    errorAddress : '*Please, fill in email in the correct'
+  }
 
   // -- [ State ] ------------------------------------------------------------
 
@@ -316,7 +328,7 @@ class createOrder extends Vue {
   actDeliveryOrder!: (params: any) => Promise<void>
 
   @nsStoreWarehouse.Action
-  actWarehouseBySeller!: (params: any) => Promise<void>
+  actWarehouseList!: () => Promise<void>
 
   @nsStoreSeller.Action
   actSellerList!: (params: any) => Promise<void>
@@ -332,6 +344,19 @@ class createOrder extends Vue {
       this.disableInput(false)
     }
     this.handleUser()
+
+    if(this.user.role === 'staff'){
+      this.warehouseByStaff()
+    }
+    else {
+      this.actWarehouseList()
+    }
+  }
+
+  destroyed() {
+    if(this.$route.path !== '/stock-out/order/add-items') {
+      this.emptyList()
+    }
   }
 
   createStockOut() {
@@ -364,10 +389,9 @@ class createOrder extends Vue {
   }
 
   showModalDelete(data?: any ) {
-    _.forEach(data, (obj)=> {
+    this.valueDelete = _.forEach(data, (obj) => {
       this.onEventDeleteList = [obj.stock]
     })
-    this.valueDelete = data
     this.isModalDelete = true
   }
 
@@ -375,28 +399,10 @@ class createOrder extends Vue {
     this.isModalCancel = true
   }
 
-  async saveEditItem() {
+  async saveEditItem( ) {
     await this.actOutGoingList(
       _.cloneDeep(this.listItemsAdd))
     this.isActive = ''
-  }
-
-  async handleDelete() {
-    const b = this.valueDelete[0]
-    _.remove(this.listItemsAdd, ({ id }) => id === b.id)
-    const result : any =  await this.actOutGoingList(
-      _.cloneDeep(this.listItemsAdd))
-    if( result ) {
-      this.isModalDelete = false
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Success Message',
-        detail: 'Successfully deleted stock',
-        life: 3000
-      })
-    }
-    if(this.listItemsAdd.length === 0) this.disableInput(false)
-    this.listItemsAdd = result
   }
 
   async handleSubmit(){
@@ -452,6 +458,12 @@ class createOrder extends Vue {
   }
 
   async handleCancel() {
+    await this.emptyList()
+    this.isModalCancel = false
+    await this.$router.push({ path: '/stock-out/order-list' })
+  }
+
+  async emptyList() {
     const emptyList =  this.listItemsAdd = []
     await this.actGetCreateOrder(_.cloneDeep(emptyList))
     await this.actOutGoingList(_.cloneDeep(emptyList))
@@ -460,7 +472,6 @@ class createOrder extends Vue {
         i.value = null
       })
     })
-    await this.$router.push({ path: '/stock-out/order-list' })
   }
 
   disableInput(isDisable: boolean) {
@@ -473,21 +484,32 @@ class createOrder extends Vue {
     })
   }
 
+  warehouseByStaff(){
+    const warehouseByUser = this.user.warehouse
+    const InfoWarehouse = this.information.warehouse
+    InfoWarehouse[0].warehouseId =  warehouseByUser?.id
+    InfoWarehouse[0].value =  warehouseByUser?.name
+    InfoWarehouse[1].value =  warehouseByUser?.email
+    InfoWarehouse[2].value = warehouseByUser?.phone
+  }
+
   handleWarehouse(event: any) {
     const InfoWarehouse = this.information.warehouse
     InfoWarehouse[0].warehouseId = event.id
     InfoWarehouse[1].value = event.email
     InfoWarehouse[2].value = event.phone
+    this.unSelectedSeller()
+
   }
 
-  async handleSeller(event: any) {
-    await this.actWarehouseBySeller({ email: event.email })
+  handleSeller(event: any) {
+    // await this.actWarehouseBySeller({ email: event.email })
     const InfoSeller = this.information.seller
     InfoSeller[0].value = event.email
     InfoSeller[0].id = event.id
     InfoSeller[1].value = event.displayName || `${event.firstName} ${event.lastName}`
     InfoSeller[2].value = event.phoneNumber
-    this.unSelectedSeller()
+    // this.unSelectedSeller()
   }
 
   handleUser() {
@@ -500,6 +522,12 @@ class createOrder extends Vue {
 
   paramSeller(event: any) {
     this.actSellerList({ email: event })
+    if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(event.value))
+    {
+      return true
+    }
+    return this.$v.information.seller?.$each?.$touch()
+
   }
 
   handleReceiver(event: any) {
@@ -514,9 +542,49 @@ class createOrder extends Vue {
   }
 
   unSelectedSeller() {
-    _.forEach(this.information.warehouse, (val) => {
+    _.forEach(this.information.seller, (val) => {
       val.value = null
     })
+  }
+
+  deliveryChange( deliveryNew , data?: any ){
+    if(deliveryNew === 0) {
+      this.showModalDelete([data])
+      this.isDisableSubmit = true
+    }
+    else if (deliveryNew > data.amount && data.delivery !== deliveryNew) {
+      this.isDisableSubmit = true
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: `Delivery quantity could not exceed ${data.amount}`,
+        life: 3000
+      })
+    } else if (deliveryNew === null){
+      this.isDisableSubmit = true
+    } else if (deliveryNew <= data.amount) {
+      this.isDisableSubmit = false
+    }
+    data.delivery = deliveryNew
+  }
+
+  async handleDelete() {
+    const b = this.valueDelete[0]
+    const c = _.cloneDeep(this.listItemsAdd)
+    _.remove(c, ({ id }) => id === b.id)
+    const result : any =  await this.actOutGoingList(
+      c)
+    if( result ) {
+      this.isModalDelete = false
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted stock',
+        life: 3000
+      })
+    }
+    if(this.listItemsAdd.length === 0) this.disableInput(false)
+    this.listItemsAdd = _.cloneDeep(result)
   }
 
   // -- [ Getter ] ------------------------------------------------------------
@@ -615,7 +683,7 @@ export default createOrder
   margin-top: 3rem
   @include desktop
     margin-top: 0px
-    margin-left: 3rem
+    margin-left: 2rem
     height: calc(100vh - 32px)
   &__header
     flex-direction: column
@@ -673,7 +741,9 @@ export default createOrder
     text-align: right !important
     .p-column-header-content
       justify-content: end !important
-.error-message
-  color: #ff0000
+::v-deep.input-errors
+  text-align: start !important
+  .error-message
+    color: #ff0000
 </style>
 
