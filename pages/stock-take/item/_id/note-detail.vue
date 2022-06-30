@@ -5,7 +5,7 @@
       .inventory.flex.flex-column
         .inventory__header
           div
-            h1.text-heading Stock Take Items Detail
+            h1.text-heading {{ titlePage }}
             span.text-subheading {{ total }} total items
           .inventory__header--action.flex(v-if="isDetail")
             Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSaveDraft') Save Draft
@@ -65,6 +65,11 @@
               Column( v-if='isDetail' header='REPORT BOX ' className="text-right" )
                 template(#body='{data}' )
                   Button.btn.btn-primary.border-0( @click='handleReport(data)') Report
+            template(#footer)
+              .grid.grid-nogutter.stock__footer(v-if='isDetail && !isCheckAssignee')
+                .col.stock__note
+                  div(style="padding-left: 10.5px") Note:
+                  InputText.inputSearchCode.w-full(v-model="submitNote" rows="1" cols="40" placeholder='Write something...')
         ConfirmDialogCustom(
           title="Report Confirm"
           image="confirm-delete"
@@ -108,6 +113,7 @@ class stockTakeItemsDetail extends Vue {
   isShowModalReport: boolean = false
   valueReportNote: string = ''
   reportData: any = {}
+  submitNote: string = ''
 
   // -- [ State ] ------------------------------------------------------------
   @nsStoreItems.State
@@ -135,13 +141,11 @@ class stockTakeItemsDetail extends Vue {
   actCreateReport!:(data: any) => Promise<any>
 
   // -- [ Function ] ------------------------------------------------------------
-
   async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
     if(this.boxStockTakeDetail.status === 'COMPLETED') {
       this.isDetail = false
     }
-
   }
 
   get total() {
@@ -154,26 +158,43 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get noteInfor() {
-    const { createdAt, createdBy, approver, assignee } = this.boxStockTakeDetail
+    const { createdAt, createdBy, assignee, seller, note, submitNote } = this.boxStockTakeDetail
+    const notes: any = []
+    if(note) {
+      notes.push({ position: 'Creator', author: createdBy?.staffId, value: note })
+    }
+    if(submitNote) {
+      notes.push({ position: 'PIC', author: assignee?.staffId, value: submitNote })
+    }
     return {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
       creatorInfo: [
         { title:'Create Time', value: createdAt ?
-          dayjs(new Date(createdAt)).format('YYYY-MM-DD')
+          dayjs(new Date(createdAt)).format('MM-DD-YYYY hh:mm A')
           : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
-        { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' },
-        { title:'APPROVER ID', value: approver?.staffId, icon: 'icon-tag-user' },
+        !this.isCheckAssignee ? { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' } : null,
         { title:'Warehouse', value: createdBy?.warehouse?.name, icon: 'icon-warehouse' },
         { title:'Items', value: this.total, icon: 'icon-frame' }
       ],
       sellerInfo: [
-        { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },
-        { title:'Email', value: this.sellerInfo?.sellerEmail, icon: 'icon-sender-email' },
-        { title:'Phone', value: this.sellerInfo?.sellerPhone, icon: 'icon-sender-phone' }
-      ]
+        { title:'Name', value: function(seller) {
+          if(!seller) return null
+          if(!seller.displayName && !seller.firstName && !seller.lastName) {
+            return 'N/A'
+          }
+          return seller.displayName || seller.firstName + ' ' + seller.lastName
+        }(seller), icon: 'icon-sender-name' },
+        { title:'Email', value: seller?.email, icon: 'icon-sender-email' },
+        { title:'Phone', value: seller?.phoneNumber, icon: 'icon-sender-phone' }
+      ],
+      notes
     }
+  }
+
+  get titlePage() {
+    return `Stock-take Note ${this.boxStockTakeDetail?.status !== 'NEW' ? ' Detail' : ''}`
   }
 
   async handleSaveDraft() {
@@ -204,7 +225,10 @@ class stockTakeItemsDetail extends Vue {
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: false,
-      submitData: this.saveItems
+      submitData: {
+        stockTakeItem: this.saveItems,
+        submitNote: this.submitNote
+      }
     })
     if(result) {
       this.$toast.add({
@@ -216,7 +240,6 @@ class stockTakeItemsDetail extends Vue {
       this.isDetail = !this.isDetail
       await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
     }
-
   }
 
   async exportpdf(){
@@ -246,12 +269,12 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get homeItem() {
-    return { label: 'Stock Take', to: '/stock-take' }
+    return { to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Note Take Detail',
+      { label: this.titlePage,
         to: `/stock-take/item/${this.$route.params.id}/note-detail`
       }
     ]
@@ -274,38 +297,51 @@ class stockTakeItemsDetail extends Vue {
     if(result?.data) {
       await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
       this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
-
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Assign stock take item successfully!',
+        life: 3000
+      })
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Assign stock take item failed!',
+        life: 3000
+      })
     }
   }
 
   async handleApprove() {
     const result = await this.actApproveStockTake({ id: this.$route.params.id })
     if(result?.data) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Save approve stock take successfully!',
+        life: 3000
+      })
       await this.$router.push(`/stock-take/item/${this.$route.params.id}/approve`)
-    }
-  }
-
-  get sellerInfo() {
-    const { stockTakeItem } = this.boxStockTakeDetail
-    if(stockTakeItem) {
-      const sumStockTakeItem = _.size(stockTakeItem)
-      const firstStock: any = stockTakeItem[0]
-      if(firstStock) {
-        const stockSame = _.partition(stockTakeItem, ({ sellerEmail }) => sellerEmail === firstStock.sellerEmail)[0]
-        if(_.size(stockSame) === sumStockTakeItem) {
-          return firstStock
-        }
-      }
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Save approve stock take failed!',
+        life: 3000
+      })
     }
   }
 
   get saveItems(){
+    const a: any = []
     _.forEach(this.items, ( { id, countedQuantity }  ) => {
-      this.stockTakeItems.push({
+      a.push({
         id ,
         countedQuantity
       })
     })
+    this.stockTakeItems = _.cloneDeep(a)
     return this.stockTakeItems
   }
 
@@ -365,8 +401,10 @@ export default stockTakeItemsDetail
   @include tablet
     margin: 50px
   ::v-deep.sub-tab
-    height: calc(100vh - 100px)
+    height: calc(100vh - 150px)
     overflow: hidden
+    display: flex
+    flex-direction: column
     @include desktop
       height: calc(100vh - 32px)
       max-width: 23rem
@@ -375,7 +413,7 @@ export default stockTakeItemsDetail
       display: flex
       align-items: center
       flex-direction: column
-      height: calc(100vh - 32px)
+      flex: 1
       overflow: auto
       @include desktop
         height: calc(100vh - 250px)
@@ -404,7 +442,12 @@ export default stockTakeItemsDetail
     border-radius: 10px
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
     background-color: #979AA4
-
+  &__footer
+    background: $color-white
+    display: flex
+    justify-content: space-between
+    padding: 6px 8px
+    align-items: center
 .wrap-unit
   width: 300px
   margin-bottom: 16px

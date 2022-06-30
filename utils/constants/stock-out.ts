@@ -36,9 +36,9 @@ export const INFORMATION = {
     { id: 8, label: 'Phone' , value:'', type: INPUT_TYPE.Text }
   ],
   warehouse: [
-    { id: 1, label: 'Name', disabled: false,  value:'', warehouseId: '', type: INPUT_TYPE.Dropdown },
-    { id: 2, label: 'Email', value:'', disabled: false ,type: INPUT_TYPE.Text },
-    { id: 3, label: 'Phone', value:'', disabled: false, type: INPUT_TYPE.Text }
+    { id: 1, label: 'Name', disabled: false, staffDisable: true,  value:'', warehouseId: '', type: INPUT_TYPE.Dropdown },
+    { id: 2, label: 'Email', value:'', disabled: false, staffDisable: true ,type: INPUT_TYPE.Text },
+    { id: 3, label: 'Phone', value:'', disabled: false, staffDisable: true, type: INPUT_TYPE.Text }
   ],
   creator: [
     { id: 1, label: 'ID', value:'', disabled: false, type: INPUT_TYPE.Text },

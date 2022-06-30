@@ -4,15 +4,14 @@
   Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab" :disabled="disableEditQty") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-    InputText.w-full.inputSearchCode(
-      type="text"
+    InputText.inputSearchCode.w-full.input-border(
       @change='changeBoxCode($event)'
       v-model="boxCodeText"
       placeholder='Please enter box code!'
       ref="inputScanBoxCode"
       :disabled="disableEditQty"
     )
-  Button.btn-print.font-semibold(label="Print" v-if='isPackingDetail' @click='isShowLabel = true')
+  Button.btn-print.font-semibold.btn.btn-primary(label="Print" v-if='isPackingDetail' @click='isShowLabel = true')
   TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" :class='isOriginal ? "originalTable" : "outGoingTable"')
     TabPanel(:disabled="true")
       template(#header)
@@ -51,21 +50,21 @@
         .col.py-3.flex.justify-content-end(v-if="!isMergeBox && !isPackingDetail")
           Button.btn.btn-primary.h-3rem(@click="showFormReport") Report
       .grid.grid-nogutter.border-bottom-1.border-gray-300.align-items-center.px-4(v-if='!isOriginal  && !isPackingDetail')
-        .col.py-3(v-if="isTranffering")
+        .col.py-3.border-right-1.border-gray-300.h-full(v-if="isTranffering")
           span.mr-2 Capacity:
           .p-input-icon-right
-            InputNumber(id="percent" suffix="%" v-model="tab.usedCapacityTranffering" :max="100" :disabled="disableEditQty")
-        .col.py-3
+            InputNumber.input-number(id="percent" suffix="%" v-model="tab.usedCapacityTranffering" :max="100" :disabled="disableEditQty")
+        .col.py-3.flex.align-items-center.px-3.h-full
           span.mr-1 Size:
           Dropdown.ml-1(v-model='tab.boxSize' :options="boxSizeList" optionLabel="name" :disabled="disableEditQty")
           span.ml-1 (cm)
-        .col.py-3.border-right-1.border-left-1.border-gray-300.flex.align-items-center.px-3(v-if='isOutgoing')
+        .col.py-3.border-right-1.border-left-1.border-gray-300.flex.align-items-center.px-3.h-full(v-if='isOutgoing')
           Checkbox(v-model="tab.checked" :binary="true" :disabled='hasTagStock(tab)' @change="handleChangeTag(tab)")
           span.ml-2 Attach Tag
           div.ml-2(v-if='isOutgoing && tab.checked')
             span.p-input-icon-right
               .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-              InputText.inputSearchCode(
+              InputText.inputSearchCode.input-border(
                 @change='addTagByBarCode'
                 v-model="tagCodeText"
                 ref="inputScanTag"
@@ -76,13 +75,13 @@
               div Estimated
               div Inventory Fee:
             div.ml-2
-              InputText.w-4.inputSearchCode(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
+              InputText.w-4.inputSearchCode.input-border(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
               span.ml-1 / day
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:
           span.ml-1.p-input-icon-right
             .icon--small.icon--right.icon-scan.surface-900.icon--absolute
-            InputText.inputSearchCode(
+            InputText.input-border.inputSearchCode(
               placeholder='Please enter bar code!'
               @change='addStockByBarcode($event)'
               v-model="barCodeText"
@@ -396,14 +395,19 @@ export default PackingOriginal
     position: relative
     z-index: 1000
     font-size: 10px !important
+  .input-border
+    border: 1px solid #ced4da
+    box-shadow: none
+    &:focus
+      border: 1.5px solid $primary
+  .p-inputtext:enabled:focus
+    box-shadow: none !important
   .originalTable
     .p-tabview-nav-container
       width: calc(100% - 200px)
   .outGoingTable
     .p-tabview-nav-container
       width: calc(100% - 59px)
-  .p-inputtext
-    background: $text-color-300
   .scan__boxcode
     right: 0
     height: 42px !important
@@ -455,9 +459,6 @@ export default PackingOriginal
       .p-tabview-panel
         display: flex
         flex-direction: column
-      .p-dropdown,
-      .p-inputtext
-        background: $text-color-300
       .p-datatable .p-datatable-thead > tr > th
         background: #fff !important
     .aritag-text

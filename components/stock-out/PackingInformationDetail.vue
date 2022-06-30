@@ -7,10 +7,17 @@
       .icon.icon-info.inline-block
       span.uppercase.ml-1 order detail
     span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{status}} &nbsp;
+<<<<<<< HEAD
     h3.uppercase.inline-block.m-1 id: {{ deliveryOrderDetail.id }} 
     div
       h5.uppercase.inline-block(style='color :#979AA4') Create time:&nbsp;
       span.uppercase.font-bold {{deliveryOrderDetail.createdAt | dateTimeHour24}}
+=======
+    h3.uppercase.inline-block.m-1 id: {{ deliveryOrderDetail.id }}
+    .flex.my-1.align-items-center
+      h5.text-500.uppercase Create time:
+      span.ml-1.uppercase.font-bold 2022 12:22AM
+>>>>>>> develop
     TabView
       TabPanel.p-3(header='Delivery')
         StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4(:sellerInfo='deliveryOrderDetail')

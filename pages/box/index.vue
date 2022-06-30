@@ -7,14 +7,14 @@
     .header__action
       .header__search
         .icon.icon--left.icon-search
-        InputText(type="text" placeholder="Search" v-model="filter.sellerEmail" v-on:input="validateText")
+        InputText(type="text" placeholder="Enter seller email" v-model="filter.sellerEmail" v-on:input="validateText")
       .btn__filter
         .btn-toggle(@click="isShowFilter = !isShowFilter")
           .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
           span Filter
-        .btn-refresh(@click="handleRefeshFilter")
+        Button.btn-refresh(@click="handleRefeshFilter")
           .icon.icon-rotate-left.bg-white
-      .btn.btn-primary(@click='routeLinkAddBox')
+      Button.btn.btn-primary(@click='routeLinkAddBox')
         .icon.icon-add-items
         span Add box
       Button.btn.btn-primary(@click='handleTransferBox')
@@ -26,9 +26,10 @@
           FilterTable(
             title="Warehouse"
             :value="filter.warehouse"
-            :options="warehouseList"
+            :options="warehouseOption"
             name="warehouse"
             @updateFilter="handleFilterBox"
+            :isClear="user.role === 'admin'"
           )
         div(class="col-12 md:col-4")
           FilterTable(
@@ -127,7 +128,7 @@
               span.table__status.table__status--outgoing(v-else) {{ data.status | boxStatus }}
         Column(:exportable="false" header="ACTION" className="text-right")
           template(#body="{data}")
-            .table__action(:class="{'action-disabled': data.status === 'BOX_STATUS_DISABLE'}")
+            .table__action(:class="{'action-disabled': (data.status === 'BOX_STATUS_DISABLE' || data.status === 'BOX_STATUS_OUTGOING')}")
               span.action-item(@click="handleEditBox(data.id)")
                 .icon.icon-edit-btn
               span.action-item(:class="{'disable-button': selectedBoxFilter.length > 0}" @click="showModalDelete([data])")
@@ -171,6 +172,7 @@ import { Paging } from '~/models/common/Paging'
 import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreUser = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
 @Component({
@@ -189,6 +191,7 @@ class BoxList extends Vue {
   sortByColumn: string = ''
   isDescending: boolean|null = null
   boxCodeDelete: string = ''
+  warehouseOption: any = []
   filter: any = {
     sellerEmail:  '',
     warehouse: null,
@@ -207,6 +210,9 @@ class BoxList extends Vue {
   @nsStoreWarehouse.State
   warehouseList!: any
 
+  @nsStoreUser.State
+  user: any | undefined
+
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
 
@@ -220,13 +226,24 @@ class BoxList extends Vue {
   actAddTransferBox!: (params: {ids: string[]}) => Promise<any>
 
   async mounted() {
-    await this.actGetBoxList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
-    await this.actWarehouseList()
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
+    await this.actGetBoxList(this.getParamAPi())
   }
 
   // -- [ Getters ] -------------------------------------------------------------
   get isFilter(){
-    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize'])
+    const paramsDefault = ['pageNumber', 'pageSize']
+    if(this.user.role === 'staff') {
+      paramsDefault.push('warehouseId')
+    }
+    const params = _.omit(this.getParamAPi(), paramsDefault)
     return Object.values(params).some((item) => item)
   }
 
@@ -333,7 +350,9 @@ class BoxList extends Vue {
   }
 
   async handleRefeshFilter() {
-    this.filter.warehouse = null
+    if(this.user.role === 'admin') {
+      this.filter.warehouse = null
+    }
     this.filter.location = ''
     this.filter.sellerEmail = ''
     this.filter.barCode = ''
@@ -414,7 +433,7 @@ export default BoxList
 .box__header
   flex-direction: column
   flex-wrap: wrap
-  margin-bottom: 24px
+  margin-bottom: 16px
   @include desktop
     flex-direction: row
     @include flex-center-space-between
@@ -428,4 +447,9 @@ export default BoxList
       @include flex-center
       flex-direction: row
       margin-top: 0
+    .btn__filter
+      .btn-refresh
+        border-top-left-radius: 0 !important
+        border-bottom-left-radius: 0 !important
+        border: none
 </style>

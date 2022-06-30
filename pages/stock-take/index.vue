@@ -31,24 +31,27 @@
             .grid.grid-nogutter
               .col
                   FilterCalendar(
-                    title="From"
+                    title="Create Time From"
                     border="left"
                     :value="filter.dateFrom"
                     name="dateFrom"
                     inputClass="border-0"
                     dateFormat="dd-mm-yy"
                     :showIcon="true"
-                    @updateFilter="handleFilter")
+                    @updateFilter="handleFilter"
+                  )
               .col.ml-1
                   FilterCalendar(
-                  title="To"
-                  border="right"
-                  :value="filter.dateTo"
-                  name="dateTo"
-                  inputClass="border-0"
-                  dateFormat="dd-mm-yy"
-                  :showIcon="true"
-                  @updateFilter="handleFilter")
+                    title="To"
+                    border="right"
+                    :value="filter.dateTo"
+                    name="dateTo"
+                    inputClass="border-0"
+                    dateFormat="dd-mm-yy"
+                    :showIcon="true"
+                    @updateFilter="handleFilter"
+                    :minDate="filter.dateFrom"
+                  )
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Warehouse"
@@ -121,7 +124,7 @@
                   span.stock-take-result.result-waiting(v-if="data.finalResultStatus === 'WAITING'") N/A
           Column(header='nOTE' sortable field='note' sortField="_note" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.note }}
+                div.grid-cell-right {{  data.approveNote || data.submitNote || data.note }}
           Column(field='status' sortable header="Status" sortField="_status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
