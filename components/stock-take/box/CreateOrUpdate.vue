@@ -2,16 +2,10 @@
   .grid.grid-nogutter.packing__detail--container
     .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto
       StockTakeNoteInfo(:info='stockTakeInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
-      .grid.wapprer-unit.ml-4.mr-4
-        .col-2.flex.align-items-center.justify-content-center
-          .icon--large.bg-blue-700(class='icon-note')
-        .col-10.flex.flex-column.justify-content-center
-          div.font-normal.text-700.text-base Note
-          Textarea.text-lg(v-model='note' placeholder='Write something...' rows='2' cols=30)
     .col-9.packing__detail--left.pl-4.pr-1.flex-1
       .grid
         .col-4
-          h2.text-heading List box
+          h2.text-heading Stock-take note
         .col-8.btn-right
           Button.p-button-outlined.p-button-primary.bg-white.w-25(
             type='button',
@@ -67,17 +61,20 @@
               .table__action.justify-content-center
                 span.action-item(@click.stop="removeBox(data)")
                   .icon.icon-btn-delete
+          template(#footer)
+              .grid.grid-nogutter.stock-takeItem__footer
+                .col.stock-takeItem__note
+                  div(style="padding-left: 10.5px") Note:
+                  InputText.inputSearchCode.w-full( rows="1" cols="40" placeholder='Write something...')
           template(#empty)
             .flex.align-items-center.justify-content-center.flex-column
               img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
               p.text-900.font-bold.mt-3 Add box!
-    Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
-        template(#header)
-          h1.text-heading Select Box
+    Dialog.item-list-dialog(:visible.sync='showModal', :modal='true' :showHeader='false' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
         BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
         template(#footer)
           Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
-          Button.p-button-primary(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()")
+          Button.p-button-primary(:label="lableBtnAddStock" icon="pi pi-check" @click="applyBox()" v-if="lableBtnAddStock.length>0")
 </template>
 
 <script lang="ts">
@@ -118,6 +115,8 @@ class DeliveryOrder extends Vue {
     status:string
   } = { user: undefined ,totalBox:0,wareHouse: undefined, status: 'NEW' }
 
+  lableBtnAddStock = ''
+
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
 
@@ -151,7 +150,7 @@ class DeliveryOrder extends Vue {
       note: this.note,
       checkType: 'BOX',
       stockTakeBox: listBox,
-      wareHouse: this.user?.warehouse? { id: this.user?.warehouse.id } : undefined,
+      warehouse: this.user?.warehouse? { id: this.user?.warehouse.id } : undefined,
       status: STOCK_TAKE_STATUS.NEW,
       reportList: this.reportList
     }
@@ -171,9 +170,10 @@ class DeliveryOrder extends Vue {
   selectBox(event){
     this.boxSelected = event
     if(this.boxSelected.length>0){
-      this.disabledApply = false
+      this.prepareLableBtnAddStock()
+      
     } else {
-      this.disabledApply = true
+      this.lableBtnAddStock = ''
     }
   }
 
@@ -224,11 +224,26 @@ class DeliveryOrder extends Vue {
       { label: 'Add new note', to: '/stock-take/box/create' }
     ]
   }
+
+  prepareLableBtnAddStock() {
+    const length = _.size(this.boxSelected)
+    let stockQuantity = ''
+    if(length === 1 ) {
+      stockQuantity = length + ' stock'
+    } else if(length > 1) {
+      stockQuantity = length + ' stocks'
+    }
+    this.lableBtnAddStock = `Add ${stockQuantity || 'stock'} to stock-take note`
+  }
+
 }
 
 export default DeliveryOrder
 </script>
 <style lang="sass" scoped>
+.grid.grid-nogutter.stock-takeItem__footer
+  padding-top: 7px
+  background: $color-white
 .btn-right
   height: 70%
   text-align: right
@@ -252,5 +267,8 @@ export default DeliveryOrder
     color: #000
     font-weight: 600
     box-shadow: none !important
-    max-width: 100%
+  max-width: 100%
+.item-list-dialog
+  ::v-deep.p-dialog-content
+    background-color: #E8EAEF
 </style>

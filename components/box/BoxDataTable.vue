@@ -1,69 +1,74 @@
 <template lang="pug">
-.inventory
-  .inventory__filter.grid.mb-1
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-      FilterTable(
-        title='Seller Email',
-        placeholder='Enter Seller Email',
-        name='sellerEmail',
-        :value='filter.sellerEmail',
-        :searchText='true',
-        @updateFilter='handleFilterBox'
-      )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-      FilterTable(
-        title='Location',
-        :value='filter.location',
-        placeholder='Enter location',
-        name='location',
-        :searchText='true',
-        @updateFilter='handleFilterBox'
-      )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-      FilterTable(
-        title='Box Code',
-        :value='filter.barCode',
-        placeholder='Enter code',
-        name='barCode',
-        :searchText='true',
-        @updateFilter='handleFilterBox'
-      )
-    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
-      FilterCalendar(
-        title='From',
-        :value='filter.dateFrom',
-        name='dateFrom',
-        inputClass='border-0',
-        dateFormat='dd-mm-yy',
-        :showIcon='true',
-        @updateFilter='handleFilterBox'
-      )
-    .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
-      FilterCalendar(
-        title='To',
-        border='right',
-        :value='filter.dateTo',
-        name='dateTo',
-        inputClass='border-0',
-        dateFormat='dd-mm-yy',
-        :showIcon='true',
-        @updateFilter='handleFilterBox'
-      )
-    .col-10
-    .col-12.text-right(
-      class='xl:col-2 lg:col-2 md:col-4 sm:col-12',
-      style='align-self: center'
-    )
-      Button.p-button-secondary.mr-1(
-        label='Refresh',
-        icon='pi pi-refresh',
-        @click='handleRefeshFilter'
-      )
-      Button.p-button-primary(
-        label='Search',
-        icon='pi pi-search',
-        @click='searchBox'
-      )
+.BoxdataTableContainer
+  .inventory__header
+    div
+      h1.text-heading Box list
+      span.text-subheading {{ totalBoxRecords }} product found
+    .header__action.flex
+      Button.btn.btn-primary.border-0.mr-2(
+        @click='handleApplyFilter'
+      ) Apply
+      .btn__filter(:class="{'active': isShowFilter}")
+        .btn-toggle(@click="isShowFilter = !isShowFilter")
+          .icon.icon-filter(v-if="!isShowFilter")
+          .icon.icon-chevron-up.bg-primary(v-else)
+          span Filter
+        .btn-refresh(@click="handleRefreshFilter")
+          .icon.icon-rotate-left.bg-white
+  div(v-if= 'isShowFilter')
+    .grid.mb-1
+      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+        FilterTable(
+          title='Seller Email',
+          placeholder='Enter Seller Email',
+          name='sellerEmail',
+          :value='filter.sellerEmail',
+          :searchText='true',
+          @updateFilter='handleFilterBox'
+          :isShowFilter="isShowFilter"
+        )
+      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+        FilterTable(
+          title='Location',
+          :value='filter.location',
+          placeholder='Enter location',
+          name='location',
+          :searchText='true',
+          @updateFilter='handleFilterBox'
+          :isShowFilter="isShowFilter"
+        )
+      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+        FilterTable(
+          title='Box Code',
+          :value='filter.barCode',
+          placeholder='Enter code',
+          name='barCode',
+          :searchText='true',
+          @updateFilter='handleFilterBox'
+          :isShowFilter="isShowFilter"
+        )
+      .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+        FilterCalendar(
+          title='From',
+          border='left'
+          :value='filter.dateFrom',
+          name='dateFrom',
+          inputClass='border-0',
+          dateFormat='dd-mm-yy',
+          :showIcon='true',
+          @updateFilter='handleFilterBox'
+        )
+      .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
+        FilterCalendar(
+          title='To',
+          border='right',
+          :value='filter.dateTo',
+          name='dateTo',
+          inputClass='border-0',
+          dateFormat='dd-mm-yy',
+          :showIcon='true',
+          @updateFilter='handleFilterBox'
+        )
   .inventory__content
     DataTable(
       v-if='boxList',
@@ -144,7 +149,7 @@
       template(#empty)
         .flex.align-items-center.justify-content-center.flex-column
           img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
-          p.text-900.font-bold.mt-3 Item not found!
+          p.text-900.font-bold.mt-3 Item not found!    
 </template>
 
 <script lang="ts">
@@ -166,6 +171,7 @@ const nsStoreUser = namespace('user-auth/store-user')
 class BoxDataTable extends Vue {
   @Prop({ default: [] }) box
   selectedBoxes: Box.Model[] = []
+  isShowFilter: boolean = false
   paging: Paging.Model = { pageNumber: 0, pageSize: 10, first: 0 }
   sortByColumn: string = ''
   isDescending: boolean | null = null
@@ -255,7 +261,7 @@ class BoxDataTable extends Vue {
     this.selectedBoxes = []
   }
 
-  async handleRefeshFilter() {
+  async handleRefreshFilter() {
     this.filter.warehouse = null
     this.filter.location = ''
     this.filter.sellerEmail = ''
@@ -303,6 +309,10 @@ class BoxDataTable extends Vue {
   rowClass(data: any) {
     return data.status === BOX_STATUS.BOX_STATUS_AVAILABLE ? '' : 'row-disable'
   }
+
+  handleApplyFilter() {
+    this.searchBox()
+  }
 }
 export default BoxDataTable
 </script>
@@ -311,6 +321,7 @@ export default BoxDataTable
 ::v-deep.inventory
   .bg-white
     background-color: $text-color-100 !important
+    padding: 2px 10px
   @include flex-column
   .pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
@@ -328,6 +339,9 @@ export default BoxDataTable
       gap: 0 16px
   &__filter
     margin-bottom: $space-size-24
+  &__header
+    display: flex
+    justify-content: space-between
   &__content
     flex: 1
     border-radius: 4px
