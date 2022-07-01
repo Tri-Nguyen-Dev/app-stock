@@ -36,3 +36,8 @@ export function resetScrollTable() {
     ele.scrollLeft = 0
   }
 }
+
+export function getTotalQuantityLabel(quantity: number, itemName, messages) {
+  const isPlural = quantity > 1 ? `${itemName}s` : itemName
+  return _.template(messages)({ quantity: `${quantity} ${isPlural}` })
+}
