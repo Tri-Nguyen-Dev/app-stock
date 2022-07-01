@@ -60,9 +60,12 @@
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
-          :options="warehouseList"
+          :options="warehouseOption"
           name="warehouse"
-          @updateFilter="handleFilter")
+          @updateFilter="handleFilter"
+          :isDisabled="user.role !== 'admin'"
+          :isClear="false"
+        )
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Seller Email"
@@ -171,9 +174,11 @@ import { Request } from '~/models/RequestList'
 import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage, resetScrollTable } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
+import { User } from '~/models/User'
 const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockIn = namespace('stock-in/request-list')
 const nsStoreExportReceipt = namespace('stock-in/export-receipt')
+const nsStoreUser = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
 @Component({
@@ -205,6 +210,8 @@ class StockIn extends Vue {
     status: null
   }
 
+  warehouseOption: any = []
+
   @nsStoreStockIn.State
   stockIn!: Request.Model[]
 
@@ -228,6 +235,9 @@ class StockIn extends Vue {
 
   @nsStoreExportReceipt.Action
   actGetReceiptLable!: (params: any) => Promise<string>
+
+  @nsStoreUser.State
+  user!: User.Model
 
   getParamApi() {
     return {
@@ -293,14 +303,22 @@ class StockIn extends Vue {
   }
 
   async mounted() {
-    await this.actGetStockIn({
-      params: { pageNumber: this.paging.pageNumber,pageSize: this.paging.pageSize }
-    })
-    this.actWarehouseList()
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouse = this.warehouseList[0]
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
+    await this.actGetStockIn(this.getParamApi())
   }
 
   async refreshFilter() {
-    refreshAllFilter(this.filter)
+    const adminFilter = _.omit(_.cloneDeep(this.filter), 'warehouse')
+    for (const items in adminFilter) this.filter[items] = null
+    // refreshAllFilter(this.filter)
     await this.actGetStockIn(this.getParamApi())
   }
 
