@@ -94,7 +94,8 @@
           :options="warehouseOption"
           name="warehouseId"
           @updateFilter="handleFilter"
-          :isClear="user.role === 'admin'"
+          :isDisabled="user.role !== 'admin'"
+          :isClear="false"
         )
       div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
@@ -376,7 +377,7 @@ class DeliveryOrderList extends Vue {
     } else {
       return ''
     }
-    
+
     // return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
@@ -385,6 +386,7 @@ class DeliveryOrderList extends Vue {
     if(role === 'admin') {
       await this.actWarehouseList()
       this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouseId = this.warehouseList[0]
     } else {
       this.warehouseOption = [warehouse]
       this.filter.warehouseId = warehouse
@@ -479,7 +481,7 @@ class DeliveryOrderList extends Vue {
   }
 
   handleRefreshFilter() {
-    const adminFilter = _.omit(_.cloneDeep(this.filter), this.user.role !== 'admin' ? 'warehouseId' : '')
+    const adminFilter = _.omit(_.cloneDeep(this.filter), 'warehouseId')
     for (const items in adminFilter) this.filter[items] = null
     this.getProductList()
   }
