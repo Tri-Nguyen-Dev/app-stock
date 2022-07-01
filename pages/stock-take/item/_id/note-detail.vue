@@ -6,7 +6,7 @@
         .inventory__header
           div
             h1.text-heading {{ titlePage }}
-            span.text-subheading {{ total }} total items
+            span.text-subheading All ({{ total }})
           .inventory__header--action.flex(v-if="isDetail")
             Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSaveDraft') Save Draft
             Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSubmit' :disabled='isDisabled' ) Submit

@@ -4,7 +4,7 @@
       .stock__header
         div
           h1.text-heading Item list
-          span.text-subheading {{ total }} product found
+          span.text-subheading {{ totalItem }}
         .header__action.flex
           Button.btn.btn-primary.border-0.mr-2(
             @click='handleApplyFilter'
@@ -26,7 +26,8 @@
                 :options="warehouseOption"
                 name="warehouse"
                 @updateFilter="handleFilter"
-                :isClear="user.role === 'admin'"
+                :isDisabled="user.role !== 'admin'"
+                :isClear="false"
               )
             .div(class="col-12 md:col-3")
               FilterTable(
@@ -161,7 +162,8 @@ import { Stock as StockModel } from '~/models/Stock'
 import {
   PAGINATE_DEFAULT,
   calculateIndex,
-  StockTakeConstants
+  StockTakeConstants,
+  getTotalQuantityLabel
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
@@ -251,14 +253,8 @@ class ItemListModel extends Vue {
 
   get lableBtnAddStock() {
     const length = _.size(this.selectedBoxeSsatisfy)
-    let stockQuantity = ''
-    if(length === 1 ) {
-      stockQuantity = length + ' stock'
-    } else if(length > 1) {
-      stockQuantity = length + ' stocks'
-    }
     return {
-      label: `Add ${stockQuantity || 'stock'} to stock-take note`,
+      label: getTotalQuantityLabel(length, 'item', 'Add <%= quantity%> to stock-take note'),
       length
     }
   }
@@ -267,6 +263,10 @@ class ItemListModel extends Vue {
     return  _.filter(this.selectedStock, ({ itemStatus }) => {
       return itemStatus !== 'ITEM_STATUS_DRAFT'
     })
+  }
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.total, 'result', '<%= quantity%> found')
   }
 
   // -- [ Setters ] -------------------------------------------------------------
@@ -336,9 +336,6 @@ class ItemListModel extends Vue {
   }
 
   handleRefreshFilter() {
-    if(this.user.role === 'admin') {
-      this.filter.warehouse = null
-    }
     this.filter.email = null
     this.filter.status = null
     this.filter.barCode = null

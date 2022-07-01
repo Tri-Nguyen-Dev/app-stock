@@ -6,7 +6,7 @@
         .stock-takeItem__header
           div
             h1.text-heading {{ isApproving ? 'Approving' : 'Approved' }} Stock-take Note Detail
-            span.text-subheading {{ total }} total items
+            span.text-subheading All ({{ total }})
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='handleSubmit' v-if='isApproving' :disabled='isDisabled') Save
             Button.btn.btn-primary.border-0(@click='exportpdf' v-else) Export

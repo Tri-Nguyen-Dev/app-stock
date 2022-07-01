@@ -3,7 +3,7 @@
   .box__header
     div
       h1.text-heading Box list
-      span.text-subheading(v-if="boxList") {{ totalBoxRecords }} products found
+      span.text-subheading(v-if="boxList") {{ totalItem }}
     .header__action
       .header__search
         .icon.icon--left.icon-search
@@ -29,7 +29,8 @@
             :options="warehouseOption"
             name="warehouse"
             @updateFilter="handleFilterBox"
-            :isClear="user.role === 'admin'"
+            :isDisabled="user.role !== 'admin'"
+            :isClear="false"
           )
         div(class="col-12 md:col-4")
           FilterTable(
@@ -163,7 +164,7 @@ import { Box } from '~/models/Box'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
-import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable } from '~/utils'
+import { getDeleteMessage, PAGINATE_DEFAULT, resetScrollTable, getTotalQuantityLabel } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreUser = namespace('user-auth/store-user')
@@ -224,6 +225,7 @@ class BoxList extends Vue {
     if(role === 'admin') {
       await this.actWarehouseList()
       this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouse = this.warehouseList[0]
     } else {
       this.warehouseOption = [warehouse]
       this.filter.warehouse = warehouse
@@ -256,6 +258,10 @@ class BoxList extends Vue {
       this.boxList.length <= 0
       ? 'checkbox-disable'
       : ''
+  }
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.totalBoxRecords, 'result', '<%= quantity%> found')
   }
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -344,9 +350,6 @@ class BoxList extends Vue {
   }
 
   async handleRefeshFilter() {
-    if(this.user.role === 'admin') {
-      this.filter.warehouse = null
-    }
     this.filter.location = ''
     this.filter.sellerEmail = ''
     this.filter.barCode = ''
