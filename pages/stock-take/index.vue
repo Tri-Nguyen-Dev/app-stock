@@ -3,7 +3,7 @@
     .stock__take__header
       div
         h1.text-heading Stock-take note list
-        span.text-subheading {{ total }} products found
+        span.text-subheading {{ total }} items found
       .header__action
         .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
