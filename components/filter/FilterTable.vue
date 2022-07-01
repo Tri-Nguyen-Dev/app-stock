@@ -17,7 +17,7 @@
         optionLabel="name"
         :value="value"
         @input="handleFilter"
-        :disabled="!isClear"
+        :disabled="isDisabled"
       )
       slot(name="multi-select")
 </template>
@@ -33,6 +33,7 @@ class FilterTable extends Vue {
   @Prop() readonly name!: any | undefined
   @Prop() readonly isShowFilter!: boolean | false
   @Prop({ default: true }) isClear: boolean
+  @Prop({ default: false }) isDisabled: boolean
 
   validateText =  _.debounce(this.handleFilter, 500);
 
