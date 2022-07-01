@@ -24,7 +24,7 @@
         .col
           .filter__item.item--disabled
             .filter__title Create time
-            .filter__text(v-if='generalInfo.createdAt') {{ generalInfo.createdAt | dateTimeHour12 }}
+            .filter__text(v-if='generalInfo.createdAt') {{ generalInfo.createdAt | dateTimeHour24 }}
             .filter__text(v-else)
               i.filter__title auto generate...
         .col

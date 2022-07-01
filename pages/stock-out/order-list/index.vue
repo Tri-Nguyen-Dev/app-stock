@@ -47,6 +47,7 @@
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
+              :maxDate="filter.createTimeTo"
             )
           .col.ml-1
             FilterCalendar(
@@ -58,6 +59,7 @@
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
+              :minDate="filter.createTimeFrom"
             )
       div(class='col-12 md:col-8 lg:col-8 xl:col-5')
         .grid.grid-nogutter
@@ -71,6 +73,7 @@
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
+              :maxDate="filter.dueDeliveryDateTo"
             )
           .col.ml-1
             FilterCalendar(
@@ -82,14 +85,16 @@
               dateFormat="dd-mm-yy"
               :showIcon="true"
               @updateFilter="handleFilter"
+              :minDate="filter.dueDeliveryDateFrom"
             )
       div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
           title="Warehouse"
           :value="filter.warehouseId"
-          :options="warehouseList"
+          :options="warehouseOption"
           name="warehouseId"
           @updateFilter="handleFilter"
+          :isClear="user.role === 'admin'"
         )
       div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
@@ -102,7 +107,7 @@
         )
       div(class='col-12 md:col-4 xl:col-3')
         FilterTable(
-          title="Assignee"
+          title="PIC"
           placeholder="Search"
           :value="filter.assigneeId"
           :searchText="true"
@@ -150,7 +155,7 @@
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
         Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
-            div {{ data.createTime | dateTimeHour12 }}
+            div {{ data.createTime | dateTimeHour24 }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" )
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.sellerEmail }}
@@ -163,7 +168,7 @@
               div.text-end Due
               div Delivery Date
           template(#body='{ data }')
-            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour12 }}
+            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour24 }}
         Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#header)
             div
@@ -177,7 +182,7 @@
               div.text-end Latest
               div update time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour12 }}
+            div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour24 }}
         Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.name" headerClass="grid-header-right")
           template(#body='{ data }')
             .flex.align-items-center.cursor-pointer.justify-content-end
@@ -197,13 +202,6 @@
           template(#body='{ data }')
             div.grid-cell-right
               span.table__status.table__status--available {{ nameStatus(data.status) }}
-              //- span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_NEW'") NEW
-              //- span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS'") In Progress
-              //- span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_CANCELLED'") Cancelled
-              //- span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_READY'") Ready
-              //- span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERING'") Delivering
-              //- span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERED' ") Delivered
-              //- span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
         template(#footer)
           Pagination(
             title="Cancel"
@@ -217,7 +215,7 @@
           div.table__empty
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
             img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-            p.text-900.font-bold.mt-3 D/O not found!
+            p.text-900.font-bold.mt-3 Item not found!
     ConfirmDialogCustom(
       title="Cancel Confirm"
       image="confirm-delete"
@@ -232,7 +230,7 @@
     Toast
 </template>
 <script lang="ts">
-import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { DeliveryList } from '~/models/Delivery'
 
@@ -243,7 +241,6 @@ import {
   DeliveryConstants,
   getCancelMessage,
   exportFileTypePdf,
-  refreshAllFilter,
   resetScrollTable
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
@@ -286,6 +283,8 @@ class DeliveryOrderList extends Vue {
     warehouseId: null
   }
 
+  warehouseOption: any = []
+
   @nsStoreDelivery.State
   total!: number
 
@@ -312,24 +311,6 @@ class DeliveryOrderList extends Vue {
 
   @nsStoreUser.State
   user!: User.Model
-
-  // -- [ Getters ] -------------------------------------------------------------
-  @Watch ('activeTab',{ immediate: true, deep: true })
-  getList(){
-    this.selectedDelivery = []
-    this.paging.pageSize = 20
-    this.paging.pageNumber = 0
-    this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS.filter((item: any) => {
-      return this.activeStatus?.split(',').includes(item.value.toString())
-    })
-    this.getDeliveryList({
-      ...this.filter,
-      warehouseId: this.filter.warehouseId?.id,
-      pageSize: this.paging.pageSize,
-      pageNumber: this.paging.pageNumber,
-      status: this.activeStatus
-    })
-  }
 
   get activeStatus() {
     return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
@@ -375,13 +356,13 @@ class DeliveryOrderList extends Vue {
   handleExportReceipt() {
     _.forEach(this.selectedDelivery, async ({ id }) => {
       const result = await this.actGetReceiptLable({ id })
-      if (result) {
+      if ( result ) {
         exportFileTypePdf(result, `receipt-${id}`)
       }
     })
   }
 
-  getIndexPaginate(index: number) {
+  getIndexPaginate( index: number ) {
     return calculateIndex(
       index,
       this.paging.pageNumber,
@@ -390,17 +371,30 @@ class DeliveryOrderList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
+    if(data.status === 'DELIVERY_ORDER_STATUS_CANCELLED') {
+      return 'row-disable'
+    } else {
+      return ''
+    }
+    
+    // return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
-  mounted() {
-    // this.getProductList()
-    this.actWarehouseList()
+  async mounted() {
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouseId = warehouse
+    }
+    this.getList()
   }
 
-  handleFilter(e: any, name: string) {
+  async handleFilter( e: any, name: string ) {
     this.filter[name] = e
-    this.getProductList()
+    await this.getProductList()
     this.selectedDelivery = []
   }
 
@@ -422,14 +416,14 @@ class DeliveryOrderList extends Vue {
     })
   }
 
-  onPage(event: any) {
+  onPage( event: any ) {
     resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getProductList()
   }
 
-  showModalDelete(data: DeliveryList.Model[]) {
+  showModalDelete( data: DeliveryList.Model[] ) {
     this.onEventDeleteList = data || this.selectedDeliveryFilter
     this.isModalDelete = true
   }
@@ -438,7 +432,7 @@ class DeliveryOrderList extends Vue {
     try {
       this.loadingSubmit = true
       const data = await this.actDeleteDeliveryByIds(_.map(this.onEventDeleteList, 'id'))
-      if (data) {
+      if ( data ) {
         this.isModalDelete = false
         this.$toast.add({
           severity: 'success',
@@ -466,7 +460,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowdbClick({ data }) {
-    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED') {
+    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && data.assigneeId === this.user.id) {
       this.$router.push(`/stock-out/order/${data.id}`)
     }
   }
@@ -485,7 +479,8 @@ class DeliveryOrderList extends Vue {
   }
 
   handleRefreshFilter() {
-    refreshAllFilter(this.filter)
+    const adminFilter = _.omit(_.cloneDeep(this.filter), this.user.role !== 'admin' ? 'warehouseId' : '')
+    for (const items in adminFilter) this.filter[items] = null
     this.getProductList()
   }
 
@@ -515,12 +510,28 @@ class DeliveryOrderList extends Vue {
 
   handleTab({ index }: any) {
     this.activeTab = index
+    this.getList()
   }
 
   handleAddNew() {
     this.$router.push('/stock-out/order')
   }
 
+  getList() {
+    this.selectedDelivery = []
+    this.paging.pageSize = 20
+    this.paging.pageNumber = 0
+    this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS.filter((item: any) => {
+      return this.activeStatus?.split(',').includes(item.value.toString())
+    })
+    this.getDeliveryList({
+      ...this.filter,
+      warehouseId: this.filter.warehouseId?.id ,
+      pageSize: this.paging.pageSize,
+      pageNumber: this.paging.pageNumber,
+      status: this.activeStatus
+    })
+  }
 }
 
 export default DeliveryOrderList

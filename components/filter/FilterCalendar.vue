@@ -10,6 +10,8 @@
       :showIcon="showIcon"
       :inputClass="inputClass"
       :dateFormat="dateFormat || 'dd-mm-yy'"
+      :minDate="minDate"
+      :maxDate="maxDate"
     )
 </template>
 <script lang='ts'>
@@ -27,6 +29,8 @@ class FilterTable extends Vue {
   @Prop() readonly inputClass!: any | undefined
   @Prop() readonly showIcon!: Boolean | false
   @Prop() readonly border!: string | undefined
+  @Prop() readonly minDate!: any
+  @Prop() readonly maxDate!: any
 
   handleFilter(e :any){
     this.$emit('updateFilter', e, this.name)
@@ -35,7 +39,6 @@ class FilterTable extends Vue {
   clearValue() {
     this.$emit('updateFilter', null, this.name)
   }
-
 }
 
 export default FilterTable

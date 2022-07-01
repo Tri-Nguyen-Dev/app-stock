@@ -5,7 +5,7 @@ div
       .info-creator
         .info-item
           span.info-title Creator ID:
-          span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.id }}
+          span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy | sellerName }}
         .info-item
           span.info-title Create Time:
           span.info-content {{ reportDetail.createdAt | dateTimeHour24 }}
@@ -51,8 +51,6 @@ div
           Column(header='NOTE' :styles="{'width': '40%'}" field='category' sortField="_category" headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center {{ data.note }}
-    div.flex.justify-content-center
-      Button.btn.btn-primary.h-3rem.mb-2(:disabled="disabledButton" @click="createStockTake") Create stock-take note
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'

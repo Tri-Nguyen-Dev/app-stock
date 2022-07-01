@@ -4,11 +4,10 @@
       .stock__header
         div
           h1.text-heading Item list
-          span.text-subheading {{ total }} product found
+          span.text-subheading {{ totalItem }}
         .header__action.flex
           Button.btn.btn-primary.border-0.mr-2(
             @click='handleApplyFilter'
-            :disabled='checkIsFilter ? null : "disabled"'
           ) Apply
           .btn__filter(:class="{'active': isShowFilter}")
             .btn-toggle(@click="isShowFilter = !isShowFilter")
@@ -24,9 +23,11 @@
               FilterTable(
                 title="Warehouse"
                 :value="filter.warehouse"
-                :options="warehouseList"
+                :options="warehouseOption"
                 name="warehouse"
                 @updateFilter="handleFilter"
+                :isDisabled="user.role !== 'admin'"
+                :isClear="false"
               )
             .div(class="col-12 md:col-3")
               FilterTable(
@@ -83,7 +84,7 @@
                     dateFormat="dd-mm-yy"
                     :showIcon="true"
                     @updateFilter="handleFilter"
-                  ) 
+                  )
             .div(class="col-12 md:col-4")
               FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
       .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
@@ -113,7 +114,7 @@
                 span.text-white-active.text-900.font-bold {{ data.stock.barCode }}
             Column(field='box.id' header='BOX CODE' :sortable='true' sortField='_box.id')
             Column(field='stock.name' header='ITEM NAME' :sortable='true' sortField='_stock.name')
-            Column(field="box.rackLocation.name" header="LOCATION" :sortable="true" className="text-right" 
+            Column(field="box.rackLocation.name" header="LOCATION" :sortable="true" className="text-right"
               sortField="_box.rackLocation.name"
             )
               template(#body="{data}")
@@ -122,7 +123,7 @@
                     span.text-primary.font-bold.font-sm.text-white-active {{ data.box.rackLocation.name }}
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
             Column(field="stock.createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_stock.createdAt")
-              template(#body="{data}") {{ data.stock.createdAt | dateTimeHour12 }}
+              template(#body="{data}") {{ data.stock.createdAt | dateTimeHour24 }}
             Column(field='status' header="Status" headerClass="grid-header-right")
               template(#body='{ data }')
                 div.grid-cell-right
@@ -161,12 +162,14 @@ import { Stock as StockModel } from '~/models/Stock'
 import {
   PAGINATE_DEFAULT,
   calculateIndex,
-  StockTakeConstants
+  StockTakeConstants,
+  getTotalQuantityLabel
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 const nsStoreOrder = namespace('stock-out/create-order')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+const nsStoreUser = namespace('user-auth/store-user')
 const dayjs = require('dayjs')
 
 @Component({
@@ -181,6 +184,7 @@ class ItemListModel extends Vue {
   isFilter: boolean = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList = StockTakeConstants.RESULT_ITEM_STOCK_OPTIONS
+  warehouseOption: any = []
   filter: any = {
     warehouse: null,
     email: null,
@@ -203,6 +207,9 @@ class ItemListModel extends Vue {
   @nsStoreWarehouse.State
   warehouseList!: any
 
+  @nsStoreUser.State
+  user: any | undefined
+
   // -- [ Action ] ------------------------------------------------------------
   @nsStoreOrder.Action
   actGetInventoryList!: (params: any) => Promise<void>
@@ -214,34 +221,40 @@ class ItemListModel extends Vue {
   @Prop({ default: [] }) itemSelected!: any
 
   @Watch('isShow')
-  getStockList() {
+  async getStockList() {
     if(this.isShow) {
-      this.getProductList()
-      this.actWarehouseList()
       this.selectedStock = _.cloneDeep(this.itemSelected)
+      const { role, warehouse } = this.user
+      if(role === 'admin') {
+        await this.actWarehouseList()
+        this.warehouseOption = _.cloneDeep(this.warehouseList)
+        this.filter.warehouse = this.warehouseList[0]
+      } else {
+        this.warehouseOption = [warehouse]
+        this.filter.warehouse = warehouse
+      }
+      this.getProductList()
     }
   }
 
   // -- [ Getters ] -------------------------------------------------------------
   get checkIsFilter() {
-    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
+    const paramsDefault = ['pageNumber', 'pageSize']
+    if(this.user.role === 'staff') {
+      paramsDefault.push('warehouseId')
+    }
+    const params = _.omit(this.getParamApi(), paramsDefault)
     return Object.values(params).some((item) => item)
   }
-  
+
   get visibleVue() {
     return this.isShow
   }
 
   get lableBtnAddStock() {
     const length = _.size(this.selectedBoxeSsatisfy)
-    let stockQuantity = ''
-    if(length === 1 ) {
-      stockQuantity = length + ' stock'
-    } else if(length > 1) {
-      stockQuantity = length + ' stocks'
-    }
     return {
-      label: `Add ${stockQuantity || 'stock'} to stock-take note`,
+      label: getTotalQuantityLabel(length, 'item', 'Add <%= quantity%> to stock-take note'),
       length
     }
   }
@@ -250,6 +263,10 @@ class ItemListModel extends Vue {
     return  _.filter(this.selectedStock, ({ itemStatus }) => {
       return itemStatus !== 'ITEM_STATUS_DRAFT'
     })
+  }
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.total, 'result', '<%= quantity%> found')
   }
 
   // -- [ Setters ] -------------------------------------------------------------
@@ -319,7 +336,6 @@ class ItemListModel extends Vue {
   }
 
   handleRefreshFilter() {
-    this.filter.warehouse = null
     this.filter.email = null
     this.filter.status = null
     this.filter.barCode = null
@@ -354,6 +370,21 @@ class ItemListModel extends Vue {
   }
 
   handleApply() {
+    if(_.size(this.selectedBoxeSsatisfy) > 1) {
+      const warehouseFirstItem = _.get(this.selectedBoxeSsatisfy[0], 'box.request.warehouse.id', null)
+      const unsatisfactoryItem =  _.find(this.selectedBoxeSsatisfy, function({ box }) {
+        return box?.request?.warehouse?.id !== warehouseFirstItem
+      })
+      if(unsatisfactoryItem) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Please add items from 1 warehouse',
+          life: 3000
+        })
+        return
+      }
+    }
     this.$emit('onApply', this.selectedBoxeSsatisfy)
   }
 

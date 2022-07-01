@@ -45,7 +45,7 @@ div.relative.flex-1
       v-if='type === "originalBox" && !isMergeBox' 
     )
       template(#body='{ data }')
-        .text-right {{ data.hasAirtag | checkHasTag }}
+        Checkbox(v-model="data.hasAirtag" :binary="true" :disabled='true')
     Column(
       header='ORIGINAL BOX CODE'
       field='originalBox'

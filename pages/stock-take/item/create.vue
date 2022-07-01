@@ -6,7 +6,7 @@
         .stock-takeItem__header
           div
             h1.text-heading Stock-take Note
-            span.text-subheading {{ totalItem }} total
+            span.text-subheading All ({{ totalItem }})
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='handleAddItems') Add Item
             Button.btn.btn-primary.border-0(@click='handleSubmit' :disabled='isDisabledSubmit') Save
@@ -17,10 +17,8 @@
             responsiveLayout="scroll"
             :resizableColumns="true"
             :class="{ 'table-wrapper-empty': !listStockSelected || listStockSelected.length <= 0 }"
-            :selection.sync="selectedStock"
             :paginator="false"
           )
-            Column(selectionMode="multiple" :styles="{width: '3rem'}")
             Column(field='no' header='NO' :styles="{'width': '3rem'}")
               template(#body='slotProps') {{ slotProps.index + 1 }}
             Column(field='stock.barCode' header='Barcode' :sortable="true")
@@ -37,15 +35,11 @@
             Column(:exportable="false" header="ACTION" className="text-right")
               template(#body="{data}")
                 .table__action
-                  span.action-item(:class="{'disable-button': selectedStock.length > 0}" @click="showModalDelete([data])")
+                  span.action-item(@click="handleDeleteStock(data)")
                     .icon.icon-btn-delete
             template(#footer)
               .grid.grid-nogutter.stock-takeItem__footer
-                .col-fixed.stock-takeItem__delete
-                  .pagination__delete(@click="showModalDelete()" v-if='selectedStock.length')
-                    .icon.icon-btn-delete
-                    span Delete {{ selectedStock.length }} items selected
-                .col-9.stock-takeItem__note
+                .col.stock-takeItem__note
                   div(style="padding-left: 10.5px") Note:
                   InputText.inputSearchCode.w-full(v-model="noteText" rows="1" cols="40" placeholder='Write something...')
             template(#empty)
@@ -60,22 +54,11 @@
       @onApply='handleApplyAddItem($event)',
       :itemSelected='listStockSelected'
     )
-    ConfirmDialogCustom(
-      title="Confirm delete"
-      image="confirm-delete"
-      :isShow="isModalDelete"
-      :onOk="handleDeleteStock"
-      :onCancel="handleCancel"
-    )
-      template(v-slot:message)
-        p {{ deleteMessage }}
 </template>
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { getDeleteMessage } from '~/utils'
 import ItemListModel from '~/components/stock-take/ItemListModel.vue'
-import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 const nsStoreUser = namespace('user-auth/store-user')
@@ -84,7 +67,6 @@ const dayjs = require('dayjs')
 @Component({
   components: {
     ItemListModel,
-    ConfirmDialogCustom,
     NoteInfo
   }
 })
@@ -93,7 +75,6 @@ class StockTakeItems extends Vue {
   isModalAddItem: boolean = false
   disabledApply = true
   isModalDelete: boolean = false
-  onEventDeleteList: any = []
   selectedStock: any = []
   noteText: string = ''
 
@@ -107,21 +88,17 @@ class StockTakeItems extends Vue {
   actCreateStockTake!: (params?: any) => Promise<any>
 
   get homeItem() {
-    return { label: 'Note list', to: '/stock-take' }
+    return { to: '/stock-take', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {
     return [
-      { label: 'Add new note', to: '/stock-take/item' }
+      { label: 'Stock-take Note', to: '/stock-take/item/create' }
     ]
   }
 
   get totalItem() {
     return _.size(this.listStockSelected)
-  }
-
-  get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'box')
   }
 
   get isDisabledSubmit() {
@@ -165,19 +142,18 @@ class StockTakeItems extends Vue {
     const data = {
       note: this.noteText,
       checkType: 'ITEM',
-      stockTakeItem: _.map(this.listStockSelected, ({ id }) => ({ stockBoxId: id }))
+      stockTakeItem: _.map(this.listStockSelected, ({ id }) => ({ stockBoxId: id })),
+      warehouse: { id: _.get(this.listStockSelected[0], 'box.request.warehouse.id', null) }
     }
     const result = await this.actCreateStockTake(data)
-    if(result) {
-      if(result?.id) {
-        this.$router.push(`/stock-take/item/${result.id}/note-detail`)
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Success Message',
-          detail: 'Successfully create stock take',
-          life: 3000
-        })
-      }
+    if(result?.id) {
+      this.$router.push(`/stock-take/item/${result.id}/note-detail`)
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully create stock take',
+        life: 3000
+      })
     }
   }
 
@@ -190,19 +166,12 @@ class StockTakeItems extends Vue {
     this.isModalAddItem = isShowModal
   }
 
-  showModalDelete(data) {
-    this.onEventDeleteList = data || this.selectedStock
-    this.isModalDelete = true
-  }
-
-  handleDeleteStock() {
+  handleDeleteStock(data) {
     this.listStockSelected = _.filter(
       this.listStockSelected, ({ id }) => {
-        return !_.find(this.onEventDeleteList, { id })
+        return id !== data.id
       }
     )
-    this.selectedStock = []
-    this.isModalDelete = false
   }
 
   handleCancel() {
@@ -215,7 +184,6 @@ export default StockTakeItems
 <style lang="sass" scoped>
 .stock
   @include tablet
-    // margin: 50px
   ::v-deep.sub-tab
     height: calc(100vh - 150px)
     overflow: hidden
@@ -292,8 +260,6 @@ export default StockTakeItems
     border-radius: 4px
     position: relative
     overflow: hidden
-  &__note
-    border-left: 1px solid var(--gray-300)!important
   &__footer
     background: $color-white
     display: flex

@@ -54,7 +54,7 @@
                           span.font-bold.text-lg {{ slotProps.item.name }}
                           .icon-arrow-up-right.icon
             div.wrap-unit.px-4
-              StockUnit(title="Create Time" :value="boxDetail.createdAt | dateTimeHour12" :isEdit="isEditBox" icon="icon-calendar")
+              StockUnit(title="Create Time" :value="boxDetail.createdAt | dateTimeHour24" :isEdit="isEditBox" icon="icon-calendar")
             div.wrap-unit.px-4(v-if='boxDetail.listStockWithAmount')
               StockUnit(title="Box Items" :value="boxDetail.listStockWithAmount.length" :isEdit="isEditBox" icon="icon-frame")
             div.wrap-unit.px-4

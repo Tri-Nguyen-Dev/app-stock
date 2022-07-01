@@ -107,7 +107,7 @@
               NuxtLink.text-white-active.text-900.font-bold(v-else
               :to="`/stock-in/${data.id}/update`" class="no-underline hover:underline") {{ data.id }}
           Column(header='Create Time' field='data.createdAt' :sortable="true" sortField="_createdAt")
-            template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
+            template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}
           Column(header='SELLER NAME' field='sellerName' :sortable="true" sortField="_seller.name")
             template(#body='{ data }') {{ data.sellerName }}
           Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_seller.email")

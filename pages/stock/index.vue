@@ -3,7 +3,7 @@
     .stock__header
       div
         h1.text-heading Stock list
-        span.text-subheading {{ total }} product found
+        span.text-subheading {{ totalItem }}
       .header__action
         .header__search
           .icon.icon--left.icon-search
@@ -19,7 +19,7 @@
           .icon.icon-add-items
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      .div(class="col-12 md:col-4")
+      .div(class="col-12 md:col-3")
         FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(
@@ -30,7 +30,7 @@
               placeholder='Select'
               :filter='true'
             )
-      .div(class="col-12 md:col-4")
+      .div(class="col-12 md:col-3")
         FilterTable(
           title="Barcode"
           placeholder="Search barcode"
@@ -40,7 +40,16 @@
           @updateFilter="handleFilter"
           :isShowFilter="isShowFilter"
         )
-      .div(class="col-12 md:col-4")
+      .div(class="col-12 md:col-3")
+        FilterTable(
+          title="Warehouse"
+          :value="filter.warehouse"
+          :options="warehouseOption"
+          name="warehouse"
+          @updateFilter="handleFilter"
+          :isDisabled="user.role !== 'admin'"
+          :isClear="false")
+      .div(class="col-12 md:col-3")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
@@ -131,12 +140,15 @@ import {
   calculateIndex,
   StockConstants,
   getDeleteMessage,
-  resetScrollTable
+  resetScrollTable,
+  getTotalQuantityLabel
 } from '~/utils'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 const nsCategoryStock = namespace('category/category-list')
 const nsStoreStock = namespace('stock/stock-list')
+const nsWarehouseStock = namespace('warehouse/warehouse-list')
+const nsStoreUser = namespace('user-auth/store-user')
 @Component({
   components: {
     ConfirmDialogCustom,
@@ -154,6 +166,7 @@ class Stock extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList = StockConstants.STOCK_STATUS_OPTIONS
   limitOptions = LIMIT_PAGE_OPTIONS
+  warehouseOption: any = []
   filter: any = {
     name: null,
     barCode: null,
@@ -172,6 +185,15 @@ class Stock extends Vue {
 
   @nsCategoryStock.State
   categoryList!: any
+
+  @nsWarehouseStock.State
+  warehouseList!: any
+
+  @nsStoreUser.State
+  user!: any
+
+  @nsWarehouseStock.Action
+  actWarehouseList!: () => Promise<void>
 
   @nsStoreStock.Action
   actGetStockList!: (params?: any) => Promise<void>
@@ -240,7 +262,16 @@ class Stock extends Vue {
     return data.stockStatus === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
   }
 
-  mounted() {
+  async mounted() {
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouse = this.warehouseList[0]
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
     this.getProductList()
     this.actCategoryList()
   }
@@ -332,10 +363,8 @@ class Stock extends Vue {
   }, 500)
 
   handleRefreshFilter() {
-    this.filter.name = null
-    this.filter.barCode = null
-    this.filter.categories = null
-    this.filter.status = null
+    const adminFilter = _.omit(_.cloneDeep(this.filter), 'warehouse')
+    for (const items in adminFilter) this.filter[items] = null
     this.getProductList()
   }
 
@@ -365,6 +394,10 @@ class Stock extends Vue {
 
   handleAddStock() {
     this.$router.push('/stock-in/create-receipt')
+  }
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.total, 'result', '<%= quantity%> found')
   }
 }
 export default Stock

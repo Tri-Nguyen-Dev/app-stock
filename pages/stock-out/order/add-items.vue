@@ -105,9 +105,9 @@
       )
       Column(field='delivery' header='DELIVERY QUANTITY' bodyClass='text-bold' :styles="{'width': '5%'}")
         template(#body='{data}')
-          InputNumber.w-7rem(v-model="data.delivery" mode="decimal" :min="0"
-            :max="data.amount" inputClass="w-full" @input='handleDeliveryChange'
-            :disabled="!data.amount"
+          InputNumber.w-7rem(mode="decimal" :min="0" :value='data.delivery'
+            :disabled="!data.amount" :class='data.amount < data.delivery && "p-invalid"'
+            inputClass="w-full" @input='handleDeliveryChange($event, data)'
           )
       Column(field='image' header='IMAGE')
         template(#body='{data}')
@@ -126,7 +126,7 @@
         template(#body='{data}')
           span.text-primary {{data.box.request.id}}
       Column(field='createdAt' header='STOCK-IN-TIME' :sortable='true' className="text-right" sortField='_stock.createdAt')
-        template(#body='{ data }') {{ data.stock.createdAt | dateTimeHour12 }}
+        template(#body='{ data }') {{ data.stock.createdAt | dateTimeHour24 }}
       template(#footer)
         Pagination(
           :paging="paging"
@@ -212,12 +212,13 @@ class AddItems extends Vue {
   }
 
   get checkIsFilter() {
-    const params = _.omit(this.getParamAPi(), ['email', 'warehouseId', 'pageNumber', 'pageSize'])
+    const params = _.omit(this.getParamAPi(), ['email', 'warehouseId', 'pageNumber', 'pageSize', 'itemStatus'])
     return Object.values(params).some((item) => item)
   }
 
   getParamAPi() {
     return {
+      itemStatus: 'ITEM_STATUS_AVAILABLE',
       pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
       email: this.sellerEmail || null,
       warehouseId: this.warehouse || null,
@@ -247,8 +248,20 @@ class AddItems extends Vue {
   }
 
   async handleOrderDelivery() {
-    await this.actOutGoingList(this.outGoingList)
-    this.$router.push({ path: '/stock-out/order' })
+    const itemError = _.find(this.outGoingList, ({ amount, delivery }) => {
+      if(amount < delivery) return true
+    })
+    if(itemError) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Delivery quantity could not exceed the inventory quantity',
+        life: 3000
+      })
+    } else {
+      await this.actOutGoingList(this.outGoingList)
+      this.$router.push({ path: '/stock-out/order' })
+    }
   }
 
   handleBack() {
@@ -276,11 +289,20 @@ class AddItems extends Vue {
     this.getDataList()
   }
 
-  handleDeliveryChange() {
-    const itemChangeOnPage = _.filter(this.inventoryList, ({ delivery }) => {
+  handleDeliveryChange(deliveryNew, data) {
+    if(deliveryNew > data.amount && data.delivery !== deliveryNew) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: `Delivery quantity could not exceed ${data.amount}`,
+        life: 3000
+      })
+    }
+    data.delivery = deliveryNew
+    this.outGoingList = _.filter(_.unionWith(this.inventoryList, this.outGoingList,(a: any, b: any) =>
+      (a.id === b.id)), ({ delivery }) => {
       return delivery && delivery > 0
     })
-    this.outGoingList = _.unionWith(this.outGoingList, itemChangeOnPage, _.isEqual)
     this.isDisabled =  _.size(this.outGoingList) < 1 ? 'disabled' : null
   }
 

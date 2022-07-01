@@ -3,14 +3,14 @@
     .stock__take__header
       div
         h1.text-heading Stock-take note list
-        span.text-subheading {{ total }} products found
+        span.text-subheading {{ totalItem }}
       .header__action
         .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
             .icon.icon-filter(v-if="!isShowFilter")
             .icon.icon-chevron-up.bg-primary(v-else)
             span Filter
-          .btn-refresh()
+          .btn-refresh(@click="handleRefeshFilter")
             .icon.icon-rotate-left.bg-white
         Button.btn.btn-primary(class="drop-option" @click="isShowOptionAddNote = !isShowOptionAddNote")
           .icon.icon-add-items
@@ -31,31 +31,36 @@
             .grid.grid-nogutter
               .col
                   FilterCalendar(
-                    title="From"
+                    title="Create Time From"
                     border="left"
                     :value="filter.dateFrom"
                     name="dateFrom"
                     inputClass="border-0"
                     dateFormat="dd-mm-yy"
                     :showIcon="true"
-                    @updateFilter="handleFilter")
+                    @updateFilter="handleFilter"
+                  )
               .col.ml-1
                   FilterCalendar(
-                  title="To"
-                  border="right"
-                  :value="filter.dateTo"
-                  name="dateTo"
-                  inputClass="border-0"
-                  dateFormat="dd-mm-yy"
-                  :showIcon="true"
-                  @updateFilter="handleFilter")
+                    title="To"
+                    border="right"
+                    :value="filter.dateTo"
+                    name="dateTo"
+                    inputClass="border-0"
+                    dateFormat="dd-mm-yy"
+                    :showIcon="true"
+                    @updateFilter="handleFilter"
+                    :minDate="filter.dateFrom"
+                  )
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
-          :options="warehouseList"
+          :options="warehouseOption"
           name="warehouse"
-          @updateFilter="handleFilter")
+          @updateFilter="handleFilter"
+          :isDisabled="user.role !== 'admin'"
+          :isClear="false")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Check Type"
@@ -103,9 +108,9 @@
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(field='id' header='NOTE ID' headerClass="grid-header-center" sortable sortField="_id")
           Column(header='Create Time' field='createdAt' sortable sortField="_createdAt")
-            template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
+            template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}
           Column(header='UPDATE time' field='updatedAt' sortable sortField="_updatedAt")
-            template(#body='{ data }') {{ data.createdAt | dateTimeHour12 }}
+            template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}
           Column(header='Creator ID' field='creatorId' sortable sortField="_createdBy.staffId")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.createdBy.staffId }}
@@ -121,7 +126,7 @@
                   span.stock-take-result.result-waiting(v-if="data.finalResultStatus === 'WAITING'") N/A
           Column(header='nOTE' sortable field='note' sortField="_note" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right {{ data.note }}
+                div.grid-cell-right {{  data.approveNote || data.submitNote || data.note }}
           Column(field='status' sortable header="Status" sortField="_status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
@@ -137,17 +142,19 @@
                 div.grid-cell-right {{ data.checkType }}
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
-              .table__action.grid-cell-center(:class="{'action-disabled': data.status === 'CANCELLED'}")
+              .table__action.grid-cell-center(:class="{'action-disabled': disableButtonDetete(data)}")
                 span.action-item(@click.stop="showModalDelete([data])" :class="{'disable-button': selectedStockTakeFilter.length > 0}")
                   .icon.icon-btn-delete
           template(#footer)
             Pagination(
-              type="items selected"
+              type="ST note selected"
               :paging="paging"
               :total="total"
               :deleted-list="selectedStockTakeFilter"
               @onDelete="showModalDelete"
-              @onPage="onPage")
+              @onPage="onPage"
+              title="Cancel"
+            )
           template(#empty)
             div.table__empty
               img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
@@ -155,7 +162,7 @@
               p.empty__text(v-if="!checkIsFilter") List is empty!
               p.notfound__text(v-else) Item not found!
     ConfirmDialogCustom(
-      title="Confirm delete"
+      title="Cancel confirm"
       image="confirm-delete"
       :isShow="isModalDelete"
       :onOk="handleDeleteStock"
@@ -168,7 +175,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getDeleteMessage, resetScrollTable } from '~/utils'
+import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getCancelMessage, resetScrollTable, getTotalQuantityLabel } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
@@ -196,6 +203,7 @@ class StockTake extends Vue {
   resultList = StockTakeConstants.RESULT_STOCK_TAKE_OPTIONS
   typeList = StockTakeConstants.TYPE_STOCK_TAKE_OPTIONS
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  warehouseOption: any = []
   filter: any = {
     id: null,
     dateFrom: null,
@@ -238,9 +246,17 @@ class StockTake extends Vue {
 
   // -- [ Getters ] -------------------------------------------------------------
   get selectedStockTakeFilter() {
-    return _.filter(this.selectedStockTake, (stock: any) => {
-      return stock.stockStatus !== 'STOCK_STATUS_DISABLE'
-    })
+    const user = this.user?.staffId
+    const isCheckDeleteOther = _.find(this.selectedStockTake, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
+    const isCheckDeletePIC = _.find(this.selectedStockTake, function(o) { return o.status === 'IN_PROGRESS' && o.assignee?.staffId !== user })
+    if(isCheckDeleteOther || isCheckDeletePIC) {
+      return []
+    }
+    else {
+      return _.filter(this.selectedStockTake, (item: any) => {
+        return item.status !== 'CANCELLED'
+      })
+    }
   }
 
   get checkIsFilter() {
@@ -274,7 +290,7 @@ class StockTake extends Vue {
   }
 
   get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'stock')
+    return getCancelMessage(this.onEventDeleteList, 'ST note selected')
   }
 
   handleExportReceipt() {
@@ -305,6 +321,9 @@ class StockTake extends Vue {
   showModalDelete(data: any) {
     this.onEventDeleteList = data || this.selectedStockTakeFilter
     this.isModalDelete = true
+    if(data) {
+      this.selectedStockTake = []
+    }
   }
 
   getParamApi() {
@@ -377,30 +396,6 @@ class StockTake extends Vue {
   async handleDeleteStock() {
     try {
       this.loadingSubmit = true
-      const isCheckDelete = _.find(this.onEventDeleteList, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
-      const isCheckDelete2 = _.find(this.onEventDeleteList, function(o) { return o.status === 'IN_PROGRESS' && !o?.assignee?.staffId })
-      if(isCheckDelete) {
-        this.loadingSubmit = false
-        this.isModalDelete = false
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Error Message',
-          detail: 'Only new and in progress status can be delete!',
-          life: 3000
-        })
-        return
-      }
-      if(isCheckDelete2) {
-        this.loadingSubmit = false
-        this.isModalDelete = false
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Error Message',
-          detail: 'Can not delete stock take with status inprogess without pic!',
-          life: 3000
-        })
-        return
-      }
       const stockTakeIds = _.map(this.onEventDeleteList, 'id')
       const data = await this.actDeleteStockTakeList(stockTakeIds)
       if (data) {
@@ -414,14 +409,38 @@ class StockTake extends Vue {
         })
         await this.getStockTakeList()
       }
+      this.selectedStockTake = []
     } catch (error) {
       this.loadingSubmit = false
     }
   }
 
-  mounted() {
-    this.actWarehouseList()
+  disableButtonDetete(data) {
+    return (data.status === 'IN_PROGRESS' && data.assignee?.staffId !== this.user?.staffId)
+      || !['IN_PROGRESS', 'NEW'].includes(data.status)
+  }
+
+  async handleRefeshFilter() {
+    const adminFilter = _.omit(_.cloneDeep(this.filter), 'warehouse')
+    for (const items in adminFilter) this.filter[items] = null
+    await this.getStockTakeList()
+  }
+
+  async mounted() {
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouse = this.warehouseList[0]
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
     this.getStockTakeList()
+  }
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.total, 'result', '<%= quantity%> found')
   }
 }
 
@@ -484,7 +503,7 @@ export default StockTake
 
       .option-item
         border-bottom: 1px solid #dee2e6
-        transition: all 0.25 ease
+        transition: all 0.25s ease
         &:hover
           background-color: $primary
           a

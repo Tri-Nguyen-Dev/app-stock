@@ -1,3 +1,5 @@
+import { REPORT_STATUS } from './report'
+
 export namespace FilterConstants {
   // -- [ Option Maps ] ------------------------------------------------
   export const BOX_SIZE_MAP = new Map<string, string>([
@@ -27,9 +29,11 @@ export namespace FilterConstants {
   ])
 
   export const REPORT_STATUS_MAP = new Map<string, string>([
-    ['REPORT_NEW', 'NEW'],
-    ['REPORT_RESOLVED', 'RESOLVED'],
-    ['REPORT_CANCELLED', 'CANCELLED']
+    [REPORT_STATUS.NEW, 'NEW'],
+    [REPORT_STATUS.IN_PROGRESS, 'IN_PROGRESS'],
+    [REPORT_STATUS.SOLVED, 'SOLVED'],
+    [REPORT_STATUS.CANCELED, 'CANCELLED']
+
   ])
   
   export const STATUS_ITEM_STOCK = new Map<string, string>([

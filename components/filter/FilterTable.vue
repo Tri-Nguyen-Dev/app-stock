@@ -3,8 +3,8 @@
     div.pt-2.pb-1.title
       span.text-600.font-sm {{title}}
     span.p-input-icon-right.w-full
-      i(v-if="value" class="pi pi-times clear" @click.stop="clearValue")
-      .icon--small.icon--right.icon-search.surface-900.icon--absolute
+      i(v-if="value && isClear" class="pi pi-times clear" @click.stop="clearValue")
+      .icon--small.icon--right.icon-search.surface-900.icon--absolute(v-if="isClear")
       InputText.border-0.w-full.mb-1(
         v-if="searchText" type="text"
         :value="value"
@@ -15,9 +15,9 @@
         v-else-if="options"
         :options="options"
         optionLabel="name"
-        :placeholder="placeholder || 'Select'"
         :value="value"
         @input="handleFilter"
+        :disabled="isDisabled"
       )
       slot(name="multi-select")
 </template>
@@ -32,6 +32,8 @@ class FilterTable extends Vue {
   @Prop() readonly placeholder!:string
   @Prop() readonly name!: any | undefined
   @Prop() readonly isShowFilter!: boolean | false
+  @Prop({ default: true }) isClear: boolean
+  @Prop({ default: false }) isDisabled: boolean
 
   validateText =  _.debounce(this.handleFilter, 500);
 

@@ -15,7 +15,7 @@
         span.font-semibold {{ (index + 1) + paginate.pageNumber * paginate.pageSize  }}
     Column(field="createdAt" header="TIME" sortable :styles="{'width': '100%'}")
       template(#body="{data}")
-        div {{ data.createdAt | dateTimeHour12 }}
+        div {{ data.createdAt | dateTimeHour24 }}
     Column(field="originalLocation.name" header="ORIGINAL LOCATION" sortable)
     Column(field="newLocation.name" header="NEW LOCATION" sortable)
     Column(field="createdBy.staffId" header="ID CREATOR" sortable)
