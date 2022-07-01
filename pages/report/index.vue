@@ -77,6 +77,7 @@
       @row-select="rowSelect($event)"
       @row-unselect="rowUnselect"
       :expandedRows.sync="expandedRows"
+      @row-click = 'rowClick'
       )
       Column(:expander="true" :styles="{width: '2rem'}")
       Column(selectionMode="multiple" :styles="{width: '3rem'}" :selection="selectedReportes")
@@ -709,4 +710,9 @@ export default ReportList
   ::v-deep.p-column-header-content
     .p-checkbox
       display: none !important
+  ::v-deep.p-datatable
+    .p-datatable-tbody
+      & > tr:not(.p-highlight):hover
+        background-color: #fcfcfc !important
+
 </style>
