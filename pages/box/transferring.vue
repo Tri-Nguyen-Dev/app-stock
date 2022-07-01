@@ -21,7 +21,7 @@
           @selectedTab='selectedOriginalBox'
         )
         StockOutPackingOriginal.mb-2.flex-1(
-          title='Box list'
+          title='transferring box'
           icon='icon-info'
           :isTranffering='true'
           :listBox="listTranfferingBox"
@@ -193,7 +193,7 @@ class DeliveryOrderPacking extends Vue {
         })
       }
     }
-    else { 
+    else {
       this.$router.push('/box')
     }
   }
@@ -320,7 +320,7 @@ class DeliveryOrderPacking extends Vue {
         }
       })
     })
-    _.forEach(listStockCancle, function (item) { 
+    _.forEach(listStockCancle, function (item) {
       if(!_.find(listStockOK, {
         'barCode': item.barCode
       })) {
@@ -389,7 +389,7 @@ class DeliveryOrderPacking extends Vue {
     }
     data.warehouse = {
       id: this.listOriginalBox[0]?.request?.warehouse?.id
-    } 
+    }
 
     data.note = this.noteText
     const result = await this.actCombineBox(data)
