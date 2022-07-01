@@ -6,7 +6,7 @@
         .stock-takeItem__header
           div
             h1.text-heading Stock-take Note
-            span.text-subheading {{ totalItem }} total
+            span.text-subheading All ({{ totalItem }})
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='addBox') Add Box
             Button.btn.btn-primary.border-0(@click='saveStockTake') Save
@@ -130,6 +130,7 @@ class DeliveryOrder extends Vue {
   }
 
   async  saveStockTake() {
+    const warehouse =  this.boxShow.find((element)=> {return element.warehouseId}  )
     const listBox = this.boxShow.map(element =>{
       return {
         boxCode: element.id
@@ -140,9 +141,9 @@ class DeliveryOrder extends Vue {
     }
     const data = {
       note: this.note,
-      checkType: 'BOX',
+      checkType: 0,
       stockTakeBox: listBox,
-      warehouse: this.user?.warehouse? { id: this.user?.warehouse.id } : undefined,
+      warehouse: { id: warehouse.warehouseId },
       status: STOCK_TAKE_STATUS.NEW,
       reportList: this.reportList
     }

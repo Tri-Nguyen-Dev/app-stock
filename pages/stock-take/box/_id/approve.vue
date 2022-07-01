@@ -23,6 +23,7 @@
           div
             h1.text-heading(v-if='this.boxStockTakeDetail.status === "APPROVED"')  Approved Stock-take Note Detail
             h1.text-heading(v-else)  Approving Stock-take Note Detail
+            span.text-subheading All ({{ boxStockTakeDetail.totalStockTakeBox }})
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='saveApprove' v-if='!isApproved') save
             Button.btn.btn-primary.border-0(@click='exportNote') export
@@ -65,9 +66,9 @@
                   Column(field="approvedQuantity" header="APPROVE QTY" className="red-text")
                     template(#body="{data}")
                       InputNumber.w-7rem(inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)' :disabled='isApproved' :useGrouping="false" mode="decimal")
-                  Column(field="discrepancy" header="APPROVE VARIANT")
+                  Column(field="approveVariant" header="APPROVE VARIANT")
                     template(#body="{data}")
-                      span(v-if='data.approvedQuantity !== null') {{data.discrepancy}}
+                      span {{data.approvedQuantity - data.inventoryQuantity}}
             template(#footer v-if='!isApproved')
                 .grid.grid-nogutter.stock-takeItem__footer
                   .col
@@ -139,36 +140,35 @@ class ApproveBoxStockTake extends Vue {
   actGetStockTakeLable!: (params?: any) => Promise<any>
 
   async mounted() {
-    await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
-    if (
-      this.boxStockTakeDetail?.status !== 'NEW' &&
-      this.user?.staffId !== this.boxStockTakeDetail?.assignee?.staffId
-    ) {
+    const staffId = this.boxStockTakeDetail?.assignee?.staffId
+    if(staffId && this.user?.staffId !== staffId) {
       this.$router.push('/stock-take')
-    }
-    this.dataList = _.cloneDeep(
-      this.boxStockTakeDetail.stockTakeBox.map((element: any) => {
-        const checkingStatus = _.some(
-          element.stockTakeItem,
-          function square(n: any) {
-            return n.isChecking
-          }
-        )
-        return {
-          ...element,
-          status: this.getStatusBox(element.stockTakeItem),
-          isChecking: checkingStatus,
-          stockTakeBoxItem: element.stockTakeItem.map((item: any) => {
-            return {
-              ...item,
-              approvedQuantity: item.countedQuantity,
-              boxCode: element.boxCode,
-              resultStatus: item.resultStatus || 'WAITING'
+    } else {
+      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+      this.dataList = _.cloneDeep(
+        this.boxStockTakeDetail.stockTakeBox.map((element: any) => {
+          const checkingStatus = _.some(
+            element.stockTakeItem,
+            function square(n: any) {
+              return n.isChecking
             }
-          })
-        }
-      })
-    )
+          )
+          return {
+            ...element,
+            status: this.getStatusBox(element.stockTakeItem),
+            isChecking: checkingStatus,
+            stockTakeBoxItem: element.stockTakeItem.map((item: any) => {
+              return {
+                ...item,
+                approvedQuantity: item.countedQuantity,
+                boxCode: element.boxCode,
+                resultStatus: item.resultStatus || 'WAITING'
+              }
+            })
+          }
+        })
+      )
+    }
   }
 
   getStatusBox(stockTakeBoxItem: any) {

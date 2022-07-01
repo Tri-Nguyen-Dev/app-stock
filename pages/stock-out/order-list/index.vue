@@ -462,7 +462,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowdbClick({ data }) {
-    if(data.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && data.assigneeId === this.user.id) {
+    if(!data.assigneeId || data.assigneeId === this.user.id) {
       this.$router.push(`/stock-out/order/${data.id}`)
     }
   }
