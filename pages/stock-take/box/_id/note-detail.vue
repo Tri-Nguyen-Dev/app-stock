@@ -1,18 +1,18 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
     StockTakeNoteInfo(:info='noteDetailInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
-      template(#note)
+      template(#note v-if='boxStockTakeDetail.note')
+        .col-12.flex.align-items-center(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          .icon.icon-note.icon.bg-primary.mr-2
+          span.font-bold.text-800.uppercase Note
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-          .icon--large.bg-blue-700(class='icon-note')
-          span.font-normal.text-700.text-base.uppercase Note
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.note')
-          .col.flex.flex-column.justify-content-center
-            div.font-normal.text-base.uppercase.font-bold Creator:
-            Textarea(:value='boxStockTakeDetail.note' disabled rows='2' cols=30)
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-          .col.flex.flex-column.justify-content-center
-            div.font-normal.text-base.uppercase.font-bold PIC:
-            Textarea.text-lg(:value='noteDetailInfo.submitNote' :disabled='isComplete' placeholder='Write something...' rows='2' cols=30)
+          .grid.grid-nogutter.wapprer-note.m-0
+            .col-12.font-semibold  Creator: {{boxStockTakeDetail.createdBy.staffId}}
+            .col-12 Note: {{ boxStockTakeDetail.note }}
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.submitNote && isComplete')
+          .grid.grid-nogutter.wapprer-note.m-0
+            .col-12.font-semibold  PIC: {{boxStockTakeDetail.assignee.staffId}}
+            .col-12 Note: {{ boxStockTakeDetail.submitNote }}
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
       .stock-takeItem.flex.flex-column
         .stock-takeItem__header
@@ -72,7 +72,6 @@
                   :value="slotProps.data.stockTakeBoxItem"
                   responsiveLayout="scroll"
                 )
-                  //- :selection.sync="slotProps.data.stockTakeBoxItem.selectedConfirm"
                   Column(field='no' header='NO' bodyClass='text-bold')
                     template(#body='slotProps') {{ slotProps.index + 1 }}
                   Column(field="barCode" header="Barcode" sortable)
@@ -80,7 +79,6 @@
                   Column(field="countedQuantity" header="COUNTED QTY" :styles="{'width': '5%'}")
                     template(#body="{data}")
                       InputNumber.w-7rem(:disabled='isCheck || isComplete || data.isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity(data)' :useGrouping="false" mode="decimal")
-                  //- Column(selectionMode="multiple" :headerStyle="{'width': '3em'}")
                   Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}")
                     template(#body="{data}")
                       span(v-if='data.countedQuantity !== null') {{data.countedQuantity - data.inventoryQuantity}}
@@ -90,6 +88,11 @@
                         tag.table__status.table__status--error(v-if='data.resultStatus === "NG"') {{data.resultStatus}}
                         tag.table__status.table__status--available(v-else-if='data.resultStatus === "OK"') {{data.resultStatus}}
                         tag.table__status.table__status--draft(v-else) {{data.resultStatus}}
+            template(#footer v-if='!isComplete')
+                .grid.grid-nogutter.stock-takeItem__footer
+                  .col
+                    div(style="padding-left: 10.5px") Note:
+                    InputText.inputSearchCode.w-full(v-model='stockTakeInfo.note' rows="1" cols="40" placeholder='Write something...')
             template(#empty)
               div.flex.align-items-center.justify-content-center.flex-column
                 img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
@@ -311,7 +314,7 @@ class NoteBoxDetail extends Vue {
         })
       })
     )
-    submitData = { stockTakeItem: [...submitData] , submitNote: this.boxStockTakeDetail.note }
+    submitData = { stockTakeItem: [...submitData] , submitNote: this.stockTakeInfo.note }
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: true,
@@ -345,7 +348,7 @@ class NoteBoxDetail extends Vue {
       })
     )
 
-    submitData = { stockTakeItem: [...submitData] , submitNote: this.boxStockTakeDetail.note }
+    submitData = { stockTakeItem: [...submitData] , submitNote: this.stockTakeInfo.note }
     const checkStatus = _.some(this.dataList, function square(n: any) {
       return n.status === null || n.status === 'WAITING'
     })
@@ -577,6 +580,13 @@ export default NoteBoxDetail
     padding-right: 0
     .child-table
       border: solid 1px #ececec
+.wapprer-note
+    width: 100%
+    min-height: 72px
+    border-radius: 4px
+    background-color: $text-color-200
+    padding: 12px
+    word-wrap: break-word
 .wapprer-unit
   min-height: 72px
   border-radius: 4px

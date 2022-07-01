@@ -1,22 +1,22 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
     StockTakeNoteInfo(:info='noteDetailInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
-      template(#note)
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-          .icon--large.bg-blue-700(class='icon-note')
-          span.font-normal.text-700.text-base.uppercase Note
+      template(#note v-if='boxStockTakeDetail.note || boxStockTakeDetail.submitNote')
+        .col-12.flex.align-items-center(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+          .icon.icon-note.icon.bg-primary.mr-2
+          span.font-bold.text-800.uppercase Note
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.note')
-          .col.flex.flex-column.justify-content-center
-            div.font-normal.text-base.uppercase.font-bold Creator:
-            Textarea(:value='boxStockTakeDetail.note' disabled rows='2' cols=30)
+          .grid.grid-nogutter.wapprer-note.m-0
+            .col-12.font-semibold  Creator: {{boxStockTakeDetail.createdBy.staffId}}
+            .col-12 Note: {{ boxStockTakeDetail.note }}
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.submitNote')
-          .col.flex.flex-column.justify-content-center
-            div.font-normal.text-base.uppercase.font-bold PIC:
-            Textarea.text-lg(:value='boxStockTakeDetail.submitNote' disabled rows='2' cols=30)
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-          .col.flex.flex-column.justify-content-center
-            div.font-normal.text-base.uppercase.font-bold Approver:
-            Textarea.text-lg(:value='stockTakeInfo.note' rows='2' cols=30)
+          .grid.grid-nogutter.wapprer-note.m-0
+            .col-12.font-semibold  PIC: {{boxStockTakeDetail.assignee.staffId}}
+            .col-12 Note: {{ boxStockTakeDetail.submitNote }}
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.approveNote && isApproved')
+          .grid.grid-nogutter.wapprer-note.m-0
+            .col-12.font-semibold  Approver: {{boxStockTakeDetail.approver.staffId}}
+            .col-12 Note: {{ boxStockTakeDetail.approveNote }}
     div.flex-1( class=' col-12  md:col-12  lg:col-7 xl:col-9' )
       .stock-takeItem.flex.flex-column
         .stock-takeItem__header
@@ -64,10 +64,15 @@
                   Column(field="countedQuantity" header="COUNTED QTY" className="red-text")
                   Column(field="approvedQuantity" header="APPROVE QTY" className="red-text")
                     template(#body="{data}")
-                      InputNumber.w-7rem(inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)' :disabled='isApproved')
+                      InputNumber.w-7rem(inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)' :disabled='isApproved' :useGrouping="false" mode="decimal")
                   Column(field="discrepancy" header="APPROVE VARIANT")
                     template(#body="{data}")
                       span(v-if='data.approvedQuantity !== null') {{data.discrepancy}}
+            template(#footer v-if='!isApproved')
+                .grid.grid-nogutter.stock-takeItem__footer
+                  .col
+                    div(style="padding-left: 10.5px") Note:
+                    InputText.inputSearchCode.w-full(v-model='stockTakeInfo.note' rows="1" cols="40" placeholder='Write something...')
             template(#empty)
               div.flex.align-items-center.justify-content-center.flex-column
                 img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" )
@@ -199,7 +204,7 @@ class ApproveBoxStockTake extends Vue {
         })
       })
     )
-    submitData = { stockTakeItem: [...submitData], approveNote: this.boxStockTakeDetail.note }
+    submitData = { stockTakeItem: [...submitData], approveNote: this.stockTakeInfo.note }
     const result = await this.actApproveSubmit({ id: this.$route.params.id , data: submitData })
     if (result) {
       this.$toast.add({
@@ -322,6 +327,13 @@ export default ApproveBoxStockTake
     padding-right: 0
     .child-table
       border: solid 1px #ececec
+.wapprer-note
+    width: 100%
+    min-height: 72px
+    border-radius: 4px
+    background-color: $text-color-200
+    padding: 12px
+    word-wrap: break-word
 .wapprer-unit
   min-height: 72px
   border-radius: 4px

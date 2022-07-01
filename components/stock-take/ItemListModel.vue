@@ -83,7 +83,7 @@
                     dateFormat="dd-mm-yy"
                     :showIcon="true"
                     @updateFilter="handleFilter"
-                  ) 
+                  )
             .div(class="col-12 md:col-4")
               FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
       .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
@@ -113,7 +113,7 @@
                 span.text-white-active.text-900.font-bold {{ data.stock.barCode }}
             Column(field='box.id' header='BOX CODE' :sortable='true' sortField='_box.id')
             Column(field='stock.name' header='ITEM NAME' :sortable='true' sortField='_stock.name')
-            Column(field="box.rackLocation.name" header="LOCATION" :sortable="true" className="text-right" 
+            Column(field="box.rackLocation.name" header="LOCATION" :sortable="true" className="text-right"
               sortField="_box.rackLocation.name"
             )
               template(#body="{data}")
@@ -244,7 +244,7 @@ class ItemListModel extends Vue {
     const params = _.omit(this.getParamApi(), paramsDefault)
     return Object.values(params).some((item) => item)
   }
-  
+
   get visibleVue() {
     return this.isShow
   }
@@ -253,9 +253,9 @@ class ItemListModel extends Vue {
     const length = _.size(this.selectedBoxeSsatisfy)
     let stockQuantity = ''
     if(length === 1 ) {
-      stockQuantity = length + ' stock'
+      stockQuantity = length + ' item'
     } else if(length > 1) {
-      stockQuantity = length + ' stocks'
+      stockQuantity = length + ' items'
     }
     return {
       label: `Add ${stockQuantity || 'stock'} to stock-take note`,

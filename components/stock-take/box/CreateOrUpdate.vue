@@ -163,7 +163,7 @@ class DeliveryOrder extends Vue {
     this.boxSelected = _.cloneDeep(event)
     if(this.boxSelected.length>0){
       this.prepareLableBtnAddStock()
-      
+
     } else {
       this.lableBtnAddStock = ''
     }
@@ -221,9 +221,9 @@ class DeliveryOrder extends Vue {
     const length = _.size(this.boxSelected)
     let stockQuantity = ''
     if(length === 1 ) {
-      stockQuantity = length + ' stock'
+      stockQuantity = length + ' box'
     } else if(length > 1) {
-      stockQuantity = length + ' stocks'
+      stockQuantity = length + ' boxes'
     }
     this.lableBtnAddStock = `Add ${stockQuantity || 'stock'} to stock-take note`
   }

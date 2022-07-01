@@ -73,7 +73,7 @@ class PackingInformationDetail extends Vue {
       return [
         { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-info-circle' },
         {
-          label: 'Packing',
+          label: 'Packing detail',
           to: `/stock-out/order/${this.deliveryOrderDetail.id}/packing`,
           icon: 'pi pi-info-circle'
         }

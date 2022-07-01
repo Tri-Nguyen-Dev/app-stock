@@ -202,13 +202,6 @@
           template(#body='{ data }')
             div.grid-cell-right
               span.table__status.table__status--available {{ nameStatus(data.status) }}
-              //- span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_NEW'") NEW
-              //- span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS'") In Progress
-              //- span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_CANCELLED'") Cancelled
-              //- span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_READY'") Ready
-              //- span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERING'") Delivering
-              //- span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERED' ") Delivered
-              //- span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
         template(#footer)
           Pagination(
             title="Cancel"
@@ -237,7 +230,7 @@
     Toast
 </template>
 <script lang="ts">
-import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { DeliveryList } from '~/models/Delivery'
 
@@ -319,24 +312,6 @@ class DeliveryOrderList extends Vue {
   @nsStoreUser.State
   user!: User.Model
 
-  // -- [ Getters ] -------------------------------------------------------------
-  @Watch ('activeTab',{ immediate: true, deep: true })
-  getList(){
-    this.selectedDelivery = []
-    this.paging.pageSize = 20
-    this.paging.pageNumber = 0
-    this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS.filter((item: any) => {
-      return this.activeStatus?.split(',').includes(item.value.toString())
-    })
-    this.getDeliveryList({
-      ...this.filter,
-      warehouseId: this.filter.warehouseId?.id,
-      pageSize: this.paging.pageSize,
-      pageNumber: this.paging.pageNumber,
-      status: this.activeStatus
-    })
-  }
-
   get activeStatus() {
     return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
   }
@@ -400,7 +375,6 @@ class DeliveryOrderList extends Vue {
   }
 
   async mounted() {
-    // this.getProductList()
     const { role, warehouse } = this.user
     if(role === 'admin') {
       await this.actWarehouseList()
@@ -409,6 +383,7 @@ class DeliveryOrderList extends Vue {
       this.warehouseOption = [warehouse]
       this.filter.warehouseId = warehouse
     }
+    this.getList()
   }
 
   async handleFilter( e: any, name: string ) {
@@ -529,12 +504,28 @@ class DeliveryOrderList extends Vue {
 
   handleTab({ index }: any) {
     this.activeTab = index
+    this.getList()
   }
 
   handleAddNew() {
     this.$router.push('/stock-out/order')
   }
 
+  getList() {
+    this.selectedDelivery = []
+    this.paging.pageSize = 20
+    this.paging.pageNumber = 0
+    this.statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS.filter((item: any) => {
+      return this.activeStatus?.split(',').includes(item.value.toString())
+    })
+    this.getDeliveryList({
+      ...this.filter,
+      warehouseId: this.filter.warehouseId?.id ,
+      pageSize: this.paging.pageSize,
+      pageNumber: this.paging.pageNumber,
+      status: this.activeStatus
+    })
+  }
 }
 
 export default DeliveryOrderList
