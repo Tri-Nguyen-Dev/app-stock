@@ -19,7 +19,7 @@
           div
             h1.text-heading(v-if='isCheck') Stock-take Note
             h1.text-heading(v-else) Stock-take Note Detail
-          .stock-takeItem__header--action.flex
+          .stock-takeItem__header--action.flex(v-if='isCancel')
             .btn.btn-primary.cursor-pointer.mr-2(@click='checkItems' v-if='isCheck')
               span.uppercase Check
             .btn.btn-primary.cursor-pointer.mr-2(@click='saveDraft' v-if='!isCheck && !isComplete')
@@ -88,7 +88,7 @@
                         tag.table__status.table__status--error(v-if='data.resultStatus === "NG"') {{data.resultStatus}}
                         tag.table__status.table__status--available(v-else-if='data.resultStatus === "OK"') {{data.resultStatus}}
                         tag.table__status.table__status--draft(v-else) {{data.resultStatus}}
-            template(#footer v-if='!isComplete')
+            template(#footer v-if='!isComplete && isCancel')
                 .grid.grid-nogutter.stock-takeItem__footer
                   .col
                     div(style="padding-left: 10.5px") Note:
@@ -455,6 +455,11 @@ class NoteBoxDetail extends Vue {
   get isApprove() {
     const { status, finalResultStatus } = this.boxStockTakeDetail
     return status === 'COMPLETED' && finalResultStatus === 'NG'
+  }
+
+  get isCancel() {
+    const { status } = this.boxStockTakeDetail
+    return status === 'CANCEL'
   }
 
   get noteDetailInfo() {
