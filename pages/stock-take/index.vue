@@ -59,7 +59,8 @@
           :options="warehouseOption"
           name="warehouse"
           @updateFilter="handleFilter"
-          :isClear="user.role === 'admin'")
+          :isDisabled="user.role !== 'admin'"
+          :isClear="false")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Check Type"
@@ -420,7 +421,7 @@ class StockTake extends Vue {
   }
 
   async handleRefeshFilter() {
-    const adminFilter = _.omit(_.cloneDeep(this.filter), this.user.role !== 'admin' ? 'warehouse' : '')
+    const adminFilter = _.omit(_.cloneDeep(this.filter), 'warehouse')
     for (const items in adminFilter) this.filter[items] = null
     await this.getStockTakeList()
   }
@@ -430,11 +431,11 @@ class StockTake extends Vue {
     if(role === 'admin') {
       await this.actWarehouseList()
       this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouse = this.warehouseList[0]
     } else {
       this.warehouseOption = [warehouse]
       this.filter.warehouse = warehouse
     }
-    this.actWarehouseList()
     this.getStockTakeList()
   }
 }
