@@ -3,7 +3,7 @@
     .stock__take__header
       div
         h1.text-heading Stock-take note list
-        span.text-subheading {{ total }} items found
+        span.text-subheading {{ totalItem }}
       .header__action
         .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
@@ -175,7 +175,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getCancelMessage, resetScrollTable } from '~/utils'
+import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getCancelMessage, resetScrollTable, getTotalQuantityLabel } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
@@ -437,6 +437,10 @@ class StockTake extends Vue {
       this.filter.warehouse = warehouse
     }
     this.getStockTakeList()
+  }
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.total, 'result', '<%= quantity%> found')
   }
 }
 
