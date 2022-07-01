@@ -9,7 +9,8 @@ import { $api, PathBind } from '~/utils'
 export default class StoreCreateReceipt extends VuexModule {
   private static readonly STATE_URL = {
     GET_INVENTORY: '/stock/list-by-seller',
-    POST_DO : '/delivery-order/create'
+    POST_DO : '/delivery-order/create',
+    GET_ESTIMATE: '/distance_matrix/estimate'
   }
 
   public listInfo: any = null;
@@ -17,6 +18,7 @@ export default class StoreCreateReceipt extends VuexModule {
   public total?: number = 0
   public outGoingListStore?: any = []
   public createDOList?: any = []
+  public estimate?: any = []
 
   @Mutation
   setStockIn(data) {
@@ -37,6 +39,11 @@ export default class StoreCreateReceipt extends VuexModule {
   @Mutation
   setDeliveryOrder(createDOList: any) {
     this.createDOList = createDOList
+  }
+
+  @Mutation
+  setEstimate(data : any ){
+    this.estimate = data
   }
 
   @Action({ commit: 'setStockIn', rawError: true })
@@ -63,6 +70,13 @@ export default class StoreCreateReceipt extends VuexModule {
       const response = await $api.post(url, params)
       return response.data
     } catch (error) {}
+  }
+
+  @Action({ commit: 'setEstimate', rawError: true })
+  async actGetEstimate(params?: any): Promise<any | undefined> {
+    const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.GET_ESTIMATE, params)
+    const response: any = await $api.get(url, { params })
+    return response.data
   }
 
 }
