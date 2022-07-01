@@ -46,7 +46,7 @@ div
     Column(field='airtag', header='TAG', headerClass='grid-header-center')
       template(#body='{ data }')
         .grid-cell-center
-          Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='isDetail')
+          Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='true')
     template( #footer )
       Pagination(
         :paging="paging"
@@ -77,6 +77,9 @@ div
       styles='width: 3rem',
       headerClass='grid-header-center'
     )
+    Column(field='stockBox.box.id', header='BOXCODE', sortable)
+      template(#body='{ data }')
+        span.font-bold.text-right {{ data.stockBox.box.id }}
     Column(
       field='stockBox.box.rackLocation.name',
       :header='isPack ? "LOCATION" : ""',
@@ -86,9 +89,6 @@ div
         span.font-bold.text-primary.text-right(
           v-if='data.stockBox.box.rackLocation'
         ) {{ data.stockBox.box.rackLocation.name }}
-    Column(field='stockBox.box.id', header='BOXCODE', sortable)
-      template(#body='{ data }')
-        span.font-bold.text-right {{ data.stockBox.box.id }}
     Column.text-overflow-ellipsis(
       field='stockBox.stock.barCode',
       header='BARCODE',
@@ -114,7 +114,7 @@ div
     Column(field='airtag', header='TAG', headerClass='grid-header-center')
       template(#body='{ data }')
         .grid-cell-center
-          Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='isDetail')
+          Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='true')
     template( #footer )
       Pagination(
         :paging="paging"
@@ -140,7 +140,6 @@ class ItemList extends Vue {
   [x: string]: any
   @Prop() listItems!: any[]
   @Prop() getParam: () => any
-  @Prop({ default: false }) isDetail!: boolean
   @Prop({ default: STOCK_OUT_ACTION.ORDER_DETAIL }) action: string
   @Prop({ default: false }) isReady: boolean
   isPack = false

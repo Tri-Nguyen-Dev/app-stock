@@ -6,7 +6,7 @@
         .stock-takeItem__header
           div
             h1.text-heading Stock-take Note
-            span.text-subheading {{ totalItem }} total
+            span.text-subheading All ({{ totalItem }})
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='handleAddItems') Add Item
             Button.btn.btn-primary.border-0(@click='handleSubmit' :disabled='isDisabledSubmit') Save
