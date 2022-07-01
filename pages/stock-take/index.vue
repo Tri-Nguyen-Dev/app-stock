@@ -3,7 +3,7 @@
     .stock__take__header
       div
         h1.text-heading Stock-take note list
-        span.text-subheading {{ total }} products found
+        span.text-subheading {{ totalItem }}
       .header__action
         .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
@@ -59,7 +59,8 @@
           :options="warehouseOption"
           name="warehouse"
           @updateFilter="handleFilter"
-          :isClear="user.role === 'admin'")
+          :isDisabled="user.role !== 'admin'"
+          :isClear="false")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Check Type"
@@ -174,7 +175,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getCancelMessage, resetScrollTable } from '~/utils'
+import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getCancelMessage, resetScrollTable, getTotalQuantityLabel } from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
@@ -420,7 +421,7 @@ class StockTake extends Vue {
   }
 
   async handleRefeshFilter() {
-    const adminFilter = _.omit(_.cloneDeep(this.filter), this.user.role !== 'admin' ? 'warehouse' : '')
+    const adminFilter = _.omit(_.cloneDeep(this.filter), 'warehouse')
     for (const items in adminFilter) this.filter[items] = null
     await this.getStockTakeList()
   }
@@ -430,12 +431,16 @@ class StockTake extends Vue {
     if(role === 'admin') {
       await this.actWarehouseList()
       this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouse = this.warehouseList[0]
     } else {
       this.warehouseOption = [warehouse]
       this.filter.warehouse = warehouse
     }
-    this.actWarehouseList()
     this.getStockTakeList()
+  }
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.total, 'result', '<%= quantity%> found')
   }
 }
 
