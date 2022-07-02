@@ -5,7 +5,7 @@
         :deliveryOrderDetail='orderDetail',
         :type='typeTitle'
       )
-    .col-9.packing__detail--right.pl-4.pr-1.flex-1(class='col-12 md:col-12 lg:col-9 xl:col-9')
+    .col-9.packing__detail--right.pl-4.pr-1(class='col-12 md:col-12 lg:col-9 xl:col-9')
       .grid
         .col-4(class='col-12 md:col-12 lg:col-4 xl:col-4')
           h1.text-heading {{ textHeading }}
@@ -260,14 +260,14 @@ export default DeliveryOrder
   text-align: right
 .packing__detail
   &--container
-    @include flex-column
     @include mobile
       min-height: calc(100vh - 32px)
     @include tablet
       min-height: calc(100vh - 32px)
     @include desktop
-    height: calc(100vh - 32px)
-    overflow: hidden
+      height: calc(100vh - 32px)
+      overflow: hidden
+    display: flex
   &--left
     height: calc( 100vh - 36px) !important
   &--right
