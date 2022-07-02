@@ -1,6 +1,6 @@
 <template lang="pug">
-div
-  DataTable.w-full.flex.flex-column.bg-white.box-page-container(
+div.box-page-container
+  DataTable.w-full.flex.flex-column.bg-white(
     :value='dataRenderItems',
     dataKey='id',
     responsiveLayout='scroll',
@@ -52,7 +52,7 @@ div
         :paging="paging"
         :total="total"
         @onPage="onPage")
-  DataTable.w-full.flex.flex-column.bg-white.box-page-container(
+  DataTable.w-full.flex.flex-column.bg-white(
     :value='dataRenderItems',
     dataKey='id',
     responsiveLayout='scroll',
@@ -146,21 +146,22 @@ class ItemList extends Vue {
   selectedItem: any[] = []
   enablePack = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
-  
-  // -- [ State ] ------------------------------------------------------------
-  paginate: any = {
-    pageNumber: 0,
-    pageSize: 10
-  }
-  
+   
   // -- [ Getters ] -------------------------------------------------------------
   get total(){
     return this.listItems.length
   }
 
+  get dataRenderItems() {
+    const start = this.paging.pageSize * this.paging.pageNumber
+    const end = start + this.paging.pageSize
+    const result = this.listItems.slice(start,end)
+    return result
+  }
+
   onPage(event: any) {
-    this.paginate.pageSize = event.rows
-    this.paginate.pageNumber = event.page
+    this.paging.pageSize = event.rows
+    this.paging.pageNumber = event.page
   }
 
   getIndexPaginate(index: number) {
@@ -169,10 +170,6 @@ class ItemList extends Vue {
       this.paging.pageNumber,
       this.paging.pageSize
     )
-  }
-
-  get dataRenderItems() {
-    return this.listItems
   }
 
   @Watch('action')
@@ -211,12 +208,17 @@ export default ItemList
 
 <style lang="sass" scoped>
 .box-page-container
-  height: calc(100vh - 18rem)
+  @include tablet
+    height: calc(100vh - 150px)  
+  @include desktop
+    height: calc(100vh - 32px)
 ::v-deep.p-datatable .p-column-header-content .p-checkbox-box.p-component
   display: none !important
-::v-deep.p-datatable .p-datatable-tbody > tr.p-highlight
-  background-color: $color-white !important
-  color: var(--surface-900) !important
+::v-deep.p-datatable 
+  .p-datatable-tbody 
+    > tr.p-highlight:not(.row-disable)
+      background-color: $color-white !important
+      color: var(--surface-900) !important
 ::v-deep.p-datatable
   height: 92% !important
 ::v-deep.p-checkbox-disabled:hover
