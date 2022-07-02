@@ -196,11 +196,6 @@ class ItemList extends Vue {
   unSelectRow() {
     this.$emit('enablePack', false)
   }
-
-  // sortData(e: any){
-  //   const  order = e.sortOrder === 1? 'asc': 'desc'
-  //   this.dataRenderItems =  _.orderBy(this.listItems,'stockBox.stock.barCode',order)
-  // }
 }
 
 export default ItemList
@@ -216,7 +211,7 @@ export default ItemList
   display: none !important
 ::v-deep.p-datatable 
   .p-datatable-tbody 
-    > tr.p-highlight:not(.row-disable)
+    tr.p-highlight:not(.row-disable)
       background-color: $color-white !important
       color: var(--surface-900) !important
 ::v-deep.p-datatable
