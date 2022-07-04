@@ -83,7 +83,7 @@ const nsStoreBoxList = namespace('box/box-list')
   }
 })
 class DeliveryOrderPacking extends Vue {
-  tranfferingBoxActive: any = { boxCode: 'TR1', items: [] }
+  tranfferingBoxActive: any = { boxCode: 'TR01', items: [] }
   indexScanBoxCode: number = 0
   autoActiveTabOut: boolean = false
   listOriginalBox: any = []
@@ -252,7 +252,7 @@ class DeliveryOrderPacking extends Vue {
     this.listTranfferingBox.push({
       icon: this.originalBoxActive?.icon,
       qrCode: this.originalBoxActive?.qrCode,
-      boxCode: this.genearateBoxCode(this.listTranfferingBox, 'TR'),
+      boxCode: this.genearateBoxCode(this.listTranfferingBox, 'TR01'),
       items: [],
       airtag:  this.originalBoxActive.airtag,
       boxSize: null,
