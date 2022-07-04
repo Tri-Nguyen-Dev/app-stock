@@ -377,8 +377,6 @@ class DeliveryOrderList extends Vue {
     } else {
       return ''
     }
-
-    // return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
   async mounted() {
@@ -512,6 +510,7 @@ class DeliveryOrderList extends Vue {
 
   handleTab({ index }: any) {
     this.activeTab = index
+    this.handleRefreshFilter()
     this.getList()
   }
 

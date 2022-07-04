@@ -600,4 +600,6 @@ export default NoteBoxDetail
     max-width: 100%
   .redInput.p-inputtext:enabled:focus
     box-shadow: 0 0 0 0.2rem rgb(38 143 255 / 50%) !important
+::v-deep.child-table.p-datatable .p-datatable-tbody tr:not(.p-highlight):hover
+  background: aliceblue !important
 </style>
