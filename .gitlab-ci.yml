@@ -13,12 +13,12 @@ prep:
   stage: prep
   script:
     - yarn install
-    - echo "$BASE_IMAGE_URL" > test.env
-    - echo "$BE_API_URL" > test.env
-    - echo "$HOME_URL" > test.env
-    - echo "$KEYCLOAK_API_URL" > test.env
-    - echo "$MOCK_API_PORT" > test.env
-    - echo "$SERVER_PORT" > test.env
+    - echo "$BASE_IMAGE_URL" >> test.env
+    - echo "$BE_API_URL" >> test.env
+    - echo "$HOME_URL" >> test.env
+    - echo "$KEYCLOAK_API_URL" >> test.env
+    - echo "$MOCK_API_PORT" >> test.env
+    - echo "$SERVER_PORT" >> test.env
     - cat test.env
   cache:
     paths:
