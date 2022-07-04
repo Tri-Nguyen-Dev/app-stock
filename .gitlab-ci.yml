@@ -13,6 +13,7 @@ prep:
   stage: prep
   script:
     - yarn install
+    - echo "$BASE_IMAGE_URL"
   cache:
     paths:
       - node_modules
