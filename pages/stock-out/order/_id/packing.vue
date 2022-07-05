@@ -89,7 +89,7 @@ class DeliveryOrderPacking extends Vue {
   valueReportNote: any = null
   listOutGoingBox: any = [
     {
-      boxCode: 'EX1',
+      boxCode: 'EX01',
       items: [],
       airtag: null,
       checked: false,
@@ -163,7 +163,12 @@ class DeliveryOrderPacking extends Vue {
     let boxCode = subname
     if(listPacking.length > 0) {
       const lastNo = _.last(listPacking)?.boxCode.replace(subname, '')
-      boxCode += parseInt(lastNo) + 1
+      if(parseInt(lastNo) >= 9) {
+        boxCode = `${boxCode}${parseInt(lastNo) + 1}`
+      }
+      else {
+        boxCode = `${boxCode}0${parseInt(lastNo) + 1}`
+      }
     } else {
       boxCode += 1
     }

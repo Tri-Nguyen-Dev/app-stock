@@ -83,7 +83,7 @@ const nsStoreBoxList = namespace('box/box-list')
   }
 })
 class DeliveryOrderPacking extends Vue {
-  tranfferingBoxActive: any = { boxCode: 'TR01', items: [] }
+  tranfferingBoxActive: any = { boxCode: 'TR1', items: [] }
   indexScanBoxCode: number = 0
   autoActiveTabOut: boolean = false
   listOriginalBox: any = []
@@ -91,7 +91,7 @@ class DeliveryOrderPacking extends Vue {
   noteText: string = ''
   listTranfferingBox: any =  [
     {
-      boxCode: 'TR1',
+      boxCode: 'TR01',
       items: [],
       airtag: null,
       checked: false,
@@ -209,8 +209,13 @@ class DeliveryOrderPacking extends Vue {
   genearateBoxCode(listPacking, subname) {
     let boxCode = subname
     if(listPacking.length > 0) {
-      const lastNo = _.last(listPacking)?.boxCode.replace(subname, '')
-      boxCode += parseInt(lastNo) + 1
+      const lastNo = _.last(listPacking)?.boxCode.replace(`${subname}`, '')
+      if(parseInt(lastNo) >= 9) {
+        boxCode = `${boxCode}${parseInt(lastNo) + 1}`
+      }
+      else {
+        boxCode = `${boxCode}0${parseInt(lastNo) + 1}`
+      }
     } else {
       boxCode += 1
     }
@@ -252,7 +257,7 @@ class DeliveryOrderPacking extends Vue {
     this.listTranfferingBox.push({
       icon: this.originalBoxActive?.icon,
       qrCode: this.originalBoxActive?.qrCode,
-      boxCode: this.genearateBoxCode(this.listTranfferingBox, 'TR01'),
+      boxCode: this.genearateBoxCode(this.listTranfferingBox, 'TR'),
       items: [],
       airtag:  this.originalBoxActive.airtag,
       boxSize: null,
