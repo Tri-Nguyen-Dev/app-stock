@@ -1,7 +1,23 @@
 <template lang="pug"> 
-  div
-    h1.text-center AIRTAG MANAGEMENT SYSTEM
-    Chart(type="bar" :data="basicData" ) 
+  .grid.dashboard-page-container
+    .col-12
+      h1.text-heading Dashboard
+    .col-12
+      .dashboard-warehouse
+        div Choose warehouse
+        Dropdown.warehouse-select(v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Select a warehouse")
+    .col-12
+      DashboardTotalCompared
+    .col-12
+      .grid.chart-container
+        .col-5
+          DashboardDeliveryChart
+          DashboardDriverChart.mt-3
+        .col-4
+          DashboardDeliveryChart
+        .col-3
+          DashboardCategoryChart
+          DashboardCapacityChart.mt-3
 </template>
 
 <script lang="ts">
@@ -9,24 +25,30 @@ import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
 class Dashboard extends Vue {
-  basicData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      {
-        label: 'My First dataset',
-        backgroundColor: '#42A5F5',
-        data: [65, 59, 80, 81, 56, 55, 40]
-      },
-      {
-        label: 'My Second dataset',
-        backgroundColor: '#FFA726',
-        data: [28, 48, 40, 19, 86, 27, 90]
-      }
-    ]
-  }
+  selectedCity = null
+  cities = [
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+  ]
 }
 
 export default Dashboard
 </script>
-<style lang="sass">
+<style lang="sass" scoped>
+.dashboard-page-container
+  .dashboard-warehouse
+    background: $color-white
+    display: flex
+    justify-content: space-between
+    align-items: center
+    padding: $space-size-8 $space-size-12
+    .warehouse-select
+      width: 200px
+  .chart-container
+    background: $color-white
+    margin-left: 0
+    margin-right: 0
 </style>
