@@ -79,4 +79,9 @@ export default class StoreCreateReceipt extends VuexModule {
     return response.data
   }
 
+  @Action({ commit: 'setEstimate', rawError: true })
+  async actClearEstimate( params: any ): Promise<string | undefined> {
+    return await params
+  }
+
 }
