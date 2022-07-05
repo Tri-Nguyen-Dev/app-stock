@@ -26,14 +26,14 @@
               .icon--large.icon-note
             .col
               div Note:
-              span {{packingDetail.order.packingNote || 'Note is empty'}}
+              span(v-if="packingDetail.order") {{ packingDetail.order.packingNote || 'Note is empty'}}
         .col-2.border-right-1.border-gray-300.p-1
           .grid.justify-content-center
             .col-3.flex
               img(src='~/assets/icons/box-border.svg')
             .col-fixed
               span.text-base.mr-1 Total boxs:
-              .font-semibold.text-primary {{ this.listOutGoingBox.length }}
+              .font-semibold.text-primary {{ listOutGoingBox.length }}
         .col-2.p-1
           .grid.justify-content-center
             .col-3.flex
