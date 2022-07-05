@@ -51,6 +51,8 @@ div
           Column(header='NOTE' :styles="{'width': '40%'}" field='category' sortField="_category" headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center {{ data.note }}
+    div.flex.justify-content-center
+      Button.btn.btn-primary.my-2.py-1(@click="createStockTake" :disabled="disabledButton") Create stock-take note
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
