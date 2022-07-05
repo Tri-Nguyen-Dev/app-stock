@@ -280,6 +280,14 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({ severity:'success', summary: 'Success Message', detail:'Packing successfully!', life: 3000 })
       this.$router.push(`/stock-out/order/${id}/packing-detail`)
     }
+    else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Packing failed!',
+        life: 3000
+      })
+    }
   }
 
   get totalItem() {
