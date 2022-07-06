@@ -169,13 +169,15 @@ class PackingTableList extends Vue {
   }
 
   handleQuantity(data, event) {
-    if(event > data.quantity) {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'The delivery Q.TY exceeded the inventory number',
-        life: 3000
-      })
+    if(!this.isMergeBox) {
+      if(event > data.quantity) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'The delivery Q.TY exceeded the inventory number',
+          life: 3000
+        })
+      }
     }
     if (!_.isNil(event)) {
       if (!event) {
