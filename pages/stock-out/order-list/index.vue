@@ -180,7 +180,7 @@
               div.text-end Estimated
               div Delivery Time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.estimatedDeliveryTime | estimateDayConvert }} {{(data.estimatedDeliveryTime/86164) < 2 ? 'day' : 'days'}}
+            div.grid-cell-right {{ data.estimatedDeliveryTime | estimateDayConvert }} {{(data.estimatedDeliveryTime/fullDayTime) < 2 ? 'day' : 'days'}}
         Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
           template(#header)
             div
@@ -297,6 +297,7 @@ class DeliveryOrderList extends Vue {
     warehouseId: null
   }
 
+  fullDayTime: number = 24 * 60 * 60
   orderIds: any
 
   isModalDriverList = false
