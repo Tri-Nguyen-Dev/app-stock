@@ -12,7 +12,7 @@
             Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSubmit' :disabled='isDisabled' ) Submit
             Button.btn.btn-primary.border-0(v-if="isCheckAssignee" @click='handleAssignee') Check
           .inventory__header--action.flex(v-else)
-            Button.btn.btn-primary.border-0(v-if="isApprove" @click="handleApprove") Approve
+            Button.btn.btn-primary.border-0(v-if="isApprove  && user.role === 'admin'" @click="handleApprove") Approve
             Button.btn.btn-primary.border-0(@click='exportpdf' ) Export
         .inventory__content
           DataTable.m-h-700(

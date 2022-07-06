@@ -5,9 +5,9 @@
   .col-10.flex.flex-column.justify-content-center
     div.font-normal.text-700.text-base {{ title }}
       slot(name='button-size')
-    a(v-if="link" :href="link" target="_blank").text-link
+    a(v-if="link" :href="link" target="_blank").text-link.text-blue-500
       span.font-bold.text-base {{value}}
-      .icon.icon-arrow-up-right.inline-block
+      .icon.icon-arrow-up-right.inline-block.bg-blue-500
     span.font-bold.text-lg.mr-1.uppercase(v-else class="text-wrap") {{ value }}
     template(v-if="model")
       InputNumber.text-lg(v-if='isEdit' :value='model' @input="handleUpdateUnit")

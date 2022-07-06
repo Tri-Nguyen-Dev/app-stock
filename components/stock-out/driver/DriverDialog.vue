@@ -6,7 +6,7 @@
     template(#footer)
       Button.p-button-secondary.width-btn(label="Close"  icon="pi pi-times" @click="showModal = false")
       Button.p-primary.width-btn(label='Assign Delivery'  icon="pi pi-check" :disabled='!enableAssign' @click='assignDriver')
-      //-Button.btn.btn-primary.border-0(@click='handleAssign' :disabled='selectedDriver.length > 0 ? null : "disabled"') Assign Delivery   
+      //-Button.btn.btn-primary.border-0(@click='handleAssign' :disabled='selectedDriver.length > 0 ? null : "disabled"') Assign Delivery
 </template>
 
 <script lang="ts">
@@ -20,6 +20,7 @@ const nsStoreOrder = namespace('stock-out/order-detail')
 })
 class DriverDialog extends Vue {
   @Prop() isModalDriverList = false
+  @Prop({ default: [] }) orderIds
   showModal = false
   enableAssign = false
   idDriver =''
@@ -48,9 +49,12 @@ class DriverDialog extends Vue {
   }
 
   async assignDriver(){
+    if(this.orderIds.length===0 && this.$route.params.id){
+      this.orderIds.push(this.$route.params.id)
+    }
     const data= {
-      id: this.idDriver,
-      idOrder: this.$route.params.id
+      driverId: this.idDriver,
+      deliveryOrderIds: this.orderIds
     }
     await this.actPostAssignDriver(data)
     this.$emit('assigned',this.dataAssignDriver)
