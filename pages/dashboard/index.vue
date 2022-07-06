@@ -14,7 +14,8 @@
           DashboardDeliveryChart
           DashboardDriverChart.mt-3
         .col-4
-          DashboardDeliveryChart
+          DashboardActivitiesChart
+          DashboardSellerChart.mt-3
         .col-3
           DashboardCategoryChart
           DashboardCapacityChart.mt-3
