@@ -28,6 +28,10 @@
           .btn.btn-primary(v-if="activeTab === 0" @click="handleAddNew")
             .icon.icon-add-items
             span Add New
+          Button.btn.btn-primary.border-0(v-show="activeTab === 1" :disabled='!isSetDelivery' @click="setDelivery")
+            span  Set delivery
+          Button.btn.btn-primary.border-0(v-show="activeTab ===1" :disabled='!isResetDelivery' @click="setDelivery")
+            span  Reset delivery
           .btn__filter(class='active' @click="handleExportReceipt")
             .btn.btn-toggle.bg-white
               .icon-download.icon--large.bg-primary
@@ -176,7 +180,7 @@
               div.text-end Estimated
               div Delivery Time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.estimatedDeliveryTime }} {{data.estimatedDeliveryTime > 1 ? 'days' : 'day'}}
+            div.grid-cell-right {{ data.estimatedDeliveryTime | estimateDayConvert }} {{(data.estimatedDeliveryTime/86164) < 2 ? 'day' : 'days'}}
         Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
           template(#header)
             div
@@ -193,9 +197,9 @@
           template(#body='{ data }')
             div.grid-cell-right {{ data.pic }} {{data.pic === null ? 'N/A' : ''}}
         Column(v-if="activeTab == 1"
-          header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
+          header='Driver' sortable field='driverPhone' sortField="_driverPhone" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.driverName }}
+            div.grid-cell-right {{ data.driverPhone === null ? 'N/A' : data.driverPhone }}
         Column(v-if="activeTab == 2"
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -229,6 +233,11 @@
         p {{ deleteMessage }}
 
     Toast
+    DriverDialog(
+      :isModalDriverList='isModalDriverList',
+      @hideDialog='hideDialog($event)',
+      @assigned='assignedDriver($event)'
+    )
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
@@ -247,6 +256,8 @@ import {
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
 import Pagination from '~/components/common/Pagination.vue'
+import DriverDialog from '~/components/stock-out/driver/DriverDialog.vue'
+import { ORDER_STATUS } from '~/utils/constants/stock-out'
 const nsStoreDelivery = namespace('delivery/delivery-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreExportReceipt = namespace('delivery/export-receipt')
@@ -255,7 +266,8 @@ const nsStoreUser = namespace('user-auth/store-user')
 @Component({
   components: {
     ConfirmDialogCustom,
-    Pagination
+    Pagination,
+    DriverDialog
   }
 })
 class DeliveryOrderList extends Vue {
@@ -284,6 +296,7 @@ class DeliveryOrderList extends Vue {
     warehouseId: null
   }
 
+  isModalDriverList = false
   warehouseOption: any = []
 
   @nsStoreDelivery.State
@@ -372,7 +385,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    if(data.status === 'DELIVERY_ORDER_STATUS_CANCELLED') {
+    if(data.status === ORDER_STATUS.CANCELED ) {
       return 'row-disable'
     } else {
       return ''
@@ -532,6 +545,35 @@ class DeliveryOrderList extends Vue {
       pageNumber: this.paging.pageNumber,
       status: this.activeStatus
     })
+  }
+
+  setDelivery() {
+    this.isModalDriverList = true
+  }
+
+  hideDialog( event:any ) {
+    this.isModalDriverList = !event
+  }
+
+  get isSetDelivery() {
+    if(this.selectedDelivery.length > 0) {
+      return this.selectedDelivery.every((item) => {
+        return item.status === ORDER_STATUS.READY
+      })
+    } else {
+      return false
+    }
+  }
+
+  get isResetDelivery() {
+    if(this.selectedDelivery.length > 0) {
+      return this.selectedDelivery.every(
+        (item) => item.status === ORDER_STATUS.SETTED || item.status === ORDER_STATUS.ACCEPTED
+      ) && this.selectedDelivery.find( (item) => item.driverId === this.selectedDelivery[0].driverId)
+    } else {
+      return false
+    }
+
   }
 }
 

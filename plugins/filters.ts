@@ -78,3 +78,8 @@ Vue.filter('sellerName', (value) => {
   if(!value) return ''
   return value.displayName || `${value.firstName} ${value.lastName}`
 })
+
+// -- [ Convert date time estimate] ------------------------------------------------
+Vue.filter('estimateDayConvert', (value) => {
+  return Math.round(value / 86164)
+})
