@@ -1,22 +1,32 @@
 <template lang="pug">
-   .item-value(:class="{ 'active': active, 'child-item': !!item.parentId }")
+  .item-value(:class="{ 'active': active, 'child-item': !!item.parentId, 'flex-column': item.childrens }"
+  :style="{ background: item.iA ? 'unset' : null }")
     ul.item-collapsed.p-2(v-if='collapsed && parentItems.length > 0' :class="{'active-child': isShowChildren}")
       li(v-for="parent in parentItems" :key="parent.id" @click.stop="handleSelect")
         nuxt-link.item-collapsed__children.py-3.pl-4(:to="parent.to") {{parent.label}}
     .item__icon(v-if="!!item.icon")
       .icon(:class="`icon-${item.icon} ${iconMenuCssClasses} ${collapsed ? 'icon--llarge' : 'icon--large'}`")
     transition(name="fade")
-      .item__label(v-if="!collapsed" :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast }")
+      .item__label(v-if="!collapsed && !item.iA" :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast && !item.iA }")
         div.item__children(v-if="item.parentId")
         div.item__rect(v-if="item.parentId")
         span {{ item.label }}
         span.icon.toggle.icon-chevron-down.surface-500(:class="iconSelectCssClasses")
         Badge.mr-2.badge-notify(v-if="item.label === 'Notifications'" :value="3")
+      .item__label.justify-content-end(v-if="!collapsed && item.iA" 
+        :class="{ 'pl-16': !!item.parentId }")
+        div.item__children(v-if="item.parentId")
+        div.item_child(:class="{ 'active': active }")
+          div.item__children(v-if="item.parentId"  :class="{ 'last-item': item.isLast }")
+          div.item__rect(v-if="item.parentId")
+          span {{ item.label }}
+          span.icon.toggle.icon-chevron-down.surface-500(:class="iconSelectCssClasses")
 </template>
 
 <script lang='ts'>
 
 import { Component, InjectReactive, namespace, Prop, Vue, Watch } from 'nuxt-property-decorator'
+import { PAGE_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
@@ -26,9 +36,12 @@ class SidebarItemValue extends Vue {
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
+  pageMenu = PAGE_MENU
+
   @Prop() readonly item!: any | undefined
   @InjectReactive() readonly selectedItem!: any
   @InjectReactive() readonly parentItems!: any
+  @InjectReactive() readonly selectParent!: any
 
   @Watch('active')
   resetActive() {
@@ -44,7 +57,8 @@ class SidebarItemValue extends Vue {
   // -- [ Getters ] -----------------------------------------------------------------------
 
   get active() {
-    return this.item.id === this.selectedItem?.id || this.item.id === this.selectedItem?.parentId
+    const subParent = _.find(this.pageMenu, (o) => (o.id === this.selectedItem?.parentId ))
+    return subParent?.parentId === this.item.id || subParent?.id === this.item.id || this.item.id === this.selectedItem?.id
   }
 
   get iconMenuCssClasses() {
@@ -52,8 +66,8 @@ class SidebarItemValue extends Vue {
   }
 
   get iconSelectCssClasses() {
-    let clazz = !this.item.parentId ? '' : '-rotate-90'
-    if (this.active && !!this.item.parentId) {
+    let clazz = !this.item.to ? '' : '-rotate-90'
+    if (this.active && !!this.item.to) {
       clazz += ' bg-primary'
     } else if (this.active) {
       clazz += ' surface-900'
@@ -165,6 +179,21 @@ export default SidebarItemValue
     @include flex-center-space-between
     width: 100%
     min-height: 56px
+    .item_child
+      min-height: 56px
+      width: calc(100% - 20px)
+      align-items: center
+      display: flex
+      justify-content: space-between
+      padding-left: 16px
+      .item__rect, .item__children
+        left: 15px
+      .last-item
+        height: calc(50% - 10px)
+    .active
+      background-color: $text-color-300
+      border-radius: 4px
+
   .item__icon
     padding: $space-size-16
 

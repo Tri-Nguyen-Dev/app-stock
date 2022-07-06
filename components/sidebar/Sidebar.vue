@@ -45,6 +45,9 @@ class MenuSidebar extends Vue {
   @ProvideReactive()
   parentItems: any = []
 
+  @ProvideReactive()
+  selectParent: any = []
+
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
   // -- [ Getters ] -------------------------------------------------------------
@@ -63,7 +66,18 @@ class MenuSidebar extends Vue {
   }
 
   onSelectMenu(item) {
-    this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
+    if(!item.parentId || !item.to) {
+      if(!_.includes(this.selectParent, item.id)) {
+        this.selectParent.push(item.id)
+      } else {
+        const subParent = _.find(this.pageMenu, (obj) => (obj.parentId === item.id && !obj.to))
+        this.selectParent = _.filter(this.selectParent, (o) => {
+          return o !== item.id && o !== subParent?.id
+        })
+      }
+    } else {
+      this.selectedItem = item
+    }
     if(!item.parentId) {
       this.parentItems = this.pageMenu.filter(value => value.parentId === item.id)
     }
@@ -75,12 +89,18 @@ class MenuSidebar extends Vue {
 
   @Watch('$route.path', { immediate: true, deep: true })
   handleSelect(path) {
-    const rootRoute = _.trim(path, '/').split('/')[0]
+    const rootRoute = _.trim(path, '/').split('/').pop()
     if (rootRoute) {
       this.selectedItem = this.pageMenu.find(item => {
-        const menuRoute = item.root || item.to
+        const menuRoute = item.root || _.trim(item.to, '/').split('/').pop()
         return _.trim(menuRoute, '/') === rootRoute
       })
+      const subParentId = this.selectedItem?.parentId
+      const subParent = _.find(this.pageMenu, (o) => (o.id === subParentId))
+      if(!_.includes(this.selectParent, subParentId)) {
+        this.selectParent.push(subParent?.parentId)
+        this.selectParent.push(subParentId)
+      }
     }
   }
 }
@@ -89,6 +109,23 @@ export default MenuSidebar
 </script>
 
 <style lang="sass" scoped>
+::-webkit-input-placeholder
+  font-weight: normal
+
+::-webkit-scrollbar
+  width: 7px
+  height: 7px
+  background-color: var(--surface-100)
+
+::-webkit-scrollbar-track
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+  border-radius: 10px
+  background-color: var(--surface-100)
+
+::-webkit-scrollbar-thumb
+  border-radius: 10px
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
+  background-color: var(--surface-300)
 .sidebar
   @include flex-column
   float: left
@@ -99,6 +136,7 @@ export default MenuSidebar
   bottom: 0
   padding: 30px 16px 30px 18px
   transition: 0.3s ease
+  overflow: auto
 
   &-head
     @include flex-center-vert

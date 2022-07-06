@@ -19,6 +19,7 @@ class SidebarItem extends Vue {
 
   @Prop() readonly item!: any | undefined
   @InjectReactive() readonly selectedItem!: any
+  @InjectReactive() readonly selectParent!: any
 
   @Emit()
   select(item) {
@@ -31,9 +32,7 @@ class SidebarItem extends Vue {
 
   // -- [ Getters ] -------------------------------------------------------------
   get isShow() {
-    return !this.item.parentId ||
-      (this.selectedItem?.parentId === this.item.parentId) ||
-      (this.selectedItem?.id === this.item.parentId)
+    return _.includes(this.selectParent, this.item.parentId) || !this.item.parentId
   }
 }
 
