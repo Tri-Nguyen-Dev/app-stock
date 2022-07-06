@@ -195,7 +195,8 @@ class DeliveryOrder extends Vue {
         return {
           id:element.boxNote.box.id,
           sellerEmail: element.boxNote.box.request?.seller.email,
-          rackLocation: element.boxNote.box.rackLocation
+          rackLocation: element.boxNote.box.rackLocation,
+          warehouseId: element.boxNote.box.request?.warehouse.id
         }
       })
       this.reportList = this.listBoxTakeNote.map(element => {
