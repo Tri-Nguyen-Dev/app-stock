@@ -66,14 +66,11 @@
             :styles="{'width': '1%'}"
           )
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
-          template(#body='{ index }')
-            span.grid-cell-center.warehouse__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
-          Column(header='Icon' field='icon' :sortable="true" sortField="_icon" headerClass="grid-header-center")
-          template(#body='{ data }')
-            .warehouse__table-barcode.grid-cell-right {{ data.icon }}
+            template(#body='{ index }')
+              span.grid-cell-center.warehouse__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(header='Name' field='name' :sortable="true" sortField="_name")
-          template(#body='{ data }')
-            NuxtLink.warehouse__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/warehouse/${data.id}`" class="no-underline hover:underline") {{ data.name }}
+            template(#body='{ data }')
+              NuxtLink.warehouse__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/warehouse/${data.id}`" class="no-underline hover:underline") {{ data.name }}
           Column(header='Adress' :sortable="true" field='adress' sortField="_adress" headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-left {{ data.address }}
@@ -82,7 +79,7 @@
               div.grid-cell-center {{ data.phone }}
           Column(header='Email' :sortable="true" field='email' sortField="email" headerClass="grid-header-center")
             template(#body='{ data }')
-              div.grid-cell-right {{ data.email }}
+              div.grid-cell-center {{ data.email }}
           Column(header='Description' :sortable="true" field='description' sortField="_description" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-center {{ data.description }}
