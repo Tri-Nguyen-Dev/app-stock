@@ -156,7 +156,7 @@
   
   Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "50vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
     template(#header)
-      div.table__status.table__status--available {{ reportDetail.reportStatus  }}
+      span.border-round.py-2.px-3.uppercase.font-bold.font-sm(:class="checkStatus(reportDetail.reportStatus)") {{ reportDetail.reportStatus | reportStatus  }}
       div.text-center
         h3.my-1 Report Detail
         h3.my-0 ID {{ reportDetail.id }}
