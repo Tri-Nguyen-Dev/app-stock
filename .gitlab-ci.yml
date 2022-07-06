@@ -7,7 +7,7 @@ stages:
   - build
   - deploy
 
-image: node:16.15.1
+image: node:latest
 
 prep:
   stage: prep
