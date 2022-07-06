@@ -36,7 +36,7 @@
                 .error-message *Seller not found, please select seller email
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
-            .grid.grid-nogutter.align-items-center.mcheckValidb-4
+            .grid.grid-nogutter.align-items-center.mb-4
               .icon.bg-primary.surface-900.mr-3.icon-receive-square
               span.uppercase.text-800.font-bold receiver information
             div
