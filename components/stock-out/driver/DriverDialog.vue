@@ -49,8 +49,8 @@ class DriverDialog extends Vue {
 
   async assignDriver(){
     const data= {
-      id: this.idDriver,
-      idOrder: this.$route.params.id
+      driverId: this.idDriver,
+      deliveryOrderIds: [this.$route.params.id]
     }
     await this.actPostAssignDriver(data)
     this.$emit('assigned',this.dataAssignDriver)
