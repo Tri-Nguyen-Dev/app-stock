@@ -2,6 +2,15 @@
   .grid.grid-nogutter.packing__detail--container
     Toast
     ConfirmDialogCustom(
+      title="Packing Confirm"
+      :isShow="isShowConfirmPacking"
+      :onOk="handleSavePacking"
+      :onCancel="cancelSavePacking"
+      :loading="loadingSubmit"
+    )
+      template(v-slot:message)
+        p Do you want to save this packing box?
+    ConfirmDialogCustom(
       title="Report Confirm"
       image="confirm-delete"
       :isShow="isShowModalReport"
@@ -64,7 +73,7 @@
               span.font-semibold.text-base.mr-1 Total items:
               .font-semibold.text-primary {{ totalItem }}
         .col-2.flex.justify-content-end.p-1
-          Button.btn.btn-primary.ml-3(@click="handleSubmit" :disabled="isDisabled") Save
+          Button.btn.btn-primary.ml-3(@click="showDialogSave" :disabled="isDisabled") Save
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, ProvideReactive, Watch } from 'nuxt-property-decorator'
@@ -96,6 +105,8 @@ class DeliveryOrderPacking extends Vue {
       boxSize: null
     }
   ]
+
+  isShowConfirmPacking: boolean = false
 
   @ProvideReactive()
   originalBoxActive: any = {}
@@ -281,6 +292,7 @@ class DeliveryOrderPacking extends Vue {
       this.$router.push(`/stock-out/order/${id}/packing-detail`)
     }
     else {
+      this.isShowConfirmPacking = false
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
@@ -378,6 +390,18 @@ class DeliveryOrderPacking extends Vue {
         this.valueReportNote = null
       }
     }
+  }
+
+  cancelSavePacking() {
+    this.isShowConfirmPacking = false
+  }
+
+  handleSavePacking() {
+    this.handleSubmit()
+  }
+
+  showDialogSave() {
+    this.isShowConfirmPacking = true
   }
 }
 
