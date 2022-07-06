@@ -10,7 +10,7 @@ export default class StoreOrderDetail extends VuexModule {
   private static readonly STATE_URL = {
     GET_DETAIL_ORDER: '/delivery-order/:id/detail',
     UPDATE_ORDER: '/delivery-order/:id/update',
-    ASSIGN_DRIVER: '/delivery-order/:id/set-delivery',
+    ASSIGN_DRIVER: '/delivery-order/set-delivery',
     GET_ORIGINAL_LABEL: '/delivery-order/:id/original-box/pdf',
     GET_OUTGOING_LABEL: '/delivery-order/:id/outgoing-box/pdf'
   }
@@ -60,7 +60,7 @@ export default class StoreOrderDetail extends VuexModule {
 
   @Action({ commit: 'assignDriver', rawError: true })
   async actPostAssignDriver(data: any): Promise<any | undefined> {
-    const url = PathBind.transform(this.context, StoreOrderDetail.STATE_URL.ASSIGN_DRIVER, { id: data.idOrder })
+    const url = PathBind.transform(this.context, StoreOrderDetail.STATE_URL.ASSIGN_DRIVER)
     return await $api.post(url, data)
   }
 

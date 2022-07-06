@@ -237,6 +237,7 @@
       :isModalDriverList='isModalDriverList',
       @hideDialog='hideDialog($event)',
       @assigned='assignedDriver($event)'
+      :orderIds='orderIds'
     )
 </template>
 <script lang="ts">
@@ -295,6 +296,8 @@ class DeliveryOrderList extends Vue {
     sellerEmail: null,
     warehouseId: null
   }
+
+  orderIds: any
 
   isModalDriverList = false
   warehouseOption: any = []
@@ -549,6 +552,9 @@ class DeliveryOrderList extends Vue {
 
   setDelivery() {
     this.isModalDriverList = true
+    this.orderIds = _.map(this.selectedDelivery, ( item:any ) => {
+      return item.id
+    })
   }
 
   hideDialog( event:any ) {
@@ -572,6 +578,24 @@ class DeliveryOrderList extends Vue {
       ) && this.selectedDelivery.find( (item) => item.driverId === this.selectedDelivery[0].driverId)
     } else {
       return false
+    }
+
+  }
+
+  assignedDriver( event:any ) {
+    if (event) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully set Delivery',
+        life: 3000
+      })
+      const packingInfo = this.$el.querySelector('.packing__detail--left')
+      if (packingInfo) {
+        const scrollHeight = packingInfo.scrollHeight
+        packingInfo.scrollTop = scrollHeight
+      }
+      this.selectedDelivery = []
     }
 
   }

@@ -5,7 +5,8 @@ div
     :key='item.key'
   )
     .col-3
-      span.font-bold.text-small.mr-1.text-label {{ item.label }}
+      span.font-bold.text-small.mr-1 {{ item.label }}
+      span.text-label {{ item.require }}
     .col-9
       AutoComplete.justify-content-end.w-full(
         v-if='item.type === INPUT_TYPE.AutoComplete'
@@ -16,14 +17,14 @@ div
         :suggestions='sellerList'
         @item-select='changeItem($event)'
         @complete="searchSeller($event)"
+        @input="clearSeller($event)"
       )
       InputText.w-full(
         v-else-if='item.type === INPUT_TYPE.Text || item.type === INPUT_TYPE.Dropdown && checkRole === "staff"'
         v-model='item.value'
-        :disabled=`checkRole === 'staff'? item.staffDisable : item.disabled `
+        :disabled=`checkRole === 'staff'? item.validDisable : item.disabled || item.validDisable `
         @change='receiverChange',
       )
-
       Dropdown.w-full(
         v-else-if='item.type === INPUT_TYPE.Dropdown && checkRole === "admin" '
         :disabled='item.disabled'
@@ -74,16 +75,19 @@ class ItemInput extends Vue {
   }
 
   searchSeller(event: any) {
-    this.$emit('paramSeller' , event.query)
+    this.$emit('paramSeller' , event.query )
+  }
 
+  clearSeller(event: any){
+    this.$emit('clearSeller' , event )
   }
 }
 
 export default ItemInput
 </script>
 <style lang="sass" scoped>
-.text-label::after
-  content: ' *:'
+.text-label
+  color: red
 ::v-deep.p-inputwrapper
   .p-autocomplete-input
     width: 100%

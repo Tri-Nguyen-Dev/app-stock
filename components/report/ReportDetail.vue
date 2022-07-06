@@ -29,7 +29,7 @@ div
             selectionMode='multiple'
             :styles="{'width': '1%'}"
           )
-          Column(header='Box code' field='name' sortField="_name" headerClass="grid-header-center")
+          Column(header='Box code' field='box.id' headerClass="grid-header-center" sortable)
             template(#body='{ data }')
               div
                 NuxtLink.m-0(:to="`/box/${data.box.id}`") {{ data.box.id }}
@@ -44,13 +44,15 @@ div
                   .info-item
                     span.info-title Name: 
                     span.info-content(v-if="data.box.request") {{  data.box.request.seller.displayName }}
-          Column(header='ST Note ID' field='barCode' sortField="_barCode" headerClass="grid-header-center")
+          Column(header='ST Note ID' field='stockTakeId' headerClass="grid-header-center" sortable)
             template(#body='{ data }')
               div.grid-cell-center 
                 NuxtLink(:to="`/stock-take/box/${data.stockTakeId}/note-detail`") {{ data.stockTakeId }}
-          Column(header='NOTE' :styles="{'width': '40%'}" field='category' sortField="_category" headerClass="grid-header-center")
+          Column(header='NOTE' :styles="{'width': '40%'}" field='note' headerClass="grid-header-center" sortable)
             template(#body='{ data }')
               div.grid-cell-center {{ data.note }}
+    div.flex.justify-content-center
+      Button.btn.btn-primary.my-2.py-1(@click="createStockTake" :disabled="disabledButton") Create stock-take note
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
