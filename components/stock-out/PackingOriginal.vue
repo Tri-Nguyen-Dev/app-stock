@@ -27,7 +27,6 @@
         span.uppercase.text-700 {{tab.boxCode}}
         span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
-        .ml-1.px-1(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
         AutoComplete.edit-location.ml-1(
           v-if="isShowLocation(tab)"
           v-model='tab.location',
