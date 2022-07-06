@@ -30,6 +30,11 @@
               sortField='_id'
             )
             Column(
+              field='sellerEmail',
+              header='SELLER EMAIL',
+              className='w-3',
+            )
+            Column(
               field='rackLocation.name',
               header='LOCATION',
               :sortable='true',
