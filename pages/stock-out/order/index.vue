@@ -45,7 +45,7 @@
                 @fieldReceiver='handleReceiver'
               )
               .input-errors(
-                v-if='$v.information.receiver.$each[0].$model.value === null && $v.information.receiver.$each[3].$model.value === null '
+                v-if='checkValidReceiver()'
               )
                 .error-message {{errorMessage.errorAddress}} Receiver Information
               .input-errors(
@@ -66,12 +66,12 @@
               StockUnit(
                 title="Estimated delivery Time"
                 icon="icon-clock"
-                :value='estimatedDate || "Estimated delivery Time" '
+                :value=' deliveryDate  ||  "Due delivery date"    '
               )
               StockUnit.mt-2(
                 title="Due delivery date"
                 icon="icon-calendar"
-                :value=' deliveryDate || "DUE DATE TIME" '
+                :value=' dueDeliveryDate  ||  "Due delivery date"  '
                 placeholder="Enter"
               )
           .border-top-1.border-gray-300.grid-nogutter
@@ -169,20 +169,20 @@
                 )
                   .icon--small.pi.pi-times.text-primary
           template( #footer  )
-            .mr-4.flex.justify-content-end( v-if="listItemsAddSize > 0" )
-              Button( label='Cancel' @click='showModalCancel' ).btn.btn__default.flex-initial
-              Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
-            .grid.grid-nogutter.ml-3( v-else )
+            .grid.grid-nogutter.ml-3
               .flex.align-items-center.justify-content-center.pl-3
                 img(src='~/assets/icons/note.svg')
               div.ml-4
                 span.font-semibold.text-base.mr-1 Note:
                 br
-                InputText.pt-0.pl-0(
+                InputText.pt-0.pl-0.w-full(
                   placeholder='Write something...',
                   style='border: none'
                   v-model='noteBox'
                 )
+            .mr-4.flex.justify-content-end( v-if="listItemsAddSize > 0" )
+              Button( label='Cancel' @click='showModalCancel' ).btn.btn__default.flex-initial
+              Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
       ConfirmDialogCustom(
         title="Confirm delete"
         image="confirm-delete"
@@ -255,6 +255,7 @@ class createOrder extends Vue {
   estimatedDate: string | any = ''
   information = INFORMATION
   isDisableSubmit: boolean = false
+  isValid: boolean = false
   errorMessage: any = {
     errorPhone  :'*Please, fill in phone in the correct',
     errorName : '*Please, fill in name in the correct',
@@ -263,6 +264,7 @@ class createOrder extends Vue {
   }
 
   // -- [ State ] ------------------------------------------------------------
+
   @nsStoreCreateOrder.State
   listInfo:any
 
@@ -296,7 +298,10 @@ class createOrder extends Vue {
   actSellerList!: (params: any) => Promise<void>
 
   @nsStoreCreateOrder.Action
-  actGetEstimate!: (obj: any) => Promise<void>
+  actGetEstimate!: (params: any) => Promise<void>
+
+  @nsStoreCreateOrder.Action
+  actClearEstimate!: (params: any ) => Promise<void>
 
   // -- [ Functions ] ------------------------------------------------------------
 
@@ -315,6 +320,12 @@ class createOrder extends Vue {
     }
     else {
       this.actWarehouseList()
+    }
+    if(this.dueDeliveryDate){
+      this.deliveryDate =  1 +  ' day'
+    }
+    if(this.noteBox ){
+      this.noteBox =  this.listInfo.note
     }
   }
 
@@ -398,8 +409,8 @@ class createOrder extends Vue {
       receiverEmail: listReceiver[1].value,
       receiverName: listReceiver[2].value,
       receiverPhone: listReceiver[3].value,
-      dueDeliveryDate: null,
-      estimatedDeliveryTime: null,
+      dueDeliveryDate: 1 ,
+      estimatedDeliveryTime: this.estimate?.estimate,
       note,
       warehouse: {
         id: this.listInfo.warehouse[0].warehouseId
@@ -435,10 +446,13 @@ class createOrder extends Vue {
     await this.$router.push({ path: '/stock-out/order-list' })
   }
 
-  async emptyList() {
+  emptyList() {
     const emptyList =  this.listItemsAdd = []
-    await this.actGetCreateOrder(_.cloneDeep(emptyList))
-    await this.actOutGoingList(_.cloneDeep(emptyList))
+    Promise.all([
+      this.actGetCreateOrder(_.cloneDeep(emptyList)),
+      this.actOutGoingList(_.cloneDeep(emptyList)),
+      this.actClearEstimate([])
+    ])
     _.forEach(this.information, function(item){
       _.forEach(item, function(i) {
         i.value = null
@@ -506,15 +520,18 @@ class createOrder extends Vue {
     return this.$v.information.seller?.$each?.$touch()
   }
 
-  handleReceiver(event: any) {
-    const d = new Date()
-    const dayFrom = dayjs(d).add(5, 'day').format('DD/MM/YYYY')
-    const dayTo = dayjs(d).add(8, 'day').format('DD/MM/YYYY')
-    const estimate = dayFrom + ' - ' + dayTo
-    if (event) {
-      this.deliveryDate = estimate
-      this.estimatedDate = '1 day'
+  async handleReceiver() {
+    const InfoWarehouse: any = this.information.warehouse
+    const infoReceiver = this.information.receiver
+    const result : any =  await this.actGetEstimate({
+      destination: infoReceiver[0].value,
+      mode: 'driving',
+      origin:  InfoWarehouse[0]?.value?.address  ||  1
+    })
+    if(result ) {
+      this.deliveryDate = 1 + ' day'
     }
+
   }
 
   unSelectedSeller() {
@@ -563,6 +580,18 @@ class createOrder extends Vue {
     this.listItemsAdd = _.cloneDeep(result)
   }
 
+  checkValidReceiver()
+  {
+    return this.$v.information.receiver?.$each[0]?.value.$dirty
+      && this.$v.information.receiver?.$each[0]?.value.$invalid
+      && this.$v.information.receiver?.$each[3]?.value.$dirty &&
+      this.$v.information.receiver?.$each[3]?.value.$invalid
+  }
+
+  dateIsValid(date) {
+    return date instanceof Date && !isNaN(date)
+  }
+
   // -- [ Getter ] ------------------------------------------------------------
 
   get listItemsAddSize() {
@@ -585,6 +614,13 @@ class createOrder extends Vue {
         icon: 'pi pi-info-circle'
       }
     ]
+  }
+
+  get dueDeliveryDate() {
+    const a = this.estimate?.estimate / 1440
+    if(a) {
+      return dayjs(new Date()).add(a, 'day').format('MM/DD/YYYY')
+    }
   }
 
 }
@@ -629,8 +665,9 @@ export default createOrder
     background: var(--surface-200)
   .btn
     border: none
-    padding: 0px 25px
-    margin: 5px 10px 0px
+    padding: 0 25px
+    margin: 5px 10px 0
+
     &__priamry
       background-color: $primary
       font-weight: 700
@@ -685,10 +722,12 @@ export default createOrder
     overflow: hidden
 ::v-deep.p-datatable
   .p-datatable-footer
-    box-shadow: 0px 10px 45px rgba(0, 10, 24, 0.1)
+    justify-content: space-between
+    display: flex
+    box-shadow: 0 10px 45px rgba(0, 10, 24, 0.1)
     background-color: #ffffff
     border: none
-    padding: 15px 0px
+    padding: 15px 0
     width: 100%
   .text-primary
     color: $primary-dark !important
