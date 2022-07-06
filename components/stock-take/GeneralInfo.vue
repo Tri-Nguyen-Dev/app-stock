@@ -18,25 +18,10 @@
       StockUnit(title="APPROVER ID" :value="info.approveId" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Warehouse" :value="info.wareHouse"   v-if='info.wareHouse' icon="icon-warehouse-info")
-      StockUnit(title="Warehouse" :value="info.user.wareHouse"  v-if='info.user.wareHouse' icon="icon-warehouse-info")
+      StockUnit(title="Warehouse" :value="info.user.warehouse.name"  v-if='info.user.warehouse' icon="icon-warehouse-info")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
       StockUnit(title="Total box" :value="info.totalBox" icon="icon-total-inventory")
     slot(name='note')
-  //- .grid.ml-4.mr-4
-  //-   .icon--large.bg-blue-700(class='icon-note')
-  //-   span.font-normal.text-700.text-base.uppercase Note
-  //- .grid.wapprer-unit.ml-4.mr-4.mt-2(v-if='boxStockTakeDetail.note')
-  //-   .col.flex.flex-column.justify-content-center
-  //-     div.font-normal.text-base.uppercase.font-bold Creator:
-  //-     Textarea(:value='boxStockTakeDetail.note' disabled rows='2' cols=30)
-  //- .grid.wapprer-unit.ml-4.mr-4.mt-2(v-if='boxStockTakeDetail.submitNote')
-  //-   .col.flex.flex-column.justify-content-center
-  //-     div.font-normal.text-base.uppercase.font-bold PIC:
-  //-     Textarea.text-lg(:value='boxStockTakeDetail.submitNote' disabled rows='2' cols=30)
-  //- .grid.wapprer-unit.ml-4.mr-4.mt-2
-  //-   .col.flex.flex-column.justify-content-center
-  //-     div.font-normal.text-base.uppercase.font-bold Approver:
-  //-     Textarea.text-lg(:value='stockTakeInfo.note' rows='2' cols=30)
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
