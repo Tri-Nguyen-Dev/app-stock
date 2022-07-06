@@ -588,10 +588,6 @@ class createOrder extends Vue {
       this.$v.information.receiver?.$each[3]?.value.$invalid
   }
 
-  dateIsValid(date) {
-    return date instanceof Date && !isNaN(date)
-  }
-
   // -- [ Getter ] ------------------------------------------------------------
 
   get listItemsAddSize() {
