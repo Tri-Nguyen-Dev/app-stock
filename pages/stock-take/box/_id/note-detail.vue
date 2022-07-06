@@ -19,17 +19,13 @@
           div
             h1.text-heading(v-if='isCheck') Stock-take Note
             h1.text-heading(v-else) Stock-take Note Detail
-          .stock-takeItem__header--action.flex
-            .btn.btn-primary.cursor-pointer.mr-2(@click='checkItems' v-if='isCheck')
-              span.uppercase Check
-            .btn.btn-primary.cursor-pointer.mr-2(@click='saveDraft' v-if='!isCheck && !isComplete')
-              span.uppercase save draft
-            .btn.btn-primary.cursor-pointer.mr-2(@click='submitNote' v-if='!isCheck && !isComplete')
-              span.uppercase submit
-            .btn.btn-primary.cursor-pointer.mr-2(@click='approveNote' v-if='isApprove')
-              span.uppercase approve
-            .btn.btn-primary.cursor-pointer.mr-2(@click='exportNote' v-if='isComplete')
-              span.uppercase export
+            span.text-subheading All ({{ boxStockTakeDetail.totalStockTakeBox }})
+          .stock-takeItem__header--action.flex(v-if='!isCancel')
+            Button.btn.btn-primary.border-0(@click='checkItems' v-if='isCheck') CHECK
+            Button.btn.btn-primary.border-0(@click='saveDraft' v-if='!isCheck && !isComplete') SAVE DRAFT
+            Button.btn.btn-primary.border-0(@click='submitNote' v-if='!isCheck && !isComplete' :disabled='isDisabled') SUBMIT
+            Button.btn.btn-primary.border-0(@click='approveNote' v-if='isApprove') APPROVE
+            Button.btn.btn-primary.border-0(@click='exportNote' v-if='isComplete') EXPORT
         .stock-takeItem__content
           DataTable(
             v-if="dataList"
@@ -88,7 +84,7 @@
                         tag.table__status.table__status--error(v-if='data.resultStatus === "NG"') {{data.resultStatus}}
                         tag.table__status.table__status--available(v-else-if='data.resultStatus === "OK"') {{data.resultStatus}}
                         tag.table__status.table__status--draft(v-else) {{data.resultStatus}}
-            template(#footer v-if='!isComplete')
+            template(#footer v-if='!isComplete && isCancel')
                 .grid.grid-nogutter.stock-takeItem__footer
                   .col
                     div(style="padding-left: 10.5px") Note:
@@ -110,16 +106,6 @@
       template(v-slot:content)
         h3.text-left.text-900 NOTE:
         Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
-    ConfirmDialogCustom(
-      title="Submit Warning"
-      :isShow="isShowSubmitWarning"
-      :onOk="okSubmitWarning"
-      :onCancel="cancelSubmitWarning"
-      :loading="loadingSubmit"
-      type='warning'
-    )
-      template(v-slot:message)
-        p Submitting is not allowed until all counted quantity has been filled!
 </template>
 
 <script lang="ts">
@@ -196,36 +182,35 @@ class NoteBoxDetail extends Vue {
   actGetStockTakeLable!: (params?: any) => Promise<any>
 
   async mounted() {
-    await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
-    if (
-      this.boxStockTakeDetail?.status !== 'NEW' &&
-      this.user?.staffId !== this.boxStockTakeDetail?.assignee?.staffId
-    ) {
+    const staffId = this.boxStockTakeDetail?.assignee?.staffId
+    if(staffId && this.user?.staffId !== staffId) {
       this.$router.push('/stock-take')
-    }
-    this.dataList = _.cloneDeep(
-      this.boxStockTakeDetail.stockTakeBox.map((element: any) => {
-        const checkingStatus = _.some(
-          element.stockTakeItem,
-          function square(n: any) {
-            return n.isChecking
-          }
-        )
-        return {
-          ...element,
-          status: this.getStatusBox(element.stockTakeItem),
-          isChecking: checkingStatus,
-          stockTakeBoxItem: element.stockTakeItem.map((item: any) => {
-            return {
-              ...item,
-              boxCode: element.boxCode,
-              resultStatus: item.resultStatus || 'WAITING',
-              selectedConfirm: []
+    } else {
+      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+      this.dataList = _.cloneDeep(
+        this.boxStockTakeDetail.stockTakeBox.map((element: any) => {
+          const checkingStatus = _.some(
+            element.stockTakeItem,
+            function square(n: any) {
+              return n.isChecking
             }
-          })
-        }
-      })
-    )
+          )
+          return {
+            ...element,
+            status: this.getStatusBox(element.stockTakeItem),
+            isChecking: checkingStatus,
+            stockTakeBoxItem: element.stockTakeItem.map((item: any) => {
+              return {
+                ...item,
+                boxCode: element.boxCode,
+                resultStatus: item.resultStatus || 'WAITING',
+                selectedConfirm: []
+              }
+            })
+          }
+        })
+      )
+    }
   }
 
   async checkItems() {
@@ -371,8 +356,6 @@ class NoteBoxDetail extends Vue {
           isDraft: false
         })
       }
-    } else {
-      this.isShowSubmitWarning = true
     }
   }
 
@@ -457,6 +440,11 @@ class NoteBoxDetail extends Vue {
     return status === 'COMPLETED' && finalResultStatus === 'NG'
   }
 
+  get isCancel() {
+    const { status } = this.boxStockTakeDetail
+    return status === 'CANCELLED'
+  }
+
   get noteDetailInfo() {
     this.stockTakeInfo.createdAt = this.boxStockTakeDetail?.createdAt
     this.stockTakeInfo.user = this.boxStockTakeDetail?.createdBy
@@ -467,6 +455,15 @@ class NoteBoxDetail extends Vue {
     this.stockTakeInfo.id = this.boxStockTakeDetail?.id
     this.stockTakeInfo.note = this.boxStockTakeDetail?.submitNote
     return this.stockTakeInfo
+  }
+
+  get isDisabled() {
+    return !!_.find(this.dataList , function ( obj:any ) {
+      if(obj.status === 'WAITING' || obj.status === null ) {
+        return true
+      }
+    })
+
   }
 
   rowClass(data: any) {

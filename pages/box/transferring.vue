@@ -21,7 +21,7 @@
           @selectedTab='selectedOriginalBox'
         )
         StockOutPackingOriginal.mb-2.flex-1(
-          title='Box list'
+          title='transferring box'
           icon='icon-info'
           :isTranffering='true'
           :listBox="listTranfferingBox"
@@ -91,7 +91,7 @@ class DeliveryOrderPacking extends Vue {
   noteText: string = ''
   listTranfferingBox: any =  [
     {
-      boxCode: 'TR1',
+      boxCode: 'TR01',
       items: [],
       airtag: null,
       checked: false,
@@ -193,7 +193,7 @@ class DeliveryOrderPacking extends Vue {
         })
       }
     }
-    else { 
+    else {
       this.$router.push('/box')
     }
   }
@@ -209,8 +209,13 @@ class DeliveryOrderPacking extends Vue {
   genearateBoxCode(listPacking, subname) {
     let boxCode = subname
     if(listPacking.length > 0) {
-      const lastNo = _.last(listPacking)?.boxCode.replace(subname, '')
-      boxCode += parseInt(lastNo) + 1
+      const lastNo = _.last(listPacking)?.boxCode.replace(`${subname}`, '')
+      if(parseInt(lastNo) >= 9) {
+        boxCode = `${boxCode}${parseInt(lastNo) + 1}`
+      }
+      else {
+        boxCode = `${boxCode}0${parseInt(lastNo) + 1}`
+      }
     } else {
       boxCode += 1
     }
@@ -320,7 +325,7 @@ class DeliveryOrderPacking extends Vue {
         }
       })
     })
-    _.forEach(listStockCancle, function (item) { 
+    _.forEach(listStockCancle, function (item) {
       if(!_.find(listStockOK, {
         'barCode': item.barCode
       })) {
@@ -389,7 +394,7 @@ class DeliveryOrderPacking extends Vue {
     }
     data.warehouse = {
       id: this.listOriginalBox[0]?.request?.warehouse?.id
-    } 
+    }
 
     data.note = this.noteText
     const result = await this.actCombineBox(data)

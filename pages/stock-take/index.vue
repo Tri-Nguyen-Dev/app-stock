@@ -20,8 +20,10 @@
               NuxtLink(to="/stock-take/box/create") Add Box
             li.option-item
               NuxtLink(to="/stock-take/item/create") Add Item
-        Button.btn.btn-primary(@click="handleExportReceipt")
-          span EXPORT FILE
+        .btn__filter(class='active' @click="handleExportReceipt")
+          .btn.btn-toggle.bg-white
+            .icon-download.icon--large.bg-primary
+            span.text-900.text-primary EXPORT FILE
     .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
       div(class="col-12 lg:col-12 xl:col-4")
         .grid
@@ -299,6 +301,7 @@ class StockTake extends Vue {
         const result = await this.actGetReceiptLable({ id })
         if (result) {
           exportFileTypePdf(result, `stock-take-${id}`)
+          this.selectedStockTake = []
         }
       })
     } else {

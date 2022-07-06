@@ -87,16 +87,11 @@ class stockTakeItemsDetail extends Vue {
   actApproveSubmit!: (params?: any) => Promise<any>
 
   async mounted() {
-    if(this.user.role === 'admin') {
-      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
-    } else {
-      this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'You do not have permission to access this page.',
-        life: 3000
-      })
+    const staffId = this.boxStockTakeDetail?.assignee?.staffId
+    if(staffId && this.user?.staffId !== staffId) {
       this.$router.push('/stock-take')
+    } else {
+      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
     }
   }
 
