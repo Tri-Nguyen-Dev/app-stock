@@ -9,6 +9,9 @@ stages:
 
 image: node:16.14.0
 
+before_script:
+  - node -v
+
 prep:
   stage: prep
   script:
