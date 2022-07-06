@@ -30,6 +30,11 @@
               sortField='_id'
             )
             Column(
+              field='sellerEmail',
+              header='SELLER EMAIL',
+              className='w-3',
+            )
+            Column(
               field='rackLocation.name',
               header='LOCATION',
               :sortable='true',
@@ -190,8 +195,7 @@ class DeliveryOrder extends Vue {
         return {
           id:element.boxNote.box.id,
           sellerEmail: element.boxNote.box.request?.seller.email,
-          rackLocation: element.boxNote.box.rackLocation,
-          warehouseId: element.boxNote.box.request?.warehouse.id
+          rackLocation: element.boxNote.box.rackLocation
         }
       })
       this.reportList = this.listBoxTakeNote.map(element => {
