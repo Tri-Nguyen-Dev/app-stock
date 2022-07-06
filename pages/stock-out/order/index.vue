@@ -324,7 +324,7 @@ class createOrder extends Vue {
     if(this.dueDeliveryDate){
       this.deliveryDate =  1 +  ' day'
     }
-    if(this.noteBox ){
+    if(this.listInfo.note !== null ){
       this.noteBox =  this.listInfo.note
     }
   }
