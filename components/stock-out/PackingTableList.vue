@@ -169,7 +169,7 @@ class PackingTableList extends Vue {
   }
 
   handleQuantity(data, event) {
-    if(event > data.quantity) {
+    if(!this.isMergeBox && event > data.quantity) {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
