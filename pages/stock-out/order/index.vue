@@ -324,7 +324,7 @@ class createOrder extends Vue {
     if(this.dueDeliveryDate){
       this.deliveryDate =  1 +  ' day'
     }
-    if(this.noteBox ){
+    if(this.listInfo.note !== null ){
       this.noteBox =  this.listInfo.note
     }
   }
@@ -586,10 +586,6 @@ class createOrder extends Vue {
       && this.$v.information.receiver?.$each[0]?.value.$invalid
       && this.$v.information.receiver?.$each[3]?.value.$dirty &&
       this.$v.information.receiver?.$each[3]?.value.$invalid
-  }
-
-  dateIsValid(date) {
-    return date instanceof Date && !isNaN(date)
   }
 
   // -- [ Getter ] ------------------------------------------------------------
