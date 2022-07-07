@@ -151,7 +151,7 @@ class DeliveryOrderPacking extends Vue {
         return {
           ...obj,
           usedCapacity: Math.ceil(obj.usedCapacity * 100),
-          suggestCapacity:  Math.ceil(obj.suggestCapacity * 100),
+          suggestCapacity: Math.ceil(obj.suggestCapacity * 100),
           items: obj.items.map((item) => ({
             ...item,
             initialQuantity: item.quantity,
