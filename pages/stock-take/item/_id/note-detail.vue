@@ -45,7 +45,7 @@
                   .text-center
                     span( v-if="!isDetail" ) {{data.countedQuantity }}
                     InputNumber.w-7rem( v-else   v-model="data.countedQuantity" :min="0" mode="decimal"
-                      inputClass="w-full" @input='handleDeliveryChange(data)'
+                      inputClass="w-full" @input='handleDeliveryChange(data)' :useGrouping="false"
                     )
               Column(field='discrepancy'  header='VARIANT' :sortable='true' className="text-center" )
                 template(#body='{data}')
@@ -138,18 +138,24 @@ class stockTakeItemsDetail extends Vue {
   actApproveStockTake!: (params?: any) => Promise<any>
 
   @nsStorePackingDetail.Action
-  actCreateReport!:(data: any) => Promise<any>
+  actCreateReport!: (data: any) => Promise<any>
 
   // -- [ Function ] ------------------------------------------------------------
-  async mounted() {
+
+  async created() {
+    await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
+    const status = this.boxStockTakeDetail?.status
     const staffId = this.boxStockTakeDetail?.assignee?.staffId
-    if(staffId && this.user?.staffId !== staffId) {
+    if (
+      this.user?.staffId !== staffId && status === 'DRAFT' ||
+      this.user?.staffId !== staffId && status === 'IN_PROGRESS') {
       this.$router.push('/stock-take')
-    } else {
-      await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
-      if(this.boxStockTakeDetail.status === 'COMPLETED') {
-        this.isDetail = false
-      }
+    }
+  }
+
+  mounted() {
+    if (this.boxStockTakeDetail.status === 'COMPLETED') {
+      this.isDetail = false
     }
   }
 
@@ -157,7 +163,7 @@ class stockTakeItemsDetail extends Vue {
     return this.boxStockTakeDetail?.totalStockTakeItem
   }
 
-  get itemsData(){
+  get itemsData() {
     this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
     return this.items
   }
@@ -165,34 +171,38 @@ class stockTakeItemsDetail extends Vue {
   get noteInfor() {
     const { createdAt, createdBy, assignee, seller, note, submitNote } = this.boxStockTakeDetail
     const notes: any = []
-    if(note) {
+    if (note) {
       notes.push({ position: 'Creator', author: createdBy?.staffId, value: note })
     }
-    if(submitNote) {
+    if (submitNote) {
       notes.push({ position: 'PIC', author: assignee?.staffId, value: submitNote })
     }
     return {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
       creatorInfo: [
-        { title:'Create Time', value: createdAt ?
-          dayjs(new Date(createdAt)).format('MM-DD-YYYY hh:mm A')
-          : null, icon: 'icon-receipt-note' },
-        { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
-        !this.isCheckAssignee ? { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' } : null,
-        { title:'Warehouse', value: createdBy?.warehouse?.name, icon: 'icon-warehouse' },
-        { title:'Items', value: this.total, icon: 'icon-frame' }
+        {
+          title: 'Create Time', value: createdAt ?
+            dayjs(new Date(createdAt)).format('MM-DD-YYYY hh:mm A')
+            : null, icon: 'icon-receipt-note'
+        },
+        { title: 'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
+        !this.isCheckAssignee ? { title: 'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' } : null,
+        { title: 'Warehouse', value: createdBy?.warehouse?.name, icon: 'icon-warehouse' },
+        { title: 'Items', value: this.total, icon: 'icon-frame' }
       ],
       sellerInfo: [
-        { title:'Name', value: function(seller) {
-          if(!seller) return null
-          if(!seller.displayName && !seller.firstName && !seller.lastName) {
-            return 'N/A'
-          }
-          return seller.displayName || seller.firstName + ' ' + seller.lastName
-        }(seller), icon: 'icon-sender-name' },
-        { title:'Email', value: seller?.email, icon: 'icon-sender-email' },
-        { title:'Phone', value: seller?.phoneNumber, icon: 'icon-sender-phone' }
+        {
+          title: 'Name', value: function (seller) {
+            if (!seller) return null
+            if (!seller.displayName && !seller.firstName && !seller.lastName) {
+              return 'N/A'
+            }
+            return seller.displayName || seller.firstName + ' ' + seller.lastName
+          }(seller), icon: 'icon-sender-name'
+        },
+        { title: 'Email', value: seller?.email, icon: 'icon-sender-email' },
+        { title: 'Phone', value: seller?.phoneNumber, icon: 'icon-sender-phone' }
       ],
       notes
     }
@@ -206,9 +216,12 @@ class stockTakeItemsDetail extends Vue {
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: true,
-      submitData: this.saveItems
+      submitData: {
+        stockTakeItem: this.saveItems,
+        submitNote: this.submitNote
+      }
     })
-    if(result) {
+    if (result) {
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
@@ -228,12 +241,12 @@ class stockTakeItemsDetail extends Vue {
   }
 
   rowClass({ isChecking }) {
-    if( isChecking ) {
+    if (isChecking) {
       return 'row-disable'
     }
   }
 
-  async handleSubmit(){
+  async handleSubmit() {
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: false,
@@ -242,7 +255,7 @@ class stockTakeItemsDetail extends Vue {
         submitNote: this.submitNote
       }
     })
-    if(result) {
+    if (result) {
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
@@ -261,18 +274,18 @@ class stockTakeItemsDetail extends Vue {
     }
   }
 
-  async exportpdf(){
-    const result = await this.actGetStockTakeLable({ id : this.$route.params.id })
-    if(result) {
-      exportFileTypePdf(result, `Stock-Take-${ this.$route.params.id }`)
+  async exportpdf() {
+    const result = await this.actGetStockTakeLable({ id: this.$route.params.id })
+    if (result) {
+      exportFileTypePdf(result, `Stock-Take-${this.$route.params.id}`)
     }
   }
 
-  handleDeliveryChange( event : any ){
-    event.discrepancy  = event.countedQuantity - event.inventoryQuantity
-    if(event.discrepancy ===  0 ) {
+  handleDeliveryChange(event: any) {
+    event.discrepancy = event.countedQuantity - event.inventoryQuantity
+    if (event.discrepancy === 0) {
       event.resultStatus = 'OK'
-    }else if(event.discrepancy !== 0 && event.countedQuantity !== null ) {
+    } else if (event.discrepancy !== 0 && event.countedQuantity !== null) {
       event.resultStatus = 'NG'
     } else {
       event.resultStatus = 'Waiting'
@@ -280,8 +293,8 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get isDisabled() {
-    return !!_.find(this.items , function (obj:any) {
-      if(obj.resultStatus === 'Waiting' || obj.resultStatus === null ) {
+    return !!_.find(this.items, function (obj: any) {
+      if (obj.resultStatus === 'Waiting' || obj.resultStatus === null) {
         return true
       }
     })
@@ -293,7 +306,8 @@ class stockTakeItemsDetail extends Vue {
 
   get breadcrumbItem() {
     return [
-      { label: this.titlePage,
+      {
+        label: this.titlePage,
         to: `/stock-take/item/${this.$route.params.id}/note-detail`
       }
     ]
@@ -313,7 +327,7 @@ class stockTakeItemsDetail extends Vue {
     const result = await this.actGetAssignBoxStockTake([
       this.$route.params.id
     ])
-    if(result?.data) {
+    if (result?.data) {
       await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
       this.items = _.cloneDeep(this.boxStockTakeDetail.stockTakeItem)
       this.$toast.add({
@@ -334,7 +348,7 @@ class stockTakeItemsDetail extends Vue {
 
   async handleApprove() {
     const result = await this.actApproveStockTake({ id: this.$route.params.id })
-    if(result?.data) {
+    if (result?.data) {
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
@@ -352,11 +366,11 @@ class stockTakeItemsDetail extends Vue {
     }
   }
 
-  get saveItems(){
+  get saveItems() {
     const a: any = []
-    _.forEach(this.items, ( { id, countedQuantity }  ) => {
+    _.forEach(this.items, ({ id, countedQuantity }) => {
       a.push({
-        id ,
+        id,
         countedQuantity
       })
     })
@@ -370,7 +384,7 @@ class stockTakeItemsDetail extends Vue {
   }
 
   async handleReportItems() {
-    if(this.reportData) {
+    if (this.reportData) {
       const result = await this.actCreateReport({
         boxNote: [
           {
@@ -406,7 +420,7 @@ class stockTakeItemsDetail extends Vue {
     this.isShowModalReport = true
   }
 
-  cancelReportBox(){
+  cancelReportBox() {
     this.isShowModalReport = false
     this.valueReportNote = ''
   }
@@ -419,6 +433,7 @@ export default stockTakeItemsDetail
 .stock
   @include tablet
     margin: 50px
+
   ::v-deep.sub-tab
     height: calc(100vh - 150px)
     overflow: hidden
@@ -428,6 +443,7 @@ export default stockTakeItemsDetail
       height: calc(100vh - 32px)
       max-width: 23rem
       overflow: hidden
+
     .sub--scroll
       display: flex
       align-items: center
@@ -453,20 +469,22 @@ export default stockTakeItemsDetail
     background-color: #F5F5F5
 
   ::-webkit-scrollbar-track
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3)
     border-radius: 10px
     background-color: #F5F5F5
 
   ::-webkit-scrollbar-thumb
     border-radius: 10px
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3)
     background-color: #979AA4
+
   &__footer
     background: $color-white
     display: flex
     justify-content: space-between
     padding: 6px 8px
     align-items: center
+
 .wrap-unit
   width: 300px
   margin-bottom: 16px
@@ -478,6 +496,7 @@ export default stockTakeItemsDetail
     margin-top: 0px
     margin-left: 2rem
     height: calc(100vh - 32px)
+
   &__header
     flex-direction: column
     flex-wrap: wrap
@@ -485,25 +504,30 @@ export default stockTakeItemsDetail
     @include desktop
       flex-direction: row
       @include flex-center-space-between
+
     &--action
       margin-top: 12px
       display: flex
       @include flex-column
-      flex-wrap:  wrap
+      flex-wrap: wrap
       gap: 10px 16px
       @include desktop
         @include flex-center
         flex-direction: row
         margin-top: 0
+
   &__filter
     margin-bottom: $space-size-24
+
   &__content
     flex: 1
     border-radius: 4px
     position: relative
     overflow: hidden
+
   .text-right
     text-align: right !important
+
     .p-column-header-content
       justify-content: end !important
 
