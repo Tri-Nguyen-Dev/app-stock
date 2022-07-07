@@ -150,8 +150,8 @@ class DeliveryOrderPacking extends Vue {
         const obj = _.cloneDeep(x)
         return {
           ...obj,
-          usedCapacity: obj.usedCapacity * 100,
-          suggestCapacity: obj.suggestCapacity * 100,
+          usedCapacity: (obj.usedCapacity * 100).toFixed(),
+          suggestCapacity: (obj.suggestCapacity * 100).toFixed(),
           items: obj.items.map((item) => ({
             ...item,
             initialQuantity: item.quantity,

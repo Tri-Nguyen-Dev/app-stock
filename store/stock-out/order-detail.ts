@@ -37,8 +37,10 @@ export default class StoreOrderDetail extends VuexModule {
   @Mutation
   assignDriver(data: any) {
     this.dataAssignDriver = data.data
-    this.orderDetail.driver = data.data.driver
-    this.orderDetail.status = data.data.status
+    if(data.data.items.length===1) {
+      this.orderDetail.driver = data.data.items[0].driver
+      this.orderDetail.status = data.data.items[0].status
+    }
   }
 
   @Mutation

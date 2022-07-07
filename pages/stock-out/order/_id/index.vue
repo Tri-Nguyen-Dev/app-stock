@@ -11,7 +11,7 @@
           h1.text-heading {{ textHeading }}
           span.text-subheading {{ total }} items found
         .col-8.btn-right.flex.justify-content-end(v-if='orderDetail' class='col-12 md:col-12 lg:col-8 xl:col-8')
-          ThemeButtonExport(:click='handleExportReceipt' v-if='checkStatus("PICK_ITEM") || isPick')
+          ThemeButtonExport(:click='handleExportReceipt' v-if='checkStatus("EXPORT") || isPick')
           Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
             type='button',
             @click='packItem',
@@ -175,32 +175,36 @@ class DeliveryOrder extends Vue {
     let show = false
     switch(action){
     case 'PICK_ITEM':
-      if(this.orderDetail.status === ORDER_STATUS.NEW ||this.$route.query.isPick === 'true') {
+      if (this.orderDetail.status === ORDER_STATUS.NEW ||this.$route.query.isPick === 'true') {
         show = true
       }
       break
     case 'PACK_ITEM':
-      if(this.orderDetail.status === ORDER_STATUS.IN_PROGRESS && this.$route.query.isPick !== 'true') {
+      if (this.orderDetail.status === ORDER_STATUS.IN_PROGRESS && this.$route.query.isPick !== 'true') {
         show = true
       }
       break
     case 'PACKING_DETAIL':
-      if(this.orderDetail.status !== ORDER_STATUS.NEW && this.orderDetail.status !== ORDER_STATUS.IN_PROGRESS ) {
+      if (this.orderDetail.status !== ORDER_STATUS.NEW && this.orderDetail.status !== ORDER_STATUS.IN_PROGRESS ) {
         show = true
       }
       break
     case 'SET_DELIVERY':
-      if(this.orderDetail.status === ORDER_STATUS.READY) {
+      if (this.orderDetail.status === ORDER_STATUS.READY) {
         show = true
       }
       break
     case 'RESET_DELIVERY':
-      if(this.orderDetail.status === ORDER_STATUS.SETTED || this.orderDetail.status === ORDER_STATUS.ACCEPTED) {
+      if (this.orderDetail.status === ORDER_STATUS.SETTED || this.orderDetail.status === ORDER_STATUS.ACCEPTED) {
         show = true
       }
       break
-    }
-    return show
+    case 'EXPORT':
+      if (this.orderDetail.status !== ORDER_STATUS.IN_PROGRESS) {
+        show = true
+      }
+      break
+    }    return show
   }
 
   initialValue() {
@@ -217,6 +221,10 @@ class DeliveryOrder extends Vue {
       this.action === STOCK_OUT_ACTION.ORDER_PICK_ITEM
         ? 'Picking list'
         : 'Delivery order detail'
+    if(this.orderDetail.status === ORDER_STATUS.READY || this.orderDetail.status === ORDER_STATUS.SETTED) {
+      this.textHeading = 'Item list'
+    }
+      
     this.total = this.orderDetail.deliveryItemList!.length
   }
 

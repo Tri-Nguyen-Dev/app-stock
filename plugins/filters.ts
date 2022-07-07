@@ -57,7 +57,7 @@ Vue.filter('dateTimeHour24', (value) => {
 // --  [ Format capacity ] -------------------------------------------------
 Vue.filter('capacityPercent', (value) => {
   const percent = value * 100
-  return `${_.isInteger(percent) ? percent : (value * 100).toFixed(2)}%`
+  return `${_.isInteger(percent) ? percent : (value * 100).toFixed()}%`
 })
 
 // -- [report status] -------------------------------
