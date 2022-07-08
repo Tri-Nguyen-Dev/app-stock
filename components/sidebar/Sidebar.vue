@@ -42,9 +42,6 @@ class MenuSidebar extends Vue {
   @ProvideReactive()
   selectedItem: any = null
 
-  // @ProvideReactive()
-  // parentItems: any = []
-
   @ProvideReactive()
   selectParent: any = []
 
@@ -89,10 +86,18 @@ class MenuSidebar extends Vue {
     const rootRoute = _.trim(path, '/').split('/')[0]
     if (rootRoute) {
       this.selectedItem = this.pageMenu.find(item => {
-        const menuRoute = item.root || item.to
-        // const menuRoute = _.trim(item.to, '/').split('/')[0]
-        return _.trim(menuRoute, '/') === rootRoute
+        return item.to === path
       })
+      if(!this.selectedItem) {
+        this.selectedItem = this.pageMenu.find(item => {
+          const isPackingDetail = path.includes('/packing-detail')
+          if(isPackingDetail) {
+            return item.to === '/stock-out/packing/packing-note-list'
+          }
+          const menuRoute = _.trim(item.to, '/').split('/')[0]
+          return _.trim(menuRoute, '/') === rootRoute && !isPackingDetail
+        })
+      }
       const subParentId = this.selectedItem?.parentId
       const subParent = _.find(this.pageMenu, (o) => (o.id === subParentId))
       if(!_.includes(this.selectParent, subParentId)) {
@@ -107,23 +112,6 @@ export default MenuSidebar
 </script>
 
 <style lang="sass" scoped>
-// ::-webkit-input-placeholder
-//   font-weight: normal
-
-// ::-webkit-scrollbar
-//   width: 7px
-//   height: 7px
-//   background-color: var(--surface-100)
-
-// ::-webkit-scrollbar-track
-//   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
-//   border-radius: 10px
-//   background-color: var(--surface-100)
-
-// ::-webkit-scrollbar-thumb
-//   border-radius: 10px
-//   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
-//   background-color: var(--surface-300)
 .sidebar
   @include flex-column
   float: left
@@ -134,7 +122,6 @@ export default MenuSidebar
   bottom: 0
   padding: 30px 16px 30px 18px
   transition: 0.3s ease
-  // overflow: auto
 
   &-head
     @include flex-center-vert
