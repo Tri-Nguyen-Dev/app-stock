@@ -133,6 +133,7 @@ class NoteBoxDetail extends Vue {
     status?: any
     id: any
     note: any
+    finalResultStatus: any
   } = {
     user: undefined,
     totalBox: 0,
@@ -141,7 +142,8 @@ class NoteBoxDetail extends Vue {
     picId: '',
     status: '',
     id: '',
-    note: ''
+    note: '',
+    finalResultStatus: ''
   }
 
   rowExpaned: any = []
@@ -454,6 +456,7 @@ class NoteBoxDetail extends Vue {
     this.stockTakeInfo.status = this.boxStockTakeDetail?.status
     this.stockTakeInfo.id = this.boxStockTakeDetail?.id
     this.stockTakeInfo.note = this.boxStockTakeDetail?.submitNote
+    this.stockTakeInfo.finalResultStatus = this.boxStockTakeDetail?.finalResultStatus
     return this.stockTakeInfo
   }
 

@@ -57,7 +57,7 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		)
 			template(#body="{ data }").font-bold
 				span(v-if="isActive !== data.stock.barCode").text-center {{data.amount}}
-				InputNumber(v-model='data.amount' :step="0.1" :minFractionDigits="1" autofocus v-else)
+				InputNumber(v-model='data.amount' autofocus v-else :useGrouping="false")
 		column(
 			field='unit.name',
 			header='UNIT',
@@ -90,7 +90,16 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 		)
 			template(#body="{ data }")
 				span(v-if="isActive !== data.stock.barCode") {{data.value}}
-				InputNumber(v-model='data.value' :step="0.1" :minFractionDigits="1" autofocus v-else)
+				InputNumber(
+          v-model='data.value'
+          :step="0.1"
+          :minFractionDigits="1"
+          autofocus v-else
+          :useGrouping="false"
+          mode="currency"
+          urrency="USD"
+          locale="en-US"
+        )
 		column(
 			field='category.name',
 			header='CATEGORY',
