@@ -612,9 +612,9 @@ class createOrder extends Vue {
   }
 
   get dueDeliveryDate() {
-    const a = this.estimate?.estimate / this.fullDayTime
-    if(a) {
-      return dayjs(new Date()).add(a, 'day').format('MM/DD/YYYY')
+    const estimateTime = this.estimate?.estimate / this.fullDayTime
+    if(estimateTime) {
+      return dayjs(new Date()).add(estimateTime + 1 , 'day').format('MM/DD/YYYY')
     }
   }
 

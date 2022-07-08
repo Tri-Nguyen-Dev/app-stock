@@ -41,9 +41,8 @@
               sortField='_rackLocation.name'
             )
               template(#body='{ data }')
-                div(v-if='data.location')
-                  .flex.align-items-center.cursor-pointer
-                    span.font-bold {{ data.location }}
+                .flex.align-items-center.cursor-pointer
+                  span.font-bold {{ data.location?  data.location : data.rackLocation.name }}
             Column(
               field='id',
               header='ACTION',

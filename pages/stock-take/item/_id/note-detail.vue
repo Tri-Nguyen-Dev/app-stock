@@ -180,6 +180,7 @@ class stockTakeItemsDetail extends Vue {
     return {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
+      finalResultStatus: this.boxStockTakeDetail?.finalResultStatus,
       creatorInfo: [
         {
           title: 'Create Time', value: createdAt ?
