@@ -98,6 +98,7 @@
               type="items selected"
               :paging="paging"
               :total="total"
+              @onDelete="showModalDelete"
               @onPage="onPage")
           template(#empty)
             div.table__empty
@@ -111,7 +112,10 @@
       title="Confirm delete"
       image="confirm-delete"
       :isShow="isModalDelete"
+      :onOk="handleDeleteWarehouse"
       :onCancel="handleCancel"
+      :deleted-list="selectedItem"
+      :loading="loadingSubmit"
     )
       template(v-slot:message)
         p {{ deleteMessage }}
@@ -150,6 +154,7 @@ class Warehouse extends Vue {
   limitOptions = LIMIT_PAGE_OPTIONS
   checkIsFilter: boolean = false
   enablePack = false
+  id: string
   selectedItem: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   filter: any = {
@@ -170,6 +175,9 @@ class Warehouse extends Vue {
 
   @nsStoreWarehouse.Action
   actWarehouseBySeller!: (params?: any) => Promise<void>
+
+  @nsStoreWarehouse.Action
+  actDeletedWarehouseById!: (id?: any) => Promise<any>
   
   // --[ getter ] ----------------------------- 
   get total() {
@@ -184,12 +192,12 @@ class Warehouse extends Vue {
   get dataRenderItems() {
     const start = this.paging.pageSize * this.paging.pageNumber
     const end = start + this.paging.pageSize
-    const result = this.warehouseList.slice(start,end)
+    const result = this.warehouseList.slice(start, end)
     return result
   }
   
   showModalDelete(data: WarehouseModel.Model[]) {
-    this.onEventDeleteList = data 
+    this.onEventDeleteList = data
     this.isModalDelete = true
   }
 
@@ -225,6 +233,21 @@ class Warehouse extends Vue {
     })
   }
 
+  async handleDeleteWarehouse() {
+    const id = this.onEventDeleteList[0].id
+    const result = await this.actDeletedWarehouseById( id )
+    if(result){
+      this.isModalDelete = false
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted box',
+        life: 3000
+      })
+      await this.actWarehouseList({ pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize })
+    }
+  }
+
   handleFilter(){
 
   }
@@ -257,8 +280,14 @@ class Warehouse extends Vue {
     }
   }
 
-  unSelectRow() {
+  unSelectRow({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
+    this.selectedItem = _.filter(
+      this.selectedItem, 
+      (warehouse: any) => warehouse.id !== data._id
+    )
     this.$emit('enablePack', false)
+    
   }
 
   async mounted() {
