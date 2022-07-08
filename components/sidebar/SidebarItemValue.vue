@@ -1,19 +1,24 @@
 <template lang="pug">
   .item-value(:class="{ 'active': active, 'child-item': !!item.parentId, 'flex-column': item.childrens }"
-  :style="{ background: item.iA ? 'unset' : null }")
-    ul.item-collapsed.p-2(v-if='collapsed && parentItems.length > 0' :class="{'active-child': isShowChildren}")
-      li(v-for="parent in parentItems" :key="parent.id" @click.stop="handleSelect")
-        nuxt-link.item-collapsed__children.py-3.pl-4(:to="parent.to") {{parent.label}}
-    .item__icon(v-if="!!item.icon")
-      .icon(:class="`icon-${item.icon} ${iconMenuCssClasses} ${collapsed ? 'icon--llarge' : 'icon--large'}`")
+    :style="{ background: item.isChild ? 'unset' : null }" @mouseenter="mouseover(item)" @mouseleave="mouseleave()")
+    ul.item-collapsed.p-2.active-child(v-if='collapsed && parentItems.length > 0')
+      li(v-for="parent in parentItems" :key="parent.id")
+        nuxt-link.item-collapsed__children.py-3.pl-4(v-if="parent.to" :to="parent.to") {{parent.label}}
+        .item__label.py-3.pl-4.active(v-else)
+          span {{ parent.label }}
+          span.icon.toggle.icon-chevron-down.surface-500(:class="iconSelectCssClasses")
+        div.pl-4(v-if='isShowChild(parent)')
+          nuxt-link.item-collapsed__children.py-3.pl-4(:to="child.to" v-for="child in parent.childrens" :key="child.id") {{ child.label }}
+    .item__icon(v-if="!!item.icon" :class="{ 'icon_collapsed': collapsed }")
+      .icon(:class="`icon-${item.icon} ${iconMenuCssClasses} ${'icon--large'}`")
     transition(name="fade")
-      .item__label(v-if="!collapsed && !item.iA" :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast && !item.iA }")
+      .item__label(v-if="!collapsed && !item.isChild" :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast && !item.isChild }")
         div.item__children(v-if="item.parentId")
         div.item__rect(v-if="item.parentId")
         span {{ item.label }}
         span.icon.toggle.icon-chevron-down.surface-500(:class="iconSelectCssClasses")
         Badge.mr-2.badge-notify(v-if="item.label === 'Notifications'" :value="3")
-      .item__label.justify-content-end(v-if="!collapsed && item.iA" 
+      .item__label.justify-content-end(v-if="!collapsed && item.isChild" 
         :class="{ 'pl-16': !!item.parentId }")
         div.item__children(v-if="item.parentId")
         div.item_child(:class="{ 'active': active }")
@@ -25,35 +30,23 @@
 
 <script lang='ts'>
 
-import { Component, InjectReactive, namespace, Prop, Vue, Watch } from 'nuxt-property-decorator'
+import { Component, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator'
 import { PAGE_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
 class SidebarItemValue extends Vue {
-  isShowChildren: boolean = false
   // -- [ Statement Properties ] ----------------------------------------------------------
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
   pageMenu = PAGE_MENU
+  parentItems: any = []
 
   @Prop() readonly item!: any | undefined
   @InjectReactive() readonly selectedItem!: any
-  @InjectReactive() readonly parentItems!: any
   @InjectReactive() readonly selectParent!: any
 
-  @Watch('active')
-  resetActive() {
-    this.isShowChildren = this.active
-  }
-
-  @Watch('collapsed')
-  showChild(){
-    if(this.collapsed) {
-      this.isShowChildren = false
-    }
-  }
   // -- [ Getters ] -----------------------------------------------------------------------
 
   get active() {
@@ -78,8 +71,29 @@ class SidebarItemValue extends Vue {
     return clazz
   }
 
-  handleSelect() {
-    this.isShowChildren = false
+  mouseover(item) {
+    if(!item.parentId) {
+      this.parentItems = []
+      this.pageMenu.forEach(value => {
+        if(value.parentId === item.id) {
+          const childrens = _.filter(this.pageMenu, (o) => {
+            return o.parentId === value.id
+          })
+          this.parentItems.push({
+            ...value,
+            childrens
+          })
+        }
+      })
+    }
+  }
+
+  mouseleave() {
+    this.parentItems = []
+  }
+
+  isShowChild(parent) {
+    return parent.childrens.length > 0 && _.includes(this.selectParent, parent.parentId)
   }
 }
 
@@ -100,7 +114,7 @@ export default SidebarItemValue
       border-radius: 4px
       background-color: $text-color-300
 .child-item
-  margin-left: 40px
+  margin-left: 32px
   .item-collapsed
     display: none !important
   &::before
@@ -137,39 +151,41 @@ export default SidebarItemValue
   .item-collapsed
     display: none
   &.active
-   .item-collapsed
-     &.active-child
-       display: block
-       z-index: 1
-     position: absolute
-     top: 40px
-     width: 230px
-     background-color: $color-white
-     border: 1px solid $bg-body-base
-     box-shadow: 0px 10px 30px rgba(0, 10, 24, 0.1)
-     border-radius: 8px
-     li
+    // .item-collapsed
+
+    &::before
+      content: ""
+      position: absolute
+      border-radius: 0 5px 5px 0
+      left: -16px
+      width: 6px
+      height: 35px
+      background-color: $primary
+
+  .item-collapsed
+    &.active-child
+      display: block
+      z-index: 1
+    position: absolute
+    top: 40px
+    width: 230px
+    background-color: $color-white
+    border: 1px solid $bg-body-base
+    box-shadow: 0px 10px 30px rgba(0, 10, 24, 0.1)
+    border-radius: 8px
+    li
       list-style: none
-     .item-collapsed__children
-       display: block
-       text-decoration: none
-       color: $text-color-900
-       &:hover
+    .item-collapsed__children
+      display: block
+      text-decoration: none
+      color: $text-color-900
+      &:hover
         border-radius: 4px
         background-color: $text-color-300
-       &.nuxt-link-active
+      &.nuxt-link-active
         background: $primary
         color: $color-white
         border-radius: 4px
-
-   &::before
-    content: ""
-    position: absolute
-    border-radius: 0 5px 5px 0
-    left: -16px
-    width: 6px
-    height: 35px
-    background-color: $primary
 
   &:hover, &.active
     border-radius: 4px
@@ -185,9 +201,9 @@ export default SidebarItemValue
       align-items: center
       display: flex
       justify-content: space-between
-      padding-left: 16px
+      padding-left: $space-size-8
       .item__rect, .item__children
-        left: 15px
+        left: 8px
       .last-item
         height: calc(50% - 10px)
     .active
@@ -195,14 +211,17 @@ export default SidebarItemValue
       border-radius: 4px
 
   .item__icon
-    padding: $space-size-16
+    padding: $space-size-16 $space-size-8
+
+  .icon_collapsed
+    padding: $space-size-18
 
   .item__icon, .item__parent-link
     min-height: 56px
 
   .toggle
-    margin-right: $space-size-20
+    margin-right: $space-size-12
 
 .pl-16
-  padding-left: $space-size-16
+  padding-left: $space-size-8
 </style>

@@ -42,8 +42,8 @@ class MenuSidebar extends Vue {
   @ProvideReactive()
   selectedItem: any = null
 
-  @ProvideReactive()
-  parentItems: any = []
+  // @ProvideReactive()
+  // parentItems: any = []
 
   @ProvideReactive()
   selectParent: any = []
@@ -78,9 +78,6 @@ class MenuSidebar extends Vue {
     } else {
       this.selectedItem = item
     }
-    if(!item.parentId) {
-      this.parentItems = this.pageMenu.filter(value => value.parentId === item.id)
-    }
     // handle specific actions
     if (item.action === MENU_ACTION.LOGOUT) {
       this.$auth.logout()
@@ -89,10 +86,11 @@ class MenuSidebar extends Vue {
 
   @Watch('$route.path', { immediate: true, deep: true })
   handleSelect(path) {
-    const rootRoute = _.trim(path, '/').split('/').pop()
+    const rootRoute = _.trim(path, '/').split('/')[0]
     if (rootRoute) {
       this.selectedItem = this.pageMenu.find(item => {
-        const menuRoute = item.root || _.trim(item.to, '/').split('/').pop()
+        const menuRoute = item.root || item.to
+        // const menuRoute = _.trim(item.to, '/').split('/')[0]
         return _.trim(menuRoute, '/') === rootRoute
       })
       const subParentId = this.selectedItem?.parentId
@@ -109,23 +107,23 @@ export default MenuSidebar
 </script>
 
 <style lang="sass" scoped>
-::-webkit-input-placeholder
-  font-weight: normal
+// ::-webkit-input-placeholder
+//   font-weight: normal
 
-::-webkit-scrollbar
-  width: 7px
-  height: 7px
-  background-color: var(--surface-100)
+// ::-webkit-scrollbar
+//   width: 7px
+//   height: 7px
+//   background-color: var(--surface-100)
 
-::-webkit-scrollbar-track
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
-  border-radius: 10px
-  background-color: var(--surface-100)
+// ::-webkit-scrollbar-track
+//   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+//   border-radius: 10px
+//   background-color: var(--surface-100)
 
-::-webkit-scrollbar-thumb
-  border-radius: 10px
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
-  background-color: var(--surface-300)
+// ::-webkit-scrollbar-thumb
+//   border-radius: 10px
+//   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
+//   background-color: var(--surface-300)
 .sidebar
   @include flex-column
   float: left
@@ -136,7 +134,7 @@ export default MenuSidebar
   bottom: 0
   padding: 30px 16px 30px 18px
   transition: 0.3s ease
-  overflow: auto
+  // overflow: auto
 
   &-head
     @include flex-center-vert
