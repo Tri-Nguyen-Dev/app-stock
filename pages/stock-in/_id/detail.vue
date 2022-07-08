@@ -324,7 +324,7 @@ class DetailReceipt extends Vue {
   totalItem() {
     let total = 0
     this.listBox.forEach((element) => {
-      total += element.listItemInBox.length
+      total += _.sumBy(element.listItemInBox, function(o) { return o.originalAmount })
     })
     return total
   }

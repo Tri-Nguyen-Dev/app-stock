@@ -76,7 +76,13 @@
               div Estimated
               div Inventory Fee:
             div.ml-2
-              InputText.w-4.inputSearchCode.input-border(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
+              InputNumber(
+                v-model='tab.inventoryFee',
+                mode='currency',
+                currency='USD',
+                locale='en-US'
+                :disabled="disableEditQty"
+              ) 
               span.ml-1 / day
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:

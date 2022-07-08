@@ -169,7 +169,9 @@ class PackingTableList extends Vue {
   }
 
   handleQuantity(data, event) {
-    if(!this.isMergeBox && event > data.quantity) {
+    const barCode = data.barCode
+    const itemActive = _.find(this.originalBoxActive.items, { barCode })
+    if(!this.isMergeBox && event > data.quantity || this.isMergeBox && itemActive.quantity <= 0) {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',

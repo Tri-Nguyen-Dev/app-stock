@@ -441,6 +441,8 @@ class DeliveryOrderPacking extends Vue {
         detail: `Box ${this.originalBoxActive.boxCode} has been successfully process. Please move to another box!`,
         life: 3000
       })
+      const indexBoxOriginalActive = _.findIndex(this.listOriginalBox, { 'boxCode': this.originalBoxActive.boxCode })
+      this.listOriginalBox[indexBoxOriginalActive].usedCapacity = 0
     }
   }
 
