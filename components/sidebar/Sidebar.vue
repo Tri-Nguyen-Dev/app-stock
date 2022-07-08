@@ -63,6 +63,11 @@ class MenuSidebar extends Vue {
   }
 
   onSelectMenu(item) {
+    if(this.collapsed) return
+    this.changeItemMenu(item)
+  }
+
+  changeItemMenu(item) {
     if(!item.parentId || !item.to) {
       if(!_.includes(this.selectParent, item.id)) {
         this.selectParent.push(item.id)
@@ -83,6 +88,21 @@ class MenuSidebar extends Vue {
 
   @Watch('$route.path', { immediate: true, deep: true })
   handleSelect(path) {
+    if(!this.collapsed) return
+    const rootRoute = _.trim(path, '/').split('/')[0]
+    if (rootRoute) {
+      const itemPath = this.pageMenu.find(item => {
+        return item.to === path
+      })
+      if(itemPath) {
+        // this.selectedItem = itemPath
+        this.changeItemMenu(itemPath)
+      }
+    }
+  }
+
+  mounted() {
+    const path = this.$route.path
     const rootRoute = _.trim(path, '/').split('/')[0]
     if (rootRoute) {
       this.selectedItem = this.pageMenu.find(item => {

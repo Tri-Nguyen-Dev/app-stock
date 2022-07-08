@@ -3,12 +3,13 @@
     :style="{ background: item.isChild ? 'unset' : null }" @mouseenter="mouseover(item)" @mouseleave="mouseleave()")
     ul.item-collapsed.p-2.active-child(v-if='collapsed && parentItems.length > 0')
       li(v-for="parent in parentItems" :key="parent.id")
-        nuxt-link.item-collapsed__children.py-3.pl-4(v-if="parent.to" :to="parent.to") {{parent.label}}
-        .item__label.py-3.pl-4.active(v-else)
+        nuxt-link.item-collapsed__children(:class="{ 'link-active': parent.id === selectedId }" v-if="parent.to" :to="parent.to") {{parent.label}}
+        .item__label.py-3.pl-4.item-collapsed__parent(v-else :class="{ 'active': isShowChild(parent) }")
           span {{ parent.label }}
           span.icon.toggle.icon-chevron-down.surface-500(:class="iconSelectCssClasses")
-        div.pl-4(v-if='isShowChild(parent)')
-          nuxt-link.item-collapsed__children.py-3.pl-4(:to="child.to" v-for="child in parent.childrens" :key="child.id") {{ child.label }}
+          ul.item-collapsed.p-2.active-child(v-if='collapsed && parent.childrens.length > 0')
+            li(v-for="child in parent.childrens" :key="child.id")
+              nuxt-link.item-collapsed__children(:class="{ 'link-active': child.id === selectedId }" v-if="child.to" :to="child.to") {{child.label}}
     .item__icon(v-if="!!item.icon" :class="{ 'icon_collapsed': collapsed }")
       .icon(:class="`icon-${item.icon} ${iconMenuCssClasses} ${'icon--large'}`")
     transition(name="fade")
@@ -31,7 +32,7 @@
 <script lang='ts'>
 
 import { Component, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator'
-import { PAGE_MENU } from '~/utils'
+import { PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
@@ -41,6 +42,7 @@ class SidebarItemValue extends Vue {
   collapsed!: boolean
 
   pageMenu = PAGE_MENU
+  settingMenu = SETTING_MENU
   parentItems: any = []
 
   @Prop() readonly item!: any | undefined
@@ -72,11 +74,12 @@ class SidebarItemValue extends Vue {
   }
 
   mouseover(item) {
+    const listMenu = item.label === 'Setting' ? this.settingMenu : this.pageMenu
     if(!item.parentId) {
       this.parentItems = []
-      this.pageMenu.forEach(value => {
+      listMenu.forEach(value => {
         if(value.parentId === item.id) {
-          const childrens = _.filter(this.pageMenu, (o) => {
+          const childrens = _.filter(listMenu, (o) => {
             return o.parentId === value.id
           })
           this.parentItems.push({
@@ -93,7 +96,11 @@ class SidebarItemValue extends Vue {
   }
 
   isShowChild(parent) {
-    return parent.childrens.length > 0 && _.includes(this.selectParent, parent.parentId)
+    return parent.id === this.selectedItem.parentId
+  }
+
+  get selectedId() {
+    return this.selectedItem?.id
   }
 }
 
@@ -163,9 +170,6 @@ export default SidebarItemValue
       background-color: $primary
 
   .item-collapsed
-    &.active-child
-      display: block
-      z-index: 1
     position: absolute
     top: 40px
     width: 230px
@@ -173,20 +177,39 @@ export default SidebarItemValue
     border: 1px solid $bg-body-base
     box-shadow: 0px 10px 30px rgba(0, 10, 24, 0.1)
     border-radius: 8px
+    &.active-child
+      display: block
+      z-index: 1
     li
       list-style: none
+    .item-collapsed__parent, .item-collapsed__children
+      padding: 1rem 0 1rem 1.5rem
+      &:hover
+        border-radius: 4px
+        background-color: $text-color-300
+
     .item-collapsed__children
       display: block
       text-decoration: none
       color: $text-color-900
-      &:hover
-        border-radius: 4px
-        background-color: $text-color-300
-      &.nuxt-link-active
+      &.link-active
         background: $primary
         color: $color-white
         border-radius: 4px
-
+    .item-collapsed__parent
+      position: relative
+      .active-child
+        top: 0
+        left: 210px
+        display: none
+        z-index: 2
+      &:hover
+        .active-child
+          display: block
+    .active
+      background-color: $text-color-300
+      border-radius: 4px
+        
   &:hover, &.active
     border-radius: 4px
     background-color: $text-color-300
