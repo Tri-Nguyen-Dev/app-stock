@@ -1,11 +1,12 @@
 <template lang="pug"> 
-  .chart-detail-container
-    .header-chart
-      h4 Delivery Order
-      .chart-statistics
-        span Total Delivery Order: 82
-        span Delivered Delivery Order: 88
-    Chart(type="bar" :data="multiAxisData" :options="multiAxisOptions")
+  Card
+    template(#content='')
+      .header-chart
+        h4 Delivery Order
+        .chart-statistics
+          span Total Delivery Order: 82
+          span Delivered Delivery Order: 88
+      Chart(type="bar" :data="multiAxisData" :options="multiAxisOptions")
 </template>
 
 <script lang="ts">
@@ -66,15 +67,11 @@ class DeliveryChart extends Vue {
 export default DeliveryChart
 </script>
 <style lang="sass" scoped>
-.chart-detail-container
-  padding: $space-size-8
-  border: 1px solid $text-color-400
-  border-radius: $border-radius-6
-  .header-chart
-    h4
-      margin: 0
-    .chart-statistics
-      display: flex
-      justify-content: space-between
-      padding: $space-size-4 0
+.header-chart
+  h4
+    margin: 0
+  .chart-statistics
+    display: flex
+    justify-content: space-between
+    padding: $space-size-4 0
 </style>

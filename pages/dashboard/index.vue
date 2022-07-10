@@ -3,13 +3,15 @@
     .col-12
       h1.text-heading Dashboard
     .col-12
-      .dashboard-warehouse
-        div Choose warehouse
-        Dropdown.warehouse-select(v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Select a warehouse")
-    .col-12
+      Card
+        template(#content='')
+          .dashboard-warehouse
+            div Choose warehouse
+            Dropdown.warehouse-select(v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Select a warehouse")
+    .col-12.pb-0
       DashboardTotalCompared
-    .col-12
-      .grid.chart-container
+    .col-12.flex-1
+      .grid
         .col-5
           DashboardDeliveryChart
           DashboardDriverChart.mt-3
@@ -40,16 +42,17 @@ export default Dashboard
 </script>
 <style lang="sass" scoped>
 .dashboard-page-container
+  @mixin flex-center-column
   .dashboard-warehouse
-    background: $color-white
+    // background: $color-white
     display: flex
     justify-content: space-between
     align-items: center
-    padding: $space-size-8 $space-size-12
+    // padding: $space-size-8 $space-size-12
     .warehouse-select
       width: 200px
-  .chart-container
-    background: $color-white
-    margin-left: 0
-    margin-right: 0
+  ::v-deep.p-card-body
+    padding: $space-size-12
+    .p-card-content
+      padding: 0
 </style>

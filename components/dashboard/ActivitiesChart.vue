@@ -1,7 +1,9 @@
 <template lang="pug">
-  div.card-dashboard
-    h4.chart-title Activities
-    Chart(type="line" :data="dataActivitiesChart")
+  Card
+    template(#content='')
+      .header-chart
+        h4.chart-title Activities
+      Chart(type="line" :data="dataActivitiesChart")
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
@@ -109,11 +111,7 @@ class ActivitiesChart extends Vue {
 export default ActivitiesChart
 </script>
 <style lang="sass" scoped>
-  .card-dashboard
-    background-color: #fff
-    box-shadow: 0px 4px 20px rgba(91, 71, 188, 0.3)
-    padding: 16px
-    border-radius: 8px
-    h4
-      margin: 0
+.header-chart
+  h4
+    margin: 0
 </style>
