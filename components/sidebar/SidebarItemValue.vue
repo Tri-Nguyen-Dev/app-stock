@@ -1,19 +1,29 @@
 <template lang="pug">
   .item-value(:class="{ 'active': active, 'child-item': !!item.parentId, 'flex-column': item.childrens }"
     :style="{ background: item.isChild ? 'unset' : null }" @mouseenter="mouseover(item)" @mouseleave="mouseleave()")
-    ul.item-collapsed.p-2.active-child(v-if='collapsed && parentItems.length > 0')
-      li(v-for="parent in parentItems" :key="parent.id")
-        nuxt-link.item-collapsed__children(:class="{ 'link-active': parent.id === selectedId }" v-if="parent.to" :to="parent.to") {{parent.label}}
-        .item__label.py-3.pl-4.item-collapsed__parent(v-else :class="{ 'active': isShowChild(parent) }")
+    ul.item-collapsed.p-2.active-child(v-if='collapsed && parentItems.length > 0'
+      :class="{ 'item-setting': item.id === 200 }" 
+    )
+      li.mb-1(v-for="parent in parentItems" :key="parent.id")
+        nuxt-link.item-collapsed__children(
+          :class="{ 'link-active': parent.id === selectedId }" 
+          v-if="parent.to" :to="parent.to"
+        ) {{parent.label}}
+        .item__label.item-collapsed__parent(v-else :class="{ 'active': isShowChild(parent) }" @click="select(parent)")
           span {{ parent.label }}
           span.icon.toggle.icon-chevron-down.surface-500(:class="iconSelectCssClasses")
           ul.item-collapsed.p-2.active-child(v-if='collapsed && parent.childrens.length > 0')
-            li(v-for="child in parent.childrens" :key="child.id")
-              nuxt-link.item-collapsed__children(:class="{ 'link-active': child.id === selectedId }" v-if="child.to" :to="child.to") {{child.label}}
+            li.mb-1(v-for="child in parent.childrens" :key="child.id")
+              nuxt-link.item-collapsed__children(
+                :class="{ 'link-active': child.id === selectedId }" 
+                v-if="child.to" :to="child.to"
+              ) {{child.label}}
     .item__icon(v-if="!!item.icon" :class="{ 'icon_collapsed': collapsed }")
       .icon(:class="`icon-${item.icon} ${iconMenuCssClasses} ${'icon--large'}`")
     transition(name="fade")
-      .item__label(v-if="!collapsed && !item.isChild" :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast && !item.isChild }")
+      .item__label(v-if="!collapsed && !item.isChild" 
+        :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast && !item.isChild }"
+      )
         div.item__children(v-if="item.parentId")
         div.item__rect(v-if="item.parentId")
         span {{ item.label }}
@@ -32,7 +42,7 @@
 <script lang='ts'>
 
 import { Component, InjectReactive, namespace, Prop, Vue } from 'nuxt-property-decorator'
-import { PAGE_MENU, SETTING_MENU } from '~/utils'
+import { MENU_ACTION, PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
 
 @Component
@@ -73,6 +83,10 @@ class SidebarItemValue extends Vue {
     return clazz
   }
 
+  get selectedId() {
+    return this.selectedItem?.id
+  }
+
   mouseover(item) {
     const listMenu = item.label === 'Setting' ? this.settingMenu : this.pageMenu
     if(!item.parentId) {
@@ -99,8 +113,10 @@ class SidebarItemValue extends Vue {
     return parent.id === this.selectedItem.parentId
   }
 
-  get selectedId() {
-    return this.selectedItem?.id
+  select(item) {
+    if (item.action === MENU_ACTION.LOGOUT) {
+      this.$auth.logout()
+    }
   }
 }
 
@@ -209,7 +225,9 @@ export default SidebarItemValue
     .active
       background-color: $text-color-300
       border-radius: 4px
-        
+  .item-setting
+    top: -80px !important
+
   &:hover, &.active
     border-radius: 4px
     background-color: $text-color-300

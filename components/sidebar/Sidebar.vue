@@ -64,10 +64,6 @@ class MenuSidebar extends Vue {
 
   onSelectMenu(item) {
     if(this.collapsed) return
-    this.changeItemMenu(item)
-  }
-
-  changeItemMenu(item) {
     if(!item.parentId || !item.to) {
       if(!_.includes(this.selectParent, item.id)) {
         this.selectParent.push(item.id)
@@ -95,8 +91,7 @@ class MenuSidebar extends Vue {
         return item.to === path
       })
       if(itemPath) {
-        // this.selectedItem = itemPath
-        this.changeItemMenu(itemPath)
+        this.selectedItem = itemPath
       }
     }
   }
