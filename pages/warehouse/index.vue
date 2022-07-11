@@ -89,7 +89,7 @@
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
-                span.action-item(@click.stop="handleEditWarehouse(data.id)")
+                span.action-item(@click.stop="handleEditWarehouse([data])")
                   .icon.icon-edit-btn
                 span.action-item(@click.stop="showModalDelete([data])" )
                   .icon.icon-btn-delete
@@ -121,7 +121,7 @@
         p {{ deleteMessage }}
 
     Toast
-    <CreateWarehouse v-show="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" :id="warehouseID"/>
+    <CreateWarehouse v-show="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" :warehouseData="warehouseData"/>
             
 </template>
 
@@ -159,8 +159,8 @@ class Warehouse extends Vue {
   limitOptions = LIMIT_PAGE_OPTIONS
   checkIsFilter: boolean = false
   enablePack = false
+  warehouseData: any = []
   id: string
-  warehouseID: string | undefined
   selectedItem: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   filter: any = {
@@ -270,9 +270,11 @@ class Warehouse extends Vue {
 
   }
 
-  handleEditWarehouse( id ) {
-    this.warehouseID = id
+  handleEditWarehouse(warehouseData) {
+    this.warehouseData = warehouseData
     this.isShowCreateWarehouse = true
+    // eslint-disable-next-line no-console
+    console.log(this.warehouseData)
     
   }
 

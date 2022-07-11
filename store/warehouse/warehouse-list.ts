@@ -57,7 +57,7 @@ export default class Warehouse extends VuexModule {
   }
 
   @Action({ commit: 'setWarehouseDetail', rawError: true })
-  async actWarehouseDetail(params: { id: number }): Promise<string | undefined> {
+  async actWarehouseDetail(params: { id?: number }): Promise<string | undefined> {
     try {
       const url = PathBind.transform(
         this.context,

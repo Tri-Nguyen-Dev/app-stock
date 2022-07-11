@@ -2,8 +2,8 @@
   .modal-overlay
     .modal
       .text-heading.modal-header Add new Warehouse
-      .card
-        .formgrid.grid
+      .card {{warehouseData}}
+        .formgrid.grid(v-if= "warehouseData.length === 0")
           .field.col-12()
             label.required__title(for='name') Name :
             InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.warehouseInformation.name.$error}")
@@ -27,12 +27,36 @@
             label(for='maxNumberRack') MaxNumberRack :
             InputText#maxNumberRack.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.maxNumberRack' type='number')
           .field.col-12.modal-btn(class='md:col-9')
-            Button.btn.btn-cancel(@click="$emit('close-modal')")
-              span Cancel
-            Button.btn.btn-primary(@click="addItem()")
-              .icon.icon-add-items
-              span Add Warehouse
-        
+        .formgrid.grid(v-if= " warehouseData.length > 0 && warehouseData[0].id")
+          .field.col-12()
+            label.required__title(for='name') Name :
+            InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseData[0].name' type='text' class='focus:border-primary' :class="{'name--error' : $v.warehouseInformation.name.$error}")
+            .error-message(v-if='$v.warehouseInformation.name.$dirty && !$v.warehouseInformation.name.required') Name cannot be empty!
+          .field.col-12()
+            label.required__title(for='icon') Address :
+            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.address' type='text' :class="{'address--error' : $v.warehouseInformation.address.$error}")
+            .error-message(v-if='$v.warehouseInformation.address.$dirty && !$v.warehouseInformation.address.required') Address cannot be empty!
+          .field.col-12()
+            label.required__title(for='email') Email:
+            InputText#email.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.email' type='text' :class="{'email--error' : $v.warehouseInformation.email.$error}")
+            .error-message(v-if='$v.warehouseInformation.email.$dirty && !$v.warehouseInformation.email.required') Email cannot be empty!
+          .field.col-12(class='lg:col-12')
+            label(for='description') Description :
+            InputText#description.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.description' type='text')
+          .field.col-12(class='md:col-6')
+            label.required__title(for='phone') Phone :
+            InputText#phone.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.phone' type='text' :class="{'phone--error' : $v.warehouseInformation.phone.$error}")
+            .error-message(v-if='$v.warehouseInformation.phone.$dirty && !$v.warehouseInformation.phone.required') Phone cannot be empty!
+          .field.col-12(class='md:col-6')
+            label(for='maxNumberRack') MaxNumberRack :
+            InputText#maxNumberRack.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.maxNumberRack' type='number')
+        .field.col-12.modal-btn(class='md:col-9')
+          Button.btn.btn-cancel(@click="$emit('close-modal')")
+            span Cancel
+          Button.btn.btn-primary(@click="addItem()")
+            .icon.icon-add-items
+            span Save
+      
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, Prop } from 'nuxt-property-decorator'
@@ -60,7 +84,7 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
   }
 })
 class AddNewWarehouse extends Vue {
-  @Prop() id!: string
+  @Prop() warehouseData!: any
   warehouseInformation: any = {
     name: '',
     address: '',
@@ -77,20 +101,40 @@ class AddNewWarehouse extends Vue {
   @nsStoreWarehouse.State
   newWarehouseDetail!: WarehouseModel.CreateOrUpdateWarehouse
 
+  @nsStoreWarehouse.State
+  warehouseDetail!: WarehouseModel.Model
+
   @nsStoreWarehouse.Action
   actWarehouseList!: (params?: any) => Promise<void>
 
   @nsStoreWarehouse.Action
-  actCreateNewWarehouse!: (param: any) => Promise<void>
+  actCreateNewWarehouse!: (param?: any) => Promise<void>
 
   @nsStoreWarehouse.Action
-  actUpdateWarehouse!: (param: any) => Promise<void>
+  actWarehouseDetail!: (param?: any) => Promise<any>
+
+  @nsStoreWarehouse.Action
+  actUpdateWarehouse!: (param?: any) => Promise<any>
 
   // --[ getter ] -----------------------------------------------
 
   // --[ functions ] --------------------------------------------
   async mounted() {
     await Promise.all([this.actWarehouseList()])
+  }
+
+  async getWarehouseDetail(){
+    
+  }
+
+  clearInform(){
+    this.warehouseInformation.name = ''
+    this.warehouseInformation.address =''
+    this.warehouseInformation.phone =''
+    this.warehouseInformation.email =''
+    this.warehouseInformation.description =''
+    this.warehouseInformation.maxNumberRack =''
+
   }
 
   async addItem() {
@@ -112,6 +156,7 @@ class AddNewWarehouse extends Vue {
     
     await this.actWarehouseList()
     if(result){
+      this.clearInform()
       this.$emit('close-modal', this.warehouseInformation)
       this.$toast.add({
         severity: 'success',
@@ -120,11 +165,41 @@ class AddNewWarehouse extends Vue {
         life: 3000
       })
     } else {
+      this.clearInform()
       this.$emit('close-modal', this.warehouseInformation)
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
         detail: 'Create category failed!',
+        life: 3000
+      })
+    }
+  }
+
+  async UpdateItem() {
+    const result = await this.actUpdateWarehouse(this.id)
+    if (result) {
+      await this.actUpdateWarehouse({
+        name: this.warehouseInformation.name,
+        icon: this.warehouseInformation.icon,
+        displayOrder: this.warehouseInformation.displayOrder,
+        deleted: this.warehouseInformation.deleted
+      })
+      await this.actWarehouseList()
+      this.clearInform()
+      this.$emit('close-modal', this.warehouseInformation)
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully update box',
+        life: 3000
+      })
+    } else {
+      this.clearInform()
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Update category failed!',
         life: 3000
       })
     }
