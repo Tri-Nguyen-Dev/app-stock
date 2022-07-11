@@ -89,7 +89,7 @@
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
-                span.action-item(@click.stop="handleEditWarehouse([data])")
+                span.action-item(@click.stop="handleEditWarehouse(data.id)")
                   .icon.icon-edit-btn
                 span.action-item(@click.stop="showModalDelete([data])" )
                   .icon.icon-btn-delete
@@ -121,14 +121,14 @@
         p {{ deleteMessage }}
 
     Toast
-    <CreateOrUpdateWarehouse v-show="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" />       
+    <CreateWarehouse v-show="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" :id="warehouseID"/>
             
 </template>
 
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
-import CreateOrUpdateWarehouse from '~/components/warehouse/CreateOrUpdateWarehouse.vue'
+import CreateWarehouse from '~/components/warehouse/CreateWarehouse.vue'
 import { Warehouse as WarehouseModel } from '~/models/Warehouse'
 import {
   LIMIT_PAGE_OPTIONS,
@@ -143,7 +143,7 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
   components: {
     ConfirmDialogCustom,
     Pagination,
-    CreateOrUpdateWarehouse
+    CreateWarehouse
   }
 })
 class Warehouse extends Vue {
@@ -160,7 +160,7 @@ class Warehouse extends Vue {
   checkIsFilter: boolean = false
   enablePack = false
   id: string
-  idEdit: string | undefined
+  warehouseID: string | undefined
   selectedItem: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   filter: any = {
@@ -270,10 +270,9 @@ class Warehouse extends Vue {
 
   }
 
-  handleEditWarehouse(data: WarehouseModel.CreateOrUpdateWarehouse[]) {
+  handleEditWarehouse( id ) {
+    this.warehouseID = id
     this.isShowCreateWarehouse = true
-    this.onEventCreateOrUpdateWarehouse = data
-    this.idEdit = data[0].id
     
   }
 

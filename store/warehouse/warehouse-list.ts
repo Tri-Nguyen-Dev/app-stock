@@ -14,8 +14,8 @@ export default class Warehouse extends VuexModule {
     UPDATE_WAREHOUSE_DETAIL: '/warehouse/:id/update',
     GET_WAREHOUSE_SELLER: '/warehouse/list/by-seller-email',
     DELETE_WAREHOUSE: '/warehouse/:id/delete',
-    DELETE_WAREHOUSE_LIST: 'warehouse/list/delete',
-    CREATE_WAREHOUSE: 'warehouse/create'
+    DELETE_WAREHOUSE_LIST: '/warehouse/list/delete',
+    CREATE_WAREHOUSE: '/warehouse/create'
   }
 
   public warehouseList: [] = []
@@ -34,8 +34,8 @@ export default class Warehouse extends VuexModule {
   }
 
   @Mutation
-  setNewWarehouse(newStockDetail: WarehouseModel.CreateOrUpdateWarehouse) {
-    this.newWarehouseDetail = newStockDetail
+  setNewWarehouse(newWarehouseDetail: WarehouseModel.CreateOrUpdateWarehouse) {
+    this.newWarehouseDetail = newWarehouseDetail
   }
 
   @Mutation
@@ -83,12 +83,23 @@ export default class Warehouse extends VuexModule {
   }
 
   @Action({ commit: 'setNewWarehouse', rawError: true })
-  async actCreateNewStock(params: any): Promise<string | undefined> {
+  async actCreateNewWarehouse(params: any): Promise<string | undefined> {
     try{
       const url = PathBind.transform(this.context, Warehouse.STATE_URL.CREATE_WAREHOUSE)
       const response = await $api.post(url, params)
       return response.data
     } catch (error) {}
+  }
+
+  @Action({ rawError: true })
+  async actUpdateWarehouse(id): Promise<string | undefined> {
+    const url = PathBind.transform(
+      this.context,
+      Warehouse.STATE_URL.UPDATE_WAREHOUSE_DETAIL,
+      { id }
+    )
+    const response: any = await $api.post(url)
+    return response.data
   }
 
   @Action({ commit: 'setWarehouseBySeller', rawError: true })

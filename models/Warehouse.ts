@@ -16,7 +16,7 @@ export namespace Warehouse {
     description?: string,
     phone?: string,
     email?: string,
-    maxNumberRack?: string
+    maxNumberRack?: number
   }
 }
   

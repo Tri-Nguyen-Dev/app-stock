@@ -3,7 +3,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
-import CreateOrUpdateWarehouse from '~/components/warehouse/CreateOrUpdateWarehouse.vue'
+import CreateOrUpdateWarehouse from '~/components/warehouse/CreateWarehouse.vue'
 
 @Component({
   components: {
