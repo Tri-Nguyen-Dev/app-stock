@@ -273,8 +273,6 @@ class Warehouse extends Vue {
   handleEditWarehouse(warehouseData) {
     this.warehouseData = warehouseData
     this.isShowCreateWarehouse = true
-    // eslint-disable-next-line no-console
-    console.log(this.warehouseData)
     
   }
 
