@@ -91,7 +91,7 @@ class DeliveryOrderPacking extends Vue {
   noteText: string = ''
   listTranfferingBox: any =  [
     {
-      boxCode: 'TR1',
+      boxCode: 'TR01',
       items: [],
       airtag: null,
       checked: false,
@@ -209,8 +209,13 @@ class DeliveryOrderPacking extends Vue {
   genearateBoxCode(listPacking, subname) {
     let boxCode = subname
     if(listPacking.length > 0) {
-      const lastNo = _.last(listPacking)?.boxCode.replace(subname, '')
-      boxCode += parseInt(lastNo) + 1
+      const lastNo = _.last(listPacking)?.boxCode.replace(`${subname}`, '')
+      if(parseInt(lastNo) >= 9) {
+        boxCode = `${boxCode}${parseInt(lastNo) + 1}`
+      }
+      else {
+        boxCode = `${boxCode}0${parseInt(lastNo) + 1}`
+      }
     } else {
       boxCode += 1
     }
@@ -436,6 +441,8 @@ class DeliveryOrderPacking extends Vue {
         detail: `Box ${this.originalBoxActive.boxCode} has been successfully process. Please move to another box!`,
         life: 3000
       })
+      const indexBoxOriginalActive = _.findIndex(this.listOriginalBox, { 'boxCode': this.originalBoxActive.boxCode })
+      this.listOriginalBox[indexBoxOriginalActive].usedCapacity = 0
     }
   }
 

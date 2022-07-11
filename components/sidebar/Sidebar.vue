@@ -43,7 +43,7 @@ class MenuSidebar extends Vue {
   selectedItem: any = null
 
   @ProvideReactive()
-  parentItems: any = []
+  selectParent: any = []
 
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
@@ -63,9 +63,18 @@ class MenuSidebar extends Vue {
   }
 
   onSelectMenu(item) {
-    this.selectedItem = !item.parentId && item.id === this.selectedItem?.id ? null : item
-    if(!item.parentId) {
-      this.parentItems = this.pageMenu.filter(value => value.parentId === item.id)
+    if(this.collapsed) return
+    if(!item.parentId || !item.to) {
+      if(!_.includes(this.selectParent, item.id)) {
+        this.selectParent.push(item.id)
+      } else {
+        const subParent = _.find(this.pageMenu, (obj) => (obj.parentId === item.id && !obj.to))
+        this.selectParent = _.filter(this.selectParent, (o) => {
+          return o !== item.id && o !== subParent?.id
+        })
+      }
+    } else {
+      this.selectedItem = item
     }
     // handle specific actions
     if (item.action === MENU_ACTION.LOGOUT) {
@@ -75,12 +84,41 @@ class MenuSidebar extends Vue {
 
   @Watch('$route.path', { immediate: true, deep: true })
   handleSelect(path) {
+    if(!this.collapsed) return
+    const rootRoute = _.trim(path, '/').split('/')[0]
+    if (rootRoute) {
+      const itemPath = this.pageMenu.find(item => {
+        return item.to === path
+      })
+      if(itemPath) {
+        this.selectedItem = itemPath
+      }
+    }
+  }
+
+  mounted() {
+    const path = this.$route.path
     const rootRoute = _.trim(path, '/').split('/')[0]
     if (rootRoute) {
       this.selectedItem = this.pageMenu.find(item => {
-        const menuRoute = item.root || item.to
-        return _.trim(menuRoute, '/') === rootRoute
+        return item.to === path
       })
+      if(!this.selectedItem) {
+        this.selectedItem = this.pageMenu.find(item => {
+          const isPackingDetail = path.includes('/packing-detail')
+          if(isPackingDetail) {
+            return item.to === '/stock-out/packing/packing-note-list'
+          }
+          const menuRoute = _.trim(item.to, '/').split('/')[0]
+          return _.trim(menuRoute, '/') === rootRoute && !isPackingDetail
+        })
+      }
+      const subParentId = this.selectedItem?.parentId
+      const subParent = _.find(this.pageMenu, (o) => (o.id === subParentId))
+      if(!_.includes(this.selectParent, subParentId)) {
+        this.selectParent.push(subParent?.parentId)
+        this.selectParent.push(subParentId)
+      }
     }
   }
 }

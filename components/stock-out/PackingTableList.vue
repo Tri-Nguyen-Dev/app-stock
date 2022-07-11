@@ -169,6 +169,16 @@ class PackingTableList extends Vue {
   }
 
   handleQuantity(data, event) {
+    const barCode = data.barCode
+    const itemActive = _.find(this.originalBoxActive.items, { barCode })
+    if(!this.isMergeBox && event > data.quantity || this.isMergeBox && itemActive.quantity <= 0) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'The delivery Q.TY exceeded the inventory number',
+        life: 3000
+      })
+    }
     if (!_.isNil(event)) {
       if (!event) {
         this.onEventDeleteList = [data]

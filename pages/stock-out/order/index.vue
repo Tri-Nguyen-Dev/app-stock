@@ -16,15 +16,7 @@
               .input-errors(
                 v-if='$v.information.warehouse.$each[0].value.$dirty && $v.information.warehouse.$each[0].value.$invalid '
                 )
-                .error-message Please, select name in the correct Warehouse Information
-              .input-errors(
-                v-else-if='$v.information.warehouse.$each[1].value.$dirty && $v.information.warehouse.$each[1].value.$invalid '
-                )
-                .error-message {{errorMessage.errorName}} Warehouse Information
-              .input-errors(
-                v-else-if='$v.information.warehouse.$each[2].value.$dirty && $v.information.warehouse.$each[2].value.$invalid  '
-                )
-                .error-message {{errorMessage.errorPhone}} Warehouse Information
+                .error-message *Please, select name in the correct Warehouse Information
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
             .grid.grid-nogutter.align-items-center.mb-4
@@ -35,20 +27,13 @@
                 :listInfor='information.seller'
                 @sellerInfor='handleSeller'
                 @paramSeller='paramSeller'
+                @clearSeller='clearSeller'
                 :sellerList='sellerList'
               )
               .input-errors(
-                v-if=' $v.information.seller.$each[0].value.$invalid && $v.information.seller.$each[0].value.$dirty '
+                v-if=' $v.information.seller.$each[0].value.$invalid && $v.information.seller.$each[0].value.$dirty'
                 )
-                .error-message Seller not found, please select seller email
-              .input-errors(
-                v-else-if='$v.information.seller.$each[1].value.$dirty && $v.information.seller.$each[1].value.$invalid '
-                )
-                .error-message {{errorMessage.errorName}} Seller Information
-              .input-errors(
-                v-else-if='$v.information.seller.$each[2].value.$dirty && $v.information.seller.$each[2].value.$invalid  '
-                )
-                .error-message {{errorMessage.errorPhone}} Seller Information
+                .error-message *Seller not found, please select seller email
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
             .grid.grid-nogutter.align-items-center.mb-4
@@ -60,21 +45,18 @@
                 @fieldReceiver='handleReceiver'
               )
               .input-errors(
-                v-if='$v.information.receiver.$each[0].value.$dirty && $v.information.receiver.$each[0].value.$invalid'
-                )
+                v-if='checkValidReceiver()'
+              )
                 .error-message {{errorMessage.errorAddress}} Receiver Information
               .input-errors(
-                v-else-if='$v.information.receiver.$each[1].value.$dirty && $v.information.receiver.$each[1].value.$invalid'
+                v-else-if='$v.information.receiver.$each[0].value.$dirty && $v.information.receiver.$each[0].value.$invalid'
                 )
-                .error-message {{errorMessage.errorEmail}} Receiver Information
-              .input-errors(
-                v-else-if='$v.information.receiver.$each[2].value.$dirty && $v.information.receiver.$each[2].value.$invalid'
-                )
-                .error-message {{errorMessage.errorName}} Receiver Information
+                .error-message *Please, fill in Address filed
               .input-errors(
                 v-else-if='$v.information.receiver.$each[3].value.$dirty && $v.information.receiver.$each[3].value.$invalid'
                 )
-                .error-message {{errorMessage.errorPhone}} Receiver Information
+                .error-message *Please, fill in Phone filed
+
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
             .grid.grid-nogutter.align-items-center.mb-4
@@ -84,12 +66,13 @@
               StockUnit(
                 title="Estimated delivery Time"
                 icon="icon-clock"
-                :value="estimatedDate"
+                :value=' deliveryDate  ||  "Estimated delivery Time"    '
               )
               StockUnit.mt-2(
                 title="Due delivery date"
                 icon="icon-calendar"
-                :value="deliveryDate"
+                :value=' dueDeliveryDate  ||  "Due delivery date"  '
+                placeholder="Enter"
               )
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
@@ -98,23 +81,6 @@
               span.uppercase.text-800.font-bold creator information
             div
               StockOutItemInput( :listInfor='information.creator')
-              .input-errors(
-                v-if='$v.information.creator.$each[0].value.$dirty && $v.information.creator.$each[0].value.$invalid'
-                )
-                .error-message Please, fill in id in the correct Creator Information
-              .input-errors(
-                v-else-if='$v.information.creator.$each[1].value.$dirty && $v.information.creator.$each[1].value.$invalid'
-                )
-                .error-message {{errorMessage.errorEmail}} Creator Information
-              .input-errors(
-                v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[2].value.$invalid'
-                )
-                .error-message {{errorMessage.errorName}} Creator Information
-              .input-errors(
-                v-else-if='$v.information.creator.$each[2].value.$dirty && $v.information.creator.$each[3].value.$invalid'
-                )
-                .error-message {{errorMessage.errorPhone}} Creator Information
-
     .inventory.flex.flex-column.flex-1(class="lg:col-7 md:col-12 ")
       .inventory__header
         div
@@ -203,20 +169,20 @@
                 )
                   .icon--small.pi.pi-times.text-primary
           template( #footer  )
-            .mr-4.flex.justify-content-end( v-if="listItemsAddSize > 0" )
-              Button( label='Cancel' @click='showModalCancel' ).btn.btn__default.flex-initial
-              Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
-            .grid.grid-nogutter.ml-3( v-else )
+            .grid.grid-nogutter.ml-3
               .flex.align-items-center.justify-content-center.pl-3
                 img(src='~/assets/icons/note.svg')
               div.ml-4
                 span.font-semibold.text-base.mr-1 Note:
                 br
-                InputText.pt-0.pl-0(
+                InputText.pt-0.pl-0.w-full(
                   placeholder='Write something...',
                   style='border: none'
                   v-model='noteBox'
                 )
+            .mr-4.flex.justify-content-end( v-if="listItemsAddSize > 0" )
+              Button( label='Cancel' @click='showModalCancel' ).btn.btn__default.flex-initial
+              Button( label='Submit' @click='handleSubmit'  ).btn.btn__priamry.flex-initial
       ConfirmDialogCustom(
         title="Confirm delete"
         image="confirm-delete"
@@ -269,11 +235,6 @@ const nsStoreUserDetail = namespace('user-auth/store-user')
         $each: {
           value: { required }
         }
-      },
-      creator:{
-        $each: {
-          value: { required }
-        }
       }
     }
   }
@@ -290,11 +251,12 @@ class createOrder extends Vue {
   loadingSubmit: boolean = false
   onEventDeleteList: any = []
   valueDelete: any
-  deliveryDate: string | any = 'Due Date Time'
-  estimatedDate: string | any = 'Estimated Delivery Time'
+  deliveryDate: string | any = ''
+  estimatedDate: string | any = ''
   information = INFORMATION
   isDisableSubmit: boolean = false
-  emailInvalid: boolean = false
+  isValid: boolean = false
+  fullDayTime: number = 24 * 60 * 60
   errorMessage: any = {
     errorPhone  :'*Please, fill in phone in the correct',
     errorName : '*Please, fill in name in the correct',
@@ -316,6 +278,9 @@ class createOrder extends Vue {
   @nsStoreSeller.State
   sellerList!: any
 
+  @nsStoreCreateOrder.State
+  estimate!: any
+
   // -- [ Action ] ------------------------------------------------------------
 
   @nsStoreCreateOrder.Action
@@ -332,6 +297,12 @@ class createOrder extends Vue {
 
   @nsStoreSeller.Action
   actSellerList!: (params: any) => Promise<void>
+
+  @nsStoreCreateOrder.Action
+  actGetEstimate!: (params: any) => Promise<void>
+
+  @nsStoreCreateOrder.Action
+  actClearEstimate!: (params: any ) => Promise<void>
 
   // -- [ Functions ] ------------------------------------------------------------
 
@@ -351,6 +322,10 @@ class createOrder extends Vue {
     else {
       this.actWarehouseList()
     }
+    if(this.dueDeliveryDate){
+      this.deliveryDate =  1 +  ' day'
+    }
+    this.noteBox =  this.listInfo?.note
   }
 
   destroyed() {
@@ -360,11 +335,18 @@ class createOrder extends Vue {
   }
 
   createStockOut() {
-    this.$v.information.seller?.$each?.$touch()
     this.$v.information.warehouse?.$each?.$touch()
     this.$v.information.receiver?.$each?.$touch()
-    this.$v.information.creator?.$each?.$touch()
-    if (!this.$v.$invalid) {
+    this.$v.information.seller?.$each?.$touch()
+    const validSeller = this.$v?.information?.seller?.$each[0]?.value
+    const validWarehouse = this.$v.information.warehouse?.$each[0]?.value
+    const validReceiver = this.$v.information.receiver
+
+    if( !validSeller?.$invalid && validSeller?.$dirty &&
+      !validWarehouse?.$invalid && validWarehouse?.$dirty &&
+      !validReceiver?.$each[0]?.value.$invalid && validReceiver?.$each[0]?.value.$dirty &&
+      !validReceiver?.$each[3]?.value.$invalid && validReceiver?.$each[3]?.value.$dirty
+    ) {
       const note = this.noteBox
       const listInfoAdd = { ...this.information , note }
       this.$router.push('/stock-out/order/add-items')
@@ -426,8 +408,8 @@ class createOrder extends Vue {
       receiverEmail: listReceiver[1].value,
       receiverName: listReceiver[2].value,
       receiverPhone: listReceiver[3].value,
-      dueDeliveryDate: null,
-      estimatedDeliveryTime: null,
+      dueDeliveryDate: 1 ,
+      estimatedDeliveryTime: this.estimate?.estimate,
       note,
       warehouse: {
         id: this.listInfo.warehouse[0].warehouseId
@@ -463,10 +445,13 @@ class createOrder extends Vue {
     await this.$router.push({ path: '/stock-out/order-list' })
   }
 
-  async emptyList() {
+  emptyList() {
     const emptyList =  this.listItemsAdd = []
-    await this.actGetCreateOrder(_.cloneDeep(emptyList))
-    await this.actOutGoingList(_.cloneDeep(emptyList))
+    Promise.all([
+      this.actGetCreateOrder(_.cloneDeep(emptyList)),
+      this.actOutGoingList(_.cloneDeep(emptyList)),
+      this.actClearEstimate([])
+    ])
     _.forEach(this.information, function(item){
       _.forEach(item, function(i) {
         i.value = null
@@ -509,7 +494,12 @@ class createOrder extends Vue {
     InfoSeller[0].id = event.id
     InfoSeller[1].value = event.displayName || `${event.firstName} ${event.lastName}`
     InfoSeller[2].value = event.phoneNumber
-    // this.unSelectedSeller()
+  }
+
+  clearSeller(event: any) {
+    if(event  === '' || event === null) {
+      this.unSelectedSeller()
+    }
   }
 
   handleUser() {
@@ -527,18 +517,20 @@ class createOrder extends Vue {
       return true
     }
     return this.$v.information.seller?.$each?.$touch()
-
   }
 
-  handleReceiver(event: any) {
-    const d = new Date()
-    const dayFrom = dayjs(d).add(5, 'day').format('DD/MM/YYYY')
-    const dayTo = dayjs(d).add(8, 'day').format('DD/MM/YYYY')
-    const estimate = dayFrom + ' - ' + dayTo
-    if (event) {
-      this.deliveryDate = estimate
-      this.estimatedDate = '1 day'
+  async handleReceiver() {
+    const InfoWarehouse: any = this.information.warehouse
+    const infoReceiver = this.information.receiver
+    const result : any =  await this.actGetEstimate({
+      destination: infoReceiver[0].value,
+      mode: 'driving',
+      origin:  InfoWarehouse[0]?.value?.address  ||  1
+    })
+    if(result ) {
+      this.deliveryDate = 1 + ' day'
     }
+
   }
 
   unSelectedSeller() {
@@ -587,6 +579,14 @@ class createOrder extends Vue {
     this.listItemsAdd = _.cloneDeep(result)
   }
 
+  checkValidReceiver()
+  {
+    return this.$v.information.receiver?.$each[0]?.value.$dirty
+      && this.$v.information.receiver?.$each[0]?.value.$invalid
+      && this.$v.information.receiver?.$each[3]?.value.$dirty &&
+      this.$v.information.receiver?.$each[3]?.value.$invalid
+  }
+
   // -- [ Getter ] ------------------------------------------------------------
 
   get listItemsAddSize() {
@@ -609,6 +609,13 @@ class createOrder extends Vue {
         icon: 'pi pi-info-circle'
       }
     ]
+  }
+
+  get dueDeliveryDate() {
+    const estimateTime = this.estimate?.estimate / this.fullDayTime
+    if(estimateTime) {
+      return dayjs(new Date()).add(estimateTime + 1 , 'day').format('MM/DD/YYYY')
+    }
   }
 
 }
@@ -653,8 +660,9 @@ export default createOrder
     background: var(--surface-200)
   .btn
     border: none
-    padding: 0px 25px
-    margin: 5px 10px 0px
+    padding: 0 25px
+    margin: 5px 10px 0
+
     &__priamry
       background-color: $primary
       font-weight: 700
@@ -709,10 +717,12 @@ export default createOrder
     overflow: hidden
 ::v-deep.p-datatable
   .p-datatable-footer
-    box-shadow: 0px 10px 45px rgba(0, 10, 24, 0.1)
+    justify-content: space-between
+    display: flex
+    box-shadow: 0 10px 45px rgba(0, 10, 24, 0.1)
     background-color: #ffffff
     border: none
-    padding: 15px 0px
+    padding: 15px 0
     width: 100%
   .text-primary
     color: $primary-dark !important

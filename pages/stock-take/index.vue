@@ -20,8 +20,10 @@
               NuxtLink(to="/stock-take/box/create") Add Box
             li.option-item
               NuxtLink(to="/stock-take/item/create") Add Item
-        Button.btn.btn-primary(@click="handleExportReceipt")
-          span EXPORT FILE
+        .btn__filter(class='active' @click="handleExportReceipt")
+          .btn.btn-toggle.bg-white
+            .icon-download.icon--large.bg-primary
+            span.text-900.text-primary EXPORT FILE
     .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
       div(class="col-12 lg:col-12 xl:col-4")
         .grid
@@ -280,12 +282,27 @@ class StockTake extends Vue {
 
   rowdbClick({ data }) {
     const type = data.checkType === 'BOX' ? 'box' : 'item'
-    if(data.status === 'APPROVING' || data.status === 'APPROVED') {
+    if(data.status === 'APPROVED') {
+      this.$router.push(`/stock-take/${type}/${data.id}/approve`)
+    }
+    else if(data.status === 'APPROVING') {
       if(data.approver && data.approver?.staffId === this.user?.staffId) {
         this.$router.push(`/stock-take/${type}/${data.id}/approve`)
       }
-    } else if(!data.assignee || data.assignee?.staffId === this.user?.staffId) {
+    }
+    else if(data.status === 'NEW' || data.status === 'COMPLETED') {
       this.$router.push(`/stock-take/${type}/${data.id}/note-detail`)
+    }
+    else if(!data.assignee || data.assignee?.staffId === this.user?.staffId) {
+      this.$router.push(`/stock-take/${type}/${data.id}/note-detail`)
+    }
+    else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'This ST note you do not have the right to handle!',
+        life: 3000
+      })
     }
   }
 
@@ -299,6 +316,7 @@ class StockTake extends Vue {
         const result = await this.actGetReceiptLable({ id })
         if (result) {
           exportFileTypePdf(result, `stock-take-${id}`)
+          this.selectedStockTake = []
         }
       })
     } else {

@@ -19,7 +19,6 @@
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
-        .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
     TabPanel.h-full(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
@@ -27,7 +26,6 @@
         span.uppercase.text-700 {{tab.boxCode}}
         span.ml-2(v-if="!isOriginal && !tab.items.length > 0" @click.stop="handleDeleteBox(index)")
           span.pi.pi-times.delete-box
-        .ml-1.px-1(v-if='isOutgoing && tab.checked && tab.airtag') {{ tab.airtag.barCode }}
         AutoComplete.edit-location.ml-1(
           v-if="isShowLocation(tab)"
           v-model='tab.location',
@@ -77,7 +75,13 @@
               div Estimated
               div Inventory Fee:
             div.ml-2
-              InputText.w-4.inputSearchCode.input-border(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
+              InputNumber(
+                v-model='tab.inventoryFee',
+                mode='currency',
+                currency='USD',
+                locale='en-US'
+                :disabled="disableEditQty"
+              ) 
               span.ml-1 / day
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:
@@ -525,8 +529,6 @@ export default PackingOriginal
         .p-button:enabled:hover
           box-shadow: none !important
       .p-tabview-nav
-        .p-disabled:first-child
-          min-width: 265px !important
         .p-disabled
           opacity: 1
           font-size: 12px
