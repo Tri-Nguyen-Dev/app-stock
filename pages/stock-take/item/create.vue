@@ -123,7 +123,7 @@ class StockTakeItems extends Vue {
           dayjs(new Date(this.user?.createdAt)).format('YYYY-MM-DD')
           : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: this.user.staffId, icon: 'icon-tag-user' },
-        { title:'Warehouse', value: this.user?.warehouse?.name, icon: 'icon-warehouse' },
+        { title:'Warehouse', value: _.get(this.listStockSelected[0], 'box.request.warehouse.name', null), icon: 'icon-warehouse' },
         { title:'Items', value: this.totalItem, icon: 'icon-frame' }
       ],
       sellerInfo: [
@@ -183,30 +183,6 @@ export default StockTakeItems
 </script>
 <style lang="sass" scoped>
 .stock
-  @include tablet
-  ::v-deep.sub-tab
-    height: calc(100vh - 150px)
-    overflow: hidden
-    display: flex
-    flex-direction: column
-    @include desktop
-      height: calc(100vh - 32px)
-      max-width: 23rem
-      overflow: hidden
-    .sub--scroll
-      display: flex
-      align-items: center
-      flex-direction: column
-      flex: 1
-      overflow: auto
-      @include desktop
-        overflow: auto
-      @include tablet
-        flex-direction: row
-        justify-content: center
-        align-items: baseline
-        overflow: hidden
-
   ::-webkit-input-placeholder
     font-weight: normal
 

@@ -17,58 +17,84 @@
           .icon.icon-rotate-left.bg-white
   div(v-if= 'isShowFilter')
     .grid.mb-1
-      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-        FilterTable(
-          title='Seller Email',
-          placeholder='Enter Seller Email',
-          name='sellerEmail',
-          :value='filter.sellerEmail',
-          :searchText='true',
-          @updateFilter='handleFilterBox'
-          :isShowFilter="isShowFilter"
-        )
-      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-        FilterTable(
-          title='Location',
-          :value='filter.location',
-          placeholder='Enter location',
-          name='location',
-          :searchText='true',
-          @updateFilter='handleFilterBox'
-          :isShowFilter="isShowFilter"
-        )
-      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-        FilterTable(
-          title='Box Code',
-          :value='filter.barCode',
-          placeholder='Enter code',
-          name='barCode',
-          :searchText='true',
-          @updateFilter='handleFilterBox'
-          :isShowFilter="isShowFilter"
-        )
-      .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
-        FilterCalendar(
-          title='From',
-          border='left'
-          :value='filter.dateFrom',
-          name='dateFrom',
-          inputClass='border-0',
-          dateFormat='dd-mm-yy',
-          :showIcon='true',
-          @updateFilter='handleFilterBox'
-        )
-      .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
-        FilterCalendar(
-          title='To',
-          border='right',
-          :value='filter.dateTo',
-          name='dateTo',
-          inputClass='border-0',
-          dateFormat='dd-mm-yy',
-          :showIcon='true',
-          @updateFilter='handleFilterBox'
-        )
+      div(class="col-12 md:col-12 xl:col-7")
+        .grid
+          div(class='col-12 md:col-3')
+            FilterTable(
+                title="Warehouse"
+                :value="filter.warehouse"
+                :options="warehouseOption"
+                name="warehouse"
+                @updateFilter="handleFilterBox"
+                :isDisabled="user.role !== 'admin'"
+                :isClear="false"
+              )
+          div(class='col-12 md:col-3')
+            FilterTable(
+              title='Box Code',
+              :value='filter.barCode',
+              placeholder='Enter code',
+              name='barCode',
+              :searchText='true',
+              @updateFilter='handleFilterBox'
+              :isShowFilter="isShowFilter"
+            )
+          div(class='col-12 md:col-3')
+            FilterTable(
+              title='Seller Email',
+              placeholder='Enter Seller Email',
+              name='sellerEmail',
+              :value='filter.sellerEmail',
+              :searchText='true',
+              @updateFilter='handleFilterBox'
+              :isShowFilter="isShowFilter"
+            )
+          div(class='col-12 md:col-3')
+            FilterTable(
+              title='Location',
+              :value='filter.location',
+              placeholder='Enter location',
+              name='location',
+              :searchText='true',
+              @updateFilter='handleFilterBox'
+              :isShowFilter="isShowFilter"
+            )
+      div(class="col-12 md:col-12 xl:col-5")
+        .grid
+          div(class='col-12 md:col-8')
+            .grid.grid-nogutter
+              .col
+                FilterCalendar(
+                  title='From',
+                  border='left'
+                  :value='filter.dateFrom',
+                  name='dateFrom',
+                  inputClass='border-0',
+                  dateFormat='dd-mm-yy',
+                  :showIcon='true',
+                  @updateFilter='handleFilterBox'
+                )
+              .col.ml-1
+                FilterCalendar(
+                  title='To',
+                  border='right',
+                  :value='filter.dateTo',
+                  name='dateTo',
+                  inputClass='border-0',
+                  dateFormat='dd-mm-yy',
+                  :showIcon='true',
+                  @updateFilter='handleFilterBox'
+                )
+          div(class="col-12 md:col-4")
+            FilterTable(
+              title='Box Code',
+              :value='filter.barCode',
+              placeholder='Enter code',
+              name='barCode',
+              :searchText='true',
+              @updateFilter='handleFilterBox'
+              :isShowFilter="isShowFilter"
+            )
   .inventory__content
     DataTable(
       v-if='boxList',
@@ -177,6 +203,7 @@ class BoxDataTable extends Vue {
   sortByColumn: string = ''
   isDescending: boolean | null = null
   boxCodeDelete: string = ''
+  warehouseOption: any = []
   filter: any = {
     sellerEmail: '',
     warehouse: null,
@@ -196,7 +223,7 @@ class BoxDataTable extends Vue {
   warehouseList!: any
 
   @nsStoreUser.State
-  user: User.Model | undefined
+  user: User.Model | any
 
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
@@ -205,8 +232,17 @@ class BoxDataTable extends Vue {
   actWarehouseList!: () => Promise<void>
 
   async mounted() {
+    // await this.actWarehouseList()
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouse = this.warehouseList[0]
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
     await this.actGetBoxList(this.getParamAPi())
-    await this.actWarehouseList()
     this.selectedBoxes = [...this.box]
   }
   // @Watch('box')
@@ -263,7 +299,6 @@ class BoxDataTable extends Vue {
   }
 
   async handleRefreshFilter() {
-    this.filter.warehouse = null
     this.filter.location = ''
     this.filter.sellerEmail = ''
     this.filter.barCode = ''

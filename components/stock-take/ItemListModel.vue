@@ -29,7 +29,7 @@
                 :isDisabled="user.role !== 'admin'"
                 :isClear="false"
               )
-            .div(class="col-12 md:col-3")
+            div(class="col-12 md:col-3")
               FilterTable(
                 title="Seller"
                 placeholder="Search barcode"
@@ -39,7 +39,7 @@
                 @updateFilter="handleFilter"
                 :isShowFilter="isShowFilter"
               )
-            .div(class="col-12 md:col-3")
+            div(class="col-12 md:col-3")
               FilterTable(
                 title="Barcode"
                 placeholder="Search barcode"
@@ -49,7 +49,7 @@
                 @updateFilter="handleFilter"
                 :isShowFilter="isShowFilter"
               )
-            .div(class="col-12 md:col-3")
+            div(class="col-12 md:col-3")
               FilterTable(
                 title="Item name"
                 placeholder="Search barcode"
@@ -85,7 +85,7 @@
                     :showIcon="true"
                     @updateFilter="handleFilter"
                   )
-            .div(class="col-12 md:col-4")
+            div(class="col-12 md:col-4")
               FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
       .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
         .col.h-full.absolute.top-0.left-0.right-0.bg-white
@@ -379,7 +379,7 @@ class ItemListModel extends Vue {
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
-          detail: 'Please add items from 1 warehouse',
+          detail: 'Item in different warehouse could not be added',
           life: 3000
         })
         return

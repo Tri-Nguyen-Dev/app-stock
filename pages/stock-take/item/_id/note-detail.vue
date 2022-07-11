@@ -432,35 +432,6 @@ export default stockTakeItemsDetail
 </script>
 <style lang="sass" scoped>
 .stock
-  @include tablet
-    margin: 50px
-
-  ::v-deep.sub-tab
-    height: calc(100vh - 150px)
-    overflow: hidden
-    display: flex
-    flex-direction: column
-    @include desktop
-      height: calc(100vh - 32px)
-      max-width: 23rem
-      overflow: hidden
-
-    .sub--scroll
-      display: flex
-      align-items: center
-      flex-direction: column
-      flex: 1
-      overflow: auto
-      @include desktop
-        height: calc(100vh - 250px)
-        overflow: auto
-      @include tablet
-        height: calc(100vh - 300px)
-        flex-direction: row
-        justify-content: center
-        align-items: baseline
-        overflow: hidden
-
   ::-webkit-input-placeholder
     font-weight: normal
 
