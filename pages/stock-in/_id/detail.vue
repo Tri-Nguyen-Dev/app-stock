@@ -75,7 +75,7 @@
 							span ${{ listBox[activeIndex].inventoryFee }}
 							span.font-semibold.text-base.ml-3 /day
 						.d-flex.col-6(class='md:col-5 lg:col-4')
-							span.font-semibold.text-base.mr-2.ml-2 Barcode:
+							span.font-semibold.text-base.mr-2.ml-2 Box Code:
 							span {{ listBox[activeIndex].id }}
 					.grid.border__left.border__right.mt-0.pb-3(
 						style='margin-right: 0px',
@@ -324,7 +324,7 @@ class DetailReceipt extends Vue {
   totalItem() {
     let total = 0
     this.listBox.forEach((element) => {
-      total += element.listItemInBox.length
+      total += _.sumBy(element.listItemInBox, function(o) { return o.originalAmount })
     })
     return total
   }

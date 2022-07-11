@@ -19,7 +19,6 @@
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
-        .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
     TabPanel.h-full(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
@@ -76,7 +75,13 @@
               div Estimated
               div Inventory Fee:
             div.ml-2
-              InputText.w-4.inputSearchCode.input-border(v-model='tab.inventoryFee' type='number' :disabled="disableEditQty" min="0")
+              InputNumber(
+                v-model='tab.inventoryFee',
+                mode='currency',
+                currency='USD',
+                locale='en-US'
+                :disabled="disableEditQty"
+              ) 
               span.ml-1 / day
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:
@@ -524,8 +529,6 @@ export default PackingOriginal
         .p-button:enabled:hover
           box-shadow: none !important
       .p-tabview-nav
-        .p-disabled:first-child
-          min-width: 265px !important
         .p-disabled
           opacity: 1
           font-size: 12px

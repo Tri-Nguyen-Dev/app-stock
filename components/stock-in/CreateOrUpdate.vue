@@ -80,7 +80,8 @@
                 label='Add box'
               )
           .overflow-y-auto(style='height: 53vh', v-if='listBox')
-            .grid.box-card.m-2(
+            .grid.box-card(
+              style='margin-bottom: 7px !important'
               v-for='box in listBox',
               @click='selectBox(box)',
               :class='{ "box-card-active": box.index == activeIndex }'
@@ -130,18 +131,18 @@
                   span.font-semibold.text-base.ml-3 (cm)
                   .input-errors( v-if='listBox[activeIndex] && $v.listBox.$each[activeIndex].boxSize.id.$dirty && $v.listBox.$each[activeIndex].boxSize.id.$invalid' style='text-align: center')
                     .error-message Please enter select box size Fee!
-            .col-12.border__right.pt-4.pb-4(class='md:col-6 lg:col-4') 
+            .col-12.border__right.pt-4.pb-4(class='md:col-6 lg:col-4')
               .grid
-                .col-12.content-center(class='md:col-6 lg:col-6') 
+                .col-12.content-center(class='md:col-6 lg:col-6')
                   span.font-semibold.text-base.mr-3.ml-2.required__title Estimate Inventory Fee
-                .col-12(class='md:col-6 lg:col-6')   
+                .col-12(class='md:col-6 lg:col-6')
                   InputNumber.number-input(
                     v-model='listBox[activeIndex].inventoryFee',
                     mode='currency',
                     currency='USD',
                     locale='en-US'
                     style='width:60%'
-                  ) 
+                  )
                   span.font-semibold.text-base.ml-3 / day
               .input-errors()
                 .error-message(v-if='$v.listBox.$each[activeIndex].inventoryFee.$dirty && $v.listBox.$each[activeIndex].inventoryFee.$invalid' style='text-align: center') Please enter Inventory Fee!
@@ -188,7 +189,7 @@
             .col-9
               span.font-semibold.text-base.mr-1 Total items:
               br
-              span.font-semibold.text-primary {{ totalItem() }}
+              span.font-semibold.text-primary {{ totalItem }}
         .d-flex.col-12(class='md:col-4 lg:col-2')
           .grid.w-full.border__right
             .col-3.flex.align-items-center.justify-content-end
@@ -288,7 +289,7 @@ const nsStoreUser = namespace('user-auth/store-user')
       }
     },
     generalInfo: {
-      seller: { required }  
+      seller: { required }
     },
     warehouse: { required }
   }
@@ -634,10 +635,10 @@ class CreateOrUpdateReceipt extends Vue {
     this.activeSave = false
   }
 
-  totalItem() {
+  get totalItem() {
     let total = 0
-    this.listBox.forEach((element) => {
-      total += element.listItemInBox.length
+    this.listBox.forEach((element) =>{
+      total += _.sumBy(element.listItemInBox, function (o) { return o.amount })
     })
     return total
   }

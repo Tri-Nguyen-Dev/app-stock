@@ -282,12 +282,27 @@ class StockTake extends Vue {
 
   rowdbClick({ data }) {
     const type = data.checkType === 'BOX' ? 'box' : 'item'
-    if(data.status === 'APPROVING' || data.status === 'APPROVED') {
+    if(data.status === 'APPROVED') {
+      this.$router.push(`/stock-take/${type}/${data.id}/approve`)
+    }
+    else if(data.status === 'APPROVING') {
       if(data.approver && data.approver?.staffId === this.user?.staffId) {
         this.$router.push(`/stock-take/${type}/${data.id}/approve`)
       }
-    } else if(!data.assignee || data.assignee?.staffId === this.user?.staffId) {
+    }
+    else if(data.status === 'NEW' || data.status === 'COMPLETED') {
       this.$router.push(`/stock-take/${type}/${data.id}/note-detail`)
+    }
+    else if(!data.assignee || data.assignee?.staffId === this.user?.staffId) {
+      this.$router.push(`/stock-take/${type}/${data.id}/note-detail`)
+    }
+    else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'This ST note you do not have the right to handle!',
+        life: 3000
+      })
     }
   }
 
