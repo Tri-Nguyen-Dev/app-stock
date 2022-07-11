@@ -34,7 +34,7 @@ export default class Warehouse extends VuexModule {
   }
 
   @Mutation
-  setNewWarehouse(newStockDetail: WarehouseModel.CreateWarehouse) {
+  setNewWarehouse(newStockDetail: WarehouseModel.CreateOrUpdateWarehouse) {
     this.newWarehouseDetail = newStockDetail
   }
 

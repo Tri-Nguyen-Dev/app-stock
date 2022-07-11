@@ -15,7 +15,7 @@
             span Filter
           .btn-refresh()
             .icon.icon-rotate-left.bg-white
-        Button.btn.btn-primary(@click='handleAddwarehouse')
+        Button.btn.btn-primary(@click='isShowCreateWarehouse = true')
           .icon.icon-add-items
           span Add Warehouse
     .grid.header__filter(:class='{ "active": isShowFilter }')
@@ -89,7 +89,7 @@
           Column(field='action' header="action" :styles="{'width': '2%'}")
             template(#body='{ data }')
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
-                span.action-item(@click.stop="handleEditStock(data.id)")
+                span.action-item(@click.stop="handleEditWarehouse([data])")
                   .icon.icon-edit-btn
                 span.action-item(@click.stop="showModalDelete([data])" )
                   .icon.icon-btn-delete
@@ -120,13 +120,15 @@
       template(v-slot:message)
         p {{ deleteMessage }}
 
-    Toast          
+    Toast
+    <CreateOrUpdateWarehouse v-show="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" />       
             
 </template>
 
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
+import CreateOrUpdateWarehouse from '~/components/warehouse/CreateOrUpdateWarehouse.vue'
 import { Warehouse as WarehouseModel } from '~/models/Warehouse'
 import {
   LIMIT_PAGE_OPTIONS,
@@ -140,7 +142,8 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 @Component({
   components: {
     ConfirmDialogCustom,
-    Pagination
+    Pagination,
+    CreateOrUpdateWarehouse
   }
 })
 class Warehouse extends Vue {
@@ -148,13 +151,16 @@ class Warehouse extends Vue {
   isShowFilter: boolean = false
   loading: boolean = false
   isModalDelete: boolean = false
+  isShowCreateWarehouse: boolean = false
   onEventDeleteList: WarehouseModel.Model[] = []
+  onEventCreateOrUpdateWarehouse: WarehouseModel.CreateOrUpdateWarehouse[] = []
   loadingSubmit: boolean = false
   isFilter: boolean = false
   limitOptions = LIMIT_PAGE_OPTIONS
   checkIsFilter: boolean = false
   enablePack = false
   id: string
+  idEdit: string | undefined
   selectedItem: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   filter: any = {
@@ -262,6 +268,13 @@ class Warehouse extends Vue {
 
   handleChangeFilter(){
 
+  }
+
+  handleEditWarehouse(data: WarehouseModel.CreateOrUpdateWarehouse[]) {
+    this.isShowCreateWarehouse = true
+    this.onEventCreateOrUpdateWarehouse = data
+    this.idEdit = data[0].id
+    
   }
 
   debounceSearchName = _.debounce((value) => {

@@ -6,29 +6,29 @@
         .formgrid.grid
           .field.col-12()
             label.required__title(for='name') Name :
-            InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='WarehouseInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.WarehouseInformation.name.$error}")
-            .error-message(v-if='$v.WarehouseInformation.name.$dirty && !$v.WarehouseInformation.name.required') Name cannot be empty! 
+            InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full
+          .field.col-12()
+            label.required__title(for='icon') Adress :
+            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text')
+          .field.col-12()
+            label.required__title(for='email') Email:
+            InputText#email.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full
+          .field.col-12(class='lg:col-12')
+            label(for='description') Description :
+            TextArea#description.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full
           .field.col-12(class='md:col-6')
-            label(for='icon') Adress:
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='WarehouseInformation.icon' )
+            label.required__title(for='phone') Phone :
+            InputText#phone.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full
           .field.col-12(class='md:col-6')
-            label(for='displayOrder') Phone:
-            InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='WarehouseInformation.displayOrder')
-          .field.col-12(class='md:col-6')
-            label(for='icon') Email:
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='WarehouseInformation.icon' )
-          .field.col-12(class='md:col-6')
-            label(for='icon') Description:
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='WarehouseInformation.icon' )
-          .field.col-12(class='md:col-6')
-            label(for='icon') Max Number Rack:
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='WarehouseInformation.icon' )
+            label(for='maxNumberRack') MaxNumberRack :
+            InputText#maxNumberRack.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full
           .field.col-12.modal-btn(class='md:col-9')
             Button.btn.btn-cancel(@click="$emit('close-modal')")
               span Cancel
-            Button.btn.btn-primary(@click="addItem()")
+            Button.btn.btn-primary()
               .icon.icon-add-items
-              span Add Category
+              span Add Warehouse
+        
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
@@ -41,9 +41,17 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
       name: {
         required
       },
-      icon: {},
-      displayOrder: {},
-      deleted: Boolean
+      adress: {
+        required
+      },
+      email: {
+        required
+      },
+      description: {},
+      phone: {
+        required
+      },
+      maxNumberRack: {}
     }
   }
 })
@@ -67,7 +75,7 @@ class AddNewWarehouse extends Vue {
   actWarehouseList!: (params?: any) => Promise<void>
 
   @nsStoreWarehouse.Action
-  actCreateNewCategory!: (param: any) => Promise<void>
+  actCreateNewWarehouse!: (param: any) => Promise<void>
 
   async mounted() {
     await Promise.all([this.actWarehouseList()])
@@ -78,7 +86,7 @@ class AddNewWarehouse extends Vue {
     if (this.$v.$invalid) {
       return
     }
-    await this.actCreateNewCategory({
+    await this.actCreateNewWarehouse({
       name: this.WarehouseInformation.Name,
       adress: this.WarehouseInformation.Adress,
       phone: this.WarehouseInformation.Phone,
@@ -122,4 +130,6 @@ export default AddNewWarehouse
   align-items: flex-end
   justify-content: flex-end
   gap: 15px
+  width: 100%
+  margin-top: 5px
 </style>
