@@ -7,7 +7,10 @@
       .icon-box-info.icon.bg-primary.mr-2
       span.uppercase.ml-1 note detail
     p.uppercase.font-bold(v-if='info.id') note id: {{info.id}}
-    span.p-2.table__status.table__status--available {{info.status | trimUnderShift}}
+    .div.status-note
+      span.p-2.table__status.table__status--available {{info.status | trimUnderShift}}
+      span.p-2.table__status.table__status--error(
+        v-if='info.status === "COMPLETED"') {{ info.finalResultStatus  }}
   .grid.m-0.p-4(v-if='info.user')
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.createdAt')
       StockUnit(title="Create time" :value="info.createdAt | dateTimeHour24" icon="icon-calendar")
@@ -71,4 +74,7 @@ export default StockTakeNoteInfo
     border-radius: 4px
     background-color: $text-color-200
     padding: 12px
+  .status-note
+    display: flex
+    justify-content: space-between
 </style>

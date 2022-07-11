@@ -35,7 +35,7 @@ class PackingInformationDetail extends Vue {
   @Prop() deliveryOrderDetail!: any
   @Prop() type!: string
   @Prop() driverInfo!: any
-  status : string |undefined
+  status : any = null
   get homeItem() {
     return { label: '', to: '/stock-out/order-list', icon: 'pi pi-list' }
   }

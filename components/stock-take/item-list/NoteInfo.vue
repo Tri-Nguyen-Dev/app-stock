@@ -9,8 +9,10 @@
         span.font-bold.text-800 NOTE DETAIL
       .col(v-if="noteInfor.id")
         span.p-2.font-bold NOTE ID: {{ noteInfor.id }}
-      .col
+      .col.status-note
         span.p-2.table__status.table__status--available {{ noteInfor.status | trimUnderShift }}
+        span.p-2.table__status.table__status--error(
+          v-if='noteInfor.status === "COMPLETED"') {{ noteInfor.finalResultStatus  }}
       .col.border-bottom-1.border-gray-300
     .sub--scroll
       .grid.w-full
@@ -60,4 +62,7 @@ export default NoteInfo
     border-radius: 4px
     background-color: $text-color-200
     padding: 12px
+  .status-note
+    display: flex
+    justify-content: space-between
 </style>

@@ -526,6 +526,8 @@ class DeliveryOrderList extends Vue {
   }
 
   handleTab({ index }: any) {
+    this.handleRefreshFilter()
+    this.isShowFilter = false
     this.activeTab = index
     this.handleRefreshFilter()
     this.getList()
