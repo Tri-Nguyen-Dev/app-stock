@@ -6,23 +6,23 @@
         .formgrid.grid
           .field.col-12()
             label.required__title(for='name') Name :
-            InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='categoryInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.categoryInformation.name.$error}")
-            .error-message(v-if='$v.categoryInformation.name.$dirty && !$v.categoryInformation.name.required') Name cannot be empty! 
+            InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='WarehouseInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.WarehouseInformation.name.$error}")
+            .error-message(v-if='$v.WarehouseInformation.name.$dirty && !$v.WarehouseInformation.name.required') Name cannot be empty! 
           .field.col-12(class='md:col-6')
             label(for='icon') Adress:
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
+            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='WarehouseInformation.icon' )
           .field.col-12(class='md:col-6')
             label(for='displayOrder') Phone:
-            InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='categoryInformation.displayOrder')
+            InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='WarehouseInformation.displayOrder')
           .field.col-12(class='md:col-6')
             label(for='icon') Email:
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
+            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='WarehouseInformation.icon' )
           .field.col-12(class='md:col-6')
             label(for='icon') Description:
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
+            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='WarehouseInformation.icon' )
           .field.col-12(class='md:col-6')
             label(for='icon') Max Number Rack:
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
+            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='WarehouseInformation.icon' )
           .field.col-12.modal-btn(class='md:col-9')
             Button.btn.btn-cancel(@click="$emit('close-modal')")
               span Cancel
@@ -49,12 +49,12 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 })
 class AddNewWarehouse extends Vue {
   WarehouseInformation: any = {
-    Name: '',
-    Adress: '',
-    Phone: '',
-    Email:'',
-    Description: '',
-    MaxNumberRack: ''
+    name: '',
+    adress: '',
+    phone: '',
+    email:'',
+    description: '',
+    maxNumberRack: ''
   }
 
   @nsStoreWarehouse.State
