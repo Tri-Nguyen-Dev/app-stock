@@ -10,7 +10,7 @@
         span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') new &nbsp;
       .grid.m-0.p-4(v-if='user')
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-          StockUnit(title="Create ID" :value="user.displayName" icon="icon-user-octagon")
+          StockUnit(title="Creator ID" :value="user.displayName" icon="icon-user-octagon")
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
           StockUnit(title="Warehouse" :value="user.displayName" icon="icon-warehouse-info")
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')

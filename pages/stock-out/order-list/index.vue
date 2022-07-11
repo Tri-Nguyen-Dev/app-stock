@@ -39,7 +39,7 @@
         .grid.grid-nogutter
           .col
             FilterCalendar(
-              title="Create time from"
+              title="Created time from"
               border="left"
               :value="filter.createTimeFrom"
               name="createTimeFrom"
@@ -153,13 +153,13 @@
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.font-bold {{ data.id }}
         Column(header='Creator ID' field='creatorId' sortable sortField="_createdBy.staffId")
           template(#body='{ data }')
-            .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
-        Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
+            .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creator.staffId }}
+        Column(header='Created time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
             div {{ data.createTime | dateTimeHour24 }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" )
           template(#body='{ data }')
-            div.grid-cell-fix-width {{ data.sellerEmail }}
+            div.grid-cell-fix-width {{ data.seller.email }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress")
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.receiverAddress }}
@@ -184,18 +184,13 @@
               div update time
           template(#body='{ data }')
             div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour24 }}
-        Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.name" headerClass="grid-header-right")
-          template(#body='{ data }')
-            .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
-              .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.pic }} {{data.pic === null ? 'N/A' : ''}}
+            div.grid-cell-right( v-if="data.assignee") {{ data.assignee.staffId }} {{data.assignee.staffId === null ? 'N/A' : ''}}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.driverName }}
+            div.grid-cell-right(v-if="data.driver") {{ data.driver.displayName }}
         Column(v-if="activeTab == 2"
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')

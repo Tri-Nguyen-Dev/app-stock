@@ -122,7 +122,7 @@
         :styles="{'width': '15%'}" sortField='_box.request.seller.email'
       )
       Column(field='box.id' header='BOX CODE' :sortable='true' className="text-right" bodyClass='font-semibold' sortField='_box.id')
-      Column(field='requestId' header='RECEIPT NODE ID' :sortable='true' className="text-right" sortField='_box.request.id')
+      Column(field='requestId' header='RECEIPT ID' :sortable='true' className="text-right" sortField='_box.request.id')
         template(#body='{data}')
           span.text-primary {{data.box.request.id}}
       Column(field='createdAt' header='STOCK-IN-TIME' :sortable='true' className="text-right" sortField='_stock.createdAt')
