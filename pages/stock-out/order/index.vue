@@ -66,7 +66,7 @@
               StockUnit(
                 title="Estimated delivery Time"
                 icon="icon-clock"
-                :value=' deliveryDate  ||  "Due delivery date"    '
+                :value=' deliveryDate  ||  "Estimated delivery Time"    '
               )
               StockUnit.mt-2(
                 title="Due delivery date"
@@ -182,7 +182,7 @@
                 )
             .mr-4.flex.justify-content-end( v-if="listItemsAddSize > 0" )
               Button( label='Cancel' @click='showModalCancel' ).btn.btn__default.flex-initial
-              Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
+              Button( label='Submit' @click='handleSubmit'  ).btn.btn__priamry.flex-initial
       ConfirmDialogCustom(
         title="Confirm delete"
         image="confirm-delete"
@@ -256,6 +256,7 @@ class createOrder extends Vue {
   information = INFORMATION
   isDisableSubmit: boolean = false
   isValid: boolean = false
+  fullDayTime: number = 24 * 60 * 60
   errorMessage: any = {
     errorPhone  :'*Please, fill in phone in the correct',
     errorName : '*Please, fill in name in the correct',
@@ -324,9 +325,7 @@ class createOrder extends Vue {
     if(this.dueDeliveryDate){
       this.deliveryDate =  1 +  ' day'
     }
-    if(this.listInfo.note !== null ){
-      this.noteBox =  this.listInfo.note
-    }
+    this.noteBox =  this.listInfo?.note
   }
 
   destroyed() {
@@ -613,9 +612,9 @@ class createOrder extends Vue {
   }
 
   get dueDeliveryDate() {
-    const a = this.estimate?.estimate / 1440
-    if(a) {
-      return dayjs(new Date()).add(a, 'day').format('MM/DD/YYYY')
+    const estimateTime = this.estimate?.estimate / this.fullDayTime
+    if(estimateTime) {
+      return dayjs(new Date()).add(estimateTime + 1 , 'day').format('MM/DD/YYYY')
     }
   }
 

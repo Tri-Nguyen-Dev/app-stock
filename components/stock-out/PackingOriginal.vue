@@ -19,7 +19,6 @@
       template(#header)
         .icon.inline-block.mr-2(:class='icon')
         span.uppercase {{title}}
-        .uppercase &nbsp;({{getTotalBox}} box(es), {{getTotalItem}} items)
     TabPanel.h-full(v-for='(tab,index) in listBox' :key='index' :disabled="isDisable(tab)")
       template(#header)
         .icon.icon-box-packing-outline.inline-block.mr-2.surface-700
@@ -530,8 +529,6 @@ export default PackingOriginal
         .p-button:enabled:hover
           box-shadow: none !important
       .p-tabview-nav
-        .p-disabled:first-child
-          min-width: 265px !important
         .p-disabled
           opacity: 1
           font-size: 12px
