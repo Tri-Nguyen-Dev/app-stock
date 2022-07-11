@@ -21,14 +21,14 @@
         .grid
           div(class='col-12 md:col-3')
             FilterTable(
-                title="Warehouse"
-                :value="filter.warehouse"
-                :options="warehouseOption"
-                name="warehouse"
-                @updateFilter="handleFilterBox"
-                :isDisabled="user.role !== 'admin'"
-                :isClear="false"
-              )
+              title="Warehouse"
+              :value="filter.warehouse"
+              :options="warehouseOption"
+              name="warehouse"
+              @updateFilter="handleFilterBox"
+              :isDisabled="user.role !== 'admin'"
+              :isClear="false"
+            )
           div(class='col-12 md:col-3')
             FilterTable(
               title='Box Code',
@@ -86,15 +86,12 @@
                   @updateFilter='handleFilterBox'
                 )
           div(class="col-12 md:col-4")
-            FilterTable(
-              title='Box Code',
-              :value='filter.barCode',
-              placeholder='Enter code',
-              name='barCode',
-              :searchText='true',
-              @updateFilter='handleFilterBox'
-              :isShowFilter="isShowFilter"
-            )
+              FilterTable(
+                title="Status"
+                :value="filter.status"
+                :options="statusList"
+                name="status"
+                @updateFilter="handleFilterBox")
   .inventory__content
     DataTable(
       v-if='boxList',
@@ -176,7 +173,7 @@
       template(#empty)
         .flex.align-items-center.justify-content-center.flex-column
           img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
-          p.text-900.font-bold.mt-3 Item not found!    
+          p.text-900.font-bold.mt-3 Item not found!
 </template>
 
 <script lang="ts">
@@ -185,7 +182,8 @@ import { Box } from '~/models/Box'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
-import { BOX_STATUS } from '~/utils'
+import { BOX_STATUS_OPTIONS, BOX_STATUS } from '~/utils/constants/box'
+import { refreshAllFilter } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -203,6 +201,7 @@ class BoxDataTable extends Vue {
   sortByColumn: string = ''
   isDescending: boolean | null = null
   boxCodeDelete: string = ''
+  statusList = BOX_STATUS_OPTIONS
   warehouseOption: any = []
   filter: any = {
     sellerEmail: '',
@@ -210,7 +209,8 @@ class BoxDataTable extends Vue {
     location: '',
     barCode: '',
     dateFrom: null,
-    dateTo: null
+    dateTo: null,
+    status: null
   }
 
   @nsStoreBox.State
@@ -258,8 +258,9 @@ class BoxDataTable extends Vue {
       pageSize: this.paging.pageSize,
       sellerEmail: this.filter.sellerEmail || null,
       barCode: this.filter.barCode || null,
-      warehouseId: this.user?.warehouse?.id,
+      warehouseId: this.filter?.warehouse?.id,
       location: this.filter.location || null,
+      status: this.filter.status?.value || null,
       from: this.filter.dateFrom
         ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD')
         : null,
@@ -299,11 +300,7 @@ class BoxDataTable extends Vue {
   }
 
   async handleRefreshFilter() {
-    this.filter.location = ''
-    this.filter.sellerEmail = ''
-    this.filter.barCode = ''
-    this.filter.dateFrom = null
-    this.filter.dateTo = null
+    refreshAllFilter(this.filter)
     await this.actGetBoxList(this.getParamAPi())
   }
 
