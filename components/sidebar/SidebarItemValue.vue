@@ -21,18 +21,15 @@
     .item__icon(v-if="!!item.icon" :class="{ 'icon_collapsed': collapsed }")
       .icon(:class="`icon-${item.icon} ${iconMenuCssClasses} ${'icon--large'}`")
     transition(name="fade")
-      .item__label(v-if="!collapsed && !item.isChild" 
-        :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast && !item.isChild }"
+      .item__label(v-if="!collapsed" 
+        :class="{ 'pl-16': !!item.parentId, 'last-item': item.isLast && !item.isChild, 'justify-content-end': item.isChild }"
       )
         div.item__children(v-if="item.parentId")
-        div.item__rect(v-if="item.parentId")
-        span {{ item.label }}
-        span.icon.toggle.icon-chevron-down.surface-500(:class="iconSelectCssClasses")
+        div.item__rect(v-if="item.parentId && !item.isChild")
+        span(v-if="!item.isChild") {{ item.label }}
+        span.icon.toggle.icon-chevron-down.surface-500(v-if="!item.isChild" :class="iconSelectCssClasses")
         Badge.mr-2.badge-notify(v-if="item.label === 'Notifications'" :value="3")
-      .item__label.justify-content-end(v-if="!collapsed && item.isChild" 
-        :class="{ 'pl-16': !!item.parentId }")
-        div.item__children(v-if="item.parentId")
-        div.item_child(:class="{ 'active': active }")
+        div.item_child(v-if="item.isChild" :class="{ 'active': active }")
           div.item__children(v-if="item.parentId"  :class="{ 'last-item': item.isLast }")
           div.item__rect(v-if="item.parentId")
           span {{ item.label }}
