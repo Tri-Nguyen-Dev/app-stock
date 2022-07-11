@@ -1,6 +1,6 @@
 <template lang="pug">
-  .menu-item.flex-row.pt-1(v-show="isShow" @click="select(item)")
-    nuxt-link(v-if="!!item.to" :to="item.to" @click.native="toggleMenu")
+  .menu-item.flex-row(v-show="isShow" @click="select(item)" :class="{'pt-1': !collapsed || !item.parentId}")
+    nuxt-link(v-if="!!item.to" :to="item.to" @click.native="toggleMenu" :class="{'link-white': routerSelectedItem !== item.to }")
       SidebarItemValue(:item="item")
     div(v-if="!item.to")
       SidebarItemValue(:item="item")
@@ -18,6 +18,7 @@ class SidebarItem extends Vue {
   collapsed!: boolean
 
   @Prop() readonly item!: any | undefined
+  @InjectReactive() readonly selectParent!: any
   @InjectReactive() readonly selectedItem!: any
 
   @Emit()
@@ -31,9 +32,11 @@ class SidebarItem extends Vue {
 
   // -- [ Getters ] -------------------------------------------------------------
   get isShow() {
-    return !this.item.parentId ||
-      (this.selectedItem?.parentId === this.item.parentId) ||
-      (this.selectedItem?.id === this.item.parentId)
+    return _.includes(this.selectParent, this.item.parentId) || !this.item.parentId
+  }
+
+  get routerSelectedItem() {
+    return this.selectedItem?.to
   }
 }
 
@@ -43,6 +46,9 @@ export default SidebarItem
 <style lang="sass" scoped>
 .menu-item
   cursor: pointer
+  .link-white
+    .item-value.child-item
+      background: $color-white
 
 .item-parent-link
   width: 40px
