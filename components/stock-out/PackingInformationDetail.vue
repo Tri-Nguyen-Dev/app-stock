@@ -23,7 +23,7 @@
         StockOutPackingCreatorInfo(:creatorInfo='deliveryOrderDetail')
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import DeliveryDriverInfo from '~/components/stock-out/driver/DriverInfor.vue'
 import { DeliveryConstants, ORDER_STATUS } from '~/utils'
 @Component({
@@ -35,20 +35,14 @@ class PackingInformationDetail extends Vue {
   @Prop() deliveryOrderDetail!: any
   @Prop() type!: string
   @Prop() driverInfo!: any
-  status : string |undefined
   get homeItem() {
     return { label: '', to: '/stock-out/order-list', icon: 'pi pi-list' }
   }
 
-  @Watch('deliveryOrderDetail')
-  setStatus(){
-    this.status = DeliveryConstants.MapStatusDelivery.get(this.deliveryOrderDetail?.status)
+  get status() {
+    return DeliveryConstants.MapStatusDelivery.get(this.deliveryOrderDetail?.status)
   }
-
-  mounted()  {
-    this.status = DeliveryConstants.MapStatusDelivery.get(this.deliveryOrderDetail?.status)
-  }
-
+ 
   get breadcrumbItem() {
     if (this.type === 'DO_DETAIL') {
       return [
