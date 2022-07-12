@@ -115,7 +115,7 @@ class stockTakeItemsDetail extends Vue {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
       creatorInfo: [
-        { title:'Create Time', value: createdAt ?
+        { title:'Created Time', value: createdAt ?
           dayjs(new Date(createdAt)).format('YYYY-MM-DD')
           : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },

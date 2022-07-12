@@ -33,9 +33,9 @@
                   span.text-primary.uppercase.ml-2 {{ boxDetail.id }}
         div.sub--scroll
             div.wrap-unit.px-4
-              StockUnit(title="Receipt note ID"  :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
+              StockUnit(title="Receipt ID"  :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
             div.wrap-unit.px-4(v-if='boxDetail.createdBy')
-              StockUnit(title="Create ID" :value="boxDetail.createdBy.id" :isEdit="isEditBox" icon="icon-tag-user")
+              StockUnit(title="Creator ID" :value="boxDetail.createdBy.staffId" :isEdit="isEditBox" icon="icon-tag-user")
             div.wrap-unit.px-4
               StockUnit(title="Warehouse"  :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
             div.wrap-unit.px-4
@@ -43,32 +43,32 @@
                 template(v-slot:auto-complete)
                   .mt-1.flex.align-items-center
                     AutoComplete.edit-location(
-                      v-model="isLocation" 
-                      field='name' 
-                      :suggestions='locationList' 
-                      forceSelection :readOnly='!isEditBox' 
-                      :placeholder='boxLocation' 
+                      v-model="isLocation"
+                      field='name'
+                      :suggestions='locationList'
+                      forceSelection :readOnly='!isEditBox'
+                      :placeholder='boxLocation'
                       @complete="searchLocation($event)"  )
                       template(#item="slotProps")
                         .grid.align-items-center.grid-nogutter
                           span.font-bold.text-lg {{ slotProps.item.name }}
                           .icon-arrow-up-right.icon
             div.wrap-unit.px-4
-              StockUnit(title="Create Time" :value="boxDetail.createdAt | dateTimeHour24" :isEdit="isEditBox" icon="icon-calendar")
+              StockUnit(title="CreateD Time" :value="boxDetail.createdAt | dateTimeHour24" :isEdit="isEditBox" icon="icon-calendar")
             div.wrap-unit.px-4(v-if='boxDetail.listStockWithAmount')
               StockUnit(title="Box Items" :value="boxDetail.listStockWithAmount.length" :isEdit="isEditBox" icon="icon-frame")
             div.wrap-unit.px-4
-              StockUnit(title="Estimated inventory Fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
+              StockUnit(title="Storage fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
             div.wrap-unit.px-4(v-if="boxDetail.boxSize" :class='isEditBox ? "opacity-40" : "opacity-100"')
               StockUnit(
-                title="Box size:" 
-                type ="size" 
-                :height="boxDetail.boxSize.height" 
-                :length="boxDetail.boxSize.length" 
-                :width="boxDetail.boxSize.width" 
+                title="Box size:"
+                type ="size"
+                :height="boxDetail.boxSize.height"
+                :length="boxDetail.boxSize.length"
+                :width="boxDetail.boxSize.width"
                 icon="icon-size")
                 template(v-slot:size)
-                  span.font-bold.text-lg.mt-1.uppercase 
+                  span.font-bold.text-lg.mt-1.uppercase
                     | {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
                 template(v-slot:button-size='')
                   span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(
@@ -146,13 +146,13 @@
                   div.pt-2.pl-1.pb-1
                     span.text-600.text-sm.pl-2 Category
                     MultiSelect#MultiSelectCatagory.w-full.border-0.mb-1.text-900.font-bold(
-                      v-model="filterParams.category" 
-                      :options='categoryList' 
-                      optionLabel="name" 
-                      optionValue="id" 
-                      placeholder="Select" 
-                      :filter='true')   
-        .box__table.flex.mt-2(v-if='activeTab ==  0')       
+                      v-model="filterParams.category"
+                      :options='categoryList'
+                      optionLabel="name"
+                      optionValue="id"
+                      placeholder="Select"
+                      :filter='true')
+        .box__table.flex.mt-2(v-if='activeTab ==  0')
           BoxDetailTable.flex-1(:listStockWithAmount='filteredBoxDetailData' :totalItems='totalItems')
         .box__table.mt-2(v-if='activeTab ==  1' )
           BoxDetailHistoryTable
@@ -335,11 +335,11 @@ export default BoxDetail
 </script>
 
 <style lang="sass" scoped>
-.box-page 
+.box-page
   display: flex
   flex-direction: column
   height: calc( 100vh - 32px )
-.box__table 
+.box__table
   flex: 1
   overflow: hidden
 @media (max-width: 1024px)
@@ -362,13 +362,13 @@ export default BoxDetail
     right: 0
 
 .sub-tab
-  @include desktop 
+  @include desktop
     max-width: 100%
     height: calc(100vh - 32px)
     overflow: auto!important
 .sub--scroll
   width: 100%
-  @include desktop 
+  @include desktop
     max-width: 100%
     overflow: auto
 
@@ -426,7 +426,7 @@ export default BoxDetail
   background-color: #979AA4
 .p-disabled, .p-component:disabled
   opacity: 1
-.wrap-unit 
+.wrap-unit
   width: 100%
   margin-bottom: 16px
 .header__action
@@ -438,5 +438,5 @@ export default BoxDetail
       justify-content: flex-end
       flex-direction: row
       margin-top: 0
-    
+
 </style>

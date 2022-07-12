@@ -9,7 +9,7 @@
     span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{status}} &nbsp;
     h3.uppercase.inline-block.m-1 id: {{ deliveryOrderDetail.id }}
     div
-      h5.uppercase.inline-block(style='color :#979AA4') Create time:&nbsp;
+      h5.uppercase.inline-block(style='color :#979AA4') Created time:&nbsp;
       span.uppercase.font-bold {{deliveryOrderDetail.createdAt | dateTimeHour24}}
     TabView
       TabPanel.p-3(header='Delivery')

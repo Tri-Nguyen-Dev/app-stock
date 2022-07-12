@@ -84,7 +84,7 @@
       Column(field="id" header="Report ID"  bodyClass="font-semibold" sortField="_id")
           template(#body="slotProps")
             span {{slotProps.data.id}}
-      Column(field="createdAt" header="CREATE TIME" :sortable="true" :styles="{width: '5rem'}"   sortField="_createdAt")
+      Column(field="createdAt" header="CREATED TIME" :sortable="true" :styles="{width: '5rem'}"   sortField="_createdAt")
         template(#body='{ data }')
           span {{ data.createdAt | dateTimeHour24 }}
       Column(field="createdBy.staffId" header="CREATOR ID" className="text-center" :sortable="true" :styles="{width: '6rem'}"   sortField="_createdAt")
