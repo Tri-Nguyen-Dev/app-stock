@@ -2,7 +2,7 @@
   div.general-info.px-3
     div.general-heading.flex.align-items-center
       .icon.inline-block.mr-2.bg-primary(class='icon-info')
-      h3.uppercase.text-sm general information
+      h3.uppercase.text-sm general info
     div.general-content.grid
       .col
         .info-item.border-1.border-gray-300.p-2.border-round

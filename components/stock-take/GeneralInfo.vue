@@ -8,8 +8,11 @@
         p.uppercase.font-bold(v-if='info.id') note id: {{info.id}}
         .div.status-note
           span.p-2.table__status.table__status--available {{info.status | trimUnderShift}}
-          span.p-2.table__status.table__status--error(
-            v-if='info.status === "COMPLETED"') {{ info.finalResultStatus  }}
+          span(v-if='info.status === "COMPLETED" ')
+            tag.p-2.table__status.table__status--error(
+              v-if='info.finalResultStatus === "NG"') {{ info.finalResultStatus  }}
+            tag.p-2.table__status.table__status--available(
+              v-else-if='info.finalResultStatus === "OK"') {{ info.finalResultStatus  }}
     template(v-slot:content)
       .grid.m-0.mt-3(v-if='info.user')
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.createdAt')

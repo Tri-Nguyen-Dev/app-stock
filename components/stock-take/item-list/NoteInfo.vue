@@ -8,8 +8,11 @@
         span.p-2.font-bold NOTE ID: {{ noteInfor.id }}
       .col.px-0.status-note
         span.p-2.table__status.table__status--available {{ noteInfor.status | trimUnderShift }}
-        span.p-2.table__status.table__status--error(
-          v-if='noteInfor.status === "COMPLETED"') {{ noteInfor.finalResultStatus  }}
+        span( v-if='noteInfor.status === "COMPLETED" ')
+          tag.p-2.table__status.table__status--error(
+            v-if='noteInfor.finalResultStatus === "NG"') {{ noteInfor.finalResultStatus  }}
+          tag.p-2.table__status.table__status--available(
+            v-else-if='noteInfor.finalResultStatus === "OK"') {{ noteInfor.finalResultStatus  }}
       .col.border-bottom-1.border-gray-300
     template(v-slot:content)
       .grid.m-0.mt-3

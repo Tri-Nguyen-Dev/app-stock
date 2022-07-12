@@ -183,7 +183,7 @@ class stockTakeItemsDetail extends Vue {
       finalResultStatus: this.boxStockTakeDetail?.finalResultStatus,
       creatorInfo: [
         {
-          title: 'Create Time', value: createdAt ?
+          title: 'Created Time', value: createdAt ?
             dayjs(new Date(createdAt)).format('MM-DD-YYYY hh:mm A')
             : null, icon: 'icon-receipt-note'
         },
@@ -242,8 +242,8 @@ class stockTakeItemsDetail extends Vue {
   }
 
   rowClass({ isChecking }) {
-    if (isChecking) {
-      return 'row-disable'
+    if (!isChecking) {
+      return 'disable'
     }
   }
 

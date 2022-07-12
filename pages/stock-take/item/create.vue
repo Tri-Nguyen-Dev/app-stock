@@ -119,7 +119,7 @@ class StockTakeItems extends Vue {
     return {
       status: 'NEW',
       creatorInfo: [
-        { title:'Create Time', value: this.user?.createdAt ?
+        { title:'Created Time', value: this.user?.createdAt ?
           dayjs(new Date(this.user?.createdAt)).format('YYYY-MM-DD')
           : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: this.user.staffId, icon: 'icon-tag-user' },
