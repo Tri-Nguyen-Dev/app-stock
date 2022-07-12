@@ -2,7 +2,7 @@
   .modal-overlay
     .modal
       .text-heading.modal-header Add new Warehouse
-      .card {{warehouseData}}
+      .card
         .formgrid.grid(v-if= "!warehouseData")
           .field.col-12()
             label.required__title(for='name') Name :

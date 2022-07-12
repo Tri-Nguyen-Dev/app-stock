@@ -55,6 +55,7 @@
           :class="{ 'table-wrapper-empty': !warehouseList || warehouseList.length <= 0 }"
           :rows='10'
           :rowHover='true'
+          responsiveLayout='scroll'
           :value='dataRenderItems'
           :selection.sync='selectedItem'
           @row-select='selectRow()'
@@ -69,7 +70,7 @@
               span.grid-cell-center.warehouse__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
-              NuxtLink.warehouse__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/warehouse/${data.id}`" class="no-underline hover:underline") {{ data.name }}
+              div.grid-cell-left {{ data.name }}
           Column(header='Adress' :sortable="true" field='adress' sortField="_adress" headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-left {{ data.address }}
@@ -154,7 +155,6 @@ class Warehouse extends Vue {
   loadingSubmit: boolean = false
   isFilter: boolean = false
   limitOptions = LIMIT_PAGE_OPTIONS
-  checkIsFilter: boolean = false
   enablePack = false
   warehouseData: any = null
   id: string
@@ -162,7 +162,7 @@ class Warehouse extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   filter: any = {
     email: null,
-    seller: null,
+    address: null,
     name: null
   }
 
@@ -185,6 +185,11 @@ class Warehouse extends Vue {
   // --[ getter ] ----------------------------- 
   get total() {
     return this.warehouseList.length
+  }
+
+  get checkIsFilter() {
+    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
+    return Object.values(params).some((item) => item)
   }
   
   onPage(event: any) {
@@ -251,8 +256,10 @@ class Warehouse extends Vue {
     }
   }
 
-  handleFilter(){
-
+  handleFilter(e: any, name: string){
+    this.filter[name] = e
+    this.getWarehouseList()
+    this.selectedItem = []
   }
 
   warehouseSelect({ data }){
