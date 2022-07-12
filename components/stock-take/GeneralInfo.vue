@@ -18,7 +18,7 @@
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.createdAt')
       StockUnit(title="Created time" :value="info.createdAt | dateTimeHour24" icon="icon-calendar")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-      StockUnit(title="Creator ID" :value="info.user.displayName|| `${info.user.firstName} ${info.user.lastName}`" icon="icon-user-octagon")
+      StockUnit(title="Creator ID" :value="info.user.staffId" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2'   v-if='info.picId')
       StockUnit(title="PIC ID" :value="info.picId" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2'   v-if='info.approveId')
