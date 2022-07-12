@@ -6,30 +6,32 @@
         .chart-statistics
           span Total Delivery Order: 82
           span Delivered Delivery Order: 88
-      Chart(type="bar" :data="multiAxisData" :options="multiAxisOptions")
+      Chart(type="bar" :data="dataChart" :options="multiAxisOptions")
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { DeliveryConstants } from '~/utils'
+const nsStoreDashboard = namespace('dashboard/data-chart')
 
 @Component
 class DeliveryChart extends Vue {
-  multiAxisData= {
-    labels: ['New', 'In Progress', 'Cancelled', 'Ready', 'Setted', 'Accepted', 'Delivering'],
-    datasets: [{
-      label: '',
-      backgroundColor: [
-        '#EC407A',
-        '#AB47BC',
-        '#42A5F5',
-        '#7E57C2',
-        '#66BB6A',
-        '#FFCA28',
-        '#26A69A'
-      ],
-      yAxisID: 'y',
-      data: [65, 59, 80, 81, 56, 55, 40]
-    }]
+
+  @nsStoreDashboard.State
+  delivery!: any
+
+  get dataChart() {
+    if(!this.delivery) return
+    const multiAxisData= {
+      labels: this.delivery.map(a => a.statusName),
+      datasets: [{
+        label: '',
+        backgroundColor: this.delivery.map(a => DeliveryConstants.MapColorDelivery.get(a.statusCode)),
+        yAxisID: 'y',
+        data: this.delivery.map(a => a.value)
+      }]
+    }
+    return multiAxisData
   }
 
   multiAxisOptions= {
@@ -56,6 +58,8 @@ class DeliveryChart extends Vue {
         }
       }
     },
+    // barThickness: 6,
+    barPercentage: 0.7,
     plugins: {
       legend: {
         display: false

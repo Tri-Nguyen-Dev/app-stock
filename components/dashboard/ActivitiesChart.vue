@@ -6,83 +6,26 @@
       Chart(type="line" :data="dataActivitiesChart")
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+const nsStoreDashboard = namespace('dashboard/data-chart')
+const dayjs = require('dayjs')
 
 @Component
 class ActivitiesChart extends Vue {
-  dataActivities: any = {
-    incoming: [
-      {
-        date: 'January',
-        value: 39
-      },
-      {
-        date: 'February',
-        value: 59
-      },
-      {
-        date: 'March',
-        value: 80
-      },
-      {
-        date: 'April',
-        value: 81
-      },
-      {
-        date: 'May',
-        value: 29
-      },
-      {
-        date: 'June',
-        value: 56
-      },
-      {
-        date: 'July',
-        value: 49
-      }
-    ],
-    outgoing: [
-      {
-        date: 'January',
-        value: 29
-      },
-      {
-        date: 'February',
-        value: 59
-      },
-      {
-        date: 'March',
-        value: 60
-      },
-      {
-        date: 'April',
-        value: 21
-      },
-      {
-        date: 'May',
-        value: 59
-      },
-      {
-        date: 'June',
-        value: 55
-      },
-      {
-        date: 'July',
-        value: 23
-      }
-    ]
-  }
+
+  @nsStoreDashboard.State
+  activities!: any
 
   get dataActivitiesChart() {
-    if(this.dataActivities) {
-      const labels = this.dataActivities?.incoming.map(item => {
-        return item.date
+    if(this.activities) {
+      const labels = this.activities.map(item => {
+        return dayjs(new Date(item.createdAt)).format('MM/DD')
       })
-      const incomingData = this.dataActivities?.incoming.map(item => {
-        return item.value
+      const incomingData = this.activities.map(item => {
+        return item.incoming
       })
-      const outgoingData = this.dataActivities?.outgoing.map(item => {
-        return item.value
+      const outgoingData = this.activities.map(item => {
+        return item.outgoing
       })
       return {
         labels,

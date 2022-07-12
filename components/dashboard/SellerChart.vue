@@ -6,47 +6,22 @@
       Chart(type="line" :data="dataSellersChart" :options='chartOptions')
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+const nsStoreDashboard = namespace('dashboard/data-chart')
+const dayjs = require('dayjs')
 
 @Component
 class SellerChart extends Vue {
-  dataSellers: any = [
-    {
-      date: 'January',
-      value: 39
-    },
-    {
-      date: 'February',
-      value: 59
-    },
-    {
-      date: 'March',
-      value: 80
-    },
-    {
-      date: 'April',
-      value: 81
-    },
-    {
-      date: 'May',
-      value: 29
-    },
-    {
-      date: 'June',
-      value: 56
-    },
-    {
-      date: 'July',
-      value: 49
-    }
-  ]
+
+  @nsStoreDashboard.State
+  sellers!: any
 
   get dataSellersChart() {
-    if(this.dataSellers) {
-      const labels = this.dataSellers.map(item => {
-        return item.date
+    if(this.sellers) {
+      const labels = this.sellers.map(item => {
+        return dayjs(new Date(item.createdAt)).format('MM/DD')
       })
-      const dataSeller = this.dataSellers.map(item => {
+      const dataSeller = this.sellers.map(item => {
         return item.value
       })
       return {

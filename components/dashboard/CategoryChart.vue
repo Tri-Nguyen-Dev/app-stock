@@ -3,18 +3,23 @@
     template(#content='')
       .header-chart
         h4 Top Categories
-        .category-item(v-for="(item, index) in data" :key="item.name")
+        .category-item(v-for="(item, index) in category" :key="item.id")
           div
             span.font-medium {{ index + 1 }}. 
-            span.font-medium {{ item.name }}
-          span.item-percent {{ item.percent }}%
+            span.font-medium {{ item.categoryName }}
+          span.item-percent {{ item.value }}%
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+const nsStoreDashboard = namespace('dashboard/data-chart')
 
 @Component
 class CategoryChart extends Vue {
+
+  @nsStoreDashboard.State
+  category!: any
+  
   data = [
     { name: 'Technology', percent: '62' },
     { name: 'Fashion', percent: '22.5' },
