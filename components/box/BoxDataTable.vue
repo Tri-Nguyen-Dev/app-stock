@@ -108,6 +108,7 @@
       @row-unselect-all='rowUnSelectAll',
       @row-select='rowSelect',
       @row-unselect='rowUnselect',
+
       :rowClass='rowClass'
     )
       Column(
@@ -183,7 +184,6 @@ import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
 import { BOX_STATUS_OPTIONS, BOX_STATUS } from '~/utils/constants/box'
-import { refreshAllFilter } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -245,10 +245,6 @@ class BoxDataTable extends Vue {
     await this.actGetBoxList(this.getParamAPi())
     this.selectedBoxes = [...this.box]
   }
-  // @Watch('box')
-  // rerenderView(){
-
-  // }
   // -- [ Getters ] -------------------------------------------------------------
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -300,7 +296,12 @@ class BoxDataTable extends Vue {
   }
 
   async handleRefreshFilter() {
-    refreshAllFilter(this.filter)
+    this.filter.email = null
+    this.filter.status = null
+    this.filter.barCode = null
+    this.filter.location = null
+    this.filter.dateFrom = null
+    this.filter.dateTo = null
     await this.actGetBoxList(this.getParamAPi())
   }
 
@@ -319,6 +320,7 @@ class BoxDataTable extends Vue {
       _.isEqual
     )
     this.updateSelectedBox()
+
   }
 
   rowSelect({ data }) {
@@ -351,19 +353,18 @@ export default BoxDataTable
 </script>
 
 <style lang="sass" scoped>
+.BoxdataTableContainer
+  height: 100%
+  display: flex
+  flex-direction: column
 ::v-deep.inventory
   .bg-white
     background-color: $text-color-100 !important
     padding: 2px 10px
-  @include flex-column
-  .pi-calendar:before
-    content: url('~/assets/icons/calendar.svg')
   .p-calendar-w-btn
     .p-button
       background: none
       border: none
-  .p-inputtext
-    box-shadow: none
   &__header
     @include flex-center-space-between
     margin-bottom: $space-size-24
@@ -390,19 +391,12 @@ export default BoxDataTable
           height: 3.5rem !important
           .text-bold
             color: $text-color-700
-            .p-inputnumber-input
-              color: $text-color-700
         & > tr > td
           padding-top: 0
           padding-bottom: 0
-        .outgoing__selected
-          background: $color-white
           > .text-bold
             font-weight: $font-weight-bold
             color: $text-color-900
-            .p-inputnumber-input
-              font-weight: $font-weight-bold
-              color: $text-color-900 !important
       .p-datatable-thead > tr > th
         white-space: unset
       .p-datatable-thead > tr > th

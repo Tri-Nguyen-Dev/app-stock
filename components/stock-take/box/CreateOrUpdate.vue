@@ -183,6 +183,7 @@ class DeliveryOrder extends Vue {
     this.showModal = false
     this.boxShow = _.cloneDeep(this.boxSelected)
     this.totalItem= _.size(this.boxSelected)
+
   }
 
   mounted() {
@@ -321,4 +322,15 @@ export default DeliveryOrder
 .item-list-dialog
   ::v-deep.p-dialog-content
     background-color: #E8EAEF
+    width: 80vw
+    padding-bottom: 5px
+    height: 85vh
+    .pagination
+      padding: 8px
+  ::v-deep.pi-calendar:before
+    content: url('~/assets/icons/calendar.svg')
+  ::v-deep.p-calendar-w-btn
+    .p-button
+      background: none
+      border: none
 </style>
