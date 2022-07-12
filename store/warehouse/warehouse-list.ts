@@ -71,21 +71,25 @@ export default class Warehouse extends VuexModule {
 
   @Action ({ rawError: true })
   async actDeletedWarehouseById( id?: any ): Promise<string | undefined> {
-    try{
-      const url = PathBind.transform(this.context, Warehouse.STATE_URL.DELETE_WAREHOUSE, { id })
-      const response: any = await $api.post( url )
-      if(!response.data) {
-        return
-      }
-      return response.data
-    } catch (error){
+    const url = PathBind.transform(
+      this.context, 
+      Warehouse.STATE_URL.DELETE_WAREHOUSE, 
+      { id }
+    )
+    const response: any = await $api.post( url )
+    if(!response.data) {
+      return
     }
+    return response.data 
   }
 
   @Action({ commit: 'setNewWarehouse', rawError: true })
   async actCreateNewWarehouse(params: any): Promise<string | undefined> {
     try{
-      const url = PathBind.transform(this.context, Warehouse.STATE_URL.CREATE_WAREHOUSE)
+      const url = PathBind.transform(
+        this.context, 
+        Warehouse.STATE_URL.CREATE_WAREHOUSE
+      )
       const response = await $api.post(url, params)
       return response.data
     } catch (error) {}
@@ -93,28 +97,22 @@ export default class Warehouse extends VuexModule {
 
   @Action({ rawError: true })
   async actUpdateWarehouse(params: any): Promise<string | undefined> {
-    try{
-      const url = PathBind.transform(
-        this.context,
-        Warehouse.STATE_URL.UPDATE_WAREHOUSE,
-        { id: params.id }
-      )
-      const response: any = await $api.post(url, params)
-      return response.data
-    }
-    catch(error){}
+    const url = PathBind.transform(
+      this.context,
+      Warehouse.STATE_URL.UPDATE_WAREHOUSE,
+      { id: params.id }
+    )
+    const response: any = await $api.post(url, params)
+    return response.data
   }
 
   @Action({ commit: 'setWarehouseBySeller', rawError: true })
   async actWarehouseBySeller( params? : any  ): Promise<string | undefined> {
-    try {
-      const url = PathBind.transform(
-        this.context,
-        Warehouse.STATE_URL.GET_WAREHOUSE_SELLER
-      )
-      const response = await $api.get(url, { params })
-      return response.data
-    } catch (error) {
-    }
+    const url = PathBind.transform(
+      this.context,
+      Warehouse.STATE_URL.GET_WAREHOUSE_SELLER
+    )
+    const response = await $api.get(url, { params })
+    return response.data
   }
 }

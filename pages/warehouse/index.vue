@@ -212,9 +212,6 @@ class Warehouse extends Vue {
     this.isModalDelete = true
   }
 
-  getSelectedWarehouseFilter() {
-  }
-  
   getIndexPaginate(index: number) {
     return calculateIndex(
       index,

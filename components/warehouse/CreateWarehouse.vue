@@ -2,7 +2,7 @@
   .modal-overlay
     .modal
       .text-heading.modal-header Add new Warehouse
-      .card
+      .card.card-container
         .formgrid.grid(v-if= "!warehouseData")
           .field.col-12()
             label.required__title(for='name') Name :
@@ -215,11 +215,11 @@ export default AddNewWarehouse
   display: flex
   justify-content: center
   align-items: center
-  background-color: #000000da
+  background-color: rgba(0, 0, 0, 0.4)
   z-index: 1000
 
 .modal
-  background-color: #fff
+  background-color: #E8EAEF
   padding: 50px
   border-radius: 10px
   width: 750px
@@ -228,15 +228,21 @@ export default AddNewWarehouse
   text-align: center
   margin-bottom: 30px
 
+.card-container
+  background-color: #FFFFFF
+  padding: 11px
+  border-radius: 10px
+  padding: 15px 30px 11px 30px
+
 .btn
   cursor: pointer
   border: none
 .btn-cancel
-  background-color: #999999
+  background-color: #E8EAEF
   color: #151622
   padding-right: 0
 .btn-cancel :hover
-  background-color: #F5F5F5
+  background-color: #486AE2 !important
   color: #fff
 .btn-primary
   width: 85px
