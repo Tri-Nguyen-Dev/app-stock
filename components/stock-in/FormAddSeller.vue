@@ -49,12 +49,16 @@ const nsStoreSeller = namespace('seller/seller-create')
 })
 class FormAddSeller extends Vue {
   @Prop({ default:'' }) email!: string
+  @Prop({ default:'' }) warehouseId!: string
   seller = {
     firstName: undefined,
     lastName:  undefined,
     email: this.email,
     phoneNumber: undefined,
-    displayName: ''
+    displayName: '',
+    warehouse:{
+      id: this.warehouseId
+    }
   }
 
   @nsStoreSeller.State
