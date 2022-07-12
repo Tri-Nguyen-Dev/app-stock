@@ -33,7 +33,7 @@
             .grid.grid-nogutter
               .col
                   FilterCalendar(
-                    title="Create Time From"
+                    title="Created Time From"
                     border="left"
                     :value="filter.dateFrom"
                     name="dateFrom"
@@ -109,7 +109,7 @@
             template(#body='{ index }')
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(field='id' header='NOTE ID' headerClass="grid-header-center" sortable sortField="_id")
-          Column(header='Create Time' field='createdAt' sortable sortField="_createdAt")
+          Column(header='Created Time' field='createdAt' sortable sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}
           Column(header='UPDATE time' field='updatedAt' sortable sortField="_updatedAt")
             template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}

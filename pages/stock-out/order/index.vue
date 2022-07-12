@@ -28,7 +28,7 @@
                 @sellerInfor='handleSeller'
                 @paramSeller='paramSeller'
                 @clearSeller='clearSeller'
-                :sellerList='sellerList'
+                :sellerList='sellerByWarehouse'
               )
               .input-errors(
                 v-if=' $v.information.seller.$each[0].value.$invalid && $v.information.seller.$each[0].value.$dirty'
@@ -64,14 +64,14 @@
               span.uppercase.text-800.font-bold time information
             div
               StockUnit(
-                title="Estimated delivery Time"
+                title="EDT"
                 icon="icon-clock"
-                :value=' deliveryDate  ||  "Estimated delivery Time"    '
+                :value=' deliveryDate  ||  "EDT"    '
               )
               StockUnit.mt-2(
-                title="Due delivery date"
+                title="Due delivery"
                 icon="icon-calendar"
-                :value=' dueDeliveryDate  ||  "Due delivery date"  '
+                :value=' dueDeliveryDate  ||  "Due delivery "  '
                 placeholder="Enter"
               )
           .border-top-1.border-gray-300.grid-nogutter
@@ -182,7 +182,7 @@
                 )
             .mr-4.flex.justify-content-end( v-if="listItemsAddSize > 0" )
               Button( label='Cancel' @click='showModalCancel' ).btn.btn__default.flex-initial
-              Button( label='Submit' @click='handleSubmit'  ).btn.btn__priamry.flex-initial
+              Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
       ConfirmDialogCustom(
         title="Confirm delete"
         image="confirm-delete"
@@ -256,7 +256,6 @@ class createOrder extends Vue {
   information = INFORMATION
   isDisableSubmit: boolean = false
   isValid: boolean = false
-  fullDayTime: number = 24 * 60 * 60
   errorMessage: any = {
     errorPhone  :'*Please, fill in phone in the correct',
     errorName : '*Please, fill in name in the correct',
@@ -276,7 +275,7 @@ class createOrder extends Vue {
   user!: any
 
   @nsStoreSeller.State
-  sellerList!: any
+  sellerByWarehouse!: any
 
   @nsStoreCreateOrder.State
   estimate!: any
@@ -296,7 +295,7 @@ class createOrder extends Vue {
   actWarehouseList!: () => Promise<void>
 
   @nsStoreSeller.Action
-  actSellerList!: (params: any) => Promise<void>
+  actSellerByWarehouse!: (params: any) => Promise<void>
 
   @nsStoreCreateOrder.Action
   actGetEstimate!: (params: any) => Promise<void>
@@ -472,6 +471,7 @@ class createOrder extends Vue {
   warehouseByStaff(){
     const warehouseByUser = this.user.warehouse
     const InfoWarehouse = this.information.warehouse
+    this.actSellerByWarehouse( { id: warehouseByUser?.id })
     InfoWarehouse[0].warehouseId =  warehouseByUser?.id
     InfoWarehouse[0].value =  warehouseByUser?.name
     InfoWarehouse[1].value =  warehouseByUser?.email
@@ -480,6 +480,7 @@ class createOrder extends Vue {
 
   handleWarehouse(event: any) {
     const InfoWarehouse = this.information.warehouse
+    this.actSellerByWarehouse( { id:event.id })
     InfoWarehouse[0].warehouseId = event.id
     InfoWarehouse[1].value = event.email
     InfoWarehouse[2].value = event.phone
@@ -500,6 +501,9 @@ class createOrder extends Vue {
     if(event  === '' || event === null) {
       this.unSelectedSeller()
     }
+    this.actSellerByWarehouse({
+      id: this.information?.warehouse[0]?.warehouseId,
+      sellerEmail: event })
   }
 
   handleUser() {
@@ -511,13 +515,23 @@ class createOrder extends Vue {
   }
 
   paramSeller(event: any) {
-    this.actSellerList({ email: event })
+    // this.actSellerByWarehouse({ sellerEmail: event })
     if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(event.value))
     {
       return true
     }
     return this.$v.information.seller?.$each?.$touch()
   }
+
+  // @Watch('paramSeller')
+  // paramSeller(event: any) {
+  //   this.actSellerByWarehouse({ sellerEmail: event })
+  //   if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(event.value))
+  //   {
+  //     return true
+  //   }
+  //   return this.$v.information.seller?.$each?.$touch()
+  // }
 
   async handleReceiver() {
     const InfoWarehouse: any = this.information.warehouse
@@ -612,9 +626,9 @@ class createOrder extends Vue {
   }
 
   get dueDeliveryDate() {
-    const estimateTime = this.estimate?.estimate / this.fullDayTime
-    if(estimateTime) {
-      return dayjs(new Date()).add(estimateTime + 1 , 'day').format('MM/DD/YYYY')
+    const a = this.estimate?.estimate / 1440
+    if(a) {
+      return dayjs(new Date()).add(a, 'day').format('MM/DD/YYYY')
     }
   }
 
