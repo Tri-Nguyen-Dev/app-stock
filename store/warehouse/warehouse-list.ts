@@ -11,7 +11,7 @@ export default class Warehouse extends VuexModule {
   private static readonly STATE_URL = {
     GET_WAREHOUSE: '/warehouse/list',
     GET_WAREHOUSE_DETAIL: '/warehouse/:id/detail',
-    UPDATE_WAREHOUSE_DETAIL: '/warehouse/:id/update',
+    UPDATE_WAREHOUSE: '/warehouse/:id/update',
     GET_WAREHOUSE_SELLER: '/warehouse/list/by-seller-email',
     DELETE_WAREHOUSE: '/warehouse/:id/delete',
     DELETE_WAREHOUSE_LIST: '/warehouse/list/delete',
@@ -92,14 +92,17 @@ export default class Warehouse extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async actUpdateWarehouse(id): Promise<string | undefined> {
-    const url = PathBind.transform(
-      this.context,
-      Warehouse.STATE_URL.UPDATE_WAREHOUSE_DETAIL,
-      { id }
-    )
-    const response: any = await $api.post(url)
-    return response.data
+  async actUpdateWarehouse(params: any): Promise<string | undefined> {
+    try{
+      const url = PathBind.transform(
+        this.context,
+        Warehouse.STATE_URL.UPDATE_WAREHOUSE,
+        { id: params.id }
+      )
+      const response: any = await $api.post(url, params)
+      return response.data
+    }
+    catch(error){}
   }
 
   @Action({ commit: 'setWarehouseBySeller', rawError: true })

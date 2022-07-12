@@ -15,8 +15,7 @@
             span Filter
           .btn-refresh()
             .icon.icon-rotate-left.bg-white
-        Button.btn.btn-primary(@click='isShowCreateWarehouse = true')
-          .icon.icon-add-items
+        Button.btn.btn-primary(@click='isShowCreateWarehouse = true; warehouseData= null')
           span Add Warehouse
     .grid.header__filter(:class='{ "active": isShowFilter }')
       .div(class="col-12 md:col-4")
@@ -119,10 +118,8 @@
     )
       template(v-slot:message)
         p {{ deleteMessage }}
-
     Toast
-    <CreateWarehouse v-show="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" :warehouseData="warehouseData"/>
-            
+    CreateWarehouse(v-show="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" :warehouseData="warehouseData")
 </template>
 
 <script lang="ts">
@@ -159,7 +156,7 @@ class Warehouse extends Vue {
   limitOptions = LIMIT_PAGE_OPTIONS
   checkIsFilter: boolean = false
   enablePack = false
-  warehouseData: any = []
+  warehouseData: any = null
   id: string
   selectedItem: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
@@ -270,10 +267,9 @@ class Warehouse extends Vue {
 
   }
 
-  handleEditWarehouse(warehouseData) {
-    this.warehouseData = warehouseData
+  handleEditWarehouse(data) {
+    this.warehouseData = _.cloneDeep(data[0])
     this.isShowCreateWarehouse = true
-    
   }
 
   debounceSearchName = _.debounce((value) => {
