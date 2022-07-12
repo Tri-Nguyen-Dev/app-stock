@@ -219,7 +219,7 @@ export default AddNewWarehouse
   z-index: 1000
 
 .modal
-  background-color: #E8EAEF
+  background-color: $bg-body-base
   padding: 50px
   border-radius: 10px
   width: 750px
@@ -229,7 +229,7 @@ export default AddNewWarehouse
   margin-bottom: 30px
 
 .card-container
-  background-color: #FFFFFF
+  background-color: $color-white
   padding: 11px
   border-radius: 10px
   padding: 15px 30px 11px 30px
@@ -239,11 +239,11 @@ export default AddNewWarehouse
   border: none
 .btn-cancel
   background-color: #E8EAEF
-  color: #151622
+  color: $text-color-900
   padding-right: 0
 .btn-cancel :hover
-  background-color: #486AE2 !important
-  color: #fff
+  background-color: $primary !important
+  color: $text-color-100
 .btn-primary
   width: 85px
 .error-message
