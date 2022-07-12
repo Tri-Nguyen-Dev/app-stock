@@ -142,7 +142,10 @@ class stockTakeItemsDetail extends Vue {
 
   // -- [ Function ] ------------------------------------------------------------
 
-  async created() {
+  async mounted() {
+    if (this.boxStockTakeDetail.status === 'COMPLETED') {
+      this.isDetail = false
+    }
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
     const status = this.boxStockTakeDetail?.status
     const staffId = this.boxStockTakeDetail?.assignee?.staffId
@@ -150,12 +153,6 @@ class stockTakeItemsDetail extends Vue {
       this.user?.staffId !== staffId && status === 'DRAFT' ||
       this.user?.staffId !== staffId && status === 'IN_PROGRESS') {
       this.$router.push('/stock-take')
-    }
-  }
-
-  mounted() {
-    if (this.boxStockTakeDetail.status === 'COMPLETED') {
-      this.isDetail = false
     }
   }
 
@@ -289,13 +286,13 @@ class stockTakeItemsDetail extends Vue {
     } else if (event.discrepancy !== 0 && event.countedQuantity !== null) {
       event.resultStatus = 'NG'
     } else {
-      event.resultStatus = 'Waiting'
+      event.resultStatus = 'WAITING'
     }
   }
 
   get isDisabled() {
     return !!_.find(this.items, function (obj: any) {
-      if (obj.resultStatus === 'Waiting' || obj.resultStatus === null) {
+      if (obj.resultStatus === 'WAITING' || obj.resultStatus === null) {
         return true
       }
     })
