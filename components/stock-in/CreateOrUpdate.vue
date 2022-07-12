@@ -4,12 +4,12 @@
     template(#title='')
       .d-flex
         i.pi.pi-info-circle.mr-3
-        span.font-semibold.text-base GENERAL INFORMATION
+        span.font-semibold.text-base GENERAL INFO
     template(#content='')
       .grid
         .col
           .filter__item.item--disabled
-            .filter__title ID receipt note
+            .filter__title Receipt ID
             .filter__text(v-if='id') {{ id }}
             .filter__text(v-else)
               i.filter__title auto generate...
@@ -23,7 +23,7 @@
             .filter__text(v-if='user') {{ user.displayName }}
         .col
           .filter__item.item--disabled
-            .filter__title Create time
+            .filter__title Created time
             .filter__text(v-if='generalInfo.createdAt') {{ generalInfo.createdAt | dateTimeHour24 }}
             .filter__text(v-else)
               i.filter__title auto generate...
@@ -134,7 +134,7 @@
             .col-12.border__right.pt-4.pb-4(class='md:col-6 lg:col-4')
               .grid
                 .col-12.content-center(class='md:col-6 lg:col-6')
-                  span.font-semibold.text-base.mr-3.ml-2.required__title Estimate Inventory Fee
+                  span.font-semibold.text-base.mr-3.ml-2.required__title Storage Fee
                 .col-12(class='md:col-6 lg:col-6')
                   InputNumber.number-input(
                     v-model='listBox[activeIndex].inventoryFee',

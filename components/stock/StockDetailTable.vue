@@ -83,7 +83,7 @@
           Column(field="sku" header="SKU" sortable className="p-text-right")
           Column(
             field="amount"
-            header="QUANTITY"
+            header="Q.TY"
             sortable className="p-text-right"
             bodyClass="font-semibold"
             :styles="{'width': '5%'}"

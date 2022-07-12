@@ -37,14 +37,14 @@
         .grid.mt-2
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(
-              title="Receipt note ID"
+              title="Receipt ID"
               :value="model.data.box.request.id"
               :isEdit="isEditItemDetail"
               icon="icon-receipt-note")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(
               title="Creator ID"
-              :value="model.data.box.createdBy.id"
+              :value="model.data.box.createdBy.staffId"
               :isEdit="isEditItemDetail"
               icon="icon-tag-user"
             )
