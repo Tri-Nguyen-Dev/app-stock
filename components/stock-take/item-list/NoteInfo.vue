@@ -1,7 +1,7 @@
 <template lang="pug">
   CommonTabDetail(:homeItem="homeItem" :breadcrumbItem="breadcrumbItem")
     template(v-slot:title)
-      .col.px-0.flex
+      .col.px-0.flex.mt-2
         .icon-box-info.icon.bg-primary.mr-2
         span.font-bold.text-800 NOTE DETAIL
       .col.px-0(v-if="noteInfor.id")
@@ -15,7 +15,7 @@
             v-else-if='noteInfor.finalResultStatus === "OK"') {{ noteInfor.finalResultStatus  }}
       .col.border-bottom-1.border-gray-300
     template(v-slot:content)
-      .grid.m-0.mt-3
+      .grid.m-0.mt-2
         .col-12.px-0.stock--info.p-2.m-0
           .col-12.px-0.flex.align-items-center
             .icon-sender-info.icon.bg-primary.mr-2

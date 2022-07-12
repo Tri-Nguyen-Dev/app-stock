@@ -172,6 +172,7 @@ class DeliveryOrder extends Vue {
   hideDialog(){
     this.showModal = false
     this.stockTakeInfo.totalBox = this.boxShow.length
+    this.stockTakeInfo.wareHouse = this.boxShow[0].warehouseName
   }
 
   removeBox(data){
@@ -180,10 +181,24 @@ class DeliveryOrder extends Vue {
   }
 
   applyBox(){
+    if(_.size(this.boxSelected) > 1) {
+      const warehouseFirstItem = _.get(this.boxSelected[0], 'warehouseId', null)
+      const unsatisfactoryItem =  _.find(this.boxSelected, function(box) {
+        return box?.warehouseId !== warehouseFirstItem
+      })
+      if(unsatisfactoryItem) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Item in different warehouse could not be added',
+          life: 3000
+        })
+        return
+      }
+    }
     this.showModal = false
     this.boxShow = _.cloneDeep(this.boxSelected)
     this.totalItem= _.size(this.boxSelected)
-
   }
 
   mounted() {

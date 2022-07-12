@@ -100,7 +100,7 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get noteInfor() {
-    const { createdAt, createdBy, approver, assignee, seller, note, submitNote, approveNote } = this.boxStockTakeDetail
+    const { createdAt, createdBy, approver, assignee, seller, note, submitNote, approveNote, updatedAt } = this.boxStockTakeDetail
     const notes: any = []
     if(note) {
       notes.push({ position: 'Creator', author: createdBy?.staffId, value: note })
@@ -116,8 +116,11 @@ class stockTakeItemsDetail extends Vue {
       status: this.boxStockTakeDetail?.status,
       creatorInfo: [
         { title:'Created Time', value: createdAt ?
-          dayjs(new Date(createdAt)).format('YYYY-MM-DD')
+          dayjs(new Date(createdAt)).format('YYYY-MM-DD HH:mm')
           : null, icon: 'icon-receipt-note' },
+        !this.isApproving ? { title: 'Approved Time', value: updatedAt ?
+          dayjs(new Date(updatedAt)).format('YYYY-MM-DD HH:mm')
+          : null, icon: 'icon-receipt-note' } : null,
         { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
         { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' },
         { title:'APPROVER ID', value: approver?.staffId, icon: 'icon-tag-user' },

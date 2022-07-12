@@ -62,7 +62,6 @@ import ItemListModel from '~/components/stock-take/ItemListModel.vue'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 const nsStoreUser = namespace('user-auth/store-user')
-const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -119,9 +118,6 @@ class StockTakeItems extends Vue {
     return {
       status: 'NEW',
       creatorInfo: [
-        { title:'Created Time', value: this.user?.createdAt ?
-          dayjs(new Date(this.user?.createdAt)).format('YYYY-MM-DD')
-          : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: this.user.staffId, icon: 'icon-tag-user' },
         { title:'Warehouse', value: _.get(this.listStockSelected[0], 'box.request.warehouse.name', null), icon: 'icon-warehouse' },
         { title:'Items', value: this.totalItem, icon: 'icon-frame' }
