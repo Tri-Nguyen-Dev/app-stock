@@ -329,10 +329,6 @@ export default Warehouse
 <style lang="sass" scoped>
 .warehouse
   @include flex-column
-  @include mobile
-    min-height: calc(100vh - 32px)
-  @include tablet
-    min-height: calc(100vh - 32px)
   @include desktop
     height: calc(100vh - 32px)
   &__header
