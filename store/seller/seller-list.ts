@@ -54,11 +54,12 @@ export default class Seller extends VuexModule {
         Seller.STATE_URL.GET_SELLER_BY_WAREHOUSE,
         params
       )
-      const response = await $api.get(url, { params: params.email }  )
+      const response = await $api.get(url, { params: { sellerEmail: params.sellerEmail } }  )
       if(response.data) {
         return response.data
       }
       return response
-    } catch (error) {}
+    } catch (error) {
+    }
   }
 }

@@ -28,7 +28,7 @@
                 @sellerInfor='handleSeller'
                 @paramSeller='paramSeller'
                 @clearSeller='clearSeller'
-                :sellerList='sellerList'
+                :sellerList='sellerByWarehouse'
               )
               .input-errors(
                 v-if=' $v.information.seller.$each[0].value.$invalid && $v.information.seller.$each[0].value.$dirty'
@@ -275,7 +275,7 @@ class createOrder extends Vue {
   user!: any
 
   @nsStoreSeller.State
-  sellerList!: any
+  sellerByWarehouse!: any
 
   @nsStoreCreateOrder.State
   estimate!: any
@@ -295,7 +295,7 @@ class createOrder extends Vue {
   actWarehouseList!: () => Promise<void>
 
   @nsStoreSeller.Action
-  actSellerList!: (params: any) => Promise<void>
+  actSellerByWarehouse!: (params: any) => Promise<void>
 
   @nsStoreCreateOrder.Action
   actGetEstimate!: (params: any) => Promise<void>
@@ -324,9 +324,7 @@ class createOrder extends Vue {
     if(this.dueDeliveryDate){
       this.deliveryDate =  1 +  ' day'
     }
-    if(this.listInfo.note !== null ){
-      this.noteBox =  this.listInfo.note
-    }
+    this.noteBox =  this.listInfo?.note
   }
 
   destroyed() {
@@ -473,6 +471,7 @@ class createOrder extends Vue {
   warehouseByStaff(){
     const warehouseByUser = this.user.warehouse
     const InfoWarehouse = this.information.warehouse
+    this.actSellerByWarehouse( { id: warehouseByUser?.id })
     InfoWarehouse[0].warehouseId =  warehouseByUser?.id
     InfoWarehouse[0].value =  warehouseByUser?.name
     InfoWarehouse[1].value =  warehouseByUser?.email
@@ -481,6 +480,7 @@ class createOrder extends Vue {
 
   handleWarehouse(event: any) {
     const InfoWarehouse = this.information.warehouse
+    this.actSellerByWarehouse( { id:event.id })
     InfoWarehouse[0].warehouseId = event.id
     InfoWarehouse[1].value = event.email
     InfoWarehouse[2].value = event.phone
@@ -501,6 +501,9 @@ class createOrder extends Vue {
     if(event  === '' || event === null) {
       this.unSelectedSeller()
     }
+    this.actSellerByWarehouse({
+      id: this.information?.warehouse[0]?.warehouseId,
+      sellerEmail: event })
   }
 
   handleUser() {
@@ -512,13 +515,23 @@ class createOrder extends Vue {
   }
 
   paramSeller(event: any) {
-    this.actSellerList({ email: event })
+    // this.actSellerByWarehouse({ sellerEmail: event })
     if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(event.value))
     {
       return true
     }
     return this.$v.information.seller?.$each?.$touch()
   }
+
+  // @Watch('paramSeller')
+  // paramSeller(event: any) {
+  //   this.actSellerByWarehouse({ sellerEmail: event })
+  //   if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(event.value))
+  //   {
+  //     return true
+  //   }
+  //   return this.$v.information.seller?.$each?.$touch()
+  // }
 
   async handleReceiver() {
     const InfoWarehouse: any = this.information.warehouse
