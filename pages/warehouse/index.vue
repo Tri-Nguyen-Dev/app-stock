@@ -60,6 +60,8 @@
           :selection.sync='selectedItem'
           @row-select='selectRow()'
           @row-unselect='unSelectRow'
+          @row-select-all="rowSelectAll"
+          @row-unselect-all="rowUnSelectAll"
         )
           Column(
             selectionMode='multiple'
@@ -98,6 +100,7 @@
               type="items selected"
               :paging="paging"
               :total="total"
+              :deleted-list="selectedItem"
               @onDelete="showModalDelete"
               @onPage="onPage")
           template(#empty)
@@ -205,7 +208,7 @@ class Warehouse extends Vue {
   }
   
   showModalDelete(data: WarehouseModel.Model[]) {
-    this.onEventDeleteList = data
+    this.onEventDeleteList = data || this.selectedItem
     this.isModalDelete = true
   }
 
@@ -242,9 +245,11 @@ class Warehouse extends Vue {
   }
 
   async handleDeleteWarehouse() {
+    this.loadingSubmit = true
     const id = this.onEventDeleteList[0].id
     const result = await this.actDeletedWarehouseById( id )
     if(result){
+      this.loadingSubmit = false
       this.isModalDelete = false
       this.$toast.add({
         severity: 'success',
@@ -303,6 +308,18 @@ class Warehouse extends Vue {
     )
     this.$emit('enablePack', false)
     
+  }
+
+  rowSelectAll({ data }) {
+    this.selectedItem = _.union(this.selectedItem, data)
+  }
+
+  rowUnSelectAll() {
+    this.selectedItem = _.differenceWith(
+      this.selectedItem,
+      this.warehouseList,
+      _.isEqual
+    )
   }
 
   async mounted() {
