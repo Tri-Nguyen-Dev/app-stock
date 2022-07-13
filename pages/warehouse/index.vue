@@ -10,35 +10,14 @@
           InputText(type='text' placeholder='Search' v-model="filter.name" v-on:input="debounceSearchName")
         .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
-            .icon.icon-filter(v-if="!isShowFilter")
-            .icon.icon-chevron-up.bg-primary(v-else)
+            .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
             span Filter
-          .btn-refresh()
+          Button.btn-refresh(@click="handleRefeshFilter")
             .icon.icon-rotate-left.bg-white
         Button.btn.btn-primary(@click='isShowCreateWarehouse = true; warehouseData= null')
           span Add Warehouse
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      .div(class="col-12 md:col-4")
-        FilterTable(
-          title="Email" 
-          name="email" 
-          placeholder="Search Email"
-          :value="filter.email"
-          :searchText="true"
-          @updateFilter="handleFilter" 
-          :isShowFilter="isShowFilter"
-        )
-      .div(class="col-12 md:col-4")
-        FilterTable(
-          title="Adress"
-          placeholder="Search Adress"
-          name="adress"
-          :value="filter.adress"
-          :searchText="true"
-          @updateFilter="handleFilter"
-          :isShowFilter="isShowFilter"
-        )
-      .div(class="col-12 md:col-4")
+      .fillter-container(class="col-12 sm:col-6")
         FilterTable(
           title="Name"
           placeholder="Search Name"
@@ -70,22 +49,22 @@
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
               span.grid-cell-center.warehouse__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
-          Column(header='Name' field='name' :sortable="true" sortField="_name")
+          Column(header='Name' field='name'  )
             template(#body='{ data }')
               div.grid-cell-left {{ data.name }}
-          Column(header='Adress' :sortable="true" field='adress' sortField="_adress" headerClass="grid-header-center")
+          Column(header='Adress'  field='adress' headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-left {{ data.address }}
-          Column(header='Phone' :sortable="true" field='phone' sortField="_phone" headerClass="grid-header-center")
+          Column(header='Phone'  field='phone' headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center {{ data.phone }}
-          Column(header='Email' :sortable="true" field='email' sortField="email" headerClass="grid-header-center")
+          Column(header='Email'  field='email' headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center {{ data.email }}
-          Column(header='Description' :sortable="true" field='description' sortField="_description" headerClass="grid-header-right")
+          Column(header='Description'  field='description' headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-center {{ data.description }}
-          Column(header='maxNumberRack' :sortable="true" field='maxNumberRack' sortField="maxNumberRack" headerClass="grid-header-center")
+          Column(header='maxNumberRack'  field='maxNumberRack' headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-center {{ data.maxNumberRack }}
           Column(field='action' header="action" :styles="{'width': '2%'}")
@@ -164,9 +143,12 @@ class Warehouse extends Vue {
   selectedItem: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   filter: any = {
-    email: null,
+    email: '',
+    phone: '',
+    name: '',
     address: null,
-    name: null
+    description: null,
+    maxNumberRack: null
   }
 
   // -- [ state ]-------------------------------
@@ -222,9 +204,15 @@ class Warehouse extends Vue {
 
   getParamApi() {
     return {
-      email: this.filter.email?.value,
-      seller: this.filter.seller?.value,
-      name: this.filter.name?.value
+      params: {
+        pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
+        'email': this.filter.email || null,
+        'address': this.filter.address || null,
+        'name': this.filter.name || null,
+        'description': this.filter.description || null,
+        'phone': this.filter.phone || null,
+        'maxNumberRack': this.filter.maxNumberRack || null
+      }
     }
   }
 
@@ -255,13 +243,26 @@ class Warehouse extends Vue {
         life: 3000
       })
       await this.actWarehouseList({ pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize })
+      this.selectedItem = []
     }
   }
 
-  handleFilter(e: any, name: string){
+  async handleFilter(e: any, name: string){
+    this.loadingSubmit = true
     this.filter[name] = e
-    this.getWarehouseList()
+    await this.actWarehouseList(this.getParamApi())
+    this.loadingSubmit = false
     this.selectedItem = []
+  }
+
+  async handleRefeshFilter() {
+    this.filter.name = ''
+    this.filter.email = ''
+    this.filter.phone = ''
+    this.filter.address = null
+    this.filter.maxNumberRack = null
+    this.filter.description = null
+    await this.actWarehouseList(this.getParamApi())
   }
 
   warehouseSelect({ data }){
@@ -348,6 +349,11 @@ export default Warehouse
       @include flex-center
       flex-direction: row
       margin-top: 0
+  .btn-refresh
+    border-top-left-radius: 0 !important
+    border-bottom-left-radius: 0 !important
+  .fillter-container
+    margin-left: 800px
 .warehouse__table
   border-radius: 4px
   flex: 1

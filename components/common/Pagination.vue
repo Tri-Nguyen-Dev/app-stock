@@ -1,6 +1,6 @@
 <template lang="pug">
   .pagination(v-if="!!paging")
-    div.pagination__info(v-if="!showDeleteBtn") {{this.from}}
+    div.pagination__info(v-if="!showDeleteBtn")
       img(:src="require('~/assets/icons/filter-left.svg')")
       span.pagination__total {{ showingText }}
     div.flex.align-items-center(v-else)

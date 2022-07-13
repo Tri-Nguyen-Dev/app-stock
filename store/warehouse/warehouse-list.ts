@@ -44,29 +44,24 @@ export default class Warehouse extends VuexModule {
   }
 
   @Action({ commit: 'setWarehouseList', rawError: true })
-  async actWarehouseList(): Promise<string | undefined> {
-    try {
-      const url = PathBind.transform(
-        this.context,
-        Warehouse.STATE_URL.GET_WAREHOUSE
-      )
-      const response = await $api.get(url)
-      return response.data
-    } catch (error) {
-    }
+  async actWarehouseList(params?: any): Promise<string | undefined> {
+    const url = PathBind.transform(
+      this.context,
+      Warehouse.STATE_URL.GET_WAREHOUSE,
+      params
+    )
+    const response = await $api.get(url, params)
+    return response.data
   }
 
   @Action({ commit: 'setWarehouseDetail', rawError: true })
   async actWarehouseDetail(params: { id?: number }): Promise<string | undefined> {
-    try {
-      const url = PathBind.transform(
-        this.context,
-        Warehouse.STATE_URL.GET_WAREHOUSE_DETAIL,
-        params
-      )
-      return await $api.get(url)
-    } catch (error) {
-    }
+    const url = PathBind.transform(
+      this.context,
+      Warehouse.STATE_URL.GET_WAREHOUSE_DETAIL,
+      params
+    )
+    return await $api.get(url)
   }
 
   @Action ({ rawError: true })
@@ -85,14 +80,13 @@ export default class Warehouse extends VuexModule {
 
   @Action({ commit: 'setNewWarehouse', rawError: true })
   async actCreateNewWarehouse(params: any): Promise<string | undefined> {
-    try{
-      const url = PathBind.transform(
-        this.context, 
-        Warehouse.STATE_URL.CREATE_WAREHOUSE
-      )
-      const response = await $api.post(url, params)
-      return response.data
-    } catch (error) {}
+    const url = PathBind.transform(
+      this.context, 
+      Warehouse.STATE_URL.CREATE_WAREHOUSE
+    )
+    const response = await $api.post(url, params)
+    return response.data
+   
   }
 
   @Action({ rawError: true })
