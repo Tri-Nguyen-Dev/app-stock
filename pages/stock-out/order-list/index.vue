@@ -43,7 +43,7 @@
         .grid.grid-nogutter
           .col
             FilterCalendar(
-              title="Create time from"
+              title="Created time from"
               border="left"
               :value="filter.createTimeFrom"
               name="createTimeFrom"
@@ -157,13 +157,13 @@
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.font-bold {{ data.id }}
         Column(header='Creator ID' field='creatorId' sortable sortField="_createdBy.staffId")
           template(#body='{ data }')
-            .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creatorId }}
-        Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
+            .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creator.staffId }}
+        Column(header='Created time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
             div {{ data.createTime | dateTimeHour24 }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" )
           template(#body='{ data }')
-            div.grid-cell-fix-width {{ data.sellerEmail }}
+            div.grid-cell-fix-width {{ data.seller.email }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress")
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.receiverAddress }}
@@ -173,7 +173,7 @@
               div.text-end Due
               div Delivery Date
           template(#body='{ data }')
-            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour24 }}
+            div.grid-cell-right {{ data.dueDeliveryDate | dateMonthYear }}
         Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#header)
             div
@@ -188,14 +188,9 @@
               div update time
           template(#body='{ data }')
             div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour24 }}
-        Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.name" headerClass="grid-header-right")
-          template(#body='{ data }')
-            .flex.align-items-center.cursor-pointer.justify-content-end
-              span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
-              .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.pic }} {{data.pic === null ? 'N/A' : ''}}
+            div.grid-cell-right( v-if="data.assignee") {{ data.assignee.staffId }} {{data.assignee.staffId === null ? 'N/A' : ''}}
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverPhone' sortField="_driverPhone" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -242,6 +237,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import dayjs from 'dayjs'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { DeliveryList } from '~/models/Delivery'
 
@@ -419,10 +415,10 @@ class DeliveryOrderList extends Vue {
     await this.getDeliveryList({
       id: this.filter.id || null,
       assigneeId: this.filter.assigneeId || null,
-      createTimeFrom: this.filter.createTimeFrom || null  ,
-      createTimeTo: this.filter.createTimeTo ||null ,
-      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom || null,
-      dueDeliveryDateTo: this.filter.dueDeliveryDateTo || null,
+      createTimeFrom: this.filter.createTimeFrom? dayjs(this.filter.createTimeFrom).format('YYYY-MM-DD') : null,
+      createTimeTo: this.filter.createTimeTo? dayjs(this.filter.createTimeTo).format('YYYY-MM-DD') : null,
+      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom? dayjs(this.filter.dueDeliveryDateFrom).format('YYYY-MM-DD') : null,
+      dueDeliveryDateTo: this.filter.dueDeliveryDateTo? dayjs(this.filter.dueDeliveryDateTo).format('YYYY-MM-DD') : null,
       sortBy: this.filter.sortBy ||null,
       desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
@@ -525,8 +521,8 @@ class DeliveryOrderList extends Vue {
     )
   }
 
-  handleTab({ index }: any) {
-    this.handleRefreshFilter()
+  async handleTab({ index }: any) {
+    await this.handleRefreshFilter()
     this.isShowFilter = false
     this.activeTab = index
     this.handleRefreshFilter()

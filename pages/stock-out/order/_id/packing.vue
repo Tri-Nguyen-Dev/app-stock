@@ -181,7 +181,7 @@ class DeliveryOrderPacking extends Vue {
         boxCode = `${boxCode}0${parseInt(lastNo) + 1}`
       }
     } else {
-      boxCode += 1
+      boxCode = `${boxCode}01`
     }
     return boxCode
   }

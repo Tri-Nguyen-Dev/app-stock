@@ -12,15 +12,14 @@
             Button.btn.btn-primary.border-0(v-if="!isCheckAssignee" @click='handleSubmit' :disabled='isDisabled' ) Submit
             Button.btn.btn-primary.border-0(v-if="isCheckAssignee" @click='handleAssignee') Check
           .inventory__header--action.flex(v-else)
-            Button.btn.btn-primary.border-0(v-if="isApprove  && user.role === 'admin'" @click="handleApprove") Approve
-            Button.btn.btn-primary.border-0(@click='exportpdf' ) Export
+            Button.btn.btn-primary.border-0(v-if="isApprove && user.role === 'admin'" @click="handleApprove") Approve
+            Button.btn.btn-primary.border-0(@click='exportpdf' v-if='boxStockTakeDetail.status !== "CANCELLED" ' ) Export
         .inventory__content
           DataTable.m-h-700(
             :value='itemsData'
             dataKey='id'
             :rows='20'
             responsiveLayout="scroll"
-            :rowClass="rowClass"
             :resizableColumns="true"
             :class="{ 'table-wrapper-empty': !items || items.length <= 0 }"
           )
@@ -31,7 +30,7 @@
             Column(field='boxCode' header='BOX CODE' :sortable='true' bodyClass='font-semibold' )
               template(#body='{data}')
                 span {{data.boxCode}}
-                badge.bg-green-400.ml-2(value="CHECKING" v-if="data.isChecking")
+                badge.bg-green-400.ml-2(value="BUSY" v-if="data.isChecking")
             Column(field="location" header="LOCATION" :sortable="true" className="text-right")
               template(#body="{data}")
                 div(v-if="data.location")
@@ -43,7 +42,7 @@
               Column(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center")
                 template.text-center(#body='{data}' class="text-center")
                   .text-center
-                    span( v-if="!isDetail" ) {{data.countedQuantity }}
+                    span( v-if="!isDetail || isBusy " ) {{data.countedQuantity }}
                     InputNumber.w-7rem( v-else   v-model="data.countedQuantity" :min="0" mode="decimal"
                       inputClass="w-full" @input='handleDeliveryChange(data)' :useGrouping="false"
                     )
@@ -62,14 +61,14 @@
                   span.table__status.table__status--draft(
                     v-else
                   ) Waiting
-              Column( v-if='isDetail' header='REPORT BOX ' className="text-right" )
+              Column( v-if=' isDetail ' header='REPORT BOX ' className="text-right" )
                 template(#body='{data}' )
-                  Button.btn.btn-primary.border-0( @click='handleReport(data)') Report
+                  Button.btn.btn-primary.border-0( @click='handleReport(data)' :disabled="isBusy") Report
             template(#footer)
               .grid.grid-nogutter.stock__footer(v-if='isDetail && !isCheckAssignee')
                 .col.stock__note
                   div(style="padding-left: 10.5px") Note:
-                  InputText.inputSearchCode.w-full(v-model="submitNote" rows="1" cols="40" placeholder='Write something...')
+                  InputText.inputSearchCode.w-full(v-model="submitNote" rows="1" cols="40" placeholder='Write something...' )
         ConfirmDialogCustom(
           title="Report Confirm"
           image="confirm-delete"
@@ -114,6 +113,7 @@ class stockTakeItemsDetail extends Vue {
   valueReportNote: string = ''
   reportData: any = {}
   submitNote: string = ''
+  isStatusCancel: boolean = true
 
   // -- [ State ] ------------------------------------------------------------
   @nsStoreItems.State
@@ -142,7 +142,7 @@ class stockTakeItemsDetail extends Vue {
 
   // -- [ Function ] ------------------------------------------------------------
 
-  async created() {
+  async mounted() {
     await this.actGetBoxStockTakeDetail({ id: this.$route.params.id })
     const status = this.boxStockTakeDetail?.status
     const staffId = this.boxStockTakeDetail?.assignee?.staffId
@@ -150,11 +150,7 @@ class stockTakeItemsDetail extends Vue {
       this.user?.staffId !== staffId && status === 'DRAFT' ||
       this.user?.staffId !== staffId && status === 'IN_PROGRESS') {
       this.$router.push('/stock-take')
-    }
-  }
-
-  mounted() {
-    if (this.boxStockTakeDetail.status === 'COMPLETED') {
+    } else if ( this.boxStockTakeDetail.status === 'COMPLETED' || status === 'CANCELLED' ) {
       this.isDetail = false
     }
   }
@@ -183,7 +179,7 @@ class stockTakeItemsDetail extends Vue {
       finalResultStatus: this.boxStockTakeDetail?.finalResultStatus,
       creatorInfo: [
         {
-          title: 'Create Time', value: createdAt ?
+          title: 'Created Time', value: createdAt ?
             dayjs(new Date(createdAt)).format('MM-DD-YYYY hh:mm A')
             : null, icon: 'icon-receipt-note'
         },
@@ -213,6 +209,10 @@ class stockTakeItemsDetail extends Vue {
     return `Stock-take Note ${this.boxStockTakeDetail?.status !== 'NEW' ? ' Detail' : ''}`
   }
 
+  get isBusy() {
+    return !!this.itemsData.isChecking
+  }
+
   async handleSaveDraft() {
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
@@ -238,12 +238,6 @@ class stockTakeItemsDetail extends Vue {
         detail: 'Save draft take note failed!',
         life: 3000
       })
-    }
-  }
-
-  rowClass({ isChecking }) {
-    if (isChecking) {
-      return 'row-disable'
     }
   }
 
@@ -289,13 +283,13 @@ class stockTakeItemsDetail extends Vue {
     } else if (event.discrepancy !== 0 && event.countedQuantity !== null) {
       event.resultStatus = 'NG'
     } else {
-      event.resultStatus = 'Waiting'
+      event.resultStatus = 'WAITING'
     }
   }
 
   get isDisabled() {
     return !!_.find(this.items, function (obj: any) {
-      if (obj.resultStatus === 'Waiting' || obj.resultStatus === null) {
+      if (obj.resultStatus === 'WAITING' || obj.resultStatus === null) {
         return true
       }
     })

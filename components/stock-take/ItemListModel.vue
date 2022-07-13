@@ -122,7 +122,7 @@
                   .flex.align-items-center.cursor-pointer.justify-content-end
                     span.text-primary.font-bold.font-sm.text-white-active {{ data.box.rackLocation.name }}
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
-            Column(field="stock.createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_stock.createdAt")
+            Column(field="stock.createdAt" header="CREATED TIME" :sortable="true" className="text-right" sortField="_stock.createdAt")
               template(#body="{data}") {{ data.stock.createdAt | dateTimeHour24 }}
             Column(field='status' header="Status" headerClass="grid-header-right")
               template(#body='{ data }')

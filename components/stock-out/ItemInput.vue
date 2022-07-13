@@ -72,6 +72,7 @@ class ItemInput extends Vue {
 
   changeItem( event : any ) {
     this.$emit('sellerInfor' , event.value)
+
   }
 
   searchSeller(event: any) {
@@ -81,6 +82,7 @@ class ItemInput extends Vue {
   clearSeller(event: any){
     this.$emit('clearSeller' , event )
   }
+
 }
 
 export default ItemInput

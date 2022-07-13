@@ -9,13 +9,16 @@
     p.uppercase.font-bold(v-if='info.id') note id: {{info.id}}
     .div.status-note
       span.p-2.table__status.table__status--available {{info.status | trimUnderShift}}
-      span.p-2.table__status.table__status--error(
-        v-if='info.status === "COMPLETED"') {{ info.finalResultStatus  }}
+      span(v-if='info.status === "COMPLETED" ')
+        tag.p-2.table__status.table__status--error(
+          v-if='info.finalResultStatus === "NG"') {{ info.finalResultStatus  }}
+        tag.p-2.table__status.table__status--available(
+          v-else-if='info.finalResultStatus === "OK"') {{ info.finalResultStatus  }}
   .grid.m-0.p-4(v-if='info.user')
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.createdAt')
-      StockUnit(title="Create time" :value="info.createdAt | dateTimeHour24" icon="icon-calendar")
+      StockUnit(title="Created time" :value="info.createdAt | dateTimeHour24" icon="icon-calendar")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-      StockUnit(title="Creator ID" :value="info.user.displayName|| `${info.user.firstName} ${info.user.lastName}`" icon="icon-user-octagon")
+      StockUnit(title="Creator ID" :value="info.user.staffId" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2'   v-if='info.picId')
       StockUnit(title="PIC ID" :value="info.picId" icon="icon-user-octagon")
     .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2'   v-if='info.approveId')
