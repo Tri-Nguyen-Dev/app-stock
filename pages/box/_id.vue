@@ -280,6 +280,9 @@ class BoxDetail extends Vue {
 
   onTabClick( event : any  ) {
     this.activeTab = event.index
+    if(this.activeTab > 0 ) {
+      this.isFilter = false
+    }
   }
 
   refreshFilter() {
