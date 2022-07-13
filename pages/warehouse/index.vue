@@ -273,10 +273,6 @@ class Warehouse extends Vue {
     this.isModalDelete = false
   }
 
-  handleChangeFilter(){
-
-  }
-
   handleEditWarehouse(data) {
     this.warehouseData = _.cloneDeep(data[0])
     this.isShowCreateWarehouse = true

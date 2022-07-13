@@ -4,15 +4,15 @@
       .text-heading.modal-header Add new Warehouse
       .card.card-container
         .formgrid.grid(v-if= "!warehouseData")
-          .field.col-12()
+          .field.col-12
             label.required__title(for='name') Name :
             InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.warehouseInformation.name.$error}")
             .error-message(v-if='$v.warehouseInformation.name.$dirty && !$v.warehouseInformation.name.required') Name cannot be empty!
-          .field.col-12()
+          .field.col-12
             label.required__title(for='icon') Address :
             InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.address' type='text' :class="{'address--error' : $v.warehouseInformation.address.$error}")
             .error-message(v-if='$v.warehouseInformation.address.$dirty && !$v.warehouseInformation.address.required') Address cannot be empty!
-          .field.col-12()
+          .field.col-12
             label.required__title(for='email') Email:
             InputText#email.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.email' type='text' :class="{'email--error' : $v.warehouseInformation.email.$error}")
             .error-message(v-if='$v.warehouseInformation.email.$dirty && !$v.warehouseInformation.email.required') Email cannot be empty!
@@ -28,13 +28,13 @@
             InputText#maxNumberRack.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseInformation.maxNumberRack' type='number')
           .field.col-12.modal-btn(class='md:col-9')
         .formgrid.grid(v-if= " warehouseData && warehouseData.id")
-          .field.col-12()
+          .field.col-12
             label.required__title(for='name') Name :
             InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseData.name' type='text' class='focus:border-primary')
-          .field.col-12()
+          .field.col-12
             label.required__title(for='icon') Address :
             InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseData.address' type='text')
-          .field.col-12()
+          .field.col-12
             label.required__title(for='email') Email:
             InputText#email.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(v-model='warehouseData.email' type='text' )
           .field.col-12(class='lg:col-12')
@@ -117,10 +117,6 @@ class AddNewWarehouse extends Vue {
   // --[ functions ] --------------------------------------------
   async mounted() {
     await Promise.all([this.actWarehouseList()])
-  }
-
-  async getWarehouseDetail(){
-    
   }
 
   clearInform(){
