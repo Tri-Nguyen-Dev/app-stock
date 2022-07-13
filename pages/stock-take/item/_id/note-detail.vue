@@ -42,7 +42,7 @@
               Column(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center")
                 template.text-center(#body='{data}' class="text-center")
                   .text-center
-                    span( v-if="!isDetail || isBusy " ) {{data.countedQuantity }}
+                    span( v-if="!isDetail || data.isChecking " ) {{data.countedQuantity }}
                     InputNumber.w-7rem( v-else   v-model="data.countedQuantity" :min="0" mode="decimal"
                       inputClass="w-full" @input='handleDeliveryChange(data)' :useGrouping="false"
                     )
@@ -63,7 +63,7 @@
                   ) Waiting
               Column( v-if=' isDetail ' header='REPORT BOX ' className="text-right" )
                 template(#body='{data}' )
-                  Button.btn.btn-primary.border-0( @click='handleReport(data)' :disabled="isBusy") Report
+                  Button.btn.btn-primary.border-0( @click='handleReport(data)' :disabled="data.isChecking") Report
             template(#footer)
               .grid.grid-nogutter.stock__footer(v-if='isDetail && !isCheckAssignee')
                 .col.stock__note
@@ -207,10 +207,6 @@ class stockTakeItemsDetail extends Vue {
 
   get titlePage() {
     return `Stock-take Note ${this.boxStockTakeDetail?.status !== 'NEW' ? ' Detail' : ''}`
-  }
-
-  get isBusy() {
-    return !!this.itemsData.isChecking
   }
 
   async handleSaveDraft() {
