@@ -169,7 +169,7 @@
               div.text-end Due
               div Delivery Date
           template(#body='{ data }')
-            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour24 }}
+            div.grid-cell-right {{ data.dueDeliveryDate | dateMonthYear }}
         Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#header)
             div
@@ -190,7 +190,7 @@
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right(v-if="data.driver") {{ data.driver.displayName }}
+            div.grid-cell-right(v-if="data.driver") {{ data.driver.phoneNumber }}
         Column(v-if="activeTab == 2"
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -227,6 +227,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import dayjs from 'dayjs'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { DeliveryList } from '~/models/Delivery'
 
@@ -399,10 +400,10 @@ class DeliveryOrderList extends Vue {
     await this.getDeliveryList({
       id: this.filter.id || null,
       assigneeId: this.filter.assigneeId || null,
-      createTimeFrom: this.filter.createTimeFrom || null  ,
-      createTimeTo: this.filter.createTimeTo ||null ,
-      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom || null,
-      dueDeliveryDateTo: this.filter.dueDeliveryDateTo || null,
+      createTimeFrom: this.filter.createTimeFrom? dayjs(this.filter.createTimeFrom).format('YYYY-MM-DD') : null,
+      createTimeTo: this.filter.createTimeTo? dayjs(this.filter.createTimeTo).format('YYYY-MM-DD') : null,
+      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom? dayjs(this.filter.dueDeliveryDateFrom).format('YYYY-MM-DD') : null,
+      dueDeliveryDateTo: this.filter.dueDeliveryDateTo? dayjs(this.filter.dueDeliveryDateTo).format('YYYY-MM-DD') : null,
       sortBy: this.filter.sortBy ||null,
       desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
