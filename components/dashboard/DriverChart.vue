@@ -1,5 +1,5 @@
 <template lang="pug"> 
-  Card
+  Card.drivers-chart-container
     template(#content='')
       .grid
         .col-3.chart-image
@@ -25,25 +25,27 @@ class DriverChart extends Vue {
 export default DriverChart
 </script>
 <style lang="sass" scoped>
-.chart-image
-  img
-    object-fit: cover
-    height: 100%
-    width: 100%
-.chart-content
-  flex: 1
-  .header-chart
-    h4
-      margin: 0
-    .chart-statistics
-      display: flex
-      justify-content: space-between
-      padding: $space-size-4 0
-    ::v-deep.p-progressbar-determinate
-      border-radius: $border-radius-20
-      height: $space-size-12
-      margin: $space-size-8 0
-      .p-progressbar-value
+.drivers-chart-container
+  min-height: 150px
+  .chart-image
+    img
+      object-fit: cover
+      height: 100%
+      width: 100%
+  .chart-content
+    flex: 1
+    .header-chart
+      h4
+        margin: 0
+      .chart-statistics
+        display: flex
+        justify-content: space-between
+        padding: $space-size-4 0
+      ::v-deep.p-progressbar-determinate
         border-radius: $border-radius-20
-        background: $primary-dark
+        height: $space-size-12
+        margin: $space-size-8 0
+        .p-progressbar-value
+          border-radius: $border-radius-20
+          background: $primary-dark
 </style>

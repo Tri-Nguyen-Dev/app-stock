@@ -8,11 +8,11 @@ import { $api, PathBind } from '~/utils'
 export default class StoreDashboard extends VuexModule {
   private static readonly STATE_URL = {
     BOX_ITEM: '/dashboard/box-item',
-    DELIVERY_CHART: '/dashboard/delivery',
+    DELIVERY_CHART: '/dashboard/deliveries',
     ACTIVITY_CHART: '/dashboard/activities',
     SELLER_CHART: '/dashboard/sellers',
-    CATEGORY_CHART: '/dashboard/category',
-    CAPACITY_CHART: '/dashboard/capacity'
+    CATEGORY_CHART: '/dashboard/categories',
+    CAPACITY_CHART: '/dashboard/capacities'
   }
 
   public boxItem?: any = null
@@ -44,12 +44,12 @@ export default class StoreDashboard extends VuexModule {
 
   @Mutation
   setCategory(data: any) {
-    this.category = data
+    this.category = data?.items
   }
 
   @Mutation
   setCapacity(data: any) {
-    this.capacity = data
+    this.capacity = data?.items
   }
 
   @Action({ commit: 'setBoxItem', rawError: true })

@@ -17,7 +17,7 @@
     .col-12.pb-0
       DashboardTotalCompared
     .col-12.flex-1
-      .grid
+      .grid.h-full
         .col-5
           DashboardDeliveryChart
           DashboardDriverChart.mt-3
@@ -64,18 +64,22 @@ class Dashboard extends Vue {
 
   async mounted() {
     await this.actWarehouseList()
-    this.warehouseSelect = this.warehouseList[9]
-    await this.actGetBoxItem({ warehouseId: this.warehouseList[9].id })
-    await this.actGetDelivery({ warehouseId: this.warehouseList[9].id })
-    await this.actActivities({ warehouseId: this.warehouseList[9].id })
-    await this.actGetSellers({ warehouseId: this.warehouseList[9].id })
-    await this.actGetCategory({ warehouseId: this.warehouseList[9].id })
-    await this.actGetCapacity({ warehouseId: this.warehouseList[9].id })
+    this.warehouseSelect = this.warehouseList[0]
+    this.getDataChart(this.warehouseList[0].id)
   }
 
   async changeWarehouse({ value }) {
     this.warehouseSelect = value
-    await this.actGetBoxItem({ warehouseId: value.id })
+    await this.getDataChart(value.id)
+  }
+
+  async getDataChart(warehouseId) {
+    await this.actGetBoxItem({ warehouseId })
+    await this.actGetDelivery({ warehouseId })
+    await this.actActivities({ warehouseId })
+    await this.actGetSellers({ warehouseId })
+    await this.actGetCategory({ warehouseId })
+    await this.actGetCapacity({ warehouseId })
   }
 }
 
@@ -83,6 +87,14 @@ export default Dashboard
 </script>
 <style lang="sass" scoped>
 .dashboard-page-container
+  @include mobile
+    min-height: calc(100vh - 32px)
+  @include tablet
+    min-height: calc(100vh - 32px)
+  @include desktop
+    height: calc(100vh - 64px)
+  display: flex
+  flex-direction: column
   @mixin flex-center-column
   .dashboard-warehouse
     display: flex

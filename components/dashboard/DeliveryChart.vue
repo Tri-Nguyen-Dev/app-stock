@@ -4,8 +4,8 @@
       .header-chart
         h4 Delivery Order
         .chart-statistics
-          span Total Delivery Order: 82
-          span Delivered Delivery Order: 88
+          span Total Delivery Order: {{ total }}
+          span Delivered Delivery Order: {{ totalDelivered }}
       Chart(type="bar" :data="dataChart" :options="multiAxisOptions")
 </template>
 
@@ -22,16 +22,36 @@ class DeliveryChart extends Vue {
 
   get dataChart() {
     if(!this.delivery) return
+    const labels: any = []
+    const backgroundColor: any = []
+    const data: any = []
+    _.forEach(this.delivery, ({ statusName, statusCode, value }) => {
+      labels.push(statusName)
+      backgroundColor.push(DeliveryConstants.MapColorDelivery.get(statusCode))
+      data.push(value)
+    })
     const multiAxisData= {
-      labels: this.delivery.map(a => a.statusName),
+      labels,
       datasets: [{
-        label: '',
-        backgroundColor: this.delivery.map(a => DeliveryConstants.MapColorDelivery.get(a.statusCode)),
+        backgroundColor,
         yAxisID: 'y',
-        data: this.delivery.map(a => a.value)
+        data
       }]
     }
     return multiAxisData
+  }
+
+  get total() {
+    return _.sumBy(this.delivery, function(o) { return o.value })
+  }
+
+  get totalDelivered() {
+    const delivered = _.find(this.delivery, function(o) {
+      return o.statusCode === DeliveryConstants.StatusDeliveryName.DELIVERED 
+    })
+    if(delivered) {
+      return delivered.value
+    }
   }
 
   multiAxisOptions= {
@@ -58,7 +78,6 @@ class DeliveryChart extends Vue {
         }
       }
     },
-    // barThickness: 6,
     barPercentage: 0.7,
     plugins: {
       legend: {

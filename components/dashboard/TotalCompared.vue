@@ -25,36 +25,35 @@ class TotalCompared extends Vue {
   boxItem!: any
 
   get dataChart() {
-    if(!this.boxItem) return
     const totalObject = {
       boxes:{
-        total: this.boxItem.totalBox,
-        percent: this.boxItem.rateBox,
+        total: this.boxItem?.totalBox || 0,
+        percent: this.boxItem?.rateBox || 0,
         comparedText: 'Compared to this day last month'
       },
       items:{
-        total: this.boxItem.totalItem,
-        percent: this.boxItem.rateItem,
+        total: this.boxItem?.totalItem || 0,
+        percent: this.boxItem?.rateItem || 0,
         comparedText: 'Compared to this day last month'
       },
       incoming:{
-        total: this.boxItem.totalIncoming,
-        percent: this.boxItem.rateIncoming,
+        total: this.boxItem?.totalIncoming || 0,
+        percent: this.boxItem?.rateIncoming || 0,
         comparedText: 'Compared to this day last month'
       },
       outgoing:{
-        total: this.boxItem.totalOutgoing,
-        percent: this.boxItem.rateOutgoing,
+        total: this.boxItem?.totalOutgoing || 0,
+        percent: this.boxItem?.rateOutgoing || 0,
         comparedText: 'Compared to this day last month'
       },
       variant:{
-        total: this.boxItem.totalVariant,
-        percent: this.boxItem.rateVariant,
+        total: this.boxItem?.totalVariant || 0,
+        percent: this.boxItem?.rateVariant || 0,
         comparedText: 'Compared to this day last month'
       },
       returned:{
-        total: this.boxItem.totalReturned,
-        percent: this.boxItem.rateReturned,
+        total: this.boxItem?.totalReturned || 0,
+        percent: this.boxItem?.rateReturned || 0,
         comparedText: 'Compared to this day last month'
       }
     }
