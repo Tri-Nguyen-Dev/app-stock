@@ -15,22 +15,19 @@
             v-else-if='noteInfor.finalResultStatus === "OK"') {{ noteInfor.finalResultStatus  }}
       .col.border-bottom-1.border-gray-300
     template(v-slot:content)
-      .grid.m-0.mt-2
+      .grid.m-0.mt-2.w-full
         .col-12.px-0.stock--info.p-2.m-0
-          .col-12.px-0.flex.align-items-center
-            .icon-sender-info.icon.bg-primary.mr-2
-            span.font-bold.text-800.uppercase ID Information
           .col-12.px-0(v-for="creator of noteInfor.creatorInfo" v-if="creator")
             StockUnit.m-0(:title="creator.title" :value='creator.value || "N/A"' :icon='creator.icon')
-          .col.border-bottom-1.border-gray-300
         .col-12.px-0.stock--contact.p-2.m-0(v-if="noteInfor.sellerInfo")
+          .col.border-top-1.border-gray-300
           .col-12.px-0.flex.align-items-center
             .icon-sender-info.icon.bg-primary.mr-2
-            span.font-bold.text-800.uppercase Seller Information
+            span.font-bold.text-800.uppercase Seller Info
           .col-12.px-0(v-for="seller of noteInfor.sellerInfo")
             StockUnit.m-0(:title="seller.title" :value='seller.value || "N/A"' :icon="seller.icon")
-          .col.border-bottom-1.border-gray-300
         .col-12.px-0.stock--contact.p-2.m-0(v-if="noteInfor.notes && noteInfor.notes.length > 0")
+          .col.border-top-1.border-gray-300
           .col-12.px-0.flex.align-items-center
             .icon.icon-note.icon.bg-primary.mr-2
             span.font-bold.text-800.uppercase Note

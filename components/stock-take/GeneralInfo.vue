@@ -13,10 +13,13 @@
               v-if='info.finalResultStatus === "NG"') {{ info.finalResultStatus  }}
             tag.p-2.table__status.table__status--available(
               v-else-if='info.finalResultStatus === "OK"') {{ info.finalResultStatus  }}
+        .col.border-bottom-1.border-gray-300
     template(v-slot:content)
-      .grid.m-0.mt-3(v-if='info.user')
+      .grid.m-0.mt-4(v-if='info.user')
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.createdAt')
           StockUnit(title="Created time" :value="info.createdAt | dateTimeHour24" icon="icon-calendar")
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.updatedAt')
+          StockUnit(title="Approved Time" :value="info.updatedAt | dateTimeHour24" icon="icon-calendar")
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
           StockUnit(title="Creator ID" :value="info.user.displayName|| `${info.user.firstName} ${info.user.lastName}`" icon="icon-user-octagon")
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.picId')

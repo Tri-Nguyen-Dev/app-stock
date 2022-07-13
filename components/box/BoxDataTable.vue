@@ -232,7 +232,6 @@ class BoxDataTable extends Vue {
   actWarehouseList!: () => Promise<void>
 
   async mounted() {
-    // await this.actWarehouseList()
     const { role, warehouse } = this.user
     if(role === 'admin') {
       await this.actWarehouseList()
@@ -292,7 +291,6 @@ class BoxDataTable extends Vue {
 
   async searchBox() {
     await this.actGetBoxList(this.getParamAPi())
-    this.selectedBoxes = []
   }
 
   async handleRefreshFilter() {

@@ -41,13 +41,13 @@
             :rowClass='rowClass'
           )
             Column(:expander="true" )
-            Column(field='no' header='NO' :styles="{'width': '1rem'}")
+            Column(field='no' header='NO' :styles="{'width': '1rem'}" bodyClass='font-semibold')
               template(#body='slotProps') {{ slotProps.index + 1 }}
-            Column(field="boxCode" header="BOX CODE" :styles="{'width': '85%'}" sortable)
+            Column(field="boxCode" header="BOX CODE" :styles="{'width': '85%'}" sortable bodyClass='font-semibold')
               template(#body="{data}")
                 span.mr-2 {{data.boxCode}}
                 badge.bg-green-400(value="CHECKING" v-if="data.isChecking")
-            Column(field="location" header="LOCATION" sortable)
+            Column(field="location" header="LOCATION")
               template(#body="{data}")
                 .flex.align-items-center.cursor-pointer
                   span.text-primary.font-bold.font-sm {{data.location}}
@@ -56,7 +56,7 @@
               template(#body="{data}")
                 Button(@click='reportTakeNote(data)' :disabled="data.isChecking || isComplete")
                   span.uppercase report
-            Column(field="status" header="STATUS" headerClass='grid-header-center' :styles="{'width': '15%'}" sortable)
+            Column(field="status" header="STATUS" headerClass='grid-header-center' :styles="{'width': '15%'}")
               template(#body="{data}")
                 .text-center
                   tag.table__status.table__status--error(v-if='data.status === "NG"') {{data.status}}
@@ -68,23 +68,23 @@
                   :value="slotProps.data.stockTakeBoxItem"
                   responsiveLayout="scroll"
                 )
-                  Column(field='no' header='NO' bodyClass='text-bold')
+                  Column(field='no' header='NO' bodyClass='font-semibold')
                     template(#body='slotProps') {{ slotProps.index + 1 }}
-                  Column(field="barCode" header="Barcode" sortable)
-                  Column(field="inventoryQuantity" header="INVENTORY QTY" sortable)
+                  Column(field="barCode" header="Barcode" sortable bodyClass='font-semibold')
+                  Column(field="inventoryQuantity" header="INVENTORY QTY")
                   Column(field="countedQuantity" header="COUNTED QTY" :styles="{'width': '5%'}")
                     template(#body="{data}")
                       InputNumber.w-7rem(:disabled='isCheck || isComplete || data.isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity(data)' :useGrouping="false" mode="decimal")
                   Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}")
                     template(#body="{data}")
                       span(v-if='data.countedQuantity !== null') {{data.countedQuantity - data.inventoryQuantity}}
-                  Column(field="resultStatus" header="STATUS" headerClass='grid-header-center' :styles="{'width': '20%'}" sortable)
+                  Column(field="resultStatus" header="STATUS" headerClass='grid-header-center' :styles="{'width': '20%'}")
                     template(#body="{data}")
                       .text-center
                         tag.table__status.table__status--error(v-if='data.resultStatus === "NG"') {{data.resultStatus}}
                         tag.table__status.table__status--available(v-else-if='data.resultStatus === "OK"') {{data.resultStatus}}
                         tag.table__status.table__status--draft(v-else) {{data.resultStatus}}
-            template(#footer v-if='!isComplete && isCancel')
+            template(#footer v-if='!isComplete && !isCancel && !isCheck')
                 .grid.grid-nogutter.stock-takeItem__footer
                   .col
                     div(style="padding-left: 10.5px") Note:

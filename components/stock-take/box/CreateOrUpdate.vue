@@ -30,19 +30,15 @@
               sortField='_id'
             )
             Column(
-              field='sellerEmail',
-              header='SELLER EMAIL',
-              className='w-3',
-            )
-            Column(
               field='rackLocation.name',
               header='LOCATION',
-              :sortable='true',
               sortField='_rackLocation.name'
             )
-              template(#body='{ data }')
-                .flex.align-items-center.cursor-pointer
-                  span.font-bold {{ data.location?  data.location : data.rackLocation.name }}
+              template(#body="{data}")
+                div(v-if="data.location")
+                  .flex.align-items-center.cursor-pointer
+                    span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
+                    .icon.icon-arrow-up-right.bg-primary.bg-white-active
             Column(
               field='id',
               header='ACTION',
@@ -163,7 +159,6 @@ class DeliveryOrder extends Vue {
     this.boxSelected = _.cloneDeep(event)
     if(this.boxSelected.length>0){
       this.prepareLableBtnAddStock()
-
     } else {
       this.lableBtnAddStock = ''
     }
@@ -172,12 +167,13 @@ class DeliveryOrder extends Vue {
   hideDialog(){
     this.showModal = false
     this.stockTakeInfo.totalBox = this.boxShow.length
-    this.stockTakeInfo.wareHouse = this.boxShow[0].warehouseName
+    this.stockTakeInfo.wareHouse = _.get(this.boxShow[0], 'warehouseName', null)
   }
 
   removeBox(data){
     this.boxShow.splice(this.boxShow.indexOf(data),1)
     this.stockTakeInfo.totalBox = this.boxShow.length
+    this.stockTakeInfo.wareHouse = _.get(this.boxShow[0], 'warehouseName', null)
   }
 
   applyBox(){

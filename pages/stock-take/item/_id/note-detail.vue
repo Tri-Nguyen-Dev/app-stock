@@ -24,34 +24,34 @@
             :resizableColumns="true"
             :class="{ 'table-wrapper-empty': !items || items.length <= 0 }"
           )
-            Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
+            Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='font-semibold')
               template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-            Column(field='barCode' header='BARCODE' :sortable='true' )
+            Column(field='barCode' header='BARCODE' :sortable='true' bodyClass='font-semibold')
             Column(field='itemName' header='ITEM NAME' :sortable='true' )
             Column(field='boxCode' header='BOX CODE' :sortable='true' bodyClass='font-semibold' )
               template(#body='{data}')
                 span {{data.boxCode}}
                 badge.bg-green-400.ml-2(value="CHECKING" v-if="data.isChecking")
-            Column(field="location" header="LOCATION" :sortable="true" className="text-right")
+            Column(field="location" header="LOCATION" className="text-right")
               template(#body="{data}")
                 div(v-if="data.location")
                   .flex.align-items-center.cursor-pointer.justify-content-end
                     span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
             div(v-if="!isCheckAssignee")
-              Column(field='inventoryQuantity' header='INVENTORY Q.TY' :sortable='true' className="text-center")
-              Column(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center")
+              Column(field='inventoryQuantity' header='INVENTORY Q.TY' className="text-center")
+              Column(field='countedQuantity' header='COUNTED Q.TY' className="text-center")
                 template.text-center(#body='{data}' class="text-center")
                   .text-center
                     span( v-if="!isDetail" ) {{data.countedQuantity }}
                     InputNumber.w-7rem( v-else   v-model="data.countedQuantity" :min="0" mode="decimal"
                       inputClass="w-full" @input='handleDeliveryChange(data)' :useGrouping="false"
                     )
-              Column(field='discrepancy'  header='VARIANT' :sortable='true' className="text-center" )
+              Column(field='discrepancy'  header='VARIANT' className="text-center" )
                 template(#body='{data}')
                   .text-center(v-if="data.countedQuantity !== null")
                     span {{data.countedQuantity - data.inventoryQuantity}}
-              Column(field='status' header='STATUS' :sortable='true' className="text-center")
+              Column(field='status' header='STATUS' className="text-center")
                 template(#body='{ data }' )
                   span.table__status.table__status--available(
                     v-if="data.resultStatus === 'OK'"
