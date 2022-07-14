@@ -1,5 +1,5 @@
 <template lang="pug"> 
-  Card
+  Card.delivery-chart-container
     template(#content='')
       .header-chart
         h4 Delivery Order
@@ -90,11 +90,21 @@ class DeliveryChart extends Vue {
 export default DeliveryChart
 </script>
 <style lang="sass" scoped>
-.header-chart
-  h4
-    margin: 0
-  .chart-statistics
-    display: flex
-    justify-content: space-between
-    padding: $space-size-4 0
+.delivery-chart-container
+  ::v-deep.p-card-body
+    height: 100%
+    .p-card-content
+      height: 100%
+      @include flex-column
+      .p-chart
+        flex: 1
+        canvas
+          height: 100% !important
+  .header-chart
+    h4
+      margin: 0
+    .chart-statistics
+      display: flex
+      justify-content: space-between
+      padding: $space-size-4 0
 </style>

@@ -37,8 +37,8 @@ class CapacityChart extends Vue {
       datasets: [
         {
           data: dataChart,
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#00A469'],
-          hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#00A469']
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#00A469', '#00CFCE', '#7E57C2'],
+          hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#00A469', '#00CFCE', '#7E57C2']
         }
       ]
     } 

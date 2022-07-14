@@ -1,6 +1,6 @@
 <template lang="pug">
   .grid
-    .col-2(v-for="(unit, index) in dataChart" :key="index")
+    .col-2(v-for="(unit, index) in dataChart" :key="index" class="col-12 md:col-4 xl:col-2")
       Card
         template(#content='')
           span Total {{ index }}
@@ -11,7 +11,7 @@
                 i(class="pi pi-arrow-up" style="font-size: 0.7rem")
               .decrease(v-else) {{ unit.percent }}%
                 i(class="pi pi-arrow-down" style="font-size: 0.7rem")
-          span.text-subheading {{ unit.comparedText }}
+          span.text-subheading Compared to this day last month
 </template>
 
 <script lang="ts">
@@ -28,33 +28,27 @@ class TotalCompared extends Vue {
     const totalObject = {
       boxes:{
         total: this.boxItem?.totalBox || 0,
-        percent: this.boxItem?.rateBox || 0,
-        comparedText: 'Compared to this day last month'
+        percent: this.boxItem?.rateBox || 0
       },
       items:{
         total: this.boxItem?.totalItem || 0,
-        percent: this.boxItem?.rateItem || 0,
-        comparedText: 'Compared to this day last month'
+        percent: this.boxItem?.rateItem || 0
       },
       incoming:{
         total: this.boxItem?.totalIncoming || 0,
-        percent: this.boxItem?.rateIncoming || 0,
-        comparedText: 'Compared to this day last month'
+        percent: this.boxItem?.rateIncoming || 0
       },
       outgoing:{
         total: this.boxItem?.totalOutgoing || 0,
-        percent: this.boxItem?.rateOutgoing || 0,
-        comparedText: 'Compared to this day last month'
+        percent: this.boxItem?.rateOutgoing || 0
       },
       variant:{
         total: this.boxItem?.totalVariant || 0,
-        percent: this.boxItem?.rateVariant || 0,
-        comparedText: 'Compared to this day last month'
+        percent: this.boxItem?.rateVariant || 0
       },
       returned:{
         total: this.boxItem?.totalReturned || 0,
-        percent: this.boxItem?.rateReturned || 0,
-        comparedText: 'Compared to this day last month'
+        percent: this.boxItem?.rateReturned || 0
       }
     }
     return totalObject

@@ -18,15 +18,16 @@
       DashboardTotalCompared
     .col-12.flex-1
       .grid.h-full
-        .col-5
-          DashboardDeliveryChart
-          DashboardDriverChart.mt-3
-        .col-4
-          DashboardActivitiesChart
+        .col-5.dashboard-column(class="col-12 xl:col-5")
+          .grid.dashboard-column.m-0.h-full
+            DashboardDeliveryChart.dashboard-column__full
+            DashboardDriverChart.mt-3
+        .col-4.dashboard-column(class="col-12 lg:col-6 xl:col-4")
+          DashboardActivitiesChart.dashboard-column__full
           DashboardSellerChart.mt-3
-        .col-3
-          DashboardCategoryChart
-          DashboardCapacityChart.mt-3
+        .col-3.dashboard-column(class="col-12 lg:col-6 xl:col-3")
+          DashboardCategoryChart.col-12.mb-3
+          DashboardCapacityChart.col-12.dashboard-column__full
 </template>
 
 <script lang="ts">
@@ -74,12 +75,14 @@ class Dashboard extends Vue {
   }
 
   async getDataChart(warehouseId) {
-    await this.actGetBoxItem({ warehouseId })
-    await this.actGetDelivery({ warehouseId })
-    await this.actActivities({ warehouseId })
-    await this.actGetSellers({ warehouseId })
-    await this.actGetCategory({ warehouseId })
-    await this.actGetCapacity({ warehouseId })
+    await Promise.all([
+      this.actGetBoxItem({ warehouseId }),
+      this.actGetDelivery({ warehouseId }),
+      this.actActivities({ warehouseId }),
+      this.actGetSellers({ warehouseId }),
+      this.actGetCategory({ warehouseId }),
+      this.actGetCapacity({ warehouseId })
+    ])
   }
 }
 
@@ -87,14 +90,6 @@ export default Dashboard
 </script>
 <style lang="sass" scoped>
 .dashboard-page-container
-  @include mobile
-    min-height: calc(100vh - 32px)
-  @include tablet
-    min-height: calc(100vh - 32px)
-  @include desktop
-    height: calc(100vh - 64px)
-  display: flex
-  flex-direction: column
   @mixin flex-center-column
   .dashboard-warehouse
     display: flex
@@ -106,4 +101,8 @@ export default Dashboard
     padding: $space-size-12
     .p-card-content
       padding: 0
+  .dashboard-column
+    @include flex-column
+    &__full
+      flex: 1
 </style>

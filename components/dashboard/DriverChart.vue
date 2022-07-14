@@ -2,8 +2,8 @@
   Card.drivers-chart-container
     template(#content='')
       .grid
-        .col-3.chart-image
-          img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
+        .col-3.chart-image.mt-2
+          img(:srcset="`${require('~/assets/images/driver.svg')}`" style="width:120px; height: 120px")
         .col-9.chart-content
           .header-chart
             h4 Drivers
@@ -26,7 +26,7 @@ export default DriverChart
 </script>
 <style lang="sass" scoped>
 .drivers-chart-container
-  min-height: 150px
+  min-height: 160px
   .chart-image
     img
       object-fit: cover
@@ -41,11 +41,12 @@ export default DriverChart
         display: flex
         justify-content: space-between
         padding: $space-size-4 0
+        margin-top: $space-size-8
       ::v-deep.p-progressbar-determinate
         border-radius: $border-radius-20
         height: $space-size-12
         margin: $space-size-8 0
         .p-progressbar-value
           border-radius: $border-radius-20
-          background: $primary-dark
+          background: $primary
 </style>
