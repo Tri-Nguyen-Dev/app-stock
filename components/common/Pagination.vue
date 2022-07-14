@@ -19,7 +19,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
 import { Paging } from 'models/common/Paging'
-import { LIMIT_PAGE_OPTIONS } from '~/utils'
+import { 
+  LIMIT_PAGE_OPTIONS,
+  paddingNum
+} from '~/utils' 
 
 @Component
 class Pagination extends Vue {
@@ -35,8 +38,8 @@ class Pagination extends Vue {
   get showingText() {
     if (this.total <= 0) return ''
     const from = String(this.paging.pageNumber * this.paging.pageSize + 1).padStart(2, '0')
-    const to = String(Math.min(this.total, (this.paging.pageNumber + 1) * this.paging.pageSize)).padStart(2, '0')
-    const total = String(this.total).padStart(2, '0')
+    const to = paddingNum(Math.min(this.total, (this.paging.pageNumber + 1) * this.paging.pageSize))
+    const total = paddingNum(this.total)
     return `Showing ${from} - ${to} of ${total}`
   }
 

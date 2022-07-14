@@ -9,3 +9,7 @@ export function calculateInfoPaginate (pageNumber: number, pageSize: number, tot
   const end = Math.min(start + pageSize - 1, total)
   return `Showing ${convertStart} - ${end} of ${total}`
 }
+
+export function paddingNum(num) {
+  return  String(num).padStart(2, '0')
+}
