@@ -271,7 +271,7 @@ class BoxList extends Vue {
       'sellerEmail': this.filter.sellerEmail || null,
       'barCode': this.filter.barCode || null,
       'warehouseId': this.filter.warehouse?.id,
-      'location': this.filter.location || null,
+      'locationName': this.filter.location || null,
       'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
       'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
       'sortBy': this.sortByColumn || null,

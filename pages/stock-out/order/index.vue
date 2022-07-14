@@ -64,15 +64,15 @@
               span.uppercase.text-800.font-bold time information
             div
               StockUnit(
-                title="EDT"
-                icon="icon-clock"
-                :value=' deliveryDate  ||  "EDT"    '
-              )
-              StockUnit.mt-2(
                 title="Due delivery"
                 icon="icon-calendar"
                 :value=' dueDeliveryDate  ||  "Due delivery "  '
                 placeholder="Enter"
+              )
+              StockUnit.mt-2(
+                title="EDT"
+                icon="icon-clock"
+                :value=' deliveryDate  ||  "EDT"    '
               )
           .border-top-1.border-gray-300.grid-nogutter
           .col.p-4
@@ -137,7 +137,9 @@
               inputClass="w-full"
               v-else
               @input='deliveryChange($event, data)'
-              :class='data.amount < data.delivery && "p-invalid"').w-7rem
+              :class='data.amount < data.delivery && "p-invalid"'
+              :useGrouping="false"
+            ).w-7rem
           column(field='tag', header='TAG', headerClass='grid-header-center')
             template(#body='{ data }')
               .grid-cell-center
@@ -182,7 +184,7 @@
                 )
             .mr-4.flex.justify-content-end( v-if="listItemsAddSize > 0" )
               Button( label='Cancel' @click='showModalCancel' ).btn.btn__default.flex-initial
-              Button( label='Submit' @click='handleSubmit' ).btn.btn__priamry.flex-initial
+              Button( label='Submit' @click='handleSubmit' :disabled="isActive !== '' " ).btn.btn__priamry.flex-initial
       ConfirmDialogCustom(
         title="Confirm delete"
         image="confirm-delete"
@@ -252,16 +254,16 @@ class createOrder extends Vue {
   onEventDeleteList: any = []
   valueDelete: any
   deliveryDate: string | any = ''
-  estimatedDate: string | any = ''
   information = INFORMATION
   isDisableSubmit: boolean = false
-  isValid: boolean = false
   errorMessage: any = {
     errorPhone  :'*Please, fill in phone in the correct',
     errorName : '*Please, fill in name in the correct',
     errorEmail : '*Please, fill in email in the correct',
     errorAddress : '*Please, fill in email in the correct'
   }
+
+  minutesDay: number = 60 * 60 * 24
 
   // -- [ State ] ------------------------------------------------------------
 
@@ -325,6 +327,7 @@ class createOrder extends Vue {
       this.deliveryDate =  1 +  ' day'
     }
     this.noteBox =  this.listInfo?.note
+
   }
 
   destroyed() {
@@ -407,8 +410,8 @@ class createOrder extends Vue {
       receiverEmail: listReceiver[1].value,
       receiverName: listReceiver[2].value,
       receiverPhone: listReceiver[3].value,
-      dueDeliveryDate: 1 ,
-      estimatedDeliveryTime: this.estimate?.estimate,
+      dueDeliveryDate: dayjs(this.dueDeliveryDate).format('YYYY-MM-DD'),
+      estimatedDeliveryTime: 1,
       note,
       warehouse: {
         id: this.listInfo.warehouse[0].warehouseId
@@ -523,16 +526,6 @@ class createOrder extends Vue {
     return this.$v.information.seller?.$each?.$touch()
   }
 
-  // @Watch('paramSeller')
-  // paramSeller(event: any) {
-  //   this.actSellerByWarehouse({ sellerEmail: event })
-  //   if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(event.value))
-  //   {
-  //     return true
-  //   }
-  //   return this.$v.information.seller?.$each?.$touch()
-  // }
-
   async handleReceiver() {
     const InfoWarehouse: any = this.information.warehouse
     const infoReceiver = this.information.receiver
@@ -626,9 +619,9 @@ class createOrder extends Vue {
   }
 
   get dueDeliveryDate() {
-    const a = this.estimate?.estimate / 1440
-    if(a) {
-      return dayjs(new Date()).add(a, 'day').format('MM/DD/YYYY')
+    const date = this.estimate?.estimate / this.minutesDay
+    if(date) {
+      return dayjs(new Date()).add(date +  1, 'day').format('MM/DD/YYYY')
     }
   }
 

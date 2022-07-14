@@ -104,3 +104,8 @@ Vue.filter('formatCurentcy', (value) => {
     useGrouping:true
   })
 })
+
+// -- [ Convert date time estimate] ------------------------------------------------
+Vue.filter('estimateDayConvert', (value) => {
+  return Math.round(value / (24*60*60))
+})
