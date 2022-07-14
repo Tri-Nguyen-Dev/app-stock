@@ -1,5 +1,5 @@
 
-export function calculateIndex(index: number, pageNumber: number, pageSize: number) {
+export function calculateIndex (index: number, pageNumber: number, pageSize: number) {
   return (index + 1) + (pageNumber * pageSize)
 }
 
