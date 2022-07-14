@@ -67,7 +67,6 @@
 import { Component, Vue, namespace, ProvideReactive, Watch } from 'nuxt-property-decorator'
 import GeneralInformation from '~/components/box/GeneralInformation.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
-import { PackingDetail } from '~/models/PackingDetail'
 import { User } from '~/models/User'
 const nsStorePackingDetail = namespace('stock-out/packing-box')
 const nsStoreBox = namespace('box/box-size-list')
@@ -83,7 +82,7 @@ const nsStoreBoxList = namespace('box/box-list')
   }
 })
 class DeliveryOrderPacking extends Vue {
-  tranfferingBoxActive: any = { boxCode: 'TR1', items: [] }
+  tranfferingBoxActive: any = { boxCode: 'TR01', items: [] }
   indexScanBoxCode: number = 0
   autoActiveTabOut: boolean = false
   listOriginalBox: any = []
@@ -112,12 +111,6 @@ class DeliveryOrderPacking extends Vue {
   @ProvideReactive()
   packingStep: number | string = 1
 
-  @nsStorePackingDetail.State('totalOriginalList')
-  totalOriginalList!: number
-
-  @nsStorePackingDetail.State('originalList')
-  originalList!: PackingDetail.OriginalBox[]
-
   @nsStorePackingDetail.State('deliveryOrderDetail')
   deliveryOrderDetail!: any
 
@@ -139,20 +132,11 @@ class DeliveryOrderPacking extends Vue {
   @nsStoreUser.State
   user: User.Model | undefined
 
-  @nsStorePackingDetail.Action
-  actGetListOriginal!: (id: any) => Promise<any>
-
-  @nsStorePackingDetail.Action
-  actGetDeliveryOrderDetail!: (id: any) => Promise<any>
-
   @nsStoreBox.Action
   actGetBoxSizeList!:() => Promise<any>
 
   @nsStorePackingDetail.Action
   actLocationSuggestion!:(data: any) => Promise<any>
-
-  @nsStorePackingDetail.Action
-  actSavePackingDetail!:(data: any) => Promise<any>
 
   @nsStoreLocationList.Action
   actLocationList!: (params: any) => Promise<void>
@@ -217,7 +201,7 @@ class DeliveryOrderPacking extends Vue {
         boxCode = `${boxCode}0${parseInt(lastNo) + 1}`
       }
     } else {
-      boxCode += 1
+      boxCode = `${boxCode}01`
     }
     return boxCode
   }

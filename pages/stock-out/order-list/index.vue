@@ -28,6 +28,10 @@
           .btn.btn-primary(v-if="activeTab === 0" @click="handleAddNew")
             .icon.icon-add-items
             span Add New
+          Button.btn.btn-primary.border-0(v-show="activeTab === 1" :disabled='!isSetDelivery' @click="setDelivery")
+            span  Set delivery
+          Button.btn.btn-primary.border-0(v-show="activeTab ===1" :disabled='!isResetDelivery' @click="setDelivery")
+            span  Reset delivery
           .btn__filter(class='active' @click="handleExportReceipt")
             .btn.btn-toggle.bg-white
               .icon-download.icon--large.bg-primary
@@ -169,14 +173,14 @@
               div.text-end Due
               div Delivery Date
           template(#body='{ data }')
-            div.grid-cell-right {{ data.dueDeliveryDate | dateTimeHour24 }}
+            div.grid-cell-right {{ data.dueDeliveryDate | dateMonthYear }}
         Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#header)
             div
               div.text-end Estimated
               div Delivery Time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.estimatedDeliveryTime }} {{data.estimatedDeliveryTime > 1 ? 'days' : 'day'}}
+            div.grid-cell-right {{ data.estimatedDeliveryTime | estimateDayConvert }} {{(data.estimatedDeliveryTime/fullDayTime) < 2 ? 'day' : 'days'}}
         Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
           template(#header)
             div
@@ -188,9 +192,9 @@
           template(#body='{ data }')
             div.grid-cell-right( v-if="data.assignee") {{ data.assignee.staffId }} {{data.assignee.staffId === null ? 'N/A' : ''}}
         Column(v-if="activeTab == 1"
-          header='Driver' sortable field='driverName' sortField="_driverName" headerClass="grid-header-right")
+          header='Driver' sortable field='driverPhone' sortField="_driverPhone" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right(v-if="data.driver") {{ data.driver.displayName }}
+            div.grid-cell-right {{ data.driverPhone === null ? 'N/A' : data.driverPhone }}
         Column(v-if="activeTab == 2"
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -224,9 +228,16 @@
         p {{ deleteMessage }}
 
     Toast
+    DriverDialog(
+      :isModalDriverList='isModalDriverList',
+      @hideDialog='hideDialog($event)',
+      @assigned='assignedDriver($event)'
+      :orderIds='orderIds'
+    )
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import dayjs from 'dayjs'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { DeliveryList } from '~/models/Delivery'
 
@@ -242,6 +253,8 @@ import {
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
 import Pagination from '~/components/common/Pagination.vue'
+import DriverDialog from '~/components/stock-out/driver/DriverDialog.vue'
+import { ORDER_STATUS } from '~/utils/constants/stock-out'
 const nsStoreDelivery = namespace('delivery/delivery-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreExportReceipt = namespace('delivery/export-receipt')
@@ -250,7 +263,8 @@ const nsStoreUser = namespace('user-auth/store-user')
 @Component({
   components: {
     ConfirmDialogCustom,
-    Pagination
+    Pagination,
+    DriverDialog
   }
 })
 class DeliveryOrderList extends Vue {
@@ -279,6 +293,10 @@ class DeliveryOrderList extends Vue {
     warehouseId: null
   }
 
+  fullDayTime: number = 24 * 60 * 60
+  orderIds: any
+
+  isModalDriverList = false
   warehouseOption: any = []
 
   @nsStoreDelivery.State
@@ -367,13 +385,11 @@ class DeliveryOrderList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    if(data.status === 'DELIVERY_ORDER_STATUS_CANCELLED') {
+    if(data.status === ORDER_STATUS.CANCELED ) {
       return 'row-disable'
     } else {
       return ''
     }
-
-    // return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
   async mounted() {
@@ -399,10 +415,10 @@ class DeliveryOrderList extends Vue {
     await this.getDeliveryList({
       id: this.filter.id || null,
       assigneeId: this.filter.assigneeId || null,
-      createTimeFrom: this.filter.createTimeFrom || null  ,
-      createTimeTo: this.filter.createTimeTo ||null ,
-      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom || null,
-      dueDeliveryDateTo: this.filter.dueDeliveryDateTo || null,
+      createTimeFrom: this.filter.createTimeFrom? dayjs(this.filter.createTimeFrom).format('YYYY-MM-DD') : null,
+      createTimeTo: this.filter.createTimeTo? dayjs(this.filter.createTimeTo).format('YYYY-MM-DD') : null,
+      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom? dayjs(this.filter.dueDeliveryDateFrom).format('YYYY-MM-DD') : null,
+      dueDeliveryDateTo: this.filter.dueDeliveryDateTo? dayjs(this.filter.dueDeliveryDateTo).format('YYYY-MM-DD') : null,
       sortBy: this.filter.sortBy ||null,
       desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
@@ -509,6 +525,7 @@ class DeliveryOrderList extends Vue {
     await this.handleRefreshFilter()
     this.isShowFilter = false
     this.activeTab = index
+    this.handleRefreshFilter()
     this.getList()
   }
 
@@ -530,6 +547,56 @@ class DeliveryOrderList extends Vue {
       pageNumber: this.paging.pageNumber,
       status: this.activeStatus
     })
+  }
+
+  setDelivery() {
+    this.isModalDriverList = true
+    this.orderIds = _.map(this.selectedDelivery, ( item:any ) => {
+      return item.id
+    })
+  }
+
+  hideDialog( event:any ) {
+    this.isModalDriverList = !event
+  }
+
+  get isSetDelivery() {
+    if(this.selectedDelivery.length > 0) {
+      return this.selectedDelivery.every((item) => {
+        return item.status === ORDER_STATUS.READY
+      })
+    } else {
+      return false
+    }
+  }
+
+  get isResetDelivery() {
+    if(this.selectedDelivery.length > 0) {
+      return this.selectedDelivery.every(
+        (item) => item.status === ORDER_STATUS.SETTED || item.status === ORDER_STATUS.ACCEPTED
+      ) && this.selectedDelivery.find( (item) => item.driverId === this.selectedDelivery[0].driverId)
+    } else {
+      return false
+    }
+
+  }
+
+  assignedDriver( event:any ) {
+    if (event) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully set Delivery',
+        life: 3000
+      })
+      const packingInfo = this.$el.querySelector('.packing__detail--left')
+      if (packingInfo) {
+        const scrollHeight = packingInfo.scrollHeight
+        packingInfo.scrollTop = scrollHeight
+      }
+      this.selectedDelivery = []
+    }
+
   }
 }
 
