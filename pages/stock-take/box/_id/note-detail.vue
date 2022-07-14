@@ -24,7 +24,7 @@
             Button.btn.btn-primary.border-0(@click='checkItems' v-if='isCheck') CHECK
             Button.btn.btn-primary.border-0(@click='saveDraft' v-if='!isCheck && !isComplete') SAVE DRAFT
             Button.btn.btn-primary.border-0(@click='submitNote' v-if='!isCheck && !isComplete' :disabled='isDisabled') SUBMIT
-            Button.btn.btn-primary.border-0(@click='approveNote' v-if='isApprove') APPROVE
+            Button.btn.btn-primary.border-0(@click='approveNote' v-if='isApprove && user.role === "admin"') APPROVE
             Button.btn.btn-primary.border-0(@click='exportNote' v-if='isComplete') EXPORT
         .stock-takeItem__content
           DataTable(
@@ -45,7 +45,7 @@
               template(#body='slotProps') {{ slotProps.index + 1 }}
             Column(field="boxCode" header="BOX CODE" :styles="{'width': '85%'}" sortable bodyClass='font-semibold')
               template(#body="{data}")
-                span.mr-2 {{data.boxCode}}
+                span.mr-2.font-bold {{data.boxCode}}
                 badge.bg-green-400(value="CHECKING" v-if="data.isChecking")
             Column(field="location" header="LOCATION")
               template(#body="{data}")
@@ -70,13 +70,16 @@
                 )
                   Column(field='no' header='NO' bodyClass='font-semibold')
                     template(#body='slotProps') {{ slotProps.index + 1 }}
-                  Column(field="barCode" header="Barcode" sortable bodyClass='font-semibold')
-                  Column(field="inventoryQuantity" header="INVENTORY QTY")
-                  Column(field="countedQuantity" header="COUNTED QTY" :styles="{'width': '5%'}")
-                    template(#body="{data}")
+                  Column(field="barCode" header="Barcode" sortable)
+                  Column(field="inventoryQuantity" header="INVENTORY Q.TY" bodyClass='font-semibold')
+                    template(#body="{ data }")
+                      div.text-center
+                        span {{ data.inventoryQuantity }}
+                  Column(field="countedQuantity" header="COUNTED Q.TY" :styles="{'width': '5%'}")
+                    template(#body="{ data }")
                       InputNumber.w-7rem(:disabled='isCheck || isComplete || data.isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity(data)' :useGrouping="false" mode="decimal")
-                  Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}")
-                    template(#body="{data}")
+                  Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}" sortable)
+                    template(#body="{ data }")
                       span(v-if='data.countedQuantity !== null') {{data.countedQuantity - data.inventoryQuantity}}
                   Column(field="resultStatus" header="STATUS" headerClass='grid-header-center' :styles="{'width': '20%'}")
                     template(#body="{data}")
@@ -603,4 +606,6 @@ export default NoteBoxDetail
     max-width: 100%
   .redInput.p-inputtext:enabled:focus
     box-shadow: 0 0 0 0.2rem rgb(38 143 255 / 50%) !important
+::v-deep.child-table.p-datatable .p-datatable-tbody tr:not(.p-highlight):hover
+  background: aliceblue !important
 </style>

@@ -24,8 +24,7 @@
       .grid
         .col-6
           h5.mb-1.required__title Quantity
-          InputText(
-            type="number"
+          InputNumber(
             :min="1" v-model='stockInformation.quantity'
             :class="{'quantity--error' : $v.stockInformation.quantity.$error}"
           ).w-full
@@ -51,7 +50,11 @@
           h5.mb-1.required__title Price
           .p-input-icon-right.w-full
             .icon.icon--right $
-            InputText(type="number" :min="1" v-model='stockInformation.value').w-full
+            InputNumber(type="number" :min="1" 
+              v-model='stockInformation.value' 
+              mode="currency"
+              currency="USD"
+              locale="en-US").w-full
             .error-message( v-if='$v.stockInformation.unit.$dirty && stockInformation.value < 0') Value cannot be null or negative!
       .grid.mb-3
         .col

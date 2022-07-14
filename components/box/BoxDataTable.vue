@@ -304,10 +304,10 @@ class BoxDataTable extends Vue {
   }
 
   rowSelectAll({ data }) {
-    const dataValid = _.filter(data, function (o) {
-      return o.status === BOX_STATUS.BOX_STATUS_AVAILABLE
-    })
-    this.selectedBoxes = _.unionWith(this.selectedBoxes, dataValid, _.isEqual)
+    // const dataValid = _.filter(data, function (o) {
+    //   return o.status === BOX_STATUS.BOX_STATUS_AVAILABLE
+    // })
+    this.selectedBoxes = _.unionWith(this.selectedBoxes, data, _.isEqual)
     this.updateSelectedBox()
   }
 
@@ -336,7 +336,7 @@ class BoxDataTable extends Vue {
   }
 
   updateSelectedBox() {
-    this.$emit('selectBox', this.selectedBoxes)
+    this.$emit('selectBox', this.selectedBoxFilter)
   }
 
   rowClass(data: any) {
@@ -345,6 +345,12 @@ class BoxDataTable extends Vue {
 
   handleApplyFilter() {
     this.searchBox()
+  }
+
+  get selectedBoxFilter() {
+    return _.filter(this.selectedBoxes, function (o) {
+      return o.status === BOX_STATUS.BOX_STATUS_AVAILABLE
+    })
   }
 }
 export default BoxDataTable

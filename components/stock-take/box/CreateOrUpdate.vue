@@ -61,7 +61,7 @@
         BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
         template(#footer)
           Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
-          Button.p-button-primary(:label="lableBtnAddStock" icon="pi pi-check" @click="applyBox()" v-if="lableBtnAddStock.length>0")
+          Button.p-button-primary(:label="prepareLableBtnAddStock" icon="pi pi-check" @click="applyBox()" v-if="boxSelected.length>0")
 </template>
 
 <script lang="ts">
@@ -89,7 +89,7 @@ const nsStoreReportList = namespace('report/report-list')
 class DeliveryOrder extends Vue {
   @Prop() id!: string
   boxShow : any[] = []
-  boxSelected: any
+  boxSelected: any[] = []
   disabledApply = true
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
   note = ''
@@ -102,7 +102,6 @@ class DeliveryOrder extends Vue {
     status:string
   } = { user: undefined ,totalBox:0,wareHouse: undefined, status: 'NEW' }
 
-  lableBtnAddStock = ''
   totalItem = 0
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
@@ -157,17 +156,13 @@ class DeliveryOrder extends Vue {
 
   selectBox(event){
     this.boxSelected = _.cloneDeep(event)
-    if(this.boxSelected.length>0){
-      this.prepareLableBtnAddStock()
-    } else {
-      this.lableBtnAddStock = ''
-    }
   }
 
   hideDialog(){
     this.showModal = false
     this.stockTakeInfo.totalBox = this.boxShow.length
     this.stockTakeInfo.wareHouse = _.get(this.boxShow[0], 'warehouseName', null)
+    this.boxSelected = _.cloneDeep(this.boxShow)
   }
 
   removeBox(data){
@@ -230,7 +225,7 @@ class DeliveryOrder extends Vue {
     ]
   }
 
-  prepareLableBtnAddStock() {
+  get prepareLableBtnAddStock() {
     const length = _.size(this.boxSelected)
     let stockQuantity = ''
     if(length === 1 ) {
@@ -238,7 +233,7 @@ class DeliveryOrder extends Vue {
     } else if(length > 1) {
       stockQuantity = length + ' boxes'
     }
-    this.lableBtnAddStock = `Add ${stockQuantity || 'stock'} to stock-take note`
+    return `Add ${stockQuantity || 'stock'} to stock-take note`
   }
 
 }
