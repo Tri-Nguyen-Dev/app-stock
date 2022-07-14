@@ -7,11 +7,12 @@ stages:
   - build
   - deploy
 
-image: node:latest
+image: node:16.14.0
 
 prep:
   stage: prep
   script:
+    - node -v
     - yarn install
   cache:
     paths:

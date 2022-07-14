@@ -385,4 +385,6 @@ export default ApproveBoxStockTake
     justify-content: space-between
     padding: 6px 8px
     align-items: center
+::v-deep.child-table.p-datatable .p-datatable-tbody tr:not(.p-highlight):hover
+  background: aliceblue !important
 </style>
