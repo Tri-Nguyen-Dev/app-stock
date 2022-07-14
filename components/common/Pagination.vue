@@ -38,9 +38,8 @@ class Pagination extends Vue {
   get showingText() {
     if (this.total <= 0) return ''
     const from = String(this.paging.pageNumber * this.paging.pageSize + 1).padStart(2, '0')
-    const to = paddingNum(Math.min(this.total, (this.paging.pageNumber + 1) * this.paging.pageSize))
-    const total = paddingNum(this.total)
-    return `Showing ${from} - ${to} of ${total}`
+    const to = Math.min(this.total, (this.paging.pageNumber + 1) * this.paging.pageSize)
+    return `Showing ${paddingNum(from)} - ${paddingNum(to)} of ${paddingNum(this.total)}`
   }
 
   get showDeleteBtn() {
