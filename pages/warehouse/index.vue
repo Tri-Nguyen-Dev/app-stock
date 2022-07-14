@@ -102,7 +102,7 @@
       template(v-slot:message)
         p {{ deleteMessage }}
     Toast
-    CreateWarehouse(v-show="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" :warehouseData="warehouseData")
+    CreateWarehouse( :isShowCreateWarehouse="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" :warehouseData="warehouseData")
 </template>
 
 <script lang="ts">
