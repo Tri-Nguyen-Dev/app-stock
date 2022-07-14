@@ -75,8 +75,34 @@ Vue.filter('trimUnderShift', (value) => {
 })
 
 Vue.filter('sellerName', (value) => {
-  if(!value) return ''
+  if( !value.firstName && !value.lastName) {
+    return ''
+  }
   return value.displayName || `${value.firstName} ${value.lastName}`
+})
+
+// -- [ Format quantity ] -----------------------------
+
+Vue.filter('formatQuantity', (value) => {
+  if(!value) {
+    return ''
+  }
+  return  Number(value).toLocaleString('en-US',{
+    useGrouping:true
+  })
+})
+
+// -- [ Format curentcy ] -----------------------------
+
+Vue.filter('formatCurentcy', (value) => {
+  if(!value) {
+    return ''
+  }
+  return  Number(value).toLocaleString('en-US',{
+    currency:'USD',
+    style:'currency',
+    useGrouping:true
+  })
 })
 
 // -- [ Convert date time estimate] ------------------------------------------------
