@@ -18,9 +18,11 @@ div.box-page-container
     Column(field='no', header='NO')
       template(#body='slotProps')
         span.font-bold {{ slotProps.index + 1 }}
-    Column(field='stockBox.box.id', header='BOXCODE', sortable)
-      template(#body='{ data }')
-        span.font-bold.text-right {{ data.stockBox.box.id }}
+    Column(field='imageUrl' header='IMG' headerClass="grid-header-center")
+            template(#body='{ data }')
+              .stock__table__image.overflow-hidden.grid-cell-center
+                img.h-2rem.w-2rem.border-round(
+                  :src="data.stockBox.stock.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
     Column.text-overflow-ellipsis(
       field='stockBox.stock.barCode',
       header='BARCODE',
@@ -32,21 +34,24 @@ div.box-page-container
     Column(field='stockBox.sku', header='SKU', :sortable='true')
       template(#body='{ data }')
         span.uppercase {{ data.stockBox.sku }}
-    Column(field='stockBox.stock.name', header='NAME', :sortable='true')
+    Column(field='stockBox.stock.name', header='STOCK NAME', :sortable='true')
       template(#body='{ data }')
         span.font-bold.text-right {{ data.stockBox.stock.name }}
+    Column(field='stockBox.box.id', header='BOXCODE', sortable)
+      template(#body='{ data }')
+        span.font-bold.text-right {{ data.stockBox.box.id }}
     Column(
       field='stockBox.amount',
-      header='QUANTITY',
+      header='Q.TY',
       :sortable='true',
-      headerClass='grid-header-right'
+      headerClass='grid-header-center'
     )
       template(#body='{ data }')
-        .font-bold.grid-cell-right {{ data.stockBox.amount }}
+        .font-bold.grid-cell-center {{ data.stockBox.amount }}
     Column(field='airtag', header='TAG', headerClass='grid-header-center')
       template(#body='{ data }')
         .grid-cell-center
-          Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='true')
+          span.font-bold.text-right {{data.hasAirtag ? 'Yes' : 'No'}}          
     template( #footer )
       Pagination(
         :paging="paging"
@@ -105,12 +110,12 @@ div.box-page-container
         span.font-bold.text-right {{ data.stockBox.stock.name }}
     Column(
       field='stockBox.amount',
-      header='QUANTITY',
+      header='Q.TY',
       :sortable='true',
-      headerClass='grid-header-right'
+      headerClass='grid-header-center'
     )
       template(#body='{ data }')
-        .font-bold.grid-cell-right {{ data.stockBox.amount }}
+        .font-bold.grid-cell-center {{ data.stockBox.amount }}
     Column(field='airtag', header='TAG', headerClass='grid-header-center')
       template(#body='{ data }')
         .grid-cell-center
