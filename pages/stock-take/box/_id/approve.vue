@@ -1,7 +1,7 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
     StockTakeNoteInfo(:info='noteDetailInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
-      template(#note v-if='boxStockTakeDetail.note || boxStockTakeDetail.submitNote')
+      template(#note v-if='boxStockTakeDetail.note || boxStockTakeDetail.submitNote || boxStockTakeDetail.approveNote')
         .col.border-bottom-1.border-gray-300
         .col-12.flex.align-items-center.px-0(className='lg:col-12 md:col-12 sm:col-12 py-3')
           .icon.icon-note.icon.bg-primary.mr-2
