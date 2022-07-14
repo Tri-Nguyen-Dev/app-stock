@@ -126,9 +126,9 @@
                   span.stock-take-result.result-ng(v-if="data.finalResultStatus === 'NG'") NG
                   span.stock-take-result.result-ok(v-if="data.finalResultStatus === 'OK'") OK
                   span.stock-take-result.result-waiting(v-if="data.finalResultStatus === 'WAITING'") N/A
-          Column(header='nOTE' sortable field='note' sortField="_note" headerClass="grid-header-right")
+          Column(header='nOTE' sortable field='note' sortField="_note")
               template(#body='{ data }')
-                div.grid-cell-right {{  data.approveNote || data.submitNote || data.note }}
+                div.text-break(v-tooltip.bottom="data.approveNote || data.submitNote || data.note") {{  data.approveNote || data.submitNote || data.note }}
           Column(field='status' sortable header="Status" sortField="_status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
@@ -538,4 +538,9 @@ export default StockTake
       color: $text-color-status
     &.result-waiting
       color: $primary
+  .text-break
+    text-overflow: ellipsis
+    white-space: nowrap
+    overflow: hidden
+    max-width: 200px
 </style>
