@@ -32,5 +32,4 @@ export const BOX_STATUS_OPTIONS = [
   { name: 'OUTGOING', value: BOX_STATUS.BOX_STATUS_OUTGOING },
   { name: 'REPORTED', value: BOX_STATUS.BOX_STATUS_REPORTED },
   { name: 'BUSY', value: BOX_STATUS.BOX_STATUS_BUSY }
-
 ]

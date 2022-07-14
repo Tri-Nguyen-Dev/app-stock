@@ -6,7 +6,7 @@
         .stock-takeItem__header
           div
             h1.text-heading Stock-take Note
-            span.text-subheading All ({{ totalItem }})
+            span.text-subheading All ({{ boxShow.length }})
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='addBox') Add Box
             Button.btn.btn-primary.border-0(@click='saveStockTake') Save
@@ -102,7 +102,6 @@ class DeliveryOrder extends Vue {
     status:string
   } = { user: undefined ,totalBox:0,wareHouse: undefined, status: 'NEW' }
 
-  totalItem = 0
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
 
@@ -169,6 +168,7 @@ class DeliveryOrder extends Vue {
     this.boxShow.splice(this.boxShow.indexOf(data),1)
     this.stockTakeInfo.totalBox = this.boxShow.length
     this.stockTakeInfo.wareHouse = _.get(this.boxShow[0], 'warehouseName', null)
+    this.boxSelected = _.cloneDeep(this.boxShow)
   }
 
   applyBox(){
@@ -189,7 +189,6 @@ class DeliveryOrder extends Vue {
     }
     this.showModal = false
     this.boxShow = _.cloneDeep(this.boxSelected)
-    this.totalItem= _.size(this.boxSelected)
   }
 
   mounted() {
@@ -235,7 +234,6 @@ class DeliveryOrder extends Vue {
     }
     return `Add ${stockQuantity || 'stock'} to stock-take note`
   }
-
 }
 
 export default DeliveryOrder
