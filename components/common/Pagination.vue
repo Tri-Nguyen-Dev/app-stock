@@ -34,17 +34,10 @@ class Pagination extends Vue {
   // -- [ Getters ] -----------------------------------------------------------
   get showingText() {
     if (this.total <= 0) return ''
-    else if(this.total <10){
-      const from = String(this.paging.pageNumber * this.paging.pageSize + 1).padStart(2, '0')
-      const to = '0' + Math.min(this.total, (this.paging.pageNumber + 1) * this.paging.pageSize)
-      const total = '0' + this.total
-      return `Showing ${from} - ${to} of ${total}`
-    }
-    else{
-      const from = String(this.paging.pageNumber * this.paging.pageSize + 1).padStart(2, '0')
-      const to = Math.min(this.total, (this.paging.pageNumber + 1) * this.paging.pageSize)
-      return `Showing ${from} - ${to} of ${this.total}`
-    }
+    const from = String(this.paging.pageNumber * this.paging.pageSize + 1).padStart(2, '0')
+    const to = String(Math.min(this.total, (this.paging.pageNumber + 1) * this.paging.pageSize)).padStart(2, '0')
+    const total = String(this.total).padStart(2, '0')
+    return `Showing ${from} - ${to} of ${total}`
   }
 
   get showDeleteBtn() {
