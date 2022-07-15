@@ -26,7 +26,7 @@
             h1.text-heading(v-else)  Approving Stock-take Note Detail
             span.text-subheading All ({{ boxStockTakeDetail.totalStockTakeBox }})
           .stock-takeItem__header--action.flex
-            Button.btn.btn-primary.border-0(@click='saveApprove' v-if='!isApproved') save
+            Button.btn.btn-primary.border-0(@click='saveApprove' v-if='!isApproved' :disabled='isDisabled') save
             Button.btn.btn-primary.border-0(@click='exportNote') export
         .stock-takeItem__content
           DataTable(
@@ -62,15 +62,15 @@
                   Column(field='no' header='NO' bodyClass='font-semibold')
                     template(#body='slotProps') {{ slotProps.index + 1 }}
                   Column(field="barCode" header="Barcode" :styles="{'width': '100%'}" sortable bodyClass='font-semibold')
-                  Column(field="inventoryQuantity" header="INVENTORY QTY" className="red-text")
-                  Column(field="countedQuantity" header="COUNTED QTY" className="red-text")
-                  Column(field="approvedQuantity" header="APPROVE QTY" className="red-text")
+                  Column(field="inventoryQuantity" header="INVENTORY QTY" className="red-text text-center")
+                  Column(field="countedQuantity" header="COUNTED QTY" className="red-text text-center")
+                  Column(field="approvedQuantity" header="APPROVE QTY" className="red-text text-center")
                     template(#body="{data}")
                       span( v-if="isApproved" ) {{data.approvedQuantity }}
                       InputNumber.w-7rem(v-else inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)' :useGrouping="false" mode="decimal")
-                  Column(field="approveVariant" header="APPROVE VARIANT")
+                  Column(field="approveVariant" header="APPROVE VARIANT" className="text-center")
                     template(#body="{data}")
-                      span {{data.approvedQuantity - data.inventoryQuantity}}
+                      span(v-if='data.approvedQuantity !== null') {{data.approvedQuantity - data.inventoryQuantity}}
             template(#footer v-if='!isApproved')
                 .grid.grid-nogutter.stock-takeItem__footer
                   .col
@@ -200,13 +200,7 @@ class ApproveBoxStockTake extends Vue {
   }
 
   async saveApprove() {
-    let submitData = _.flatten(
-      _.map(this.dataList, ({ stockTakeBoxItem }) => {
-        return _.map(stockTakeBoxItem, ({ id, approvedQuantity, inventoryQuantity }) => {
-          return { id, approvedQuantity, inventoryQuantity }
-        })
-      })
-    )
+    let submitData: any = this.submitDataStock()
     submitData = { stockTakeItem: [...submitData], approveNote: this.stockTakeInfo.note }
     const result = await this.actApproveSubmit({ id: this.$route.params.id , data: submitData })
     if (result) {
@@ -275,6 +269,26 @@ class ApproveBoxStockTake extends Vue {
         to: `/stock-take/item/${this.$route.params.id}/approve`
       }
     ]
+  }
+
+  get isDisabled() {
+    const object = _.find(this.submitDataStock(), ({ approvedQuantity })=>{
+      if(_.isNull(approvedQuantity)){
+        return true
+      }
+    })
+    return !!object
+  }
+
+  submitDataStock() {
+    const submitData = _.flatten(
+      _.map(this.dataList, ({ stockTakeBoxItem }) => {
+        return _.map(stockTakeBoxItem, ({ id, approvedQuantity, inventoryQuantity }) => {
+          return { id, approvedQuantity, inventoryQuantity }
+        })
+      })
+    )
+    return submitData
   }
 }
 

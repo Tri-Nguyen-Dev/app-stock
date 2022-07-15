@@ -124,7 +124,7 @@ export default SidebarItemValue
 .toggle-none
   display: none
 
-.sidebar-foot
+.sidebar-content-foot
   .badge-notify
     border-radius: 3px
     background-color: $bg-orange

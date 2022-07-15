@@ -7,10 +7,11 @@
           span.user-name {{ userDisplayName }}
           span.user-role {{ userRole }}
       .icon.icon--xlarge.icon-menu-toggle.surface-500(v-if="widthScreen > 1024" :class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
-    .menu-section.sidebar-menu
-      SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)" @toggleMenu="toggleMenu")
-    .menu-section.sidebar-foot
-      SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
+    .sidebar-content
+      .menu-section.sidebar-content-menu
+        SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)" @toggleMenu="toggleMenu")
+      .menu-section.sidebar-content-foot
+        SidebarItem(v-for="item in settingMenu" :key="item.id" :item="item" @select="onSelectMenu(item)")
 </template>
 
 <script lang='ts'>
@@ -127,6 +128,25 @@ export default MenuSidebar
 </script>
 
 <style lang="sass" scoped>
+::-webkit-scrollbar
+  background-color: transparent
+  width: 12px
+  position: absolute
+  top: 0
+  right: -10px
+
+::-webkit-scrollbar-track
+  display: none
+
+::-webkit-scrollbar-thumb
+  border-radius: 20px
+  border: 3px solid transparent
+  background-color: rgba(0,0,0,0.3)
+  background-clip: content-box
+  position: absolute
+  top: 0
+  right: -10px
+  
 .sidebar
   @include flex-column
   float: left
@@ -135,13 +155,13 @@ export default MenuSidebar
   top: 0
   left: 0
   bottom: 0
-  padding: 30px 16px 30px 18px
+  padding: 30px 0
   transition: 0.3s ease
 
   &-head
     @include flex-center-vert
     border-bottom: 1px solid $text-color-400
-    padding-bottom: $space-size-24
+    padding: 0 $space-size-16 $space-size-24
 
     .user-avatar
       @include size(48px)
@@ -157,15 +177,26 @@ export default MenuSidebar
       font-size: $font-size-large
       font-weight: $font-weight-bold
 
-  &-menu
-    padding-top: $space-size-16
+  &-content
+    @include flex-column
+    flex: 1
+    padding: 0 $space-size-16
+    position: relative
+    overflow: hidden
 
-  &-foot
-    padding-top: $space-size-4
-    border-top: 1px solid $text-color-400
-    min-height: 130px
-    margin-top: auto
+    &-menu
+      padding-top: $space-size-16
+      margin-bottom: $space-size-16
 
+    &-foot
+      padding-top: $space-size-4
+      border-top: 1px solid $text-color-400
+      min-height: 130px
+      margin-top: auto
+
+  &-content:hover
+    overflow-y: overlay
+  
   .menu-section
     position: relative
 
