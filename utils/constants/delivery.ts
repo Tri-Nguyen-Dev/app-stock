@@ -43,6 +43,7 @@ export namespace DeliveryConstants {
     { name: 'Accepted', value: StatusDelivery.ACCEPTED },
     { name: 'Pending', value: StatusDelivery.PENDING }
   ]
+
   export const MapDeliveryTab = new Map<number, string>([
     [TabDelivery.NEW, `${StatusDelivery.NEW},${StatusDelivery.IN_PROGRESS},${StatusDelivery.CANCELLED}`],
     [TabDelivery.DELIVERY_SETTING, `${StatusDelivery.READY},${StatusDelivery.SETTED},${StatusDelivery.ACCEPTED},${StatusDelivery.DELIVERING}`],
@@ -61,4 +62,7 @@ export namespace DeliveryConstants {
     [StatusDeliveryName.RETURNED, 'Returned'],
     [StatusDeliveryName.PENDING, 'Pending']
   ])
+}
+
+export class StatusDelivery {
 }
