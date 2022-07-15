@@ -49,9 +49,9 @@ Dialog.item-list-dialog(:visible.sync='showModal', :showHeader='false' :modal='t
     .field.col-12.modal-btn(class='md:col-9')
       Button.btn.btn-cancel(@click="$emit('close-modal')") Cancel
         span
-      Button.btn.btn-primary(v-if="!warehouseData")(@click="addItem()")
+      Button.btn.btn-primary(v-if="!warehouseData" @click="addItem()")
         span Save
-      Button.btn.btn-primary(v-if="warehouseData")(@click="UpdateItem()")
+      Button.btn.btn-primary(v-if="warehouseData" @click="UpdateItem()")
         span Save
 </template>
 <script lang="ts">
