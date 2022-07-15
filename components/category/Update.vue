@@ -1,26 +1,27 @@
 <template lang="pug">
-.modal
-  .card
-    .formgrid.grid
-      .field.col-12()
-        label.required__title(for='name') Name :
-        InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(@change='onChange' v-model='categoryInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.categoryInformation.name.$error}")
-      .field.col-12(class='md:col-6')
-        label(for='icon') Icon :
-        InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
-      .field.col-12(class='md:col-6')
-        label(for='displayOrder') DisplayOrder :
-        InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='categoryInformation.displayOrder')
-      .field.col-12(class='md:col-3')
-        label(for='delete') Deleted :
-        select#delete.w-full.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.outline-none( style='appearance: auto' v-model='categoryInformation.deleted')
-          option false
-          option true
-      .field.col-12.modal-btn(class='md:col-9')
-        Button.btn.btn-outline(@click="$emit('close-modal')")
-          span Cancel
-        Button.btn.btn-primary(@click="UpdateItem()")
-          span Update Category {{categoryData}}
+Dialog.item-list-dialog(:visible.sync='visibleVue', :modal='true' :showHeader='false')
+  .modal
+    .card
+      .formgrid.grid
+        .field.col-12()
+          label.required__title(for='name') Name :
+          InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(@change='onChange' v-model='categoryInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.categoryInformation.name.$error}")
+        .field.col-12(class='md:col-6')
+          label(for='icon') Icon :
+          InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
+        .field.col-12(class='md:col-6')
+          label(for='displayOrder') DisplayOrder :
+          InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='categoryInformation.displayOrder')
+        .field.col-12(class='md:col-3')
+          label(for='delete') Deleted :
+          select#delete.w-full.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.outline-none( style='appearance: auto' v-model='categoryInformation.deleted')
+            option false
+            option true
+        .field.col-12.modal-btn(class='md:col-9')
+          Button.btn.btn-outline(@click="$emit('close-modal')")
+            span Cancel
+          Button.btn.btn-primary(@click="UpdateItem()")
+            span Update Category
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, Prop, Watch } from 'nuxt-property-decorator'
@@ -42,6 +43,8 @@ const nsStoreCategory = namespace('category/category-list')
 })
 class UpdateCategory extends Vue { 
   @Prop() categoryData!: any
+  @Prop({ default: false }) isShow!: boolean
+
   categoryName: any = []
   duplicatedItem: any = []
   categoryInformation: any = {
@@ -159,6 +162,11 @@ class UpdateCategory extends Vue {
       }
     }
   }
+
+  get visibleVue() {
+    return this.isShow
+  }
+
 }
 export default UpdateCategory
 </script>

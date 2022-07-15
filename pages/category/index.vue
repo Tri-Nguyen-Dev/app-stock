@@ -72,11 +72,12 @@
   Toast
   Dialog(header=`Create category` :visible.sync='showModalCreate', :modal='true')
     CreateModal(@close-modal='showModalCreate = false')
-  Dialog(header=`Update category`, :categoryData='categoryData' :visible.sync='showModalUpdate', :modal='true')
-    UpdateModal(
-      :categoryData='categoryData'
-      @close-modal='showModalUpdate = false'
-    )
+  //- Dialog(header=`Update category`, :visible.sync='showModalUpdate', :modal='true')
+  UpdateModal(
+    :isShow="showModalUpdate"
+    :categoryData='categoryData'
+    @close-modal='hideDialog($event)',
+  )
 </template>
 
 <script lang="ts">
@@ -210,6 +211,10 @@ class Categories extends Vue {
 
   mounted() {
     this.getCategoryList()
+  }
+
+  hideDialog(){
+    this.showModalUpdate = false
   }
 
 }
