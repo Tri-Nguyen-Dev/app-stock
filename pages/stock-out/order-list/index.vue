@@ -180,7 +180,7 @@
               div.text-end Estimated
               div Delivery Time
           template(#body='{ data }')
-            div.grid-cell-right {{ data.estimatedDeliveryTime | estimateDayConvert }} {{(data.estimatedDeliveryTime/fullDayTime) < 2 ? 'day' : 'days'}}
+            div.grid-cell-right {{ data.estimatedDeliveryTime }} {{(data.estimatedDeliveryTime) < 2 ? 'day' : 'days'}}
         Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
           template(#header)
             div
@@ -192,9 +192,9 @@
           template(#body='{ data }')
             div.grid-cell-right( v-if="data.assignee") {{ data.assignee.staffId }} {{data.assignee.staffId === null ? 'N/A' : ''}}
         Column(v-if="activeTab == 1"
-          header='Driver' sortable field='driverPhone' sortField="_driverPhone" headerClass="grid-header-right")
+          header='Driver' sortable field='driverPhone' sortField="_driver.phoneNumber" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.driverPhone === null ? 'N/A' : data.driverPhone }}
+            div.grid-cell-right(v-if='data.driver')  {{ data.driver.phoneNumber === null ? 'N/A' : data.driver.phoneNumber }}
         Column(v-if="activeTab == 2"
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -232,7 +232,7 @@
       :isModalDriverList='isModalDriverList',
       @hideDialog='hideDialog($event)',
       @assigned='assignedDriver($event)'
-      :orderIds='orderIds'
+      :orderIds='setDelivery'
     )
 </template>
 <script lang="ts">
@@ -419,7 +419,7 @@ class DeliveryOrderList extends Vue {
       createTimeTo: this.filter.createTimeTo? dayjs(this.filter.createTimeTo).format('YYYY-MM-DD') : null,
       dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom? dayjs(this.filter.dueDeliveryDateFrom).format('YYYY-MM-DD') : null,
       dueDeliveryDateTo: this.filter.dueDeliveryDateTo? dayjs(this.filter.dueDeliveryDateTo).format('YYYY-MM-DD') : null,
-      sortBy: this.filter.sortBy ||null,
+      sortBy: this.filter.sortBy || null,
       desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
       warehouseId: this.filter.warehouseId?.id,
