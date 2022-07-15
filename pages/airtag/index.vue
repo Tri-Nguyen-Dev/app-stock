@@ -40,6 +40,11 @@
         :class='{ "table-wrapper-empty": !airtagList || airtagList.length <= 0 }',
         dataKey='id',
         :rowHover='true'
+        :selection='selectedAirtag'
+        @row-select-all="rowSelectAll"
+        @row-unselect-all="rowUnSelectAll"
+        @row-select="rowSelect"
+        @row-unselect="rowUnselect"
       )
         Column(
           selectionMode='multiple',
@@ -200,6 +205,30 @@ class Airtag extends Vue {
     this.filter.barCode = value
     this.getAirtagList()
   }, 500)
+
+  rowSelectAll({ data }) {
+    this.selectedAirtag = _.union(this.selectedAirtag, data)
+  }
+
+  rowUnSelectAll() {
+    this.selectedAirtag = _.differenceWith(
+      this.selectedAirtag,
+      this.airtagList,
+      _.isEqual
+    )
+  }
+
+  rowSelect({ data }) {
+    this.selectedAirtag.push(data)
+  }
+
+  rowUnselect({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
+    this.selectedAirtag = _.filter(
+      this.selectedAirtag,
+      (AirTag: any) => AirTag.id !== data.id
+    )
+  }
 
   mounted() {
     this.getAirtagList()
