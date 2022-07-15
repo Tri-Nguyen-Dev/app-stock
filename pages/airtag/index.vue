@@ -5,9 +5,30 @@
       h1.text-heading Airtag
       span.text-subheading Total {{ airtagTotal }} Airtags
     .header__action
+      .btn__filter(:class="{'active': isShowFilter}")
+          .btn-toggle(@click="isShowFilter = !isShowFilter")
+            .icon.icon-filter(v-if="!isShowFilter")
+            .icon.icon-chevron-up.bg-primary(v-else)
+            span Filter
+          .btn-refresh(@click="handleRefreshFilter")
+            .icon.icon-rotate-left.bg-white
       Button.btn.btn-primary()
         .icon.icon-add-items
         span Add Airtag
+  .grid.header__filter(:class='{ "active": isShowFilter }')
+    .div(class="col-0 md:col-6")
+    .div(class="col-12 md:col-3")
+      FilterTable(
+        title="Barcode"
+        placeholder="Search barcode"
+        name="barCode"
+        :value="filter.barCode"
+        :searchText="true"
+        @updateFilter="handleFilter"
+        :isShowFilter="isShowFilter"
+      )
+    .div(class="col-12 md:col-3")
+        FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
 
   .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
@@ -64,10 +85,12 @@ import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
+import { Airtag as AirtagModel } from '~/models/AirTag'
 import {
   PAGINATE_DEFAULT,
   calculateIndex,
-  resetScrollTable
+  resetScrollTable,
+  AirtagConstants
 } from '~/utils'
 const nsAirtagList = namespace('airtag/Airtag')
 
@@ -80,11 +103,19 @@ const nsAirtagList = namespace('airtag/Airtag')
 class Airtag extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   onEventDeleteList: any = []
-  desc: boolean | null = null
   isModalDelete: boolean = false
   showModalCreate: boolean = false
   showModalUpdate: boolean = false
   airtagData: any = []
+  isShowFilter: boolean = false
+  selectedAirtag: AirtagModel.Model[] = []
+  statusList = AirtagConstants.AIRTAG_STATUS_OPTIONS
+  filter: any = {
+    name: null,
+    barCode: null,
+    status: null,
+    desc: null
+  }
 
   @nsAirtagList.State
   airtagList!: any
@@ -108,7 +139,9 @@ class Airtag extends Vue {
     return {
       pageNumber: this.paging.pageNumber,
       pageSize: this.paging.pageSize,
-      desc: this.desc
+      desc: this.filter.desc,
+      barCode: this.filter.barCode,
+      status: this.filter.status?.value
     }
   }
 
@@ -130,16 +163,16 @@ class Airtag extends Vue {
   }
 
   rowClass(data: any) {
-    return data.status === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
+    return data.status === 'AIRTAG_STATUS_DISABLE' ? 'row-disable' : ''
   }
 
   sortData(e: any) {
     resetScrollTable()
     const { sortOrder } = e
     if (sortOrder) {
-      this.desc = sortOrder !== 1
+      this.filter.desc = sortOrder !== 1
     } else {
-      this.desc = null
+      this.filter.desc = null
     }
     this.getAirtagList()
   }
@@ -150,6 +183,23 @@ class Airtag extends Vue {
     this.paging.pageNumber = event.page
     await this.getAirtagList()
   }
+
+  handleRefreshFilter() {
+    const adminFilter = _.omit(_.cloneDeep(this.filter))
+    for (const items in adminFilter) this.filter[items] = null
+    this.getAirtagList()
+  }
+
+  handleFilter(e: any, name: string){
+    this.filter[name] = e
+    this.getAirtagList()
+    this.selectedAirtag = []
+  }
+
+  debounceSearchCode = _.debounce((value) => {
+    this.filter.barCode = value
+    this.getAirtagList()
+  }, 500)
 
   mounted() {
     this.getAirtagList()

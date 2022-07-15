@@ -22,5 +22,6 @@ export namespace Airtag {
     status?: String
     airTagAttribute?: AirtagAttr
     barCode?: string
+    AirtagStatus: string
   }
 }
