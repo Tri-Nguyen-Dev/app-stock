@@ -56,8 +56,8 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 			:styles="{'width': '10%'}"
 		)
 			template(#body="{ data }").font-bold
-				span(v-if="isActive !== data.stock.barCode").text-center {{data.amount}}
-				InputNumber(v-model='data.amount' autofocus v-else :useGrouping="false")
+				span(v-if="isActive !== data.stock.barCode").text-center {{data.amount | formatQuantity }}
+				InputNumber(v-model='data.amount' autofocus v-else :useGrouping="true")
 		column(
 			field='unit.name',
 			header='UNIT',
@@ -89,15 +89,15 @@ DataTable.w-full.flex.flex-column.table__sort-icon.bg-white.box-page-container(
 			:styles="{'width': '10%'}"
 		)
 			template(#body="{ data }")
-				span(v-if="isActive !== data.stock.barCode") {{data.value}}
+				span(v-if="isActive !== data.stock.barCode") {{data.value | formatCurentcy}}
 				InputNumber(
           v-model='data.value'
           :step="0.1"
           :minFractionDigits="1"
           autofocus v-else
-          :useGrouping="false"
+          :useGrouping="true"
           mode="currency"
-          urrency="USD"
+          currency="USD"
           locale="en-US"
         )
 		column(
@@ -236,4 +236,6 @@ export default ItemDataTable
 				font-weight:  bold
 				border: none
 				color: var(--surface-500)
+.icon:hover
+	cursor: pointer !important
 </style>

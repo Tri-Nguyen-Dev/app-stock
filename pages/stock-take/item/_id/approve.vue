@@ -20,29 +20,29 @@
             :rowClass='rowClass'
             :class="{ 'table-wrapper-empty': !dataTable || dataTable.length <= 0 }"
           )
-            Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='text-bold')
+            Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='font-semibold')
               template(#body='slotProps') {{ slotProps.index + 1 }}
-            Column(field='barCode' header='BARCODE' :sortable='true' )
+            Column(field='barCode' header='BARCODE' :sortable='true' bodyClass='font-semibold')
             Column(field='itemName' header='ITEM NAME' :sortable='true' )
             Column(field='boxCode' header='BOX CODE' :sortable='true' bodyClass='font-semibold' )
               template(#body='{data}')
                 span {{data.boxCode}}
                 badge.bg-green-400.ml-2(value="CHECKING" v-if="data.isChecking")
-            Column(field="location" header="LOCATION" :sortable="true" className="text-right")
+            Column(field="location" header="LOCATION" className="text-right")
               template(#body="{data}")
                 div(v-if="data.location")
                   .flex.align-items-center.cursor-pointer.justify-content-end
                     span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
-            Column(field='inventoryQuantity' header='INVENTORY Q.TY' :sortable='true'
+            Column(field='inventoryQuantity' header='INVENTORY Q.TY'
               className="text-center text-highlight" :styles="{'width': '25px'}")
-            Column.white-space-normal(field='countedQuantity' header='COUNTED Q.TY' :sortable='true' className="text-center text-highlight")
-            Column(field='approvedQuantity' header='APPROVED Q.TY' :sortable='true' className="text-center text-highlight")
+            Column.white-space-normal(field='countedQuantity' header='COUNTED Q.TY' className="text-center text-highlight")
+            Column(field='approvedQuantity' header='APPROVED Q.TY' className="text-center text-highlight")
               template.text-center(#body='{data}' class="text-center")
                 .text-center
                   span( v-if="!isApproving" ) {{data.approvedQuantity }}
                   InputNumber.w-7rem( v-else v-model="data.approvedQuantity" :min="0" mode="decimal" inputClass="w-full" )
-            Column(field='countedQuantity' header='APPROVED VARIANT' :sortable='true' className="text-center")
+            Column(field='countedQuantity' header='APPROVED VARIANT' className="text-center")
               template.text-center(#body='{data}' class="text-center")
                 .text-center(v-if='data.approvedQuantity !== null') {{ data.approvedQuantity - data.inventoryQuantity }}
             template(#footer)
@@ -100,7 +100,7 @@ class stockTakeItemsDetail extends Vue {
   }
 
   get noteInfor() {
-    const { createdAt, createdBy, approver, assignee, seller, note, submitNote, approveNote } = this.boxStockTakeDetail
+    const { createdAt, createdBy, approver, assignee, seller, note, submitNote, approveNote, updatedAt } = this.boxStockTakeDetail
     const notes: any = []
     if(note) {
       notes.push({ position: 'Creator', author: createdBy?.staffId, value: note })
@@ -115,9 +115,12 @@ class stockTakeItemsDetail extends Vue {
       id: this.boxStockTakeDetail?.id,
       status: this.boxStockTakeDetail?.status,
       creatorInfo: [
-        { title:'Create Time', value: createdAt ?
-          dayjs(new Date(createdAt)).format('YYYY-MM-DD')
+        { title:'Created Time', value: createdAt ?
+          dayjs(new Date(createdAt)).format('YYYY-MM-DD HH:mm')
           : null, icon: 'icon-receipt-note' },
+        !this.isApproving ? { title: 'Approved Time', value: updatedAt ?
+          dayjs(new Date(updatedAt)).format('YYYY-MM-DD HH:mm')
+          : null, icon: 'icon-receipt-note' } : null,
         { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
         { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' },
         { title:'APPROVER ID', value: approver?.staffId, icon: 'icon-tag-user' },
@@ -230,29 +233,6 @@ export default stockTakeItemsDetail
 </script>
 <style lang="sass" scoped>
 .stock
-  @include tablet
-  ::v-deep.sub-tab
-    height: calc(100vh - 150px)
-    overflow: hidden
-    display: flex
-    flex-direction: column
-    @include desktop
-      height: calc(100vh - 32px)
-      max-width: 23rem
-      overflow: hidden
-    .sub--scroll
-      display: flex
-      align-items: center
-      flex-direction: column
-      flex: 1
-      overflow: auto
-      @include desktop
-        overflow: auto
-      @include tablet
-        flex-direction: row
-        justify-content: center
-        align-items: baseline
-        overflow: hidden
 
   ::-webkit-input-placeholder
     font-weight: normal

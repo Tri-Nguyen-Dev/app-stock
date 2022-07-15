@@ -7,7 +7,7 @@ div
           span.info-title Creator ID:
           span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy | sellerName }}
         .info-item
-          span.info-title Create Time:
+          span.info-title Created time:
           span.info-content {{ reportDetail.createdAt | dateTimeHour24 }}
         .info-item
           span.info-title PIC ID: 
@@ -34,7 +34,7 @@ div
               div
                 NuxtLink.m-0(:to="`/box/${data.box.id}`") {{ data.box.id }}
                 .info-seller
-                  h3.mt-2.mb-0.text-base Seller Information:
+                  h3.mt-2.mb-0.text-base Seller Info:
                   .info-item
                     span.info-title Email:
                     span.info-content(v-if="data.box.request") {{  data.box.request.seller.email }}

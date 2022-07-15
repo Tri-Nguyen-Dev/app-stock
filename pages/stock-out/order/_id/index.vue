@@ -1,6 +1,6 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
-    .packing__detail--left.col-3.surface-0.overflow-y-auto(class='col-12 md:col-12 lg:col-3 xl:col-3')
+    .packing__detail--left.col-3.surface-0.overflow-y-auto.scroll-y-custom(class='col-12 md:col-12 lg:col-3 xl:col-3')
       PackingInformationDetail#packingInfo(
         :deliveryOrderDetail='orderDetail',
         :type='typeTitle'
@@ -204,7 +204,8 @@ class DeliveryOrder extends Vue {
         show = true
       }
       break
-    }    return show
+    }
+    return show
   }
 
   initialValue() {
@@ -283,4 +284,5 @@ export default DeliveryOrder
 .w-25
   min-width: 95px
   margin-left: 7px
+
 </style>

@@ -37,14 +37,14 @@
         .grid.mt-2
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(
-              title="Receipt note ID"
-              :value="model.data.box.request.id"
+              title="Receipt ID"
+              :value="requestId"
               :isEdit="isEditItemDetail"
               icon="icon-receipt-note")
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(
               title="Creator ID"
-              :value="model.data.box.createdBy.id"
+              :value="model.data.box.createdBy.staffId"
               :isEdit="isEditItemDetail"
               icon="icon-tag-user"
             )
@@ -52,14 +52,14 @@
             StockUnit(
               title="Warehouse"
               :isEdit="isEditItemDetail"
-              :value="model.data.box.request.warehouse.name"
+              :value="warehouseName"
               icon="icon-warehouse"
             )
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3')
             StockUnit(
               title="Location"
               :isEdit="isEditItemDetail"
-              :value="model.data.box.rackLocation.name"
+              :value="rackLocation"
               icon="icon-location-2"
             )
           .col-6(class='xl:col-6 lg:col-12 md:col-12 sm:col-12 p-3' :class='isEditItemDetail ? "opacity-40" : "opacity-100"')
@@ -154,6 +154,18 @@ class ItemDetail extends Vue {
       { label: 'Stock Detail', to: `/stock/${this.sid}` },
       { label: 'Item Detail', to: `/stock/${this.bid}` }
     ]
+  }
+
+  get requestId() {
+    return this.model.data.box.request?.id
+  }
+
+  get warehouseName() {
+    return this.model.data.box?.request?.warehouse?.name
+  }
+
+  get rackLocation() {
+    return this.model.data.box.rackLocation.name
   }
 
   // -- [ Functions ] ----------------------------------------------------------

@@ -9,7 +9,7 @@
     span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{status}} &nbsp;
     h3.uppercase.inline-block.m-1 id: {{ deliveryOrderDetail.id }}
     div
-      h5.uppercase.inline-block(style='color :#979AA4') Create time:&nbsp;
+      h5.uppercase.inline-block(style='color :#979AA4') Created time:&nbsp;
       span.uppercase.font-bold {{deliveryOrderDetail.createdAt | dateTimeHour24}}
     TabView
       TabPanel.p-3(header='Delivery')
@@ -23,7 +23,7 @@
         StockOutPackingCreatorInfo(:creatorInfo='deliveryOrderDetail')
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import DeliveryDriverInfo from '~/components/stock-out/driver/DriverInfor.vue'
 import { DeliveryConstants, ORDER_STATUS } from '~/utils'
 @Component({
@@ -35,20 +35,14 @@ class PackingInformationDetail extends Vue {
   @Prop() deliveryOrderDetail!: any
   @Prop() type!: string
   @Prop() driverInfo!: any
-  status : any = null
   get homeItem() {
     return { label: '', to: '/stock-out/order-list', icon: 'pi pi-list' }
   }
 
-  @Watch('deliveryOrderDetail')
-  setStatus(){
-    this.status = DeliveryConstants.MapStatusDelivery.get(this.deliveryOrderDetail?.status)
+  get status() {
+    return DeliveryConstants.MapStatusDelivery.get(this.deliveryOrderDetail?.status)
   }
-
-  mounted()  {
-    this.status = DeliveryConstants.MapStatusDelivery.get(this.deliveryOrderDetail?.status)
-  }
-
+ 
   get breadcrumbItem() {
     if (this.type === 'DO_DETAIL') {
       return [
