@@ -1,30 +1,28 @@
 <template lang="pug">
-  .modal-overlay
-    .modal
-      .text-heading.modal-header Add new Category
-      .card
-        .formgrid.grid
-          .field.col-12()
-            label.required__title(for='name') Name :
-            InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(@change='onChange' v-model='categoryInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.categoryInformation.name.$error}")
-            .error-message(v-if='$v.categoryInformation.name.$dirty && !$v.categoryInformation.name.required') Name cannot be empty! 
-          .field.col-12(class='md:col-6')
-            label(for='icon') Icon :
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
-          .field.col-12(class='md:col-6')
-            label(for='displayOrder') DisplayOrder :
-            InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='categoryInformation.displayOrder')
-          .field.col-12(class='md:col-3')
-            label(for='delete') Deleted :
-            select#delete.w-full.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.outline-none( style='appearance: auto' v-model='categoryInformation.deleted')
-              option false
-              option true
-          .field.col-12.modal-btn(class='md:col-9')
-            Button.btn.btn-cancel(@click="$emit('close-modal')")
-              span Cancel
-            Button.btn.btn-primary(@click="addItem()")
-              .icon.icon-add-items
-              span Add Category
+.modal 
+  .card
+    .formgrid.grid
+      .field.col-12()
+        label.required__title(for='name') Name :
+        InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(@change='onChange' v-model='categoryInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.categoryInformation.name.$error}")
+        .error-message(v-if='$v.categoryInformation.name.$dirty && !$v.categoryInformation.name.required') Name cannot be empty! 
+      .field.col-12(class='md:col-6')
+        label(for='icon') Icon :
+        InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
+      .field.col-12(class='md:col-6')
+        label(for='displayOrder') DisplayOrder :
+        InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='categoryInformation.displayOrder')
+      .field.col-12(class='md:col-3')
+        label(for='delete') Deleted :
+        select#delete.w-full.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.outline-none( style='appearance: auto' v-model='categoryInformation.deleted')
+          option false
+          option true
+      .field.col-12.modal-btn(class='md:col-9')
+        Button.btn.btn-cancel(@click="$emit('close-modal')")
+          span Cancel
+        Button.btn.btn-primary(@click="addItem()")
+          .icon.icon-add-items
+          span Add Category
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
@@ -131,18 +129,6 @@ class AddNewCategory extends Vue {
 export default AddNewCategory
 </script>
 <style lang="sass" scoped>
-.modal-overlay
-  position: fixed
-  top: 0
-  bottom: 0
-  left: 0
-  right: 0
-  display: flex
-  justify-content: center
-  align-items: center
-  background-color: #000000da
-  z-index: 1000
-
 .modal
   background-color: #fff
   padding: 50px

@@ -70,12 +70,13 @@
     template(v-slot:message)
       p {{ deleteMessage }}
   Toast
-  CreateModal(v-show='showModalCreate', @close-modal='showModalCreate = false')
-  UpdateModal(
-    v-show='showModalUpdate',
-    @close-modal='showModalUpdate = false',
-    :categoryData='categoryData'
-  )
+  Dialog(header=`Create category` :visible.sync='showModalCreate', :modal='true')
+    CreateModal(@close-modal='showModalCreate = false')
+  Dialog(header=`Update category`, :categoryData='categoryData' :visible.sync='showModalUpdate', :modal='true')
+    UpdateModal(
+      :categoryData='categoryData'
+      @close-modal='showModalUpdate = false'
+    )
 </template>
 
 <script lang="ts">
@@ -210,6 +211,7 @@ class Categories extends Vue {
   mounted() {
     this.getCategoryList()
   }
+
 }
 export default Categories
 </script>

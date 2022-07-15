@@ -1,28 +1,26 @@
 <template lang="pug">
-  .modal-overlay
-    .modal
-      .text-heading.modal-header Update category id {{this.categoryData.id}}
-      .card
-        .formgrid.grid
-          .field.col-12()
-            label.required__title(for='name') Name :
-            InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(@change='onChange' v-model='categoryInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.categoryInformation.name.$error}")
-          .field.col-12(class='md:col-6')
-            label(for='icon') Icon :
-            InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
-          .field.col-12(class='md:col-6')
-            label(for='displayOrder') DisplayOrder :
-            InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='categoryInformation.displayOrder')
-          .field.col-12(class='md:col-3')
-            label(for='delete') Deleted :
-            select#delete.w-full.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.outline-none( style='appearance: auto' v-model='categoryInformation.deleted')
-              option false
-              option true
-          .field.col-12.modal-btn(class='md:col-9')
-            Button.btn.btn-outline(@click="$emit('close-modal')")
-              span Cancel
-            Button.btn.btn-primary(@click="UpdateItem()")
-              span Update Category
+.modal
+  .card
+    .formgrid.grid
+      .field.col-12()
+        label.required__title(for='name') Name :
+        InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(@change='onChange' v-model='categoryInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.categoryInformation.name.$error}")
+      .field.col-12(class='md:col-6')
+        label(for='icon') Icon :
+        InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
+      .field.col-12(class='md:col-6')
+        label(for='displayOrder') DisplayOrder :
+        InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='categoryInformation.displayOrder')
+      .field.col-12(class='md:col-3')
+        label(for='delete') Deleted :
+        select#delete.w-full.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.outline-none( style='appearance: auto' v-model='categoryInformation.deleted')
+          option false
+          option true
+      .field.col-12.modal-btn(class='md:col-9')
+        Button.btn.btn-outline(@click="$emit('close-modal')")
+          span Cancel
+        Button.btn.btn-primary(@click="UpdateItem()")
+          span Update Category {{categoryData}}
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, Prop, Watch } from 'nuxt-property-decorator'
@@ -98,7 +96,7 @@ class UpdateCategory extends Vue {
     this.categoryInformation.displayOrder = this.categoryData.displayOrder
     this.categoryInformation.deleted = this.categoryData.deleted
   }
-  
+
   async UpdateItem() {
     await this.checkDuplicate()
     if (this.duplicatedItem.length > 0) {
@@ -165,21 +163,9 @@ class UpdateCategory extends Vue {
 export default UpdateCategory
 </script>
 <style lang="sass" scoped>
-.modal-overlay
-  position: fixed
-  top: 0
-  bottom: 0
-  left: 0
-  right: 0
-  display: flex
-  justify-content: center
-  align-items: center
-  background-color: #000000da
-  z-index: 1000
-
 .modal
   background-color: #fff
-  padding: 50px
+  padding: 30px
   border-radius: 10px
   width: 750px
 
