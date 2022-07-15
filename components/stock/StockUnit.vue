@@ -41,7 +41,7 @@ export default StockUnit
   border-radius: 4px
   background-color: $text-color-200
   .text-wrap
-    word-break: break-all
+    word-break: break-word
   ::v-deep.p-inputtext
     border: none
     background: transparent

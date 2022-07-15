@@ -1,4 +1,4 @@
-          <template lang="pug">
+<template lang="pug">
 .receipt-note
   card.mb-5
     template(#title='')
@@ -20,7 +20,7 @@
         .col
           .filter__item.item--disabled
             .filter__title Creator name
-            .filter__text(v-if='user') {{ user.displayName }}
+            .filter__text(v-if='user') {{ user.staffId }}
         .col
           .filter__item.item--disabled
             .filter__title Created time
@@ -65,7 +65,7 @@
         .col
           .filter__item.item--disabled
             .filter__title Seller name
-            .filter__text(v-if='generalInfo.seller') {{ generalInfo.seller.displayName }}
+            .filter__text(v-if='generalInfo.seller') {{ generalInfo.seller | sellerName}}
   card.card-custom
     template(#content='')
       .grid
@@ -189,7 +189,7 @@
             .col-9
               span.font-semibold.text-base.mr-1 Total items:
               br
-              span.font-semibold.text-primary {{ totalItem }}
+              span.font-semibold.text-primary {{ totalItem | formatQuantity }}
         .d-flex.col-12(class='md:col-4 lg:col-2')
           .grid.w-full.border__right
             .col-3.flex.align-items-center.justify-content-end
@@ -197,7 +197,7 @@
             .col-9
               span.font-semibold.text-base.mr-1 Total fee:
               br
-              span.font-semibold.text-primary $ {{ Number(totalFee()).toLocaleString() }} /day
+              span.font-semibold.text-primary {{ totalFee() | formatCurentcy }} /day
         .d-flex.justify-content-center.col-12(class='md:col-4 lg:col-2')
           Button.p-button-secondary.mr-2(
             label='Save draft',
@@ -244,6 +244,7 @@
         @cancelCreateSeller='cancelCreateSeller',
         @createSeller='createSeller($event)',
         :email='generalInfo.seller'
+        :warehouseId='warehouse.id'
     )
   Dialog(:visible.sync='isModalDelete', :modal='true')
     .confirm-dialog__content
@@ -344,7 +345,7 @@ class CreateOrUpdateReceipt extends Vue {
   @nsStoreUser.State
   user: User.Model | undefined
 
-  warehouse: any = null
+  warehouse: any = {}
   seller: any = null
   sellerEmailError: any = null
   isShowFormAddSeller: boolean = false
@@ -771,6 +772,9 @@ class CreateOrUpdateReceipt extends Vue {
       this.activeIndex = this.listBox.find((element) =>{
         return this.$v.listBox.$each![element.index]?.$invalid
       })!.index
+      return false
+    }
+    if(this.$v.$invalid){
       return false
     }
     return true
