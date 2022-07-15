@@ -17,58 +17,81 @@
           .icon.icon-rotate-left.bg-white
   div(v-if= 'isShowFilter')
     .grid.mb-1
-      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-        FilterTable(
-          title='Seller Email',
-          placeholder='Enter Seller Email',
-          name='sellerEmail',
-          :value='filter.sellerEmail',
-          :searchText='true',
-          @updateFilter='handleFilterBox'
-          :isShowFilter="isShowFilter"
-        )
-      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-        FilterTable(
-          title='Location',
-          :value='filter.location',
-          placeholder='Enter location',
-          name='location',
-          :searchText='true',
-          @updateFilter='handleFilterBox'
-          :isShowFilter="isShowFilter"
-        )
-      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-        FilterTable(
-          title='Box Code',
-          :value='filter.barCode',
-          placeholder='Enter code',
-          name='barCode',
-          :searchText='true',
-          @updateFilter='handleFilterBox'
-          :isShowFilter="isShowFilter"
-        )
-      .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
-        FilterCalendar(
-          title='From',
-          border='left'
-          :value='filter.dateFrom',
-          name='dateFrom',
-          inputClass='border-0',
-          dateFormat='dd-mm-yy',
-          :showIcon='true',
-          @updateFilter='handleFilterBox'
-        )
-      .col-12(class='xl:col-3 lg:col-3 md:col-4 sm:col-12')
-        FilterCalendar(
-          title='To',
-          border='right',
-          :value='filter.dateTo',
-          name='dateTo',
-          inputClass='border-0',
-          dateFormat='dd-mm-yy',
-          :showIcon='true',
-          @updateFilter='handleFilterBox'
-        )
+      div(class="col-12 md:col-12 xl:col-7")
+        .grid
+          div(class='col-12 md:col-3')
+            FilterTable(
+              title="Warehouse"
+              :value="filter.warehouse"
+              :options="warehouseOption"
+              name="warehouse"
+              @updateFilter="handleFilterBox"
+              :isDisabled="user.role !== 'admin'"
+              :isClear="false"
+            )
+          div(class='col-12 md:col-3')
+            FilterTable(
+              title='Box Code',
+              :value='filter.barCode',
+              placeholder='Enter code',
+              name='barCode',
+              :searchText='true',
+              @updateFilter='handleFilterBox'
+              :isShowFilter="isShowFilter"
+            )
+          div(class='col-12 md:col-3')
+            FilterTable(
+              title='Seller Email',
+              placeholder='Enter Seller Email',
+              name='sellerEmail',
+              :value='filter.sellerEmail',
+              :searchText='true',
+              @updateFilter='handleFilterBox'
+              :isShowFilter="isShowFilter"
+            )
+          div(class='col-12 md:col-3')
+            FilterTable(
+              title='Location',
+              :value='filter.location',
+              placeholder='Enter location',
+              name='location',
+              :searchText='true',
+              @updateFilter='handleFilterBox'
+              :isShowFilter="isShowFilter"
+            )
+      div(class="col-12 md:col-12 xl:col-5")
+        .grid
+          div(class='col-12 md:col-8')
+            .grid.grid-nogutter
+              .col
+                FilterCalendar(
+                  title='From',
+                  border='left'
+                  :value='filter.dateFrom',
+                  name='dateFrom',
+                  inputClass='border-0',
+                  dateFormat='dd-mm-yy',
+                  :showIcon='true',
+                  @updateFilter='handleFilterBox'
+                )
+              .col.ml-1
+                FilterCalendar(
+                  title='To',
+                  border='right',
+                  :value='filter.dateTo',
+                  name='dateTo',
+                  inputClass='border-0',
+                  dateFormat='dd-mm-yy',
+                  :showIcon='true',
+                  @updateFilter='handleFilterBox'
+                )
+          div(class="col-12 md:col-4")
+              FilterTable(
+                title="Status"
+                :value="filter.status"
+                :options="statusList"
+                name="status"
+                @updateFilter="handleFilterBox")
   .inventory__content
     DataTable(
       v-if='boxList',
@@ -85,6 +108,7 @@
       @row-unselect-all='rowUnSelectAll',
       @row-select='rowSelect',
       @row-unselect='rowUnselect',
+
       :rowClass='rowClass'
     )
       Column(
@@ -150,7 +174,7 @@
       template(#empty)
         .flex.align-items-center.justify-content-center.flex-column
           img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
-          p.text-900.font-bold.mt-3 Item not found!    
+          p.text-900.font-bold.mt-3 Item not found!
 </template>
 
 <script lang="ts">
@@ -159,7 +183,7 @@ import { Box } from '~/models/Box'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
-import { BOX_STATUS } from '~/utils'
+import { BOX_STATUS_OPTIONS, BOX_STATUS } from '~/utils/constants/box'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -177,13 +201,16 @@ class BoxDataTable extends Vue {
   sortByColumn: string = ''
   isDescending: boolean | null = null
   boxCodeDelete: string = ''
+  statusList = BOX_STATUS_OPTIONS
+  warehouseOption: any = []
   filter: any = {
     sellerEmail: '',
     warehouse: null,
     location: '',
     barCode: '',
     dateFrom: null,
-    dateTo: null
+    dateTo: null,
+    status: null
   }
 
   @nsStoreBox.State
@@ -196,7 +223,7 @@ class BoxDataTable extends Vue {
   warehouseList!: any
 
   @nsStoreUser.State
-  user: User.Model | undefined
+  user: User.Model | any
 
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
@@ -205,14 +232,18 @@ class BoxDataTable extends Vue {
   actWarehouseList!: () => Promise<void>
 
   async mounted() {
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouse = this.warehouseList[0]
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
     await this.actGetBoxList(this.getParamAPi())
-    await this.actWarehouseList()
     this.selectedBoxes = [...this.box]
   }
-  // @Watch('box')
-  // rerenderView(){
-
-  // }
   // -- [ Getters ] -------------------------------------------------------------
 
   // -- [ Functions ] ------------------------------------------------------------
@@ -222,8 +253,9 @@ class BoxDataTable extends Vue {
       pageSize: this.paging.pageSize,
       sellerEmail: this.filter.sellerEmail || null,
       barCode: this.filter.barCode || null,
-      warehouseId: this.user?.warehouse?.id,
+      warehouseId: this.filter?.warehouse?.id,
       location: this.filter.location || null,
+      status: this.filter.status?.value || null,
       from: this.filter.dateFrom
         ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD')
         : null,
@@ -259,24 +291,23 @@ class BoxDataTable extends Vue {
 
   async searchBox() {
     await this.actGetBoxList(this.getParamAPi())
-    this.selectedBoxes = []
   }
 
   async handleRefreshFilter() {
-    this.filter.warehouse = null
-    this.filter.location = ''
-    this.filter.sellerEmail = ''
-    this.filter.barCode = ''
+    this.filter.email = null
+    this.filter.status = null
+    this.filter.barCode = null
+    this.filter.location = null
     this.filter.dateFrom = null
     this.filter.dateTo = null
     await this.actGetBoxList(this.getParamAPi())
   }
 
   rowSelectAll({ data }) {
-    const dataValid = _.filter(data, function (o) {
-      return o.status === BOX_STATUS.BOX_STATUS_AVAILABLE
-    })
-    this.selectedBoxes = _.unionWith(this.selectedBoxes, dataValid, _.isEqual)
+    // const dataValid = _.filter(data, function (o) {
+    //   return o.status === BOX_STATUS.BOX_STATUS_AVAILABLE
+    // })
+    this.selectedBoxes = _.unionWith(this.selectedBoxes, data, _.isEqual)
     this.updateSelectedBox()
   }
 
@@ -287,6 +318,7 @@ class BoxDataTable extends Vue {
       _.isEqual
     )
     this.updateSelectedBox()
+
   }
 
   rowSelect({ data }) {
@@ -304,7 +336,7 @@ class BoxDataTable extends Vue {
   }
 
   updateSelectedBox() {
-    this.$emit('selectBox', this.selectedBoxes)
+    this.$emit('selectBox', this.selectedBoxFilter)
   }
 
   rowClass(data: any) {
@@ -314,24 +346,29 @@ class BoxDataTable extends Vue {
   handleApplyFilter() {
     this.searchBox()
   }
+
+  get selectedBoxFilter() {
+    return _.filter(this.selectedBoxes, function (o) {
+      return o.status === BOX_STATUS.BOX_STATUS_AVAILABLE
+    })
+  }
 }
 export default BoxDataTable
 </script>
 
 <style lang="sass" scoped>
+.BoxdataTableContainer
+  height: 100%
+  display: flex
+  flex-direction: column
 ::v-deep.inventory
   .bg-white
     background-color: $text-color-100 !important
     padding: 2px 10px
-  @include flex-column
-  .pi-calendar:before
-    content: url('~/assets/icons/calendar.svg')
   .p-calendar-w-btn
     .p-button
       background: none
       border: none
-  .p-inputtext
-    box-shadow: none
   &__header
     @include flex-center-space-between
     margin-bottom: $space-size-24
@@ -358,19 +395,12 @@ export default BoxDataTable
           height: 3.5rem !important
           .text-bold
             color: $text-color-700
-            .p-inputnumber-input
-              color: $text-color-700
         & > tr > td
           padding-top: 0
           padding-bottom: 0
-        .outgoing__selected
-          background: $color-white
           > .text-bold
             font-weight: $font-weight-bold
             color: $text-color-900
-            .p-inputnumber-input
-              font-weight: $font-weight-bold
-              color: $text-color-900 !important
       .p-datatable-thead > tr > th
         white-space: unset
       .p-datatable-thead > tr > th
