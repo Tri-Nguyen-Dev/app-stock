@@ -1,11 +1,11 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
     StockTakeNoteInfo(:info='noteDetailInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
-      template(#note v-if='boxStockTakeDetail.note')
+      template(#note v-if='boxStockTakeDetail.note || boxStockTakeDetail.submitNote')
         .col-12.flex.align-items-center(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
           .icon.icon-note.icon.bg-primary.mr-2
           span.font-bold.text-800.uppercase Note
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.note')
           .grid.grid-nogutter.wapprer-note.m-0
             .col-12.font-semibold  Creator: {{boxStockTakeDetail.createdBy.staffId}}
             .col-12 Note: {{ boxStockTakeDetail.note }}
@@ -24,7 +24,7 @@
             Button.btn.btn-primary.border-0(@click='checkItems' v-if='isCheck') CHECK
             Button.btn.btn-primary.border-0(@click='saveDraft' v-if='!isCheck && !isComplete') SAVE DRAFT
             Button.btn.btn-primary.border-0(@click='submitNote' v-if='!isCheck && !isComplete' :disabled='isDisabled') SUBMIT
-            Button.btn.btn-primary.border-0(@click='approveNote' v-if='isApprove') APPROVE
+            Button.btn.btn-primary.border-0(@click='approveNote' v-if='isApprove && user.role === "admin"') APPROVE
             Button.btn.btn-primary.border-0(@click='exportNote' v-if='isComplete') EXPORT
         .stock-takeItem__content
           DataTable(
@@ -41,13 +41,13 @@
             :rowClass='rowClass'
           )
             Column(:expander="true" )
-            Column(field='no' header='NO' :styles="{'width': '1rem'}")
+            Column(field='no' header='NO' :styles="{'width': '1rem'}" bodyClass='font-semibold')
               template(#body='slotProps') {{ slotProps.index + 1 }}
-            Column(field="boxCode" header="BOX CODE" :styles="{'width': '85%'}" sortable)
+            Column(field="boxCode" header="BOX CODE" :styles="{'width': '85%'}" sortable bodyClass='font-semibold')
               template(#body="{data}")
-                span.mr-2 {{data.boxCode}}
+                span.mr-2.font-bold {{data.boxCode}}
                 badge.bg-green-400(value="CHECKING" v-if="data.isChecking")
-            Column(field="location" header="LOCATION" sortable)
+            Column(field="location" header="LOCATION")
               template(#body="{data}")
                 .flex.align-items-center.cursor-pointer
                   span.text-primary.font-bold.font-sm {{data.location}}
@@ -56,7 +56,7 @@
               template(#body="{data}")
                 Button(@click='reportTakeNote(data)' :disabled="data.isChecking || isComplete")
                   span.uppercase report
-            Column(field="status" header="STATUS" headerClass='grid-header-center' :styles="{'width': '15%'}" sortable)
+            Column(field="status" header="STATUS" headerClass='grid-header-center' :styles="{'width': '15%'}")
               template(#body="{data}")
                 .text-center
                   tag.table__status.table__status--error(v-if='data.status === "NG"') {{data.status}}
@@ -68,23 +68,26 @@
                   :value="slotProps.data.stockTakeBoxItem"
                   responsiveLayout="scroll"
                 )
-                  Column(field='no' header='NO' bodyClass='text-bold')
+                  Column(field='no' header='NO' bodyClass='font-semibold')
                     template(#body='slotProps') {{ slotProps.index + 1 }}
                   Column(field="barCode" header="Barcode" sortable)
-                  Column(field="inventoryQuantity" header="INVENTORY QTY" sortable)
-                  Column(field="countedQuantity" header="COUNTED QTY" :styles="{'width': '5%'}")
-                    template(#body="{data}")
+                  Column(field="inventoryQuantity" header="INVENTORY Q.TY" bodyClass='font-semibold')
+                    template(#body="{ data }")
+                      div.text-center
+                        span {{ data.inventoryQuantity }}
+                  Column(field="countedQuantity" header="COUNTED Q.TY" :styles="{'width': '5%'}")
+                    template(#body="{ data }")
                       InputNumber.w-7rem(:disabled='isCheck || isComplete || data.isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity(data)' :useGrouping="false" mode="decimal")
-                  Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}")
-                    template(#body="{data}")
+                  Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}" sortable)
+                    template(#body="{ data }")
                       span(v-if='data.countedQuantity !== null') {{data.countedQuantity - data.inventoryQuantity}}
-                  Column(field="resultStatus" header="STATUS" headerClass='grid-header-center' :styles="{'width': '20%'}" sortable)
+                  Column(field="resultStatus" header="STATUS" headerClass='grid-header-center' :styles="{'width': '20%'}")
                     template(#body="{data}")
                       .text-center
                         tag.table__status.table__status--error(v-if='data.resultStatus === "NG"') {{data.resultStatus}}
                         tag.table__status.table__status--available(v-else-if='data.resultStatus === "OK"') {{data.resultStatus}}
                         tag.table__status.table__status--draft(v-else) {{data.resultStatus}}
-            template(#footer v-if='!isComplete && isCancel')
+            template(#footer v-if='!isComplete && !isCancel && !isCheck')
                 .grid.grid-nogutter.stock-takeItem__footer
                   .col
                     div(style="padding-left: 10.5px") Note:
@@ -603,4 +606,6 @@ export default NoteBoxDetail
     max-width: 100%
   .redInput.p-inputtext:enabled:focus
     box-shadow: 0 0 0 0.2rem rgb(38 143 255 / 50%) !important
+::v-deep.child-table.p-datatable .p-datatable-tbody tr:not(.p-highlight):hover
+  background: aliceblue !important
 </style>

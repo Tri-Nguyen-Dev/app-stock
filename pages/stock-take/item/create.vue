@@ -19,14 +19,12 @@
             :class="{ 'table-wrapper-empty': !listStockSelected || listStockSelected.length <= 0 }"
             :paginator="false"
           )
-            Column(field='no' header='NO' :styles="{'width': '3rem'}")
+            Column(field='no' header='NO' :styles="{'width': '3rem'}" bodyClass='font-semibold')
               template(#body='slotProps') {{ slotProps.index + 1 }}
-            Column(field='stock.barCode' header='Barcode' :sortable="true")
-              template(#body='{ data }')
-                span.text-white-active.text-900.font-bold {{ data.stock.barCode }}
+            Column(field='stock.barCode' header='Barcode' :sortable="true" bodyClass='font-semibold')
             Column(field='stock.name' header='ITEM NAME' :sortable='true')
-            Column(field='box.id' header='BOX CODE' :sortable='true')
-            Column(field="box.rackLocation.name" header="LOCATION" :sortable="true" className="text-right")
+            Column(field='box.id' header='BOX CODE' :sortable='true' bodyClass='font-semibold')
+            Column(field="box.rackLocation.name" header="LOCATION" className="text-right")
               template(#body="{data}")
                 div(v-if="data.box.rackLocation")
                   .flex.align-items-center.cursor-pointer.justify-content-end
@@ -62,7 +60,6 @@ import ItemListModel from '~/components/stock-take/ItemListModel.vue'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 const nsStoreUser = namespace('user-auth/store-user')
-const dayjs = require('dayjs')
 
 @Component({
   components: {
@@ -119,12 +116,9 @@ class StockTakeItems extends Vue {
     return {
       status: 'NEW',
       creatorInfo: [
-        { title:'Create Time', value: this.user?.createdAt ?
-          dayjs(new Date(this.user?.createdAt)).format('YYYY-MM-DD')
-          : null, icon: 'icon-receipt-note' },
         { title:'Creator ID', value: this.user.staffId, icon: 'icon-tag-user' },
-        { title:'Warehouse', value: this.user?.warehouse?.name, icon: 'icon-warehouse' },
-        { title:'Items', value: this.totalItem, icon: 'icon-frame' }
+        { title:'Warehouse', value: _.get(this.listStockSelected[0], 'box.request.warehouse.name', null), icon: 'icon-warehouse' },
+        { title:'Items', value: this.totalItem || '0', icon: 'icon-frame' }
       ],
       sellerInfo: [
         { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },
@@ -183,30 +177,6 @@ export default StockTakeItems
 </script>
 <style lang="sass" scoped>
 .stock
-  @include tablet
-  ::v-deep.sub-tab
-    height: calc(100vh - 150px)
-    overflow: hidden
-    display: flex
-    flex-direction: column
-    @include desktop
-      height: calc(100vh - 32px)
-      max-width: 23rem
-      overflow: hidden
-    .sub--scroll
-      display: flex
-      align-items: center
-      flex-direction: column
-      flex: 1
-      overflow: auto
-      @include desktop
-        overflow: auto
-      @include tablet
-        flex-direction: row
-        justify-content: center
-        align-items: baseline
-        overflow: hidden
-
   ::-webkit-input-placeholder
     font-weight: normal
 

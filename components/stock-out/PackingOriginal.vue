@@ -391,7 +391,6 @@ class PackingOriginal extends Vue {
   }
 
   get classTabView() {
-    if(this.listBox.length <= 0) return '' 
     return this.isOriginal ? 'originalTable' : 'outGoingTable'
   }
 }

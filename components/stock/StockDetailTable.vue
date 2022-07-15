@@ -44,7 +44,7 @@
         FilterTable(
           title="Warehouse"
           :value="filter.warehouse"
-          :options="warehouseList"
+          :options="warehouseOption"
           name="warehouse"
           @updateFilter="handleFilter"
         )
@@ -83,7 +83,7 @@
           Column(field="sku" header="SKU" sortable className="p-text-right")
           Column(
             field="amount"
-            header="QUANTITY"
+            header="Q.TY"
             sortable className="p-text-right"
             bodyClass="font-semibold"
             :styles="{'width': '5%'}"
@@ -169,13 +169,12 @@ import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { Stock as StockModel } from '~/models/Stock'
 import {
-  LIMIT_PAGE_OPTIONS,
-  PAGINATE_DEFAULT,
-  calculateIndex
+  PAGINATE_DEFAULT
 } from '~/utils'
 const nsStoreStockTable = namespace('stock/stock-detail')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsSidebar = namespace('layout/store-sidebar')
+const nsStoreUser = namespace('user-auth/store-user')
 
 @Component({
   components: { ConfirmDialogCustom, Pagination }
@@ -186,15 +185,12 @@ class StockDetailTable extends Vue {
 
   @Prop() sku!: string
   isShowFilter: boolean = false
-  selectedWarehouse = []
-  selectedStatus = null
   selectedStock: StockModel.ModelDetail[] = []
-  deleteStockList = []
   isModalDelete: boolean = false
   ids: string[] = []
   loadingSubmit: boolean = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
-  limitOptions = LIMIT_PAGE_OPTIONS
+  warehouseOption: any = []
 
   filter: any = {
     sellerName: null,
@@ -231,6 +227,9 @@ class StockDetailTable extends Vue {
   @nsStoreWarehouse.State
   warehouseList!: any
 
+  @nsStoreUser.State
+  user: any | undefined
+
   @nsStoreStockTable.Action
   actGetItemsList!: (params: any) => Promise<void>
 
@@ -239,14 +238,6 @@ class StockDetailTable extends Vue {
 
   @nsStoreStockTable.Action
   actDeleteItemsById!: (ids: string[]) => Promise<void>
-
-  get getInfoPaginate() {
-    const { pageNumber, pageSize } = this.paginate
-    const start = (pageNumber + 1) * pageSize - (pageSize - 1)
-    const convertStart = ('0' + start).slice(-2)
-    const end = Math.min(start + pageSize - 1, this.itemsList.data.total)
-    return `Showing ${convertStart} - ${end} of ${this.itemsList.data.total}`
-  }
 
   get selectedStockFilter() {
     return this.selectedStock.filter(
@@ -296,14 +287,6 @@ class StockDetailTable extends Vue {
 
   handleCancel() {
     this.isModalDelete = false
-  }
-
-  getIndexPaginate(index: number) {
-    return calculateIndex(
-      index,
-      this.paging.pageNumber,
-      this.paging.pageSize
-    )
   }
 
   async handleDeleteItems() {
@@ -370,9 +353,17 @@ class StockDetailTable extends Vue {
     })
   }
 
-  mounted() {
-    this.getItemsList()
-    this.actWarehouseList()
+  async mounted() {
+    await this.getItemsList()
+    const { role, warehouse } = this.user
+    if(role === 'admin') {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.filter.warehouse = this.warehouseList[0]
+    } else {
+      this.warehouseOption = [warehouse]
+      this.filter.warehouse = warehouse
+    }
   }
 }
 export default StockDetailTable

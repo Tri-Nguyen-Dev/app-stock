@@ -29,7 +29,7 @@
                 :isDisabled="user.role !== 'admin'"
                 :isClear="false"
               )
-            .div(class="col-12 md:col-3")
+            div(class="col-12 md:col-3")
               FilterTable(
                 title="Seller"
                 placeholder="Search barcode"
@@ -39,7 +39,7 @@
                 @updateFilter="handleFilter"
                 :isShowFilter="isShowFilter"
               )
-            .div(class="col-12 md:col-3")
+            div(class="col-12 md:col-3")
               FilterTable(
                 title="Barcode"
                 placeholder="Search barcode"
@@ -49,7 +49,7 @@
                 @updateFilter="handleFilter"
                 :isShowFilter="isShowFilter"
               )
-            .div(class="col-12 md:col-3")
+            div(class="col-12 md:col-3")
               FilterTable(
                 title="Item name"
                 placeholder="Search barcode"
@@ -85,7 +85,7 @@
                     :showIcon="true"
                     @updateFilter="handleFilter"
                   )
-            .div(class="col-12 md:col-4")
+            div(class="col-12 md:col-4")
               FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
       .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
         .col.h-full.absolute.top-0.left-0.right-0.bg-white
@@ -122,7 +122,7 @@
                   .flex.align-items-center.cursor-pointer.justify-content-end
                     span.text-primary.font-bold.font-sm.text-white-active {{ data.box.rackLocation.name }}
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
-            Column(field="stock.createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_stock.createdAt")
+            Column(field="stock.createdAt" header="CREATED TIME" :sortable="true" className="text-right" sortField="_stock.createdAt")
               template(#body="{data}") {{ data.stock.createdAt | dateTimeHour24 }}
             Column(field='status' header="Status" headerClass="grid-header-right")
               template(#body='{ data }')
@@ -309,14 +309,6 @@ class ItemListModel extends Vue {
     })
   }
 
-  handleChangeFilter() {
-    this.getProductList()
-    if(this.filter.categories.length === 0) {
-      this.filter.categories = ''
-      this.getProductList()
-    }
-  }
-
   onPage(event: any) {
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
@@ -379,7 +371,7 @@ class ItemListModel extends Vue {
         this.$toast.add({
           severity: 'error',
           summary: 'Error Message',
-          detail: 'Please add items from 1 warehouse',
+          detail: 'Item in different warehouse could not be added',
           life: 3000
         })
         return

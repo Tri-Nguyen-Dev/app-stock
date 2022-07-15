@@ -4,7 +4,7 @@
 		template(#title='')
 			.d-flex
 				i.pi.pi-info-circle.mr-3
-				span.font-semibold.text-base GENERAL INFORMATION
+				span.font-semibold.text-base  GENERAL INFO
 		template(#content='')
 			.grid(v-if='receiptDetail.data')
 				.col
@@ -21,7 +21,7 @@
 						.filter__text {{ receiptDetail.data.createdBy.displayName }}
 				.col
 					.filter__item.item--disabled
-						.filter__title Create time
+						.filter__title Created time
 						.filter__text {{ receiptDetail.data.createdAt | dateTimeHour24 }}
 				.col
 					.filter__item
@@ -71,7 +71,7 @@
 							span {{ getSize(activeIndex) }}
 							span.font-semibold.text-base.ml-3 (cm)
 						.d-flex.col-12.border__right.pt-4.pb-4(class='md:col-5 lg:col-4')
-							span.font-semibold.text-base.mr-3.ml-2 Estimate Inventory Fee:
+							span.font-semibold.text-base.mr-3.ml-2 Storage Fee:
 							span ${{ listBox[activeIndex].inventoryFee }}
 							span.font-semibold.text-base.ml-3 /day
 						.d-flex.col-6(class='md:col-5 lg:col-4')

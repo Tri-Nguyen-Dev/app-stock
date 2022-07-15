@@ -16,7 +16,7 @@
         .grid.grid-nogutter
           .col
             FilterCalendar(
-              title="Create time from"
+              title="Created time from"
               border="left"
               :value="filter.createTimeFrom"
               name="createTimeFrom"
@@ -79,7 +79,7 @@
         Column(field='id' header='ID' sortable headerClass="grid-header-center")
           template(#body='{ data }')
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.font-bold {{ data.id }}
-        Column(header='Create time' field='createTime' sortable  sortField="_createdAt" )
+        Column(header='Created time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
             div {{ data.createTime | dateTimeHour24 }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")

@@ -90,7 +90,7 @@
             NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/box/${data.id}`"
             class="no-underline hover:underline") {{ data.id }}
         Column(field="sellerEmail" header="SELLER EMAIL" :sortable="true" className="w-3" sortField="_request.seller.email")
-        Column(field="createdAt" header="CREATE TIME" :sortable="true" className="text-right" sortField="_createdAt")
+        Column(field="createdAt" header="CREATED TIME" :sortable="true" className="text-right" sortField="_createdAt")
           template(#body="{data}") {{ data.createdAt | dateTimeHour24 }}
         Column(field="usedCapacity" header="USED CAPACITY" className="text-right")
           template(#body="{data}") {{ data.usedCapacity | capacityPercent}}
@@ -271,7 +271,7 @@ class BoxList extends Vue {
       'sellerEmail': this.filter.sellerEmail || null,
       'barCode': this.filter.barCode || null,
       'warehouseId': this.filter.warehouse?.id,
-      'location': this.filter.location || null,
+      'locationName': this.filter.location || null,
       'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
       'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
       'sortBy': this.sortByColumn || null,

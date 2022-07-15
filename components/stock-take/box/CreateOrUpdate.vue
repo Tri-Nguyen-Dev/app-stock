@@ -6,7 +6,7 @@
         .stock-takeItem__header
           div
             h1.text-heading Stock-take Note
-            span.text-subheading All ({{ totalItem }})
+            span.text-subheading All ({{ boxShow.length }})
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='addBox') Add Box
             Button.btn.btn-primary.border-0(@click='saveStockTake') Save
@@ -30,19 +30,15 @@
               sortField='_id'
             )
             Column(
-              field='sellerEmail',
-              header='SELLER EMAIL',
-              className='w-3',
-            )
-            Column(
               field='rackLocation.name',
               header='LOCATION',
-              :sortable='true',
               sortField='_rackLocation.name'
             )
-              template(#body='{ data }')
-                .flex.align-items-center.cursor-pointer
-                  span.font-bold {{ data.location?  data.location : data.rackLocation.name }}
+              template(#body="{data}")
+                div(v-if="data.location")
+                  .flex.align-items-center.cursor-pointer
+                    span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
+                    .icon.icon-arrow-up-right.bg-primary.bg-white-active
             Column(
               field='id',
               header='ACTION',
@@ -65,7 +61,7 @@
         BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
         template(#footer)
           Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")
-          Button.p-button-primary(:label="lableBtnAddStock" icon="pi pi-check" @click="applyBox()" v-if="lableBtnAddStock.length>0")
+          Button.p-button-primary(:label="prepareLableBtnAddStock" icon="pi pi-check" @click="applyBox()" v-if="boxSelected.length>0")
 </template>
 
 <script lang="ts">
@@ -93,7 +89,7 @@ const nsStoreReportList = namespace('report/report-list')
 class DeliveryOrder extends Vue {
   @Prop() id!: string
   boxShow : any[] = []
-  boxSelected: any
+  boxSelected: any[] = []
   disabledApply = true
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
   note = ''
@@ -106,8 +102,6 @@ class DeliveryOrder extends Vue {
     status:string
   } = { user: undefined ,totalBox:0,wareHouse: undefined, status: 'NEW' }
 
-  lableBtnAddStock = ''
-  totalItem = 0
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
 
@@ -161,28 +155,40 @@ class DeliveryOrder extends Vue {
 
   selectBox(event){
     this.boxSelected = _.cloneDeep(event)
-    if(this.boxSelected.length>0){
-      this.prepareLableBtnAddStock()
-
-    } else {
-      this.lableBtnAddStock = ''
-    }
   }
 
   hideDialog(){
     this.showModal = false
     this.stockTakeInfo.totalBox = this.boxShow.length
+    this.stockTakeInfo.wareHouse = _.get(this.boxShow[0], 'warehouseName', null)
+    this.boxSelected = _.cloneDeep(this.boxShow)
   }
 
   removeBox(data){
     this.boxShow.splice(this.boxShow.indexOf(data),1)
     this.stockTakeInfo.totalBox = this.boxShow.length
+    this.stockTakeInfo.wareHouse = _.get(this.boxShow[0], 'warehouseName', null)
+    this.boxSelected = _.cloneDeep(this.boxShow)
   }
 
   applyBox(){
+    if(_.size(this.boxSelected) > 1) {
+      const warehouseFirstItem = _.get(this.boxSelected[0], 'warehouseId', null)
+      const unsatisfactoryItem =  _.find(this.boxSelected, function(box) {
+        return box?.warehouseId !== warehouseFirstItem
+      })
+      if(unsatisfactoryItem) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Item in different warehouse could not be added',
+          life: 3000
+        })
+        return
+      }
+    }
     this.showModal = false
     this.boxShow = _.cloneDeep(this.boxSelected)
-    this.totalItem= _.size(this.boxSelected)
   }
 
   mounted() {
@@ -218,7 +224,7 @@ class DeliveryOrder extends Vue {
     ]
   }
 
-  prepareLableBtnAddStock() {
+  get prepareLableBtnAddStock() {
     const length = _.size(this.boxSelected)
     let stockQuantity = ''
     if(length === 1 ) {
@@ -226,9 +232,8 @@ class DeliveryOrder extends Vue {
     } else if(length > 1) {
       stockQuantity = length + ' boxes'
     }
-    this.lableBtnAddStock = `Add ${stockQuantity || 'stock'} to stock-take note`
+    return `Add ${stockQuantity || 'stock'} to stock-take note`
   }
-
 }
 
 export default DeliveryOrder
@@ -321,4 +326,15 @@ export default DeliveryOrder
 .item-list-dialog
   ::v-deep.p-dialog-content
     background-color: #E8EAEF
+    width: 80vw
+    padding-bottom: 5px
+    height: 85vh
+    .pagination
+      padding: 8px
+  ::v-deep.pi-calendar:before
+    content: url('~/assets/icons/calendar.svg')
+  ::v-deep.p-calendar-w-btn
+    .p-button
+      background: none
+      border: none
 </style>
