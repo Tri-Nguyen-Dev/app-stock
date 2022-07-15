@@ -1,32 +1,108 @@
 <template lang="pug"> 
-  div
-    h1.text-center AIRTAG MANAGEMENT SYSTEM
-    Chart(type="bar" :data="basicData" ) 
+  .grid.dashboard-page-container
+    .col-12
+      h1.text-heading Dashboard
+    .col-12
+      Card
+        template(#content='')
+          .dashboard-warehouse
+            div Choose warehouse
+            Dropdown.warehouse-select(
+              :value="warehouseSelect"
+              :options="warehouseList"
+              optionLabel="name"
+              placeholder="Select a warehouse"
+              @change="changeWarehouse"
+            )
+    .col-12.pb-0
+      DashboardTotalCompared
+    .col-12.flex-1
+      .grid.h-full
+        .col-5.dashboard-column(class="col-12 xl:col-5")
+          .grid.dashboard-column.m-0.h-full
+            DashboardDeliveryChart.dashboard-column__full
+            DashboardDriverChart.mt-3
+        .col-4.dashboard-column(class="col-12 lg:col-6 xl:col-4")
+          DashboardActivitiesChart.dashboard-column__full
+          DashboardSellerChart.mt-3
+        .col-3.dashboard-column(class="col-12 lg:col-6 xl:col-3")
+          DashboardCategoryChart.col-12.mb-3
+          DashboardCapacityChart.col-12.dashboard-column__full
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+const nsStoreDashboard = namespace('dashboard/data-chart')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component
 class Dashboard extends Vue {
-  basicData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      {
-        label: 'My First dataset',
-        backgroundColor: '#42A5F5',
-        data: [65, 59, 80, 81, 56, 55, 40]
-      },
-      {
-        label: 'My Second dataset',
-        backgroundColor: '#FFA726',
-        data: [28, 48, 40, 19, 86, 27, 90]
-      }
-    ]
+  warehouseSelect = null
+  
+  @nsStoreWarehouse.State
+  warehouseList!: any
+
+  @nsStoreWarehouse.Action
+  actWarehouseList!: () => Promise<void>
+
+  @nsStoreDashboard.Action
+  actGetBoxItem!: (params: any) => Promise<void>
+
+  @nsStoreDashboard.Action
+  actGetDelivery!: (params: any) => Promise<void>
+
+  @nsStoreDashboard.Action
+  actActivities!: (params: any) => Promise<void>
+
+  @nsStoreDashboard.Action
+  actGetSellers!: (params: any) => Promise<void>
+
+  @nsStoreDashboard.Action
+  actGetCategory!: (params: any) => Promise<void>
+
+  @nsStoreDashboard.Action
+  actGetCapacity!: (params: any) => Promise<void>
+
+  async mounted() {
+    await this.actWarehouseList()
+    this.warehouseSelect = this.warehouseList[0]
+    this.getDataChart(this.warehouseList[0].id)
+  }
+
+  async changeWarehouse({ value }) {
+    this.warehouseSelect = value
+    await this.getDataChart(value.id)
+  }
+
+  async getDataChart(warehouseId) {
+    await Promise.all([
+      this.actGetBoxItem({ warehouseId }),
+      this.actGetDelivery({ warehouseId }),
+      this.actActivities({ warehouseId }),
+      this.actGetSellers({ warehouseId }),
+      this.actGetCategory({ warehouseId }),
+      this.actGetCapacity({ warehouseId })
+    ])
   }
 }
 
 export default Dashboard
 </script>
-<style lang="sass">
+<style lang="sass" scoped>
+.dashboard-page-container
+  @mixin flex-center-column
+  .dashboard-warehouse
+    display: flex
+    justify-content: space-between
+    align-items: center
+    .warehouse-select
+      width: 200px
+  ::v-deep.p-card-body
+    padding: $space-size-12
+    .p-card-content
+      padding: 0
+  .dashboard-column
+    @include flex-column
+    &__full
+      flex: 1
 </style>
