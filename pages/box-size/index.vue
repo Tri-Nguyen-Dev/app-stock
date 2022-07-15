@@ -16,12 +16,7 @@
           dataKey='id'
           :rowHover='true'
           responsiveLayout='scroll'
-          :value='dataRenderItems'
-          :selection.sync='selectedItem'
-          @row-select='selectRow()'
-          @row-unselect='unSelectRow'
-          @row-select-all="rowSelectAll"
-          @row-unselect-all="rowUnSelectAll"
+          :value='boxSizeList'
         )
           Column(
             selectionMode='multiple'
@@ -59,11 +54,11 @@
               @onPage="onPage")
           template(#empty)
             div.table__empty
-              img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
+              img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!boxSizeList")
               img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-              p.empty__text(v-if="!checkIsFilter") List is empty!, Click
+              p.empty__text(v-if="!boxSizeList") List is empty!, Click
                 span &nbsp;here
-                span(@click="handleAddwarehouse") &nbsp;to add item.
+                span(@click="") &nbsp;to add item.
               p.notfound__text(v-else) Item not found!
     ConfirmDialogCustom(
       title="Confirm delete"
@@ -104,11 +99,21 @@ class BoxSize extends Vue {
   selectedItem: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
 
-  // -- [ state ]-------------------------------
+  // -- [ state ]---------------------------------------------
   @nsStoreBoxSize.State
   boxSizeList!: BoxSizeModel.Model[]
-  // --[ getter ] ------------------------------
 
+  @nsStoreBoxSize.Action
+  actBoxSizeList!: () => Promise<void>
+  // --[ getter ] --------------------------------------------
+
+  // -- [functions] ------------------------------------------
+  async getBoxSizeList() {
+    await this.actBoxSizeList()
+    // eslint-disable-next-line no-console
+    console.log(this.boxSizeList)
+    
+  }
 }
 export default BoxSize
 </script>
