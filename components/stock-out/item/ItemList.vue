@@ -51,7 +51,7 @@ div.box-page-container
     Column(field='airtag', header='TAG', headerClass='grid-header-center')
       template(#body='{ data }')
         .grid-cell-center
-          span.font-bold.text-right {{data.hasAirtag ? 'Yes' : 'No'}}          
+          Checkbox(v-model='data.hasAirtag', :binary='true', :disabled='true')         
     template( #footer )
       Pagination(
         :paging="paging"
