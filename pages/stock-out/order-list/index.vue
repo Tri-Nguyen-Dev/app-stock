@@ -190,7 +190,8 @@
             div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour24 }}
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right( v-if="data.assignee") {{ data.assignee.staffId }} {{data.assignee.staffId === null ? 'N/A' : ''}}
+            div.grid-cell-right(v-if="data.assignee") {{data.assignee.staffId}}
+            div.grid-cell-right(v-else) N/A
         Column(v-if="activeTab == 1"
           header='Driver' sortable field='driverPhone' sortField="_driverPhone" headerClass="grid-header-right")
           template(#body='{ data }')
