@@ -5,7 +5,7 @@
       h1.text-heading Categories
       span.text-subheading Total {{ categoriesTotal }} categories
     .header__action
-      Button.btn.btn-primary(@click='showModalCreate = true')
+      Button.btn.btn-primary(@click='handleCreate')
         .icon.icon-add-items
         span Add Category
 
@@ -70,14 +70,13 @@
     template(v-slot:message)
       p {{ deleteMessage }}
   Toast
-  Dialog(header=`Create category` :visible.sync='showModalCreate', :modal='true')
-    CreateModal(@close-modal='showModalCreate = false')
-  //- Dialog(header=`Update category`, :visible.sync='showModalUpdate', :modal='true')
-  UpdateModal(
-    :isShow="showModalUpdate"
+  CreateOrUpdate(
+    :isShow="showModal"
+    :modalHeader ='modalHeader'
     :categoryData='categoryData'
-    @close-modal='hideDialog($event)',
+    @close-modal='showModal = false',
   )
+  
 </template>
 
 <script lang="ts">
@@ -85,8 +84,7 @@ import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
-import CreateModal from '~/components/category/Create.vue'
-import UpdateModal from '~/components/category/Update.vue'
+import CreateOrUpdate from '~/components/category/CreateOrUpdate.vue'
 import {
   PAGINATE_DEFAULT,
   calculateIndex,
@@ -99,8 +97,7 @@ const nsCategoryList = namespace('category/category-list')
   components: {
     ConfirmDialogCustom,
     Pagination,
-    CreateModal,
-    UpdateModal
+    CreateOrUpdate
   }
 })
 class Categories extends Vue {
@@ -109,9 +106,9 @@ class Categories extends Vue {
   sortByColumn: string = ''
   sortDescending: boolean | null = null
   isModalDelete: boolean = false
-  showModalCreate: boolean = false
-  showModalUpdate: boolean = false
+  showModal: boolean = false
   categoryData: any = []
+  modalHeader: string = ''
 
   @nsCategoryList.State
   categoryList!: any
@@ -204,17 +201,23 @@ class Categories extends Vue {
     await this.getCategoryList()
   }
 
-  handleUpdate(categoryData) {
-    this.categoryData = categoryData
-    this.showModalUpdate = true
-  }
-
   mounted() {
     this.getCategoryList()
   }
 
   hideDialog(){
-    this.showModalUpdate = false
+    this.showModal = false
+  }
+
+  handleCreate(){
+    this.modalHeader ='Create Category'
+    this.showModal = true
+  }
+
+  handleUpdate(categoryData) {
+    this.categoryData = categoryData
+    this.showModal = true
+    this.modalHeader = 'Update Category'
   }
 
 }

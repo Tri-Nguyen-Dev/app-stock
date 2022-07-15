@@ -1,8 +1,8 @@
 <template lang="pug">
-Dialog.item-list-dialog(:visible.sync='visibleVue', :modal='true' :showHeader='false')
+Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
   .modal
-    .card
-      .formgrid.grid
+    .text-heading.modal-header {{modalHeader}} 
+    .formgrid.grid
         .field.col-12()
           label.required__title(for='name') Name :
           InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(@change='onChange' v-model='categoryInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.categoryInformation.name.$error}")
@@ -12,16 +12,13 @@ Dialog.item-list-dialog(:visible.sync='visibleVue', :modal='true' :showHeader='f
         .field.col-12(class='md:col-6')
           label(for='displayOrder') DisplayOrder :
           InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='categoryInformation.displayOrder')
-        .field.col-12(class='md:col-3')
-          label(for='delete') Deleted :
-          select#delete.w-full.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.outline-none( style='appearance: auto' v-model='categoryInformation.deleted')
-            option false
-            option true
-        .field.col-12.modal-btn(class='md:col-9')
-          Button.btn.btn-outline(@click="$emit('close-modal')")
+        .field.col-12.modal-btn(class='md:col-12')
+          Button.btn.btn-outline(@click="handleCancle")
             span Cancel
-          Button.btn.btn-primary(@click="UpdateItem()")
-            span Update Category
+          Button.btn.btn-primary(v-if="modalHeader === 'Create Category'" @click='addItem')
+            span Create Category
+          Button.btn.btn-primary(v-if="modalHeader === 'Update Category'" @click='UpdateItem')
+            span Update Category  
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, Prop, Watch } from 'nuxt-property-decorator'
@@ -44,14 +41,14 @@ const nsStoreCategory = namespace('category/category-list')
 class UpdateCategory extends Vue { 
   @Prop() categoryData!: any
   @Prop({ default: false }) isShow!: boolean
+  @Prop() modalHeader!: any
 
   categoryName: any = []
   duplicatedItem: any = []
   categoryInformation: any = {
     name: '',
     icon: '',
-    displayOrder: '',
-    deleted: false
+    displayOrder: ''
   }
 
   @nsStoreCategory.State
@@ -65,6 +62,9 @@ class UpdateCategory extends Vue {
 
   @nsStoreCategory.Action
   actUpdateCategory!: (param: any) => Promise<any>
+
+  @nsStoreCategory.Action
+  actCreateNewCategory!: (param: any) => Promise<void>
 
   async getOtherCategoryName() {
     await this.actCategoryList()
@@ -120,10 +120,11 @@ class UpdateCategory extends Vue {
       if (result) {
         await this.actCategoryList()
         this.$emit('close-modal', this.categoryInformation)
+        this.categoryInformation = []
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',
-          detail: 'Successfully update box',
+          detail: 'Successfully update category',
           life: 3000
         })
       } else {
@@ -146,10 +147,11 @@ class UpdateCategory extends Vue {
       if (result) {
         await this.actCategoryList()
         this.$emit('close-modal', this.categoryInformation)
+        this.categoryInformation = []
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',
-          detail: 'Successfully update box',
+          detail: 'Successfully update category',
           life: 3000
         })
       } else {
@@ -163,8 +165,54 @@ class UpdateCategory extends Vue {
     }
   }
 
+  async addItem() {
+    await this.checkDuplicate()
+    if (this.duplicatedItem.length > 0) {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'category name dupicated !',
+        life: 3000
+      })
+    }
+    else{
+      this.$v.categoryInformation.name?.$touch()
+      if (this.$v.$invalid) {
+        return
+      }
+      await this.actCreateNewCategory({
+        name: this.categoryInformation.name,
+        icon: this.categoryInformation.icon,
+        displayOrder: this.categoryInformation.displayOrder
+      })
+      await this.actCategoryList()
+      if (this.newCategoryDetail) {
+        this.$emit('close-modal', this.categoryInformation)
+        this.categoryInformation = []
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Successfully create new category',
+          life: 3000
+        })
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Create category failed!',
+          life: 3000
+        })
+      }
+    }
+  }
+
   get visibleVue() {
     return this.isShow
+  }
+
+  handleCancle() {
+    this.$emit('close-modal')
+    this.categoryInformation = []
   }
 
 }
@@ -173,9 +221,9 @@ export default UpdateCategory
 <style lang="sass" scoped>
 .modal
   background-color: #fff
-  padding: 30px
+  padding: 20px
   border-radius: 10px
-  width: 750px
+  width: 650px
 
 .modal-header
   text-align: center
