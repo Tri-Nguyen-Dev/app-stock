@@ -19,11 +19,6 @@
         dataKey='id',
         :rowHover='true'
       )
-        Column(
-          selectionMode='multiple',
-          :styles='{ width: "1%" }',
-          :headerClass='classHeaderMuti'
-        )
         Column(field='displayOrder', header='NO', :styles='{ width: "1%" }')
           template(#body='{ index }')
             span.grid-cell-center.category__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -134,12 +129,6 @@ class Categories extends Vue {
   async getCategoryList() {
     await this.actCategoryList(
       this.getParamAPi() )
-  }
-
-  get classHeaderMuti() {
-    return !this.categoryList || this.categoryList.length <= 0
-      ? 'checkbox-disable'
-      : ''
   }
 
   getIndexPaginate(index: number) {
