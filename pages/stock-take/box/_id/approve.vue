@@ -1,19 +1,20 @@
 <template lang="pug">
   .grid.flex.grid-nogutter.stock
     StockTakeNoteInfo(:info='noteDetailInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
-      template(#note v-if='boxStockTakeDetail.note || boxStockTakeDetail.submitNote')
-        .col-12.flex.align-items-center(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+      template(#note v-if='boxStockTakeDetail.note || boxStockTakeDetail.submitNote || boxStockTakeDetail.approveNote')
+        .col.border-bottom-1.border-gray-300
+        .col-12.flex.align-items-center.px-0(className='lg:col-12 md:col-12 sm:col-12 py-3')
           .icon.icon-note.icon.bg-primary.mr-2
           span.font-bold.text-800.uppercase Note
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.note')
+        .col-12.px-0(className='lg:col-12 md:col-12 sm:col-12 py-3' v-if='boxStockTakeDetail.note')
           .grid.grid-nogutter.wapprer-note.m-0
             .col-12.font-semibold  Creator: {{boxStockTakeDetail.createdBy.staffId}}
             .col-12 Note: {{ boxStockTakeDetail.note }}
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.submitNote')
+        .col-12.px-0(className='lg:col-12 md:col-12 sm:col-12 py-3' v-if='boxStockTakeDetail.submitNote')
           .grid.grid-nogutter.wapprer-note.m-0
             .col-12.font-semibold  PIC: {{boxStockTakeDetail.assignee.staffId}}
             .col-12 Note: {{ boxStockTakeDetail.submitNote }}
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.approveNote && isApproved')
+        .col-12.px-0(className='lg:col-12 md:col-12 sm:col-12 py-3' v-if='boxStockTakeDetail.approveNote && isApproved')
           .grid.grid-nogutter.wapprer-note.m-0
             .col-12.font-semibold  Approver: {{boxStockTakeDetail.approver.staffId}}
             .col-12 Note: {{ boxStockTakeDetail.approveNote }}
@@ -25,7 +26,7 @@
             h1.text-heading(v-else)  Approving Stock-take Note Detail
             span.text-subheading All ({{ boxStockTakeDetail.totalStockTakeBox }})
           .stock-takeItem__header--action.flex
-            Button.btn.btn-primary.border-0(@click='saveApprove' v-if='!isApproved') save
+            Button.btn.btn-primary.border-0(@click='saveApprove' v-if='!isApproved' :disabled='isDisabled') save
             Button.btn.btn-primary.border-0(@click='exportNote') export
         .stock-takeItem__content
           DataTable(
@@ -41,12 +42,12 @@
             :rowHover="false"
           )
             Column(:expander="true" )
-            Column(field='no' header='NO')
+            Column(field='no' header='NO' bodyClass='font-semibold')
               template(#body='slotProps') {{ slotProps.index + 1 }}
-            Column(field="boxCode" header="BOX CODE" sortable)
+            Column(field="boxCode" header="BOX CODE" sortable bodyClass='font-semibold')
               template(#body="{data}")
                 span.mr-2 {{data.boxCode}}
-            Column(field="location" header="LOCATION" :styles="{'width': '100%'}" sortable)
+            Column(field="location" header="LOCATION" :styles="{'width': '100%'}")
               template(#body="{data}")
                 .flex.align-items-center.cursor-pointer
                   span.text-primary.font-bold.font-sm {{data.location}}
@@ -58,17 +59,18 @@
                   responsiveLayout="scroll"
                   :rowClass='rowClass'
                 )
-                  Column(field='no' header='NO' bodyClass='text-bold')
+                  Column(field='no' header='NO' bodyClass='font-semibold')
                     template(#body='slotProps') {{ slotProps.index + 1 }}
-                  Column(field="barCode" header="Barcode" :styles="{'width': '100%'}" sortable)
-                  Column(field="inventoryQuantity" header="INVENTORY QTY" sortable className="red-text")
-                  Column(field="countedQuantity" header="COUNTED QTY" className="red-text")
-                  Column(field="approvedQuantity" header="APPROVE QTY" className="red-text")
+                  Column(field="barCode" header="Barcode" :styles="{'width': '100%'}" sortable bodyClass='font-semibold')
+                  Column(field="inventoryQuantity" header="INVENTORY QTY" className="red-text text-center")
+                  Column(field="countedQuantity" header="COUNTED QTY" className="red-text text-center")
+                  Column(field="approvedQuantity" header="APPROVE QTY" className="red-text text-center")
                     template(#body="{data}")
-                      InputNumber.w-7rem(inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)' :disabled='isApproved' :useGrouping="false" mode="decimal")
-                  Column(field="approveVariant" header="APPROVE VARIANT")
+                      span( v-if="isApproved" ) {{data.approvedQuantity }}
+                      InputNumber.w-7rem(v-else inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)' :useGrouping="false" mode="decimal")
+                  Column(field="approveVariant" header="APPROVE VARIANT" className="text-center")
                     template(#body="{data}")
-                      span {{data.approvedQuantity - data.inventoryQuantity}}
+                      span(v-if='data.approvedQuantity !== null') {{data.approvedQuantity - data.inventoryQuantity}}
             template(#footer v-if='!isApproved')
                 .grid.grid-nogutter.stock-takeItem__footer
                   .col
@@ -95,6 +97,7 @@ const nsStoreUser = namespace('user-auth/store-user')
 class ApproveBoxStockTake extends Vue {
   stockTakeInfo: {
     createdAt?: any
+    updatedAt?: any
     user?: any
     picId?: any
     approveId?: any
@@ -197,13 +200,7 @@ class ApproveBoxStockTake extends Vue {
   }
 
   async saveApprove() {
-    let submitData = _.flatten(
-      _.map(this.dataList, ({ stockTakeBoxItem }) => {
-        return _.map(stockTakeBoxItem, ({ id, approvedQuantity, inventoryQuantity }) => {
-          return { id, approvedQuantity, inventoryQuantity }
-        })
-      })
-    )
+    let submitData: any = this.submitDataStock()
     submitData = { stockTakeItem: [...submitData], approveNote: this.stockTakeInfo.note }
     const result = await this.actApproveSubmit({ id: this.$route.params.id , data: submitData })
     if (result) {
@@ -248,6 +245,9 @@ class ApproveBoxStockTake extends Vue {
 
   get noteDetailInfo() {
     this.stockTakeInfo.createdAt = this.boxStockTakeDetail?.createdAt
+    if(this.boxStockTakeDetail.status === 'APPROVED') {
+      this.stockTakeInfo.updatedAt = this.boxStockTakeDetail?.updatedAt
+    }
     this.stockTakeInfo.user = this.boxStockTakeDetail?.createdBy
     this.stockTakeInfo.picId = this.boxStockTakeDetail?.assignee?.staffId
     this.stockTakeInfo.approveId = this.boxStockTakeDetail?.approver?.staffId
@@ -269,6 +269,26 @@ class ApproveBoxStockTake extends Vue {
         to: `/stock-take/item/${this.$route.params.id}/approve`
       }
     ]
+  }
+
+  get isDisabled() {
+    const object = _.find(this.submitDataStock(), ({ approvedQuantity })=>{
+      if(_.isNull(approvedQuantity)){
+        return true
+      }
+    })
+    return !!object
+  }
+
+  submitDataStock() {
+    const submitData = _.flatten(
+      _.map(this.dataList, ({ stockTakeBoxItem }) => {
+        return _.map(stockTakeBoxItem, ({ id, approvedQuantity, inventoryQuantity }) => {
+          return { id, approvedQuantity, inventoryQuantity }
+        })
+      })
+    )
+    return submitData
   }
 }
 
@@ -317,16 +337,6 @@ export default ApproveBoxStockTake
     border-radius: 10px
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)
     background-color: #979AA4
-::v-deep.parent-table .p-datatable-tbody > tr.p-datatable-row-expansion
-  .red-row
-    .red-text
-      color: red
-      .p-inputtext
-        color: red
-  & td
-    padding-right: 0
-    .child-table
-      border: solid 1px #ececec
 .wapprer-note
     width: 100%
     min-height: 72px
@@ -379,6 +389,16 @@ export default ApproveBoxStockTake
     border-radius: 4px
     position: relative
     overflow: hidden
+    .p-datatable-tbody > tr.p-datatable-row-expansion
+      .red-row
+        .red-text
+          color: red
+          .p-inputtext
+            color: red
+      & td
+        padding-right: 0
+        .child-table
+          border: solid 1px #ececec
   &__footer
     background: $color-white
     display: flex
