@@ -8,7 +8,6 @@
       Button.btn.btn-primary(@click='handleCreate')
         .icon.icon-add-items
         span Add Category
-
   .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable(
@@ -127,8 +126,7 @@ class Categories extends Vue {
   }
 
   async getCategoryList() {
-    await this.actCategoryList(
-      this.getParamAPi() )
+    await this.actCategoryList(this.getParamAPi())
   }
 
   getIndexPaginate(index: number) {
@@ -141,7 +139,6 @@ class Categories extends Vue {
     if (sortOrder) {
       this.sortDescending = sortOrder !== 1
       this.sortByColumn = sortField.replace('_', '')
-
     } else {
       this.sortDescending = null
       this.sortByColumn = ''
@@ -194,12 +191,12 @@ class Categories extends Vue {
     this.getCategoryList()
   }
 
-  hideDialog(){
+  hideDialog() {
     this.showModal = false
   }
 
-  handleCreate(){
-    this.modalHeader ='Create Category'
+  handleCreate() {
+    this.modalHeader = 'Create Category'
     this.showModal = true
   }
 
@@ -208,7 +205,6 @@ class Categories extends Vue {
     this.showModal = true
     this.modalHeader = 'Update Category'
   }
-
 }
 export default Categories
 </script>

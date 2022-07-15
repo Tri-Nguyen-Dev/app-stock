@@ -56,15 +56,13 @@ export default class Category extends VuexModule {
   }
 
   @Action({ commit: 'setNewCategory', rawError: true })
-  async actCreateNewCategory(params: any): Promise<string | undefined> {
-    try {
-      const url = PathBind.transform(
-        this.context,
-        Category.STATE_URL.CREATE_CATEGORY
-      )
-      const response = await $api.post(url, params)
-      return response.data
-    } catch (error) {}
+  async actCreateNewCategory(params: any): Promise<string | undefined> { 
+    const url = PathBind.transform(
+      this.context,
+      Category.STATE_URL.CREATE_CATEGORY
+    )
+    const response = await $api.post(url, params)
+    return response.data
   }
 
   @Action({ rawError: true })

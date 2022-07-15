@@ -38,7 +38,7 @@ const nsStoreCategory = namespace('category/category-list')
     }
   }
 })
-class UpdateCategory extends Vue { 
+class UpdateCategory extends Vue {
   @Prop() categoryData!: any
   @Prop({ default: false }) isShow!: boolean
   @Prop() modalHeader!: any
@@ -69,7 +69,9 @@ class UpdateCategory extends Vue {
   async getOtherCategoryName() {
     await this.actCategoryList()
     this.categoryName = _.cloneDeep(this.categoryList)
-    this.categoryName = this.categoryName.map((item) =>{return item.name})
+    this.categoryName = this.categoryName.map((item) => {
+      return item.name
+    })
     this.categoryName = this.categoryName.filter((item) => {
       return item !== this.categoryData.name
     })
@@ -78,8 +80,8 @@ class UpdateCategory extends Vue {
 
   async checkDuplicate() {
     await this.getOtherCategoryName()
-    for(let i=0; i < this.categoryName.length; i++){
-      if(this.categoryInformation.name === this.categoryName[i]){
+    for (let i = 0; i < this.categoryName.length; i++) {
+      if (this.categoryInformation.name === this.categoryName[i]) {
         this.duplicatedItem.push(this.categoryInformation.name)
       }
     }
@@ -90,9 +92,9 @@ class UpdateCategory extends Vue {
     this.duplicatedItem = []
     await this.checkDuplicate()
   }
-  
+
   @Watch('categoryData')
-  updateData(){
+  updateData() {
     this.categoryInformation.id = this.categoryData.id
     this.categoryInformation.name = this.categoryData.name
     this.categoryInformation.icon = this.categoryData.icon
@@ -109,8 +111,7 @@ class UpdateCategory extends Vue {
         detail: 'category name dupicated !',
         life: 3000
       })
-    }
-    else if(this.categoryInformation.name === this.categoryData.name){
+    } else if (this.categoryInformation.name === this.categoryData.name) {
       const result = await this.actUpdateCategory({
         id: this.categoryInformation.id,
         icon: this.categoryInformation.icon,
@@ -135,8 +136,7 @@ class UpdateCategory extends Vue {
           life: 3000
         })
       }
-    }
-    else{
+    } else {
       const result = await this.actUpdateCategory({
         id: this.categoryInformation.id,
         name: this.categoryInformation.name,
@@ -174,8 +174,7 @@ class UpdateCategory extends Vue {
         detail: 'category name dupicated !',
         life: 3000
       })
-    }
-    else{
+    } else {
       this.$v.categoryInformation.name?.$touch()
       if (this.$v.$invalid) {
         return
@@ -214,7 +213,6 @@ class UpdateCategory extends Vue {
     this.$emit('close-modal')
     this.categoryInformation = []
   }
-
 }
 export default UpdateCategory
 </script>
