@@ -1,4 +1,4 @@
-          <template lang="pug">
+<template lang="pug">
 .receipt-note
   card.mb-5
     template(#title='')
