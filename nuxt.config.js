@@ -74,7 +74,9 @@ export default {
       'Breadcrumb',
       'Toast',
       'Textarea',
-      'Chart'
+      'Chart',
+      'ProgressBar',
+      'Card'
     ],
     directives: ['Tooltip', 'Badge']
   },
