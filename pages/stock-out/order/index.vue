@@ -324,7 +324,7 @@ class createOrder extends Vue {
       this.actWarehouseList()
     }
     if(this.dueDeliveryDate){
-      this.deliveryDate =  1 +  ' day' 
+      this.deliveryDate =  1 +  ' day'
     }
     this.noteBox =  this.listInfo?.note
 
@@ -604,7 +604,7 @@ class createOrder extends Vue {
   }
 
   get homeItem() {
-    return { to: '/stock-out/order-list', icon: 'pi pi-list' }  
+    return { to: '/stock-out/order-list', icon: 'pi pi-list' }
   }
 
   get breadcrumbItem() {

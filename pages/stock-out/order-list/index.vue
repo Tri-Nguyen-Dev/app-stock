@@ -167,25 +167,15 @@
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress")
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.receiverAddress }}
-        Column( sortable field='dueDeliveryDate' sortField="_dueDeliveryDate" headerClass="grid-header-right")
-          template(#header)
-            div
-              div.text-end Due
-              div Delivery Date
+        Column(header='DUE DELIVERY' sortable field='dueDeliveryDate' sortField="_dueDeliveryDate" headerClass="grid-header-right")
+
           template(#body='{ data }')
             div.grid-cell-right {{ data.dueDeliveryDate | dateMonthYear }}
-        Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
-          template(#header)
-            div
-              div.text-end Estimated
-              div Delivery Time
+        Column( header='EDT' sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.estimatedDeliveryTime }} {{(data.estimatedDeliveryTime) < 2 ? 'day' : 'days'}}
-        Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
-          template(#header)
-            div
-              div.text-end Latest
-              div update time
+        Column( header='Latest Update' sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
+  
           template(#body='{ data }')
             div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour24 }}
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
