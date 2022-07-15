@@ -83,6 +83,9 @@ class DeliveryChart extends Vue {
       legend: {
         display: false
       }
+    },
+    onClick: () => {
+      this.$router.push('/stock-out/order-list')
     }
   }
 }
@@ -91,6 +94,7 @@ export default DeliveryChart
 </script>
 <style lang="sass" scoped>
 .delivery-chart-container
+  cursor: pointer
   ::v-deep.p-card-body
     height: 100%
     .p-card-content
@@ -100,6 +104,7 @@ export default DeliveryChart
         flex: 1
         canvas
           height: 100% !important
+          width: 100% !important
   .header-chart
     h4
       margin: 0

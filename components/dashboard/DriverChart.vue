@@ -8,18 +8,41 @@
           .header-chart
             h4 Drivers
             .chart-statistics
-              span Active: 80/120
-              span New: +88
-            ProgressBar(:value="value2" :showValue="false")
-            span Average D/O: 6 per driver
+              span Active: {{ dataChart.active }}
+              span(v-tooltip="'Compared to last month'") New: +{{dataChart.new}}
+            ProgressBar(:value="dataChart.data" :showValue="false")
+            span Average D/O: {{ dataChart.average }} per driver
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue } from 'nuxt-property-decorator'
+const nsStoreDashboard = namespace('dashboard/data-chart')
 
 @Component
 class DriverChart extends Vue {
-  value2 = 70
+
+  @nsStoreDashboard.State
+  delivery!: any
+
+  get dataChart() {
+    if(this.delivery) {
+      const data = Math.floor((Math.random() * 30) + 1)
+      const total = Math.floor((Math.random() * 100) + 31)
+      return {
+        active: `${data}/${total}`,
+        new: Math.floor((Math.random() * 10) + 1),
+        data,
+        average: Math.floor((Math.random() * 10) + 1)
+      }
+    } else {
+      return {
+        active: 0/0,
+        new: 0,
+        data: 0,
+        average: 0
+      }
+    }
+  }
 }
 
 export default DriverChart

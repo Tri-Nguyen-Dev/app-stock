@@ -6,7 +6,7 @@
       .chart-container
         Chart(type="doughnut" :data="dataChart" :options="chartOptions")
       .chart-explication
-        span.font-medium Free Space: 88%
+        span.font-medium(v-if="noteObject.freeSpace") Free Space: {{ noteObject.freeSpace }}%
         .grid.mt-2(v-if="noteObject")
           .col.chart-explication-item(v-for="(item, index) in noteObject.labels" :key="item")
             .item-content
@@ -26,9 +26,10 @@ class CapacityChart extends Vue {
 
   get dataChart() {
     if(!this.capacity) return
+    const [freeSpace, capacity] = _.partition(this.capacity, ['sizeId', 'FREE_SPACE'])
     const dataChart: any = []
     const labels: any = []
-    _.forEach(this.capacity, ({ sizeName, value }) => {
+    _.forEach(capacity, ({ sizeName, value }) => {
       dataChart.push(value)
       labels.push(sizeName)
     })
@@ -40,17 +41,17 @@ class CapacityChart extends Vue {
           backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#00A469', '#00CFCE', '#7E57C2'],
           hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#00A469', '#00CFCE', '#7E57C2']
         }
-      ]
+      ],
+      freeSpace
     } 
   }
 
   get noteObject() {
-    if(this.dataChart) {
-      return {
-        data: _.get(this.dataChart, 'datasets[0]data', null),
-        colors: _.get(this.dataChart, 'datasets[0]backgroundColor', null),
-        labels: this.dataChart?.labels
-      }
+    return {
+      data: _.get(this.dataChart, 'datasets[0]data', null),
+      colors: _.get(this.dataChart, 'datasets[0]backgroundColor', null),
+      labels: this.dataChart?.labels,
+      freeSpace: _.get(this.dataChart, 'freeSpace[0].percent', null)
     }
   }
 
