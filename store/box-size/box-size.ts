@@ -22,7 +22,7 @@ export default class BoxSize extends VuexModule {
 
     @Mutation
     setBoxSizeList(data: any) {
-      this.boxSizeList = data
+      this.boxSizeList = data.items
     }
 
     @Mutation
