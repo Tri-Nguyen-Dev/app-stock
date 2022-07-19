@@ -7,26 +7,9 @@
       .header__action
         .header__search
           .icon.icon--left.icon-search
-          InputText(type='text' placeholder='Search' v-model="filter.name" v-on:input="debounceSearchName")
-        .btn__filter(:class="{'active': isShowFilter}")
-          .btn-toggle(@click="isShowFilter = !isShowFilter")
-            .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
-            span Filter
-          Button.btn-refresh(@click="handleRefeshFilter")
-            .icon.icon-rotate-left.bg-white
+          InputText(type='text' placeholder='Search warehouse name' v-model="filter.name" v-on:input="debounceSearchName")
         Button.btn.btn-primary(@click='isShowCreateWarehouse = true; warehouseData= null')
           span Add Warehouse
-    .grid.header__filter(:class='{ "active": isShowFilter }')
-      .fillter-container(class="col-12 sm:col-6")
-        FilterTable(
-          title="Name"
-          placeholder="Search Name"
-          name="name"
-          :value="filter.name"
-          :searchText="true"
-          @updateFilter="handleFilter"
-          :isShowFilter="isShowFilter"
-        )
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable(
