@@ -3,7 +3,7 @@
     h1.text-heading Delivery order list
     .stock__header.grid.mt-3
       div.col-12(class="lg:col-6")
-        TabView(@tab-click="handleTab($event)" :activeIndex.sync="indexTag")
+        TabView(@tab-click="handleTab($event)" :activeIndex="indexTag")
           TabPanel
             template(#header)
               .icon.icon-truck.mr-2.surface-600
@@ -298,7 +298,7 @@ class DeliveryOrderList extends Vue {
   deliveryList!: DeliveryList.Model[]
 
   @nsStoreOrderList.State
-  indexTag!: number
+  indexTag: number
 
   @nsStoreDelivery.Action
   getDeliveryList!: (params?: any) => Promise<void>
@@ -316,7 +316,7 @@ class DeliveryOrderList extends Vue {
   actGetReceiptLable!: (params: any) => Promise<string>
 
   @nsStoreOrderList.Mutation
-  setIndexTag!: (index: number) => any
+  setIndexTag: (index: number) => void
 
   @nsStoreExportReceipt.State
   receiptUrl!: any
