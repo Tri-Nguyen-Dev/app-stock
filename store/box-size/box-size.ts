@@ -13,7 +13,7 @@ export default class BoxSize extends VuexModule {
       GET_BOX_SIZE: '/box-size/list',
       GET_BOX_SIZE_DETAIL: '/box-size/:id/detail',
       UPDATE_BOX_SIZE: '/box-size/:id/update',
-      DELETE_BOX_SIZE: '/box-size/:id/delete',
+      DELETE_BOX_SIZE: '/box-size/list/delete',
       CREATE_BOX_SIZE: '/box-size/create'
     }
     
@@ -63,11 +63,13 @@ export default class BoxSize extends VuexModule {
 
     @Action ({ rawError: true })
     async actDeletedBoxSizeByIds( ids?: string[] ): Promise<string | undefined> {
+      // eslint-disable-next-line no-console
+      console.log(ids)
       const url = PathBind.transform(
         this.context, 
         BoxSize.STATE_URL.DELETE_BOX_SIZE
       )
-      const response: any = await $api.post(url, { ids })
+      const response: any = await $api.post(url, ids )
       if(!response.data) {
         return
       }

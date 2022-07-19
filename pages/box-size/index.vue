@@ -9,6 +9,7 @@
           .icon.icon--left.icon-search
           InputText(type='text' placeholder='Search')
         Button.btn.btn-primary(@click='isCreateBoxSize = true; boxSizeData = null')
+          .icon.icon-add-items
           span Add Box Size
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
@@ -69,7 +70,6 @@
       :isShow="isModalDelete"
       :onOk="handleDeleteBoxSize"
       :onCancel="handleCancel"
-      :deleted-list="selectedItem"
       :loading="loadingSubmit"
     )
       template(v-slot:message)
@@ -155,12 +155,6 @@ class BoxSize extends Vue {
   }
 
   // -- [functions] ------------------------------------------
-
-  showModalDelete(data: BoxSizeModel.Model[]) {
-    this.onEventDeleteList = data || this.selectedItem
-    this.isModalDelete = true
-  }
-
   selectRow() {
     this.$emit('selectRow', this.selectedItem)
     if (this.selectedItem.length === this.dataRenderItems.length) {
@@ -190,24 +184,25 @@ class BoxSize extends Vue {
   async getBoxSizeList() {
     await this.actBoxSizeList()
   }
+  
+  showModalDelete(data: BoxSizeModel.Model[]) {
+    this.onEventDeleteList = data || this.selectedItem
+    this.isModalDelete = true
+  }
 
   async handleDeleteBoxSize() {
-    try {
-      this.loadingSubmit = true
-      const data = await this.actDeletedBoxSizeByIds(_.map(this.onEventDeleteList, 'id'))
-      if (data) {
-        this.loadingSubmit = false
-        this.isModalDelete = false
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Success Message',
-          detail: 'Successfully deleted stock',
-          life: 3000
-        })
-        await this.getBoxSizeList()
-      }
-    } catch (error) {
+    this.loadingSubmit = true
+    const data = await this.actDeletedBoxSizeByIds(_.map(this.onEventDeleteList, 'id')) 
+    if (data) {
       this.loadingSubmit = false
+      this.isModalDelete = false
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted boxsize',
+        life: 3000
+      })
+      await this.getBoxSizeList()
     }
   }
 
