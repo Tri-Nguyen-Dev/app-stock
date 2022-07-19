@@ -78,7 +78,11 @@
             .flex.align-items-center.justify-content-center.flex-column
               img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
               p.text-900.font-bold.mt-3 Add box!
-    Dialog(:visible.sync='showModal', :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
+    Dialog(
+      :visible.sync='showModal'
+      :modal='true'
+      :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}'
+      @hide='hideDialog()')
         template(#header)
           h1.text-heading Select Box
         BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
@@ -133,11 +137,11 @@ class DeliveryOrder extends Vue {
 
   showModal = false
   addBox() {
-    this.showModal = true  
+    this.showModal = true
   }
 
   async  saveStockTake() {
-   
+
     const listBox = this.boxShow.map(element =>{
       return {
         id: element.id

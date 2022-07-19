@@ -33,7 +33,13 @@
       div(class="col-12 lg:col-12 xl:col-4")
         .grid
           div(class="col-12 md:col-3")
-            FilterTable(title="ID" :value="filter.id" placeholder="Enter ID" name="id" :searchText="true" @updateFilter="handleFilter" :isShowFilter="isShowFilter")
+            FilterTable(
+              title="ID"
+              :value="filter.id"
+              placeholder="Enter ID"
+              name="id" :searchText="true"
+              @updateFilter="handleFilter"
+              :isShowFilter="isShowFilter")
           div(class="col-12 md:col-9")
             .grid.grid-nogutter
               .col
@@ -171,7 +177,10 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Request } from '~/models/RequestList'
-import { REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT, exportFileTypePdf, getDeleteMessage, resetScrollTable } from '~/utils'
+import {
+  REQUEST_STATUS, refreshAllFilter, calculateIndex, PAGINATE_DEFAULT,
+  exportFileTypePdf, getDeleteMessage, resetScrollTable
+} from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'

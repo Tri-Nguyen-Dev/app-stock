@@ -28,7 +28,14 @@
       div(class="col-12 lg:col-12 xl:col-4")
         .grid
           div(class="col-12 md:col-3")
-            FilterTable(title="Note ID" :value="filter.id" placeholder="Enter ID" name="id" :searchText="true" @updateFilter="handleFilter" :isShowFilter="isShowFilter")
+            FilterTable(
+              title="Note ID"
+              :value="filter.id"
+              placeholder="Enter ID"
+              name="id"
+              :searchText="true"
+              @updateFilter="handleFilter"
+              :isShowFilter="isShowFilter")
           div(class="col-12 md:col-9")
             .grid.grid-nogutter
               .col
@@ -118,7 +125,8 @@
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.createdBy.staffId }}
           Column(header='PIC ID' field='picId' sortable sortField="_assignee.staffId")
             template(#body='{ data }')
-              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-if="data.assignee") {{ data.assignee.staffId }}
+              .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(
+                v-if="data.assignee") {{ data.assignee.staffId }}
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-else) N/A
           Column(header='Result' sortable field='result' sortField="_resultStatus" headerClass="grid-header-right")
               template(#body='{ data }')
@@ -177,7 +185,10 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf, getCancelMessage, resetScrollTable, getTotalQuantityLabel } from '~/utils'
+import {
+  PAGINATE_DEFAULT, calculateIndex, StockTakeConstants, exportFileTypePdf,
+  getCancelMessage, resetScrollTable, getTotalQuantityLabel
+} from '~/utils'
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
@@ -249,8 +260,12 @@ class StockTake extends Vue {
   // -- [ Getters ] -------------------------------------------------------------
   get selectedStockTakeFilter() {
     const user = this.user?.staffId
-    const isCheckDeleteOther = _.find(this.selectedStockTake, function(o) { return o.status !== 'IN_PROGRESS' && o.status !== 'NEW' })
-    const isCheckDeletePIC = _.find(this.selectedStockTake, function(o) { return o.status === 'IN_PROGRESS' && o.assignee?.staffId !== user })
+    const isCheckDeleteOther = _.find(this.selectedStockTake, function(o) {
+      return o.status !== 'IN_PROGRESS' && o.status !== 'NEW'
+    })
+    const isCheckDeletePIC = _.find(this.selectedStockTake, function(o) {
+      return o.status === 'IN_PROGRESS' && o.assignee?.staffId !== user
+    })
     if(isCheckDeleteOther || isCheckDeletePIC) {
       return []
     }

@@ -5,22 +5,37 @@ Dialog.item-list-dialog(:visible.sync='showModal', :showHeader='false' :modal='t
     .formgrid.grid(v-if= "!warehouseData")
       .field.col-12
         label.required__title(for='name') Name :
-        InputText#name.w-full(v-model='warehouseInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.warehouseInformation.name.$error}")
+        InputText#name.w-full(
+          v-model='warehouseInformation.name'
+          type='text'
+          class='focus:border-primary'
+          :class="{'name--error' : $v.warehouseInformation.name.$error}")
         .error-message(v-if='$v.warehouseInformation.name.$dirty && !$v.warehouseInformation.name.required') Name cannot be empty!
       .field.col-12
         label.required__title(for='icon') Address :
-        InputText#icon.w-full(v-model='warehouseInformation.address' type='text' :class="{'address--error' : $v.warehouseInformation.address.$error}")
-        .error-message(v-if='$v.warehouseInformation.address.$dirty && !$v.warehouseInformation.address.required') Address cannot be empty!
+        InputText#icon.w-full(
+          v-model='warehouseInformation.address'
+          type='text'
+          :class="{'address--error' : $v.warehouseInformation.address.$error}")
+        .error-message(
+          v-if='$v.warehouseInformation.address.$dirty && !$v.warehouseInformation.address.required'
+        ) Address cannot be empty!
       .field.col-12
         label.required__title(for='email') Email:
-        InputText#email.w-full(v-model='warehouseInformation.email' type='text' :class="{'email--error' : $v.warehouseInformation.email.$error}")
+        InputText#email.w-full(
+          v-model='warehouseInformation.email'
+          type='text'
+          :class="{'email--error' : $v.warehouseInformation.email.$error}")
         .error-message(v-if='$v.warehouseInformation.email.$dirty && !$v.warehouseInformation.email.required') Email cannot be empty!
       .field.col-12(class='lg:col-12')
         label(for='description') Description :
         InputText#description.w-full(v-model='warehouseInformation.description' type='text')
       .field.col-12(class='md:col-6')
         label.required__title(for='phone') Phone :
-        InputText#phone.w-full(v-model='warehouseInformation.phone' type='text' :class="{'phone--error' : $v.warehouseInformation.phone.$error}")
+        InputText#phone.w-full(
+          v-model='warehouseInformation.phone'
+          type='text'
+          :class="{'phone--error' : $v.warehouseInformation.phone.$error}")
         .error-message(v-if='$v.warehouseInformation.phone.$dirty && !$v.warehouseInformation.phone.required') Phone cannot be empty!
       .field.col-12(class='md:col-6')
         label(for='maxNumberRack') MaxNumberRack :
@@ -95,7 +110,7 @@ class AddNewWarehouse extends Vue {
     description: '',
     maxNumberRack: ''
   }
-  
+
   // -- [ state ]------------------------------------------------
   @nsStoreWarehouse.State
   warehouseList!: WarehouseModel.Model[]
@@ -155,7 +170,7 @@ class AddNewWarehouse extends Vue {
       description: this.warehouseInformation.description,
       maxNumberRack: +this.warehouseInformation.maxNumberRack
     })
-    
+
     await this.actWarehouseList()
     if(result){
       this.clearInform()
