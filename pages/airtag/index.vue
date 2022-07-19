@@ -12,7 +12,7 @@
             span Filter
           .btn-refresh(@click="handleRefreshFilter")
             .icon.icon-rotate-left.bg-white
-      Button.btn.btn-primary()
+      Button.btn.btn-primary(@click='handleCreate')
         .icon.icon-add-items
         span Add Airtag
   .grid.header__filter(:class='{ "active": isShowFilter }')
@@ -65,7 +65,7 @@
         Column(field='action', header='action', :styles='{ width: "5%" }')
           template(#body='{ data }')
             .table__action(:class="{'action-disabled': data.status === 'AIRTAG_STATUS_DISABLE'}")
-              span.action-item(@click='')
+              span.action-item(@click='handleUpdate(data)')
                 .icon.icon-edit-btn
               span.action-item(@click='showModalDelete([data])')
                 .icon.icon-btn-delete
@@ -81,7 +81,7 @@
             img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
             p.empty__text List is empty!, Click
               span &nbsp;here
-              span() &nbsp;to add item.
+              span(@click='handleCreate') &nbsp;to add item.
       ConfirmDialogCustom(
         title="Confirm delete"
         image="confirm-delete"
@@ -92,6 +92,12 @@
         template(v-slot:message)
           p {{ deleteMessage }}
       Toast
+      CreateOrUpdate(
+        :isShow="showModal"
+        :modalHeader ='modalHeader'
+        :categoryData='airtagData'
+        @close-modal='showModal = false',
+      )
 </template>
 
 <script lang="ts">
@@ -100,6 +106,7 @@ import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 import { Airtag as AirtagModel } from '~/models/AirTag'
+import CreateOrUpdate from '~/components/airtag/CreateOrUpdate.vue'
 import {
   PAGINATE_DEFAULT,
   calculateIndex,
@@ -112,19 +119,20 @@ const nsAirtagList = namespace('airtag/Airtag')
 @Component({
   components: {
     ConfirmDialogCustom,
-    Pagination
+    Pagination,
+    CreateOrUpdate  
   }
 })
 class Airtag extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   onEventDeleteList: any = []
   isModalDelete: boolean = false
-  showModalCreate: boolean = false
-  showModalUpdate: boolean = false
   airtagData: any = []
+  showModal: boolean = false
   isShowFilter: boolean = false
   selectedAirtag: AirtagModel.Model[] = []
   statusList = AirtagConstants.AIRTAG_STATUS_OPTIONS
+  modalHeader: string = ''
   filter: any = {
     name: null,
     barCode: null,
@@ -271,6 +279,17 @@ class Airtag extends Vue {
         pageSize: this.paging.pageSize
       })
     }
+  }
+
+  handleCreate() {
+    this.modalHeader = 'Create Category'
+    this.showModal = true
+  }
+
+  handleUpdate(airtagData) {
+    this.airtagData = airtagData
+    this.showModal = true
+    this.modalHeader = 'Update Category'
   }
 
   mounted() {

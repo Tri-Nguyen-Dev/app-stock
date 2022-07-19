@@ -16,7 +16,7 @@ export const PAGE_MENU = [
   { id: 3, icon: 'location', label: 'Bin', hideToggled: true },
   { id: 4, icon: 'award', label: 'Role', hideToggled: true },
   { id: 5, icon: 'user-octagon', label: 'Shipper', hideToggled: true },
-  { id: 6, icon: 'tag', label: 'Tags', hideToggled: true },
+  { id: 6, to: '/airtag', icon: 'tag', label: 'Tags', hideToggled: true },
   { id: 7, icon: 'send-square', label: 'Seller', hideToggled: true },
   { id: 8, to: '/dashboard', icon: 'dashboard', label: 'Dashboard', hideToggled: true },
   { id: 9, icon: 'dollar-square', label: 'Inventory Fee', hideToggled: true },
