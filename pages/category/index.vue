@@ -2,7 +2,7 @@
 .category
   .category__header
     div
-      h1.text-heading Categories
+      h1.text-heading Category
       span.text-subheading Total {{ categoriesTotal }} categories
     .header__action
       Button.btn.btn-primary(@click='handleCreate')
