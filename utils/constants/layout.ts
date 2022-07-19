@@ -20,7 +20,8 @@ export const PAGE_MENU = [
   { id: 7, icon: 'send-square', label: 'Seller', hideToggled: true },
   { id: 8, to: '/dashboard', icon: 'dashboard', label: 'Dashboard', hideToggled: true },
   { id: 9, icon: 'dollar-square', label: 'Inventory Fee', hideToggled: true },
-  { id: 13, to: '/warehouse', icon: 'house-2', label: 'Warehouse', hideToggled: true }
+  { id: 13, to: '/warehouse', icon: 'house-2', label: 'Warehouse', hideToggled: true },
+  { id: 10, to: '/category', icon: 'list-ul', label: 'Category', hideToggled: true }
 ]
 
 export const SETTING_MENU = [
