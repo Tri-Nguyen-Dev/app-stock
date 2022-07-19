@@ -2,13 +2,13 @@
   .box-size
     .box-size__header
       div 
-        h1.text-heading Box Size 
+        h1.text-heading Box Size
         span.text-subheading {{ total }} types found
       .header__action
         .header__search
           .icon.icon--left.icon-search
           InputText(type='text' placeholder='Search')
-        Button.btn.btn-primary(@click='isCreateBoxSize = true' boxSizeData = null)
+        Button.btn.btn-primary(@click='isCreateBoxSize = true; boxSizeData = null')
           span Add Box Size
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white

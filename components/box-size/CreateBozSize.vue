@@ -3,15 +3,15 @@ Dialog.item-list-dialog(:visible.sync='showModal', :showHeader='false' :modal='t
   .text-heading.confirm-dialog__title Add New BoxSize
   .card.card-container
     .formgrid.grid(v-if= "!boxSizeData")
-      .field.col-12
+      .field.col-12(class='md:col-6')
         label.required__title(for='name') Name :
         InputText#name.w-full(v-model='boxSizeInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.boxSizeInformation.name.$error}")
         .error-message(v-if='$v.boxSizeInformation.name.$dirty && !$v.boxSizeInformation.name.required') Name cannot be empty!
-      .field.col-12
+      .field.col-12(class='md:col-6')
         label.required__title(for='height') Height :
         InputText#height.w-full(v-model='boxSizeInformation.height' type='text' :class="{'height--error' : $v.boxSizeInformation.height.$error}")
         .error-message(v-if='$v.boxSizeInformation.height.$dirty && !$v.boxSizeInformation.height.required') Height cannot be empty!
-      .field.col-12
+      .field.col-12(class='md:col-6')
         label.required__title(for='width') Width :
         InputText#width.w-full(v-model='boxSizeInformation.width' type='text' :class="{'width--error' : $v.boxSizeInformation.width.$error}")
         .error-message(v-if='$v.boxSizeInformation.width.$dirty && !$v.boxSizeInformation.width.required') Width cannot be empty!
@@ -21,13 +21,13 @@ Dialog.item-list-dialog(:visible.sync='showModal', :showHeader='false' :modal='t
         .error-message(v-if='$v.boxSizeInformation.length.$dirty && !$v.boxSizeInformation.length.required') Length cannot be empty!
       .field.col-12.modal-btn(class='md:col-9')
     .formgrid.grid(v-if= " boxSizeData && boxSizeData.id")
-      .field.col-12
+      .field.col-12(class='md:col-6')
         label.required__title(for='name') Name :
         InputText#name.w-full(v-model='boxSizeData.name' type='text' class='focus:border-primary')
-      .field.col-12
+      .field.col-12(class='md:col-6')
         label.required__title(for='height') Height :
         InputText#height.w-full(v-model='boxSizeData.height' type='text')
-      .field.col-12
+      .field.col-12(class='md:col-6')
         label.required__title(for='width') Width :
         InputText#width.w-full(v-model='boxSizeData.width' type='text')
       .field.col-12(class='md:col-6')
@@ -85,7 +85,7 @@ class AddNewBoxSize extends Vue {
   boxSizeList!: BoxSizeModel.Model[]
   // --[ getter ] -----------------------------------------------
 
-  @Watch('isShowCreateWarehouse')
+  @Watch('isCreateBoxSize')
   setShowModal(){
     this.showModal = this.isCreateBoxSize
   }
