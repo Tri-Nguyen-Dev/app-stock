@@ -65,7 +65,6 @@
         :value='deliveryList'
         @sort="sortData($event)"
         :class="{ 'table-wrapper-empty': !deliveryList || deliveryList.length <= 0 }"
-        :rowClass="rowClass"
         responsiveLayout="scroll"
         :selection='selectedDelivery'
         dataKey='id'
@@ -81,7 +80,7 @@
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.font-bold {{ data.id }}
         Column(header='Created time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
-            div {{ data.createTime | dateTimeHour24 }}
+            div {{ data.createTime | dateTime }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.sellerEmail }}
@@ -213,12 +212,6 @@ class PackingNoteList extends Vue {
       this.paging.pageNumber,
       this.paging.pageSize
     )
-  }
-
-  rowClass(data: DeliveryList.Model) {
-    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS'
-      && data.assigneeId !== this.user.id
-      || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
   mounted() {

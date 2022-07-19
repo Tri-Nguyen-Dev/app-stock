@@ -86,7 +86,7 @@
           span {{slotProps.data.id}}
       Column(field="createdAt" header="CREATED TIME" :sortable="true" :styles="{width: '5rem'}"   sortField="_createdAt")
         template(#body='{ data }')
-          span {{ data.createdAt | dateTimeHour24 }}
+          span {{ data.createdAt | dateTime }}
       Column(
         field="createdBy.staffId"
         header="CREATOR ID"
