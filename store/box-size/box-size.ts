@@ -39,4 +39,38 @@ export default class BoxSize extends VuexModule {
       const response = await $api.get(url)
       return response.data
     }
+
+    @Action({ commit: 'setNewBoxSize', rawError: true })
+    async actCreateNewBoxSize(params: any): Promise<string | undefined> {
+      const url = PathBind.transform(
+        this.context,
+        BoxSize.STATE_URL.CREATE_BOX_SIZE
+      )
+      const response = await $api.post(url, params)
+      return response.data
+    }
+
+    @Action({ rawError: true })
+    async actUpdateBoxSize(params: any): Promise<string | undefined> {
+      const url = PathBind.transform(
+        this.context,
+        BoxSize.STATE_URL.UPDATE_BOX_SIZE,
+        { id: params.id }
+      )
+      const response: any = await $api.post(url, params)
+      return response.data
+    }
+
+    @Action ({ rawError: true })
+    async actDeletedBoxSizeByIds( ids?: string[] ): Promise<string | undefined> {
+      const url = PathBind.transform(
+        this.context, 
+        BoxSize.STATE_URL.DELETE_BOX_SIZE
+      )
+      const response: any = await $api.post(url, { ids })
+      if(!response.data) {
+        return
+      }
+      return response.data 
+    }
 }

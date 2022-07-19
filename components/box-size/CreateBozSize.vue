@@ -5,40 +5,72 @@ Dialog.item-list-dialog(:visible.sync='showModal', :showHeader='false' :modal='t
     .formgrid.grid(v-if= "!boxSizeData")
       .field.col-12(class='md:col-6')
         label.required__title(for='name') Name :
-        InputText#name.w-full(v-model='boxSizeInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.boxSizeInformation.name.$error}")
-        .error-message(v-if='$v.boxSizeInformation.name.$dirty && !$v.boxSizeInformation.name.required') Name cannot be empty!
+        InputText#name.w-full(
+          v-model='boxSizeInform.name' 
+          type='text' class='focus:border-primary' 
+          :class="{'name--error' : $v.boxSizeInform.name.$error}"
+        )
+        .error-message(v-if='$v.boxSizeInform.name.$dirty && !$v.boxSizeInform.name.required') Name cannot be empty!
       .field.col-12(class='md:col-6')
         label.required__title(for='height') Height :
-        InputText#height.w-full(v-model='boxSizeInformation.height' type='text' :class="{'height--error' : $v.boxSizeInformation.height.$error}")
-        .error-message(v-if='$v.boxSizeInformation.height.$dirty && !$v.boxSizeInformation.height.required') Height cannot be empty!
+        InputText#height.w-full(
+          v-model='boxSizeInform.height' 
+          type='text' 
+          :class="{'height--error' : $v.boxSizeInform.height.$error}"
+        
+        )
+        .error-message(v-if='$v.boxSizeInform.height.$dirty && !$v.boxSizeInform.height.required') Height cannot be empty!
       .field.col-12(class='md:col-6')
         label.required__title(for='width') Width :
-        InputText#width.w-full(v-model='boxSizeInformation.width' type='text' :class="{'width--error' : $v.boxSizeInformation.width.$error}")
-        .error-message(v-if='$v.boxSizeInformation.width.$dirty && !$v.boxSizeInformation.width.required') Width cannot be empty!
+        InputText#width.w-full(
+          v-model='boxSizeInform.width' 
+          type='text' 
+          :class="{'width--error' : $v.boxSizeInform.width.$error}"
+        )
+        .error-message(v-if='$v.boxSizeInform.width.$dirty && !$v.boxSizeInform.width.required') Width cannot be empty!
       .field.col-12(class='md:col-6')
         label.required__title(for='length') Length :
-        InputText#length.w-full(v-model='boxSizeInformation.length' type='text' :class="{'length--error' : $v.boxSizeInformation.length.$error}")
-        .error-message(v-if='$v.boxSizeInformation.length.$dirty && !$v.boxSizeInformation.length.required') Length cannot be empty!
+        InputText#length.w-full(
+          v-model='boxSizeInform.length' 
+          type='text' 
+          :class="{'length--error' : $v.boxSizeInform.length.$error}"
+        )
+        .error-message(v-if='$v.boxSizeInform.length.$dirty && !$v.boxSizeInform.length.required') Length cannot be empty!
       .field.col-12.modal-btn(class='md:col-9')
     .formgrid.grid(v-if= " boxSizeData && boxSizeData.id")
       .field.col-12(class='md:col-6')
         label.required__title(for='name') Name :
-        InputText#name.w-full(v-model='boxSizeData.name' type='text' class='focus:border-primary')
+        InputText#name.w-full(
+          v-model='boxSizeData.name' 
+          type='text' 
+          class='focus:border-primary'
+        )
       .field.col-12(class='md:col-6')
         label.required__title(for='height') Height :
-        InputText#height.w-full(v-model='boxSizeData.height' type='text')
+        InputText#height.w-full(
+          v-model='boxSizeData.height' 
+          type='text'
+        )
       .field.col-12(class='md:col-6')
         label.required__title(for='width') Width :
-        InputText#width.w-full(v-model='boxSizeData.width' type='text')
+        InputText#width.w-full(
+          v-model='boxSizeData.width' 
+          type='text'
+        )
       .field.col-12(class='md:col-6')
         label.required__title(for='length') Length :
-        InputText#length.w-full(v-model='boxSizeData.length' type='text')
+        InputText#length.w-full(
+          v-model='boxSizeData.length' 
+          type='text'
+        )
       .field.col-12.modal-btn(class='md:col-9')
   template(#footer)
     .field.col-12.modal-btn(class='md:col-9')
       Button.btn.btn-cancel(@click="$emit('close-modal')") Cancel
         span
-      Button.btn.btn-primary
+      Button.btn.btn-primary(v-if="!boxSizeData" @click="addItem()")
+        span Save
+      Button.btn.btn-primary(v-if="boxSizeData" @click="UpdateItem()")
         span Save
 </template>
 
@@ -53,7 +85,7 @@ const nsStoreBoxSize = namespace('box-size/box-size')
     ConfirmDialogCustom
   },
   validations: {
-    boxSizeInformation: {
+    boxSizeInform: {
       name: {
         required
       },
@@ -73,22 +105,114 @@ class AddNewBoxSize extends Vue {
   @Prop() isCreateBoxSize = false
   @Prop() boxSizeData!: any
   showModal = false
-  boxSizeInformation: any = {
+  boxSizeInform: any = {
     name: '',
     height: '',
     width: '',
-    length:''
+    length: ''
   }
 
   // -- [ state ]------------------------------------------------
   @nsStoreBoxSize.State
   boxSizeList!: BoxSizeModel.Model[]
+
+  @nsStoreBoxSize.State
+  newBoxSize!: BoxSizeModel.CreateOrUpdateBoxSize
+
+  @nsStoreBoxSize.Action
+  actBoxSizeList!: () => Promise<void>
+
+  @nsStoreBoxSize.Action
+  actCreateNewBoxSize!: (param?: any) => Promise<void>
+  
+  @nsStoreBoxSize.Action
+  actUpdateBoxSize!: (param?: any) => Promise<any>
+
   // --[ getter ] -----------------------------------------------
 
   @Watch('isCreateBoxSize')
   setShowModal(){
     this.showModal = this.isCreateBoxSize
   }
+
+  // --[ functions ] --------------------------------------------
+  async mounted() {
+    await Promise.all([this.actBoxSizeList()])
+  }
+
+  clearInform(){
+    this.boxSizeInform.name = ''
+    this.boxSizeInform.height =''
+    this.boxSizeInform.width =''
+    this.boxSizeInform.length =''
+  }
+
+  async addItem() {
+    this.$v.boxSizeInform.name?.$touch()
+    this.$v.boxSizeInform.height?.$touch()
+    this.$v.boxSizeInform.width?.$touch()
+    this.$v.boxSizeInform.length?.$touch()
+    if (this.$v.$invalid) {
+      return
+    }
+    const result: any = await this.actCreateNewBoxSize({
+      name: this.boxSizeInform.name,
+      height: +this.boxSizeInform.height,
+      width: +this.boxSizeInform.width,
+      length: +this.boxSizeInform.length
+    })
+
+    await this.actBoxSizeList()
+    if(result){
+      this.clearInform()
+      this.$emit('close-modal', this.boxSizeInform)
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully create new category',
+        life: 3000
+      })
+    } else {
+      this.clearInform()
+      this.$emit('close-modal', this.boxSizeInform)
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Create category failed!',
+        life: 3000
+      })
+    }
+  }
+
+  async UpdateItem(){
+    const result = await this.actUpdateBoxSize({
+      id: this.boxSizeData.id,
+      name: this.boxSizeData.name,
+      height: this.boxSizeData.height,
+      width: this.boxSizeData.width,
+      length: this.boxSizeData.length
+    })
+    if (result){
+      await this.actBoxSizeList()
+      this.clearInform()
+      this.$emit('close-modal', this.boxSizeData)
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully update box',
+        life: 3000
+      }) 
+    } else {
+      this.clearInform()
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Update category failed!',
+        life: 3000
+      })
+    }
+  }
+
 }
 
 export default AddNewBoxSize

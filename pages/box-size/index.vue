@@ -17,6 +17,9 @@
           :rowHover='true'
           responsiveLayout='scroll'
           :value='dataRenderItems'
+          :selection.sync='selectedItem'
+          @row-select='selectRow()'
+
         )
           Column(
             selectionMode='multiple'
@@ -24,7 +27,7 @@
           )
           Column(field='no' header='NO' :styles="{'width': '1%'}" )
             template(#body='{ index }')
-              span.grid-cell-center.warehouse__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
+              span.grid-cell-center.boxsize__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(header='Name' field='name' headerClass="grid-header-center")
             template(#body='{ data }')
               div.grid-cell-left {{ data.name }}
@@ -72,7 +75,11 @@
       template(v-slot:message)
         p {{ deleteMessage }}
     Toast
-    CreateBoxSize( :isCreateBoxSize="isCreateBoxSize" @close-modal="isCreateBoxSize = false" :boxSizeData="boxSizeData")
+    CreateBoxSize( 
+      :isCreateBoxSize="isCreateBoxSize" 
+      @close-modal="isCreateBoxSize = false"
+      :boxSizeData="boxSizeData"
+    )
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
@@ -114,6 +121,9 @@ class BoxSize extends Vue {
   @nsStoreBoxSize.Action
   actBoxSizeList!: () => Promise<void>
 
+  @nsStoreBoxSize.Action
+  actDeletedBoxSizeByIds!: (ids: string[]) => Promise<any>
+
   // --[ getter ] --------------------------------------------
   
   get total() {
@@ -129,7 +139,7 @@ class BoxSize extends Vue {
   }
 
   get deleteMessage() {
-    return getDeleteMessage(this.onEventDeleteList, 'warehouse')
+    return getDeleteMessage(this.onEventDeleteList, 'box-size')
   }
 
   onPage(event: any) {
@@ -151,6 +161,23 @@ class BoxSize extends Vue {
     this.isModalDelete = true
   }
 
+  selectRow() {
+    this.$emit('selectRow', this.selectedItem)
+    if (this.selectedItem.length === this.dataRenderItems.length) {
+      this.$emit('enablePack', true)
+    }
+  }
+
+  unSelectRow({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
+    this.selectedItem = _.filter(
+      this.selectedItem,
+      (boxsize: any) => boxsize.id !== data._id
+    )
+    this.$emit('enablePack', false)
+
+  }
+
   handleCancel() {
     this.isModalDelete = false
   }
@@ -165,6 +192,23 @@ class BoxSize extends Vue {
   }
 
   async handleDeleteBoxSize() {
+    try {
+      this.loadingSubmit = true
+      const data = await this.actDeletedBoxSizeByIds(_.map(this.onEventDeleteList, 'id'))
+      if (data) {
+        this.loadingSubmit = false
+        this.isModalDelete = false
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Successfully deleted stock',
+          life: 3000
+        })
+        await this.getBoxSizeList()
+      }
+    } catch (error) {
+      this.loadingSubmit = false
+    }
   }
 
   async mounted() {
