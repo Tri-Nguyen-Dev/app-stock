@@ -313,8 +313,8 @@ class DeliveryOrderPacking extends Vue {
 
   get isDisabled() {
     if(_.size(this.listOriginalBox)) {
-      const unprocessedStocks = _.partition(_.flatten(_.map(this.listOriginalBox, 'items')), function({ outGoingQuantity, actualOutGoing }) { 
-        return outGoingQuantity === actualOutGoing
+      const unprocessedStocks = _.partition(_.flatten(_.map(this.listOriginalBox, 'items')), function({ out, actual }) {
+        return out === actual
       })[1]
       const unsetBoxSizeOutGoing = _.partition(this.listOutGoingBox, { 'boxSize': null })[0]
       const unsetTagCode = _.partition(this.listOutGoingBox, { 'airtag': null, checked: true  })[0]
@@ -366,7 +366,7 @@ class DeliveryOrderPacking extends Vue {
             },
             note: this.valueReportNote
           }
-        ] 
+        ]
       })
       if(result) {
         this.isShowModalReport = false

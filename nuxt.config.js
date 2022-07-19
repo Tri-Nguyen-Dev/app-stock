@@ -150,6 +150,11 @@ export default {
         _: 'lodash'
       })
     ],
+    loaders: {
+      vue: {
+        compiler: require('vue-template-babel-compiler')
+      }
+    },
     babel: {
       compact: true,
       plugins: [

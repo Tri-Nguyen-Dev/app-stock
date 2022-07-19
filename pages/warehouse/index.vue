@@ -1,5 +1,5 @@
 <template lang="pug">
-  .warehouse 
+  .warehouse
     .warehouse__header
       div
         h1.text-heading Warehouse List
@@ -7,26 +7,9 @@
       .header__action
         .header__search
           .icon.icon--left.icon-search
-          InputText(type='text' placeholder='Search' v-model="filter.name" v-on:input="debounceSearchName")
-        .btn__filter(:class="{'active': isShowFilter}")
-          .btn-toggle(@click="isShowFilter = !isShowFilter")
-            .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
-            span Filter
-          Button.btn-refresh(@click="handleRefeshFilter")
-            .icon.icon-rotate-left.bg-white
+          InputText(type='text' placeholder='Search warehouse name' v-model="filter.name" v-on:input="debounceSearchName")
         Button.btn.btn-primary(@click='isShowCreateWarehouse = true; warehouseData= null')
           span Add Warehouse
-    .grid.header__filter(:class='{ "active": isShowFilter }')
-      .fillter-container(class="col-12 sm:col-6")
-        FilterTable(
-          title="Name"
-          placeholder="Search Name"
-          name="name"
-          :value="filter.name"
-          :searchText="true"
-          @updateFilter="handleFilter"
-          :isShowFilter="isShowFilter"
-        )
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
         DataTable(
@@ -102,7 +85,10 @@
       template(v-slot:message)
         p {{ deleteMessage }}
     Toast
-    CreateWarehouse( :isShowCreateWarehouse="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" :warehouseData="warehouseData")
+    CreateWarehouse(
+      :isShowCreateWarehouse="isShowCreateWarehouse"
+      @close-modal="isShowCreateWarehouse = false"
+      :warehouseData="warehouseData")
 </template>
 
 <script lang="ts">
@@ -166,8 +152,8 @@ class Warehouse extends Vue {
 
   @nsStoreWarehouse.Action
   actDeletedWarehouseById!: (id?: any) => Promise<any>
-  
-  // --[ getter ] ----------------------------- 
+
+  // --[ getter ] -----------------------------
   get total() {
     return this.warehouseList.length
   }
@@ -176,7 +162,7 @@ class Warehouse extends Vue {
     const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
-  
+
   onPage(event: any) {
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
@@ -188,7 +174,7 @@ class Warehouse extends Vue {
     const result = this.warehouseList.slice(start, end)
     return result
   }
-  
+
   showModalDelete(data: WarehouseModel.Model[]) {
     this.onEventDeleteList = data || this.selectedItem
     this.isModalDelete = true
@@ -297,11 +283,11 @@ class Warehouse extends Vue {
   unSelectRow({ originalEvent, data }) {
     originalEvent.originalEvent.stopPropagation()
     this.selectedItem = _.filter(
-      this.selectedItem, 
+      this.selectedItem,
       (warehouse: any) => warehouse.id !== data._id
     )
     this.$emit('enablePack', false)
-    
+
   }
 
   rowSelectAll({ data }) {
