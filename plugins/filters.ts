@@ -31,7 +31,7 @@ Vue.filter('dateMonthYear', (value) => {
 
 // -- [ Format date  type] ------------------------------------------------
 Vue.filter('dateMonthYear', (value) => {
-  return dayjs(new Date(value)).format('DD/MM/YYYY')
+  return dayjs(new Date(value)).format('MM/DD/YYYY')
 })
 
 // -- [ AWS ] ------------------------------------------------
