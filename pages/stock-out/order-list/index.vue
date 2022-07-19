@@ -167,25 +167,15 @@
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress")
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.receiverAddress }}
-        Column( sortable field='dueDeliveryDate' sortField="_dueDeliveryDate" headerClass="grid-header-right")
-          template(#header)
-            div
-              div.text-end Due
-              div Delivery Date
+        Column(header='DUE DELIVERY' sortable field='dueDeliveryDate' sortField="_dueDeliveryDate" headerClass="grid-header-right")
+
           template(#body='{ data }')
             div.grid-cell-right {{ data.dueDeliveryDate | dateMonthYear }}
-        Column( sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
-          template(#header)
-            div
-              div.text-end Estimated
-              div Delivery Time
+        Column( header='EDT' sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.estimatedDeliveryTime | estimateDayConvert }} {{(data.estimatedDeliveryTime/fullDayTime) < 2 ? 'day' : 'days'}}
-        Column( sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
-          template(#header)
-            div
-              div.text-end Latest
-              div update time
+            div.grid-cell-right {{ data.estimatedDeliveryTime }} {{(data.estimatedDeliveryTime) < 2 ? 'day' : 'days'}}
+        Column( header='Latest Update' sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
+  
           template(#body='{ data }')
             div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour24 }}
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
@@ -193,9 +183,9 @@
             div.grid-cell-right(v-if="data.assignee") {{data.assignee.staffId}}
             div.grid-cell-right(v-else) N/A
         Column(v-if="activeTab == 1"
-          header='Driver' sortable field='driverPhone' sortField="_driverPhone" headerClass="grid-header-right")
+          header='Driver' sortable field='driverPhone' sortField="_driver.phoneNumber" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.driverPhone === null ? 'N/A' : data.driverPhone }}
+            div.grid-cell-right(v-if='data.driver')  {{ data.driver.phoneNumber === null ? 'N/A' : data.driver.phoneNumber }}
         Column(v-if="activeTab == 2"
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')
@@ -233,7 +223,7 @@
       :isModalDriverList='isModalDriverList',
       @hideDialog='hideDialog($event)',
       @assigned='assignedDriver($event)'
-      :orderIds='orderIds'
+      :orderIds='setDelivery'
     )
 </template>
 <script lang="ts">
@@ -420,7 +410,7 @@ class DeliveryOrderList extends Vue {
       createTimeTo: this.filter.createTimeTo? dayjs(this.filter.createTimeTo).format('YYYY-MM-DD') : null,
       dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom? dayjs(this.filter.dueDeliveryDateFrom).format('YYYY-MM-DD') : null,
       dueDeliveryDateTo: this.filter.dueDeliveryDateTo? dayjs(this.filter.dueDeliveryDateTo).format('YYYY-MM-DD') : null,
-      sortBy: this.filter.sortBy ||null,
+      sortBy: this.filter.sortBy || null,
       desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
       warehouseId: this.filter.warehouseId?.id,

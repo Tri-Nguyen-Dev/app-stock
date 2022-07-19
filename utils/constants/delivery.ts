@@ -62,6 +62,19 @@ export namespace DeliveryConstants {
     [StatusDeliveryName.RETURNED, 'Returned'],
     [StatusDeliveryName.PENDING, 'Pending']
   ])
+
+  export const MapColorDelivery = new Map<string, string>([
+    [StatusDeliveryName.NEW, '#00A469'],
+    [StatusDeliveryName.IN_PROGRESS,'#AB47BC'],
+    [StatusDeliveryName.CANCELLED,'#979AA4'],
+    [StatusDeliveryName.READY, '#7E57C2'],
+    [StatusDeliveryName.SETTED, '#FFBF24'],
+    [StatusDeliveryName.ACCEPTED,'#66BB6A'],
+    [StatusDeliveryName.DELIVERING, '#00CFCE'],
+    [StatusDeliveryName.DELIVERED,'#FF6285'],
+    [StatusDeliveryName.RETURNED, '#E041A0'],
+    [StatusDeliveryName.PENDING, '#FF9756']
+  ])
 }
 
 export class StatusDelivery {

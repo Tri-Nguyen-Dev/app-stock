@@ -492,7 +492,6 @@ class createOrder extends Vue {
   }
 
   handleSeller(event: any) {
-    // await this.actWarehouseBySeller({ email: event.email })
     const InfoSeller = this.information.seller
     InfoSeller[0].value = event.email
     InfoSeller[0].id = event.id
@@ -568,11 +567,11 @@ class createOrder extends Vue {
   }
 
   async handleDelete() {
-    const b = this.valueDelete[0]
-    const c = _.cloneDeep(this.listItemsAdd)
-    _.remove(c, ({ id }) => id === b.id)
+    const valueDelete = this.valueDelete[0]
+    const val = _.cloneDeep(this.listItemsAdd)
+    _.remove(val, ({ id }) => id === valueDelete.id)
     const result : any =  await this.actOutGoingList(
-      c)
+      val)
     if( result ) {
       this.isModalDelete = false
       this.$toast.add({

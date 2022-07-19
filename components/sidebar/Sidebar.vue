@@ -1,5 +1,5 @@
 <template lang="pug">
-  .sidebar(:style="{ width: sidebarWidth }")
+  .sidebar(:style="{ width: sidebarWidth }" :class="{ 'sidebar-collapsed': !collapsed }")
     .menu-section.sidebar-head
       template(v-if="!collapsed")
         img.user-avatar(:src="user.avatarUrl | getThumbnailUrl")
@@ -146,7 +146,14 @@ export default MenuSidebar
   position: absolute
   top: 0
   right: -10px
-  
+
+.sidebar-collapsed
+  .sidebar-content
+    overflow: hidden
+
+  .sidebar-content:hover
+    overflow-y: overlay
+
 .sidebar
   @include flex-column
   float: left
@@ -182,7 +189,6 @@ export default MenuSidebar
     flex: 1
     padding: 0 $space-size-16
     position: relative
-    overflow: hidden
 
     &-menu
       padding-top: $space-size-16
@@ -194,9 +200,6 @@ export default MenuSidebar
       min-height: 130px
       margin-top: auto
 
-  &-content:hover
-    overflow-y: overlay
-  
   .menu-section
     position: relative
 
