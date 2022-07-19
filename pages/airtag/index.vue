@@ -67,7 +67,7 @@
             .table__action(:class="{'action-disabled': data.status === 'AIRTAG_STATUS_DISABLE'}")
               span.action-item(@click='')
                 .icon.icon-edit-btn
-              span.action-item(@click.stop='')
+              span.action-item(@click='showModalDelete([data])')
                 .icon.icon-btn-delete
         template(#footer)
           Pagination(
@@ -82,7 +82,16 @@
             p.empty__text List is empty!, Click
               span &nbsp;here
               span() &nbsp;to add item.
-
+      ConfirmDialogCustom(
+        title="Confirm delete"
+        image="confirm-delete"
+        :isShow="isModalDelete"
+        :onOk="handleDeleteAirtag"
+        :onCancel="handleCancel"
+      )
+        template(v-slot:message)
+          p {{ deleteMessage }}
+      Toast
 </template>
 
 <script lang="ts">
@@ -95,6 +104,7 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   resetScrollTable,
+  getDeleteMessage,
   AirtagConstants
 } from '~/utils'
 const nsAirtagList = namespace('airtag/Airtag')
@@ -228,6 +238,39 @@ class Airtag extends Vue {
       this.selectedAirtag,
       (AirTag: any) => AirTag.id !== data.id
     )
+  }
+
+  handleCancel() {
+    this.isModalDelete = false
+  }
+
+  showModalDelete(data?: any) {
+    this.onEventDeleteList = data
+    this.isModalDelete = true
+  }
+
+  get deleteMessage() {
+    return getDeleteMessage(this.onEventDeleteList, 'Airtag list')
+  }
+
+  async handleDeleteAirtag() {
+    const id = _.map(this.onEventDeleteList, 'id')
+    const result = await this.actDeleteairtagByIds(id[0])
+    if (result) {
+      this.isModalDelete = false
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully deleted box',
+        life: 3000
+      })
+      this.paging.first = 0
+      this.paging.pageNumber = 0
+      await this.actAirtagList({
+        pageNumber: this.paging.pageNumber,
+        pageSize: this.paging.pageSize
+      })
+    }
   }
 
   mounted() {

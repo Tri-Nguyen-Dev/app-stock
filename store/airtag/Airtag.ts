@@ -1,7 +1,6 @@
 import { Module, Mutation, VuexModule, Action } from 'vuex-module-decorators'
 import { PathBind } from '~/utils/commons/path-bind'
 import { $api } from '~/utils'
-// import { Airtag as AirtagModel } from '~/models/Airtag'
 
 @Module({
   stateFactory: true,
@@ -51,14 +50,12 @@ export default class Airtag extends VuexModule {
 
   @Action({ rawError: true })
   async actCreateNewAirtag(params: any): Promise<string | undefined> {
-    try {
-      const url = PathBind.transform(
-        this.context,
-        Airtag.STATE_URL.CREATE_AIRTAG
-      )
-      const response = await $api.post(url, params)
-      return response.data
-    } catch (error) {}
+    const url = PathBind.transform(
+      this.context,
+      Airtag.STATE_URL.CREATE_AIRTAG
+    )
+    const response = await $api.post(url, params)
+    return response.data
   }
 
   @Action({ rawError: true })
