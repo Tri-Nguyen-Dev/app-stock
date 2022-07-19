@@ -65,7 +65,6 @@
         :value='deliveryList'
         @sort="sortData($event)"
         :class="{ 'table-wrapper-empty': !deliveryList || deliveryList.length <= 0 }"
-        :rowClass="rowClass"
         responsiveLayout="scroll"
         :selection='selectedDelivery'
         dataKey='id'
@@ -213,12 +212,6 @@ class PackingNoteList extends Vue {
       this.paging.pageNumber,
       this.paging.pageSize
     )
-  }
-
-  rowClass(data: DeliveryList.Model) {
-    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS'
-      && data.assigneeId !== this.user.id
-      || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
   mounted() {

@@ -488,7 +488,7 @@ class CreateOrUpdateReceipt extends Vue {
         },
         box: '',
         amount: stockInformation.quantity,
-        value: stockInformation.value,
+        value: +stockInformation.value,
         sku: stockInformation.sku,
         itemStatus: ''
       }
