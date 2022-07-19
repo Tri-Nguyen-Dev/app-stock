@@ -3,7 +3,7 @@
     h1.text-heading Delivery order list
     .stock__header.grid.mt-3
       div.col-12(class="lg:col-6")
-        TabView(@tab-click="handleTab($event)")
+        TabView(@tab-click="handleTab($event)" :activeIndex.sync="indexTag")
           TabPanel
             template(#header)
               .icon.icon-truck.mr-2.surface-600
@@ -250,6 +250,7 @@ const nsStoreDelivery = namespace('delivery/delivery-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const nsStoreExportReceipt = namespace('delivery/export-receipt')
 const nsStoreUser = namespace('user-auth/store-user')
+const nsStoreOrderList = namespace('stock-out/order-list')
 
 @Component({
   components: {
@@ -296,6 +297,9 @@ class DeliveryOrderList extends Vue {
   @nsStoreDelivery.State
   deliveryList!: DeliveryList.Model[]
 
+  @nsStoreOrderList.State
+  indexTag!: number
+
   @nsStoreDelivery.Action
   getDeliveryList!: (params?: any) => Promise<void>
 
@@ -310,6 +314,9 @@ class DeliveryOrderList extends Vue {
 
   @nsStoreExportReceipt.Action
   actGetReceiptLable!: (params: any) => Promise<string>
+
+  @nsStoreOrderList.Mutation
+  setIndexTag!: (index: number) => any
 
   @nsStoreExportReceipt.State
   receiptUrl!: any
@@ -513,6 +520,7 @@ class DeliveryOrderList extends Vue {
   }
 
   async handleTab({ index }: any) {
+    this.setIndexTag(index)
     await this.handleRefreshFilter()
     this.isShowFilter = false
     this.activeTab = index
