@@ -25,7 +25,7 @@ module.exports = {
       { blankLine: 'never', prev: '*', next: ['const', 'let', 'var', 'return'] }
     ],
     'object-curly-spacing':  ['error', 'always'],
-    // 'max-len': ['error', { 'code': 140 }],
+    'max-len': ['error', { 'code': 155 }],
     'require-await': 'error'
   }
 }

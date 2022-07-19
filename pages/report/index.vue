@@ -1,24 +1,24 @@
 <template lang="pug">
-.report-page-container.flex.flex-column
-  .box__header
-    div
-      h1.text-heading Report list
-      span.text-subheading(v-if="reportList") {{ totalReportRecords }} products found
-    .header__action
-      .header__search
-        .icon.icon--left.icon-search
-        InputText(type="text" placeholder="Search" v-model="filter.id" v-on:input="validateText")
-      .btn__filter
-        .btn-toggle(@click="isShowFilter = !isShowFilter")
-          .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
-          span Filter
-        .btn-refresh(@click="handleRefeshFilter")
-          .icon.icon-rotate-left.bg-white
-      .btn.btn-primary(@click='addReport')
-        .icon.icon-add-items
-        span Add Report
-  .grid.header__filter(:class='{ "active": isShowFilter }')
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+  .report-page-container.flex.flex-column
+    .box__header
+      div
+        h1.text-heading Report list
+        span.text-subheading(v-if="reportList") {{ totalReportRecords }} products found
+      .header__action
+        .header__search
+          .icon.icon--left.icon-search
+          InputText(type="text" placeholder="Search" v-model="filter.id" v-on:input="validateText")
+        .btn__filter
+          .btn-toggle(@click="isShowFilter = !isShowFilter")
+            .icon(:class="isShowFilter ? 'icon-chevron-up' : 'icon-filter'")
+            span Filter
+          .btn-refresh(@click="handleRefeshFilter")
+            .icon.icon-rotate-left.bg-white
+        .btn.btn-primary(@click='addReport')
+          .icon.icon-add-items
+          span Add Report
+    .grid.header__filter(:class='{ "active": isShowFilter }')
+      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
         FilterTable(
           title="Seller email"
           placeholder="Search"
@@ -27,49 +27,49 @@
           name="sellerEmail"
           @updateFilter="handleFilterReport"
         )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-      FilterTable(
-        title="Report ID"
-        :value="filter.id"
-        placeholder="Enter code"
-        name="id"
-        :searchText="true"
-        @updateFilter="handleFilterReport"
-        :isShowFilter="isShowFilter"
-      )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-      FilterCalendar(
-        title="From"
-        :value="filter.dateFrom"
-        name="dateFrom"
-        inputClass="border-0"
-        dateFormat="dd-mm-yy"
-        :showIcon="true"
-        @updateFilter="handleFilterReport"
-      )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-      FilterCalendar(
-        title="To"
-        border="right"
-        :value="filter.dateTo"
-        name="dateTo"
-        inputClass="border-0"
-        dateFormat="dd-mm-yy"
-        :showIcon="true"
-        @updateFilter="handleFilterReport"
-      )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-      FilterTable(
-        title="Box Code"
-        :value="filter.barCode"
-        placeholder="Enter code"
-        name="barCode"
-        :searchText="true"
-        @updateFilter="handleFilterReport"
-      )
-    .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
-      FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
-  DataTable.relative.overflow-hidden.m-h-700(:value="reportList" responsiveLayout="scroll"
+      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+        FilterTable(
+          title="Report ID"
+          :value="filter.id"
+          placeholder="Enter code"
+          name="id"
+          :searchText="true"
+          @updateFilter="handleFilterReport"
+          :isShowFilter="isShowFilter"
+        )
+      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+        FilterCalendar(
+          title="From"
+          :value="filter.dateFrom"
+          name="dateFrom"
+          inputClass="border-0"
+          dateFormat="dd-mm-yy"
+          :showIcon="true"
+          @updateFilter="handleFilterReport"
+        )
+      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+        FilterCalendar(
+          title="To"
+          border="right"
+          :value="filter.dateTo"
+          name="dateTo"
+          inputClass="border-0"
+          dateFormat="dd-mm-yy"
+          :showIcon="true"
+          @updateFilter="handleFilterReport"
+        )
+      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+        FilterTable(
+          title="Box Code"
+          :value="filter.barCode"
+          placeholder="Enter code"
+          name="barCode"
+          :searchText="true"
+          @updateFilter="handleFilterReport"
+        )
+      .col-12(class='xl:col-2 lg:col-2 md:col-4 sm:col-12')
+        FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
+    DataTable.relative.overflow-hidden.m-h-700(:value="reportList" responsiveLayout="scroll"
       :selection="selectedReportes" :rows="20" :scrollable="false"
       :rowClass="rowClass" @sort="sortData($event)"
       @row-select-all="rowSelectAll"
@@ -78,56 +78,67 @@
       @row-unselect="rowUnselect"
       :expandedRows.sync="expandedRows"
       @row-click = 'rowClick'
-      )
+    )
       Column(:expander="true" :styles="{width: '2rem'}")
       Column(selectionMode="multiple" :styles="{width: '3rem'}" :selection="selectedReportes")
       Column(field="id" header="Report ID"  bodyClass="font-semibold" sortField="_id")
-          template(#body="slotProps")
-            span {{slotProps.data.id}}
+        template(#body="slotProps")
+          span {{slotProps.data.id}}
       Column(field="createdAt" header="CREATED TIME" :sortable="true" :styles="{width: '5rem'}"   sortField="_createdAt")
         template(#body='{ data }')
           span {{ data.createdAt | dateTimeHour24 }}
-      Column(field="createdBy.staffId" header="CREATOR ID" className="text-center" :sortable="true" :styles="{width: '6rem'}"   sortField="_createdAt")
+      Column(
+        field="createdBy.staffId"
+        header="CREATOR ID"
+        className="text-center"
+        :sortable="true" :styles="{width: '6rem'}"
+        sortField="_createdAt")
       Column(field="status" header="STATUS"  :styles="{width: '5rem'}")
         template(#body='{ data }')
-              span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
-                :class="checkStatus(data.reportStatus)")
-                | {{ data.reportStatus | reportStatus }}
-      Column( field="id" :exportable="false" header="ACTION" headerClass='grid-header-center' className="text-center" :styles="{width: '9rem'}")
+          span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
+            :class="checkStatus(data.reportStatus)")
+            | {{ data.reportStatus | reportStatus }}
+      Column(
+        field="id"
+        :exportable="false"
+        header="ACTION"
+        headerClass='grid-header-center'
+        className="text-center"
+        :styles="{width: '9rem'}")
         template(#body="{data}")
           .table__action(:class="{'action-disabled': checkDisabledAction(data)}" style= 'justify-content: center')
             span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
               .icon.icon-btn-delete
       template(#expansion="slotProps")
-          div.orders-subtable
-            .grid
-              .col-1
-              .col-11
-                DataTable(
-                  :value='slotProps.data.boxNote'
-                  dataKey='box.id'
-                  responsiveLayout="scroll"
-                  :selection.sync="selectedShowBox[slotProps.index]"
-                  @row-select="rowChirldSelect($event,slotProps.index)"
-                  @row-unselect="rowChirldUnselect($event,slotProps.index)"                  
-                  )
-                  Column(selectionMode="multiple" 
+        div.orders-subtable
+          .grid
+            .col-1
+            .col-11
+              DataTable(
+                :value='slotProps.data.boxNote'
+                dataKey='box.id'
+                responsiveLayout="scroll"
+                :selection.sync="selectedShowBox[slotProps.index]"
+                @row-select="rowChirldSelect($event,slotProps.index)"
+                @row-unselect="rowChirldUnselect($event,slotProps.index)"
+              )
+                Column(selectionMode="multiple"
                   :styles="{width: '3rem'}"
                   :selection='selectedShowBox[slotProps.index]'
-                  )
-                  Column(field="box.id" header="BOX CODE" :styles="{width: '7rem'}" bodyClass="font-semibold")
-                  Column(field="box.request.seller.email" :styles="{width: '15rem'}" header="SELLER EMAIL")
-                  Column(field="stockTakeId" header="stock take note id" :styles="{width: '10rem'}" className="uppercase")
-                  Column(field="note" header="note" )
-                  //- Column(field="id" header="action" className="uppercase" :styles="{width: '7rem'}" bodyClass="font-semibold" )
-                  //-   template(#body="{data}")
-                  //-     .table__action(style= 'justify-content: center')
-                  //-       span.action-item( @click="showModalDelete([data])")
-                  //-         .icon.icon-btn-delete
-                  template(#empty)
-                    div.flex.align-items-center.justify-content-center.flex-column
-                      img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
-                      p.text-900.font-bold.mt-3 Information not found!
+                )
+                Column(field="box.id" header="BOX CODE" :styles="{width: '7rem'}" bodyClass="font-semibold")
+                Column(field="box.request.seller.email" :styles="{width: '15rem'}" header="SELLER EMAIL")
+                Column(field="stockTakeId" header="stock take note id" :styles="{width: '10rem'}" className="uppercase")
+                Column(field="note" header="note" )
+                //- Column(field="id" header="action" className="uppercase" :styles="{width: '7rem'}" bodyClass="font-semibold" )
+                //-   template(#body="{data}")
+                //-     .table__action(style= 'justify-content: center')
+                //-       span.action-item( @click="showModalDelete([data])")
+                //-         .icon.icon-btn-delete
+                template(#empty)
+                  div.flex.align-items-center.justify-content-center.flex-column
+                    img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
+                    p.text-900.font-bold.mt-3 Information not found!
       template(#footer)
         .pagination
           div.pagination__info(v-if='!(isDeleteReport || isStockTake)')
@@ -153,47 +164,57 @@
             span.text-primary.underline.cursor-pointer(@click='addReport') &nbsp;here
             span &nbsp;to add item.
           p.text-900.font-bold.mt-3(v-else) Item not found!
-  
-  Dialog.report-detail(:visible.sync='isShowModalDetail' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "50vw", "padding-bottom":"5px"}' @hide='hideModalDetail()')
-    template(#header)
-      span.border-round.py-2.px-3.uppercase.font-bold.font-sm(:class="checkStatus(reportDetail.reportStatus)") {{ reportDetail.reportStatus | reportStatus  }}
-      div.text-center
-        h3.my-1 Report Detail
-        h3.my-0 ID {{ reportDetail.id }}
-    ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
-  Dialog(:visible.sync='showModal' :modal='true' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
-    template(#header)
-      h1.text-heading Report detail
-    BoxDataTable(@selectBox='createSelectBox($event)' :box='boxShow' v-if='!isConfirm')
-    .confirm.grid(v-if='isConfirm')
-      .col-12
-        DataTable.w-full.table__sort-icon.h-full(:value="boxShow" responsiveLayout="scroll")
-          Column(field="id" header="box code" className="uppercase")
-          Column(field="sellerEmail" header="seller email" className="uppercase")
-          Column(field="note" header="note" className="uppercase" :styles="{width: '50%'}")
-            template(#body="{ data }")
-              InputText.w-full(v-model='data.note' autofocus)
-          Column(header="action" className="text-center" headerClass="grid-header-center")
-            template(#body="{data}")
-              .table__action(style='justify-content: center')
-                span.action-item(@click="removeBox(data.id)")
-                  .icon.icon-btn-delete
-    template(#footer)
-      Button.p-button-secondary(label="Close" icon="pi pi-times" @click="closeDialog()")
-      Button.p-button-primary(label="Back" icon="pi pi-arrow-left" @click="isConfirm = false;" v-if='isConfirm')
-      Button.p-button-success(label="Save" icon="pi pi-check" @click="saveReport()" v-if='isConfirm')
-      Button.p-button-success(label="Save" icon="pi pi-check" @click="saveReport()" v-if='isConfirm && isUpdate')
-      Button.p-button-success(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()" v-if='!isConfirm')
-  ConfirmDialogCustom(
-    title="Do you want to cancel reports"
-    image="confirm-delete"
-    :isShow="isModalDelete"
-    :onOk="handleDeleteReport"
-    :onCancel="handleCancel"
-    :loading="loadingSubmit"
-  )
-    template(v-slot:message)
-      p {{ deleteMessage }}
+
+    Dialog.report-detail(
+      :visible.sync='isShowModalDetail'
+      :modal='true'
+      :contentStyle='{"background-color": "#E8EAEF;", "width": "50vw", "padding-bottom":"5px"}'
+      @hide='hideModalDetail()')
+      template(#header)
+        span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
+          :class="checkStatus(reportDetail.reportStatus)") {{ reportDetail.reportStatus | reportStatus  }}
+        div.text-center
+          h3.my-1 Report Detail
+          h3.my-0 ID {{ reportDetail.id }}
+      ReportDetail(@closeModal="hideModalDetail" :reportDetail="reportDetail" @createStockTakeFromDatail='createStockTakeFromDatail')
+    Dialog(
+      :visible.sync='showModal'
+      :modal='true'
+
+      :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}'
+      @hide='hideDialog()')
+      template(#header)
+        h1.text-heading Report detail
+      BoxDataTable(@selectBox='createSelectBox($event)' :box='boxShow' v-if='!isConfirm')
+      .confirm.grid(v-if='isConfirm')
+        .col-12
+          DataTable.w-full.table__sort-icon.h-full(:value="boxShow" responsiveLayout="scroll")
+            Column(field="id" header="box code" className="uppercase")
+            Column(field="sellerEmail" header="seller email" className="uppercase")
+            Column(field="note" header="note" className="uppercase" :styles="{width: '50%'}")
+              template(#body="{ data }")
+                InputText.w-full(v-model='data.note' autofocus)
+            Column(header="action" className="text-center" headerClass="grid-header-center")
+              template(#body="{data}")
+                .table__action(style='justify-content: center')
+                  span.action-item(@click="removeBox(data.id)")
+                    .icon.icon-btn-delete
+      template(#footer)
+        Button.p-button-secondary(label="Close" icon="pi pi-times" @click="closeDialog()")
+        Button.p-button-primary(label="Back" icon="pi pi-arrow-left" @click="isConfirm = false;" v-if='isConfirm')
+        Button.p-button-success(label="Save" icon="pi pi-check" @click="saveReport()" v-if='isConfirm')
+        Button.p-button-success(label="Save" icon="pi pi-check" @click="saveReport()" v-if='isConfirm && isUpdate')
+        Button.p-button-success(label="Apply" icon="pi pi-check" :disabled='disabledApply'  @click="applyBox()" v-if='!isConfirm')
+    ConfirmDialogCustom(
+      title="Do you want to cancel reports"
+      image="confirm-delete"
+      :isShow="isModalDelete"
+      :onOk="handleDeleteReport"
+      :onCancel="handleCancel"
+      :loading="loadingSubmit"
+    )
+      template(v-slot:message)
+        p {{ deleteMessage }}
 </template>
 
 <script lang="ts">
@@ -239,9 +260,9 @@ class ReportList extends Vue {
     { name: 'Solved', value: REPORT_STATUS.SOLVED }
   ]
 
-  stockTakeItem : any[] = []
-  expandedRows : any[] = []
-  selectedShowBox: any[] = [] 
+  stockTakeItem: any[] = []
+  expandedRows: any[] = []
+  selectedShowBox: any[] = []
   isConfirm = false
   filter: any = {
     sellerEmail: '',
@@ -251,7 +272,7 @@ class ReportList extends Vue {
     status: ''
   }
 
-  pageOption = LIMIT_PAGE_OPTIONS 
+  pageOption = LIMIT_PAGE_OPTIONS
   isStockTake = false
   isDeleteReport = false
   @nsStoreReport.State
@@ -297,7 +318,7 @@ class ReportList extends Vue {
   actGetReceiptLable!: (id: any) => Promise<any>
 
   async mounted() {
-    await this.actGetReportList({ pageNumber: this.paging.pageNumber , pageSize: this.paging.pageSize })
+    await this.actGetReportList({ pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize })
     this.expandedRows = this.reportList
   }
 
@@ -325,7 +346,7 @@ class ReportList extends Vue {
   // -- [ Watch ] -----------------------------------------------------------
 
   @Watch('reportList')
-  changeReportList(){
+  changeReportList() {
     this.boxSelected = []
     this.reportList.forEach(() => {
       this.boxSelected.push([])
@@ -388,7 +409,7 @@ class ReportList extends Vue {
   }
 
   rowClass(report) {
-    if(report.reportStatus === REPORT_STATUS.NEW) {
+    if (report.reportStatus === REPORT_STATUS.NEW) {
       return ''
     } else {
       return 'row-disable'
@@ -414,12 +435,12 @@ class ReportList extends Vue {
     this.showModal = true
     this.isConfirm = true
     this.isUpdate = true
-    this.boxShow = this.reportList.find( element=> {
-      return element.id===id
+    this.boxShow = this.reportList.find(element => {
+      return element.id === id
     }).boxNote.map(element => {
       return {
-        id : element.box.id,
-        note:element.note,
+        id: element.box.id,
+        note: element.note,
         sellerEmail: element.box.request.seller.email
       }
     })
@@ -442,8 +463,8 @@ class ReportList extends Vue {
 
   rowSelectAll({ data }) {
     this.selectedReportes = _.unionWith(this.selectedReportes, data, _.isEqual)
-    this.selectedReportes.forEach((element, index)=> {
-      this.boxSelected[index].push(...element.boxNote)  
+    this.selectedReportes.forEach((element, index) => {
+      this.boxSelected[index].push(...element.boxNote)
     })
     this.selectedShowBox = _.cloneDeep(this.boxSelected)
     this.setReportSelected(-1)
@@ -475,14 +496,14 @@ class ReportList extends Vue {
 
   // -- [select chirld] --------------------------------
 
-  rowChirldSelect({ data },index) {
+  rowChirldSelect({ data }, index) {
     this.isStockTake = true
     this.boxSelected[index].push(data)
     this.setReportSelected(index)
   }
 
   rowChirldUnselect({ originalEvent, data }, index) {
-    _.remove(this.boxSelected[index], function(boxNote) {
+    _.remove(this.boxSelected[index], function (boxNote) {
       return boxNote.id === data.id
     })
     originalEvent.originalEvent.stopPropagation()
@@ -513,7 +534,7 @@ class ReportList extends Vue {
   applyBox() {
     this.boxShow = this.boxSelected.map((element) => {
       return {
-        id : element.id,
+        id: element.id,
         note: element.note,
         sellerEmail: element.sellerEmail
       }
@@ -521,17 +542,17 @@ class ReportList extends Vue {
     this.isConfirm = true
   }
 
-  async saveReport(){
-    const data = this.boxShow.map(element =>{
+  async saveReport() {
+    const data = this.boxShow.map(element => {
       return {
         box: {
-          id : element.id
+          id: element.id
         },
         note: element.note
       }
     })
     await this.actCreateReport({ boxNote: data })
-    if(this.reportCreate){
+    if (this.reportCreate) {
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',
@@ -550,29 +571,29 @@ class ReportList extends Vue {
     this.isShowModalDetail = true
   }
 
-  createStockTake() { 
+  createStockTake() {
     if (this.stockTakeItem.length > 0) {
       this.setListBoxTakeNote(this.stockTakeItem)
       this.$router.push('/stock-take/box/create')
     }
   }
 
-  removeBox(id){
+  removeBox(id) {
     this.boxShow = _.filter(this.boxShow, (box: any) => box.id !== id)
   }
 
-  closeDialog(){
+  closeDialog() {
     this.showModal = false
     this.resetData()
   }
 
-  resetData(){
+  resetData() {
     this.boxShow = []
     this.boxSelected = []
     this.isConfirm = false
   }
-  
-  checkDisabledAction(data){
+
+  checkDisabledAction(data) {
     return !data
   }
 
@@ -581,7 +602,7 @@ class ReportList extends Vue {
       ...this.reportDetail,
       boxNote: data
     }]
-    const dataReport:any = []
+    const dataReport: any = []
     listReport.forEach(report => {
       report.boxNote.forEach(boxNote => {
         dataReport.push({
@@ -595,33 +616,33 @@ class ReportList extends Vue {
     this.setListBoxTakeNote(dataReport)
     this.$router.push('/stock-take/box/create')
   }
-  
-  checkStatus(status){
-    switch(status){
-    case REPORT_STATUS.NEW:{
+
+  checkStatus(status) {
+    switch (status) {
+    case REPORT_STATUS.NEW: {
       return 'text-green-400 bg-green-100 '
     }
-    case REPORT_STATUS.SOLVED:{
+    case REPORT_STATUS.SOLVED: {
       return 'text-primary bg-blue-100 '
     }
-    case REPORT_STATUS.CANCELED:{
+    case REPORT_STATUS.CANCELED: {
       return 'table__status--reported'
     }
-    case REPORT_STATUS.IN_PROGRESS:{
+    case REPORT_STATUS.IN_PROGRESS: {
       return 'text-primary bg-blue-100 '
     }
     }
   }
 
-  setReportSelected(reportIndex){
-    this.stockTakeItem= []
-    if(reportIndex >-1 ) {
+  setReportSelected(reportIndex) {
+    this.stockTakeItem = []
+    if (reportIndex > -1) {
       this.boxSelected[reportIndex].forEach(element => {
         this.stockTakeItem.push({
           id: this.reportList[reportIndex].id,
           boxNote: element
         })
-      }) 
+      })
     } else {
       this.selectedReportes.forEach(report => {
         report.boxNote.forEach(element => {
@@ -632,11 +653,12 @@ class ReportList extends Vue {
         })
       })
     }
-    this.isDeleteReport = this.selectedReportes.length>0
-    this.isStockTake = this.stockTakeItem.length >0 
+    this.isDeleteReport = this.selectedReportes.length > 0
+    this.isStockTake = this.stockTakeItem.length > 0
   }
 
 }
+
 export default ReportList
 </script>
 
@@ -646,8 +668,10 @@ export default ReportList
     .p-button
       background: none !important
       border: none !important
+
   ::v-deep.pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
+
 .report-page-container
   @include mobile
     min-height: calc(100vh - 32px)
@@ -655,23 +679,31 @@ export default ReportList
     min-height: calc(100vh - 32px)
   @include desktop
     height: calc(100vh - 32px)
+
   ::v-deep.p-component
     font-family: $font-family-primary
+
   ::v-deep.pi-calendar:before
     content: url('~/assets/icons/calendar.svg')
+
   ::v-deep.p-calendar-w-btn
     .p-button
       background: none
       border: none
+
   ::v-deep.text-right
     text-align: right !important
+
     .p-column-header-content
       justify-content: end !important
+
   ::v-deep.disable-button
     pointer-events: none
     background-color: $text-color-300
+
     .icon
       background-color: $text-color-500
+
 .box__header
   flex-direction: column
   flex-wrap: wrap
@@ -679,37 +711,45 @@ export default ReportList
   @include desktop
     flex-direction: row
     @include flex-center-space-between
+
 .header__action
-    margin-top: 12px
-    display: flex
-    @include flex-column
-    flex-wrap:  wrap
-    gap: 10px 16px
-    @include desktop
-      @include flex-center
-      flex-direction: row
-      margin-top: 0
+  margin-top: 12px
+  display: flex
+  @include flex-column
+  flex-wrap: wrap
+  gap: 10px 16px
+  @include desktop
+    @include flex-center
+    flex-direction: row
+    margin-top: 0
+
 ::v-deep.report-detail
   .p-dialog-footer
     display: flex
     justify-content: center
+
   .main-info
     margin: 24px 0
+
     .info-item
       margin-top: 10px
       font-size: 14px
       font-weight: 400
+
     .info-content
       margin-left: 6px
+
 ::v-deep.confirm
   .p-datatable-table
     .p-datatable-tbody
       & > tr
         height: 3.5rem !important
+
 .orders-subtable
   ::v-deep.p-column-header-content
     .p-checkbox
       display: none !important
+
   ::v-deep.p-datatable
     .p-datatable-tbody
       & > tr:not(.p-highlight):hover

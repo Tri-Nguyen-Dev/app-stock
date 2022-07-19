@@ -51,7 +51,7 @@
           :value="filter.sellerEmail"
           :searchText="true"
           name="sellerEmail"
-          @updateFilter="handleFilter" 
+          @updateFilter="handleFilter"
         )
       div(class='col-12 md:col-4 lg:col-2 xl:col-2')
         FilterTable(
@@ -96,7 +96,7 @@
         //-       .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.creatorId }}   
+            div.grid-cell-right {{ data.creatorId }}
         Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
@@ -196,11 +196,6 @@ class PackingNoteList extends Vue {
   @nsStoreUser.State
   user!: User.Model
 
-  get checkIsFilter() {
-    const params = _.omit(this.filter, ['pageNumber', 'pageSize'])
-    return Object.values(params).some((item) => item)
-  }
-
   // -- [ Functions ] ------------------------------------------------------------
 
   handleExportReceipt() {
@@ -221,7 +216,9 @@ class PackingNoteList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && data.assigneeId !== this.user.id || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
+    return data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS'
+      && data.assigneeId !== this.user.id
+      || data.status === 'DELIVERY_ORDER_STATUS_CANCELLED' ? '' :''
   }
 
   mounted() {
@@ -389,7 +386,7 @@ export default PackingNoteList
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
-.btn__filter 
+.btn__filter
   width: 100%
   @include desktop
     width: 166px

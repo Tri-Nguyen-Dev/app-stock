@@ -6,7 +6,10 @@
         .user-info
           span.user-name {{ userDisplayName }}
           span.user-role {{ userRole }}
-      .icon.icon--xlarge.icon-menu-toggle.surface-500(v-if="widthScreen > 1024" :class="{ 'bg-primary': collapsed }", @click="toggleSidebar")
+      .icon.icon--xlarge.icon-menu-toggle.surface-500(
+        v-if="widthScreen > 1024"
+        :class="{ 'bg-primary': collapsed }"
+        @click="toggleSidebar")
     .sidebar-content
       .menu-section.sidebar-content-menu
         SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)" @toggleMenu="toggleMenu")
@@ -26,10 +29,10 @@ class MenuSidebar extends Vue {
   // -- [ Statement Properties ] ------------------------------------------------
   @nsSidebar.State
   widthScreen!: number
-  
+
   @nsSidebar.Getter('sidebarWidth')
   sidebarWidth!: string
-  
+
   @nsSidebar.State('collapsed')
   collapsed!: boolean
 
@@ -58,7 +61,7 @@ class MenuSidebar extends Vue {
     return this.user?.role?.toUpperCase() || ''
   }
   // -- [ Methods ] ------------------------------------------------------------
-  
+
   toggleMenu() {
     this.$emit('toggleMenu')
   }

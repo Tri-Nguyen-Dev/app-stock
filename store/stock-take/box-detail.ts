@@ -37,7 +37,11 @@ export default class StoreBoxStockTake extends VuexModule {
 
   @Action({ rawError: true })
   async actSubmitBoxStockTakeDetail(params: any): Promise<string | undefined> {
-    const url = PathBind.transform(this.context, StoreBoxStockTake.STATE_URL.SUBMIT_BOX_STOCK_TAKE_DETAIL,{ id: params.id, isDraft: params.isDraft })
+    const url = PathBind.transform(
+      this.context,
+      StoreBoxStockTake.STATE_URL.SUBMIT_BOX_STOCK_TAKE_DETAIL,
+      { id: params.id, isDraft: params.isDraft }
+    )
     return await $api.post(url, params.submitData)
   }
 

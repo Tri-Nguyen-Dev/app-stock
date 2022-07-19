@@ -23,11 +23,11 @@
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           .my-0p.info-title.text-sm Seller phone
-          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length > 0 && infoSeller") {{ infoSeller.phoneNumber }}
+          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length && infoSeller") {{ infoSeller.phoneNumber }}
       .col
         .info-item.border-1.border-gray-300.p-2.border-round
           p.my-0.info-title.text-sm Seller name
-          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length > 0 && infoSeller") {{ infoSeller.displayName }} 
+          p.info-content.text-900.font-semibold.text-sm.my-1(v-if="this.listOriginalBox.length && infoSeller") {{ infoSeller.displayName }}
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'

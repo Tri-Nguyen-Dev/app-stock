@@ -13,12 +13,18 @@
               .icon.icon-box-info.mr-1.bg-blue-700(class='xl:inline lg:hidden md:hidden sm:hidden xs:hidden')
               span.uppercase.font-bold.text-sm general information
             .flex.justify-content-end.col-3
-              .surface-hover.border-round.cursor-pointer.p-2.edit__detail--button(@click='editStockDetail' :class='isEditStockDetail ? "hidden" : " "')
+              .surface-hover.border-round.cursor-pointer.p-2.edit__detail--button(
+                @click='editStockDetail'
+                :class='isEditStockDetail ? "hidden" : " "'
+              )
                 .icon.icon-btn-edit
           .grid.mb-3.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
             img(:src="model.data.imagePath | getImageUrl").border-round.w-full
           .grid.my-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
-            Tag.table__status.table__status--available(severity="success" v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"').uppercase Available
+            Tag.table__status.table__status--available(
+              severity="success"
+              v-show='model.data.stockStatus === "STOCK_STATUS_AVAILABLE"'
+            ).uppercase Available
             Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DISABLE"').uppercase.surface-200 Disable
             Tag(v-show='model.data.stockStatus === "STOCK_STATUS_DRAFT"').uppercase Draft
           .grid.mb-2.px-4(:class='isEditStockDetail ? "opacity-40" : "opacity-100"')
@@ -31,7 +37,10 @@
             span.uppercase.font-semibold.text-blue-700
           div.sub--scroll
             .wrap-unit.px-4
-              StockUnit(title="Total inventory quantity" :value="model.data.totalInventoryQuantity" icon="icon-total-inventory" :isEdit="isEditStockDetail")
+              StockUnit(
+                title="Total inventory quantity"
+                :value="model.data.totalInventoryQuantity"
+                icon="icon-total-inventory" :isEdit="isEditStockDetail")
             .wrap-unit.px-4
               StockUnit(title="Size (L*W*H)" icon="icon-size")
                 template(v-slot:size)

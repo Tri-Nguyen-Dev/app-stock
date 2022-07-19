@@ -1,24 +1,34 @@
 <template lang="pug">
-Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
+Dialog(header="" :visible.sync='visibleVue', :modal='true' :showHeader='false')
   .modal
-    .text-heading.modal-header {{modalHeader}} 
+    .text-heading.modal-header {{modalHeader}}
     .formgrid.grid
         .field.col-12()
           label.required__title(for='name') Name :
-          InputText#name.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(@change='onChange' v-model='categoryInformation.name' type='text' class='focus:border-primary' :class="{'name--error' : $v.categoryInformation.name.$error}")
+          InputText#name.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(
+            @change='onChange'
+            v-model='categoryInformation.name'
+            type='text'
+            class='focus:border-primary'
+            :class="{'name--error' : $v.categoryInformation.name.$error}")
         .field.col-12(class='md:col-6')
           label(for='icon') Icon :
-          InputText#icon.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='text' v-model='categoryInformation.icon' )
+          InputText#icon.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(
+            type='text'
+            v-model='categoryInformation.icon')
         .field.col-12(class='md:col-6')
           label(for='displayOrder') DisplayOrder :
-          InputText#displayOrder.text-base.text-color.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(type='number' v-model='categoryInformation.displayOrder')
+          // eslint-disable-next-line max-len
+          InputText#displayOrder.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(
+            type='number'
+            v-model='categoryInformation.displayOrder')
         .field.col-12.modal-btn(class='md:col-12')
           Button.btn.btn-outline(@click="handleCancle")
             span Cancel
           Button.btn.btn-primary(v-if="modalHeader === 'Create Category'" @click='addItem')
             span Create Category
           Button.btn.btn-primary(v-if="modalHeader === 'Update Category'" @click='UpdateItem')
-            span Update Category  
+            span Update Category
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, Prop, Watch } from 'nuxt-property-decorator'
@@ -80,8 +90,8 @@ class UpdateCategory extends Vue {
 
   async checkDuplicate() {
     await this.getOtherCategoryName()
-    for (let i = 0; i < this.categoryName.length; i++) {
-      if (this.categoryInformation.name === this.categoryName[i]) {
+    for (const element of this.categoryName) {
+      if (this.categoryInformation.name === element) {
         this.duplicatedItem.push(this.categoryInformation.name)
       }
     }

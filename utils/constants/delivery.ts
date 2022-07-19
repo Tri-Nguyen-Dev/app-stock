@@ -45,9 +45,18 @@ export namespace DeliveryConstants {
   ]
 
   export const MapDeliveryTab = new Map<number, string>([
-    [TabDelivery.NEW, `${StatusDelivery.NEW},${StatusDelivery.IN_PROGRESS},${StatusDelivery.CANCELLED}`],
-    [TabDelivery.DELIVERY_SETTING, `${StatusDelivery.READY},${StatusDelivery.SETTED},${StatusDelivery.ACCEPTED},${StatusDelivery.DELIVERING}`],
-    [TabDelivery.DELIVERED, `${StatusDelivery.DELIVERED},${StatusDelivery.RETURNED}`]
+    [
+      TabDelivery.NEW,
+      `${StatusDelivery.NEW},${StatusDelivery.IN_PROGRESS},${StatusDelivery.CANCELLED}`
+    ],
+    [
+      TabDelivery.DELIVERY_SETTING,
+      `${StatusDelivery.READY},${StatusDelivery.SETTED},${StatusDelivery.ACCEPTED},${StatusDelivery.DELIVERING}`
+    ],
+    [
+      TabDelivery.DELIVERED,
+      `${StatusDelivery.DELIVERED},${StatusDelivery.RETURNED}`
+    ]
   ])
 
   export const MapStatusDelivery = new Map<string, string>([
