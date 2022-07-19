@@ -10,7 +10,7 @@
     h3.uppercase.inline-block.m-1 id: {{ deliveryOrderDetail.id }}
     div
       h5.uppercase.inline-block(style='color :#979AA4') Created time:&nbsp;
-      span.uppercase.font-bold {{deliveryOrderDetail.createdAt | dateTimeHour24}}
+      span.uppercase.font-bold {{ deliveryOrderDetail.createdAt | dateTime('MMMM D YYYY HH:mm') }}
     TabView
       TabPanel.p-3(header='Delivery')
         StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4(:sellerInfo='deliveryOrderDetail')

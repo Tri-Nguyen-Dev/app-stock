@@ -8,7 +8,7 @@ div
           span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy | sellerName }}
         .info-item
           span.info-title Created time:
-          span.info-content {{ reportDetail.createdAt | dateTimeHour24 }}
+          span.info-content {{ reportDetail.createdAt | dateTime }}
         .info-item
           span.info-title PIC ID: 
           span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.staffId }}

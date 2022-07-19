@@ -22,7 +22,7 @@
 				.col
 					.filter__item.item--disabled
 						.filter__title Created time
-						.filter__text {{ receiptDetail.data.createdAt | dateTimeHour24 }}
+						.filter__text {{ receiptDetail.data.createdAt | dateTime }}
 				.col
 					.filter__item
 						.filter__title.item--disabled Warehouse

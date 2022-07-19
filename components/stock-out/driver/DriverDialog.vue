@@ -20,7 +20,7 @@ const nsStoreOrder = namespace('stock-out/order-detail')
 })
 class DriverDialog extends Vue {
   @Prop() isModalDriverList = false
-  @Prop({ default: [] }) orderIds
+  @Prop() orderIds
   showModal = false
   enableAssign = false
   idDriver =''
