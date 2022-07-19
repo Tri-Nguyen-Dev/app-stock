@@ -57,7 +57,12 @@
               .flex.align-items-center.justify-content-center.flex-column
                 img(:srcset='`${require("~/assets/images/table-notfound.png")} 2x`')
                 p.text-900.font-bold.mt-3 Add box!
-    Dialog.item-list-dialog(:visible.sync='showModal', :modal='true' :showHeader='false' :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}' @hide='hideDialog()')
+    Dialog.item-list-dialog(
+      :visible.sync='showModal'
+      :modal='true'
+      :showHeader='false'
+      :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}'
+      @hide='hideDialog()')
         BoxDataTable(@selectBox='selectBox($event)' :box='boxShow')
         template(#footer)
           Button.p-button-secondary(label="Close" icon="pi pi-times" @click="showModal = false;disabledApply = true")

@@ -38,7 +38,14 @@
               span.text-900.text-primary Export file
     .grid.header__filter(:class='{ "active": isShowFilter }')
       div(class='col-12 md:col-4 lg:col-4 xl:col-2')
-        FilterTable(title="ID" placeholder="Search" name="id" :value="filter.id" :searchText="true" @updateFilter="handleFilter" :isShowFilter="isShowFilter")
+        FilterTable(
+          title="ID"
+          placeholder="Search"
+          name="id"
+          :value="filter.id"
+          :searchText="true"
+          @updateFilter="handleFilter"
+          :isShowFilter="isShowFilter")
       div(class='col-12 md:col-8 lg:col-8 xl:col-5')
         .grid.grid-nogutter
           .col
@@ -168,24 +175,22 @@
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.receiverAddress }}
         Column(header='DUE DELIVERY' sortable field='dueDeliveryDate' sortField="_dueDeliveryDate" headerClass="grid-header-right")
-
           template(#body='{ data }')
             div.grid-cell-right {{ data.dueDeliveryDate | dateMonthYear }}
         Column( header='EDT' sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.estimatedDeliveryTime }} {{(data.estimatedDeliveryTime) < 2 ? 'day' : 'days'}}
         Column( header='Latest Update' sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
-  
           template(#body='{ data }')
             div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour24 }}
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right( v-if="data.assignee") {{ data.assignee.staffId }} {{data.assignee.staffId === null ? 'N/A' : ''}}
-        Column(v-if="activeTab == 1"
+            div.grid-cell-right {{ data.assignee?.staffId || 'N/A' }}
+        Column(:hidden='activeTab !== 1'
           header='Driver' sortable field='driverPhone' sortField="_driver.phoneNumber" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right(v-if='data.driver')  {{ data.driver.phoneNumber === null ? 'N/A' : data.driver.phoneNumber }}
-        Column(v-if="activeTab == 2"
+            div.grid-cell-right {{ data.driver?.phoneNumber || 'N/A' }}
+        Column(:hidden='activeTab !== 2'
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')
         Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
@@ -326,8 +331,10 @@ class DeliveryOrderList extends Vue {
 
   get selectedDeliveryFilter() {
     return _.filter(this.selectedDelivery, (delivery: DeliveryList.Model) => {
-      if(this.activeTab === 0) {
-        return delivery.status === 'DELIVERY_ORDER_STATUS_NEW' || delivery.status !== 'DELIVERY_ORDER_STATUS_CANCELLED' && (delivery.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && delivery.assigneeId === this.user.id)
+      if (this.activeTab === 0) {
+        return delivery.status === 'DELIVERY_ORDER_STATUS_NEW'
+          || delivery.status !== 'DELIVERY_ORDER_STATUS_CANCELLED'
+          && (delivery.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS' && delivery.assigneeId === this.user.id)
       } else return delivery
     })
   }
@@ -360,13 +367,13 @@ class DeliveryOrderList extends Vue {
   handleExportReceipt() {
     _.forEach(this.selectedDelivery, async ({ id }) => {
       const result = await this.actGetReceiptLable({ id })
-      if ( result ) {
+      if (result) {
         exportFileTypePdf(result, `receipt-${id}`)
       }
     })
   }
 
-  getIndexPaginate( index: number ) {
+  getIndexPaginate(index: number) {
     return calculateIndex(
       index,
       this.paging.pageNumber,
@@ -375,7 +382,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowClass(data: DeliveryList.Model) {
-    if(data.status === ORDER_STATUS.CANCELED ) {
+    if (data.status === ORDER_STATUS.CANCELED) {
       return 'row-disable'
     } else {
       return ''
@@ -384,7 +391,7 @@ class DeliveryOrderList extends Vue {
 
   async mounted() {
     const { role, warehouse } = this.user
-    if(role === 'admin') {
+    if (role === 'admin') {
       await this.actWarehouseList()
       this.warehouseOption = _.cloneDeep(this.warehouseList)
       this.filter.warehouseId = this.warehouseList[0]
@@ -395,7 +402,7 @@ class DeliveryOrderList extends Vue {
     this.getList()
   }
 
-  async handleFilter( e: any, name: string ) {
+  async handleFilter(e: any, name: string) {
     this.filter[name] = e
     await this.getProductList()
     this.selectedDelivery = []
@@ -405,10 +412,10 @@ class DeliveryOrderList extends Vue {
     await this.getDeliveryList({
       id: this.filter.id || null,
       assigneeId: this.filter.assigneeId || null,
-      createTimeFrom: this.filter.createTimeFrom? dayjs(this.filter.createTimeFrom).format('YYYY-MM-DD') : null,
-      createTimeTo: this.filter.createTimeTo? dayjs(this.filter.createTimeTo).format('YYYY-MM-DD') : null,
-      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom? dayjs(this.filter.dueDeliveryDateFrom).format('YYYY-MM-DD') : null,
-      dueDeliveryDateTo: this.filter.dueDeliveryDateTo? dayjs(this.filter.dueDeliveryDateTo).format('YYYY-MM-DD') : null,
+      createTimeFrom: this.filter.createTimeFrom ? dayjs(this.filter.createTimeFrom).format('YYYY-MM-DD') : null,
+      createTimeTo: this.filter.createTimeTo ? dayjs(this.filter.createTimeTo).format('YYYY-MM-DD') : null,
+      dueDeliveryDateFrom: this.filter.dueDeliveryDateFrom ? dayjs(this.filter.dueDeliveryDateFrom).format('YYYY-MM-DD') : null,
+      dueDeliveryDateTo: this.filter.dueDeliveryDateTo ? dayjs(this.filter.dueDeliveryDateTo).format('YYYY-MM-DD') : null,
       sortBy: this.filter.sortBy || null,
       desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
@@ -419,14 +426,14 @@ class DeliveryOrderList extends Vue {
     })
   }
 
-  onPage( event: any ) {
+  onPage(event: any) {
     resetScrollTable()
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
     this.getProductList()
   }
 
-  showModalDelete( data: DeliveryList.Model[] ) {
+  showModalDelete(data: DeliveryList.Model[]) {
     this.onEventDeleteList = data || this.selectedDeliveryFilter
     this.isModalDelete = true
   }
@@ -435,7 +442,7 @@ class DeliveryOrderList extends Vue {
     try {
       this.loadingSubmit = true
       const data = await this.actDeleteDeliveryByIds(_.map(this.onEventDeleteList, 'id'))
-      if ( data ) {
+      if (data) {
         this.isModalDelete = false
         this.$toast.add({
           severity: 'success',
@@ -463,7 +470,7 @@ class DeliveryOrderList extends Vue {
   }
 
   rowdbClick({ data }) {
-    if(!data.assigneeId || data.assigneeId === this.user.id) {
+    if (!data.assigneeId || data.assigneeId === this.user.id) {
       this.$router.push(`/stock-out/order/${data.id}`)
     }
   }
@@ -532,7 +539,7 @@ class DeliveryOrderList extends Vue {
     })
     this.getDeliveryList({
       ...this.filter,
-      warehouseId: this.filter.warehouseId?.id ,
+      warehouseId: this.filter.warehouseId?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       status: this.activeStatus
@@ -541,17 +548,17 @@ class DeliveryOrderList extends Vue {
 
   setDelivery() {
     this.isModalDriverList = true
-    this.orderIds = _.map(this.selectedDelivery, ( item:any ) => {
+    this.orderIds = _.map(this.selectedDelivery, (item: any) => {
       return item.id
     })
   }
 
-  hideDialog( event:any ) {
+  hideDialog(event: any) {
     this.isModalDriverList = !event
   }
 
   get isSetDelivery() {
-    if(this.selectedDelivery.length > 0) {
+    if (this.selectedDelivery.length > 0) {
       return this.selectedDelivery.every((item) => {
         return item.status === ORDER_STATUS.READY
       })
@@ -561,17 +568,17 @@ class DeliveryOrderList extends Vue {
   }
 
   get isResetDelivery() {
-    if(this.selectedDelivery.length > 0) {
+    if (this.selectedDelivery.length > 0) {
       return this.selectedDelivery.every(
         (item) => item.status === ORDER_STATUS.SETTED || item.status === ORDER_STATUS.ACCEPTED
-      ) && this.selectedDelivery.find( (item) => item.driverId === this.selectedDelivery[0].driverId)
+      ) && this.selectedDelivery.find((item) => item.driverId === this.selectedDelivery[0].driverId)
     } else {
       return false
     }
 
   }
 
-  assignedDriver( event:any ) {
+  assignedDriver(event: any) {
     if (event) {
       this.$toast.add({
         severity: 'success',
@@ -692,6 +699,7 @@ export default DeliveryOrderList
 .filter__dropdown, .filter__multiselect
   @include size(100%, 40px)
   border: none
+
 .btn__filter
   width: 100%
   @include desktop

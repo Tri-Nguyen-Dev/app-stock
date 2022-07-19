@@ -1,5 +1,5 @@
 <template lang="pug">
-  .warehouse 
+  .warehouse
     .warehouse__header
       div
         h1.text-heading Warehouse List
@@ -102,7 +102,10 @@
       template(v-slot:message)
         p {{ deleteMessage }}
     Toast
-    CreateWarehouse( :isShowCreateWarehouse="isShowCreateWarehouse" @close-modal="isShowCreateWarehouse = false" :warehouseData="warehouseData")
+    CreateWarehouse(
+      :isShowCreateWarehouse="isShowCreateWarehouse"
+      @close-modal="isShowCreateWarehouse = false"
+      :warehouseData="warehouseData")
 </template>
 
 <script lang="ts">
@@ -166,8 +169,8 @@ class Warehouse extends Vue {
 
   @nsStoreWarehouse.Action
   actDeletedWarehouseById!: (id?: any) => Promise<any>
-  
-  // --[ getter ] ----------------------------- 
+
+  // --[ getter ] -----------------------------
   get total() {
     return this.warehouseList.length
   }
@@ -176,7 +179,7 @@ class Warehouse extends Vue {
     const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
-  
+
   onPage(event: any) {
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
@@ -188,7 +191,7 @@ class Warehouse extends Vue {
     const result = this.warehouseList.slice(start, end)
     return result
   }
-  
+
   showModalDelete(data: WarehouseModel.Model[]) {
     this.onEventDeleteList = data || this.selectedItem
     this.isModalDelete = true
@@ -297,11 +300,11 @@ class Warehouse extends Vue {
   unSelectRow({ originalEvent, data }) {
     originalEvent.originalEvent.stopPropagation()
     this.selectedItem = _.filter(
-      this.selectedItem, 
+      this.selectedItem,
       (warehouse: any) => warehouse.id !== data._id
     )
     this.$emit('enablePack', false)
-    
+
   }
 
   rowSelectAll({ data }) {

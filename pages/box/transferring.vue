@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace, ProvideReactive, Watch } from 'nuxt-property-decorator'
+import { Component, namespace, ProvideReactive, Vue, Watch } from 'nuxt-property-decorator'
 import GeneralInformation from '~/components/box/GeneralInformation.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { User } from '~/models/User'
@@ -321,6 +321,7 @@ class DeliveryOrderPacking extends Vue {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
+        // eslint-disable-next-line max-len
         detail: `The Item ${listStockNotMatch[0].barCode} could not be transferred. Its quantity in one box must be at least ${listStockNotMatch[0]?.maxDo}!`,
         life: 3000
       })
@@ -347,7 +348,18 @@ class DeliveryOrderPacking extends Vue {
   }
 
   getStocks(stocks) {
-    const result =  _.map(stocks, ({ stock, originalBox, originalLocation, initialQuantity, quantity, sku, id, validAmount, originalAmount, value }) => ({
+    return _.map(stocks, ({
+      stock,
+      originalBox,
+      originalLocation,
+      initialQuantity,
+      quantity,
+      sku,
+      id,
+      validAmount,
+      originalAmount,
+      value
+    }) => ({
       id,
       stock: { id: stock.id },
       originalBox,
@@ -359,13 +371,19 @@ class DeliveryOrderPacking extends Vue {
       originalAmount,
       value
     }))
-    return result
   }
 
   async handleSubmit() {
     const data: any = {}
     data.originalBox = _.map(this.listOriginalBox, 'boxCode')
-    data.transferringBox = _.map(this.listTranfferingBox, ({ boxSize, items, inventoryFee, location, usedCapacityTranffering, ...rest }) => ({
+    data.transferringBox = _.map(this.listTranfferingBox, ({
+      boxSize,
+      items,
+      inventoryFee,
+      location,
+      usedCapacityTranffering,
+      ...rest
+    }) => ({
       ...rest,
       boxSize,
       inventoryFee,

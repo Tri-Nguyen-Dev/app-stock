@@ -129,7 +129,9 @@
                     :showClear='true'
                   )
                   span.font-semibold.text-base.ml-3 (cm)
-                  .input-errors( v-if='listBox[activeIndex] && $v.listBox.$each[activeIndex].boxSize.id.$dirty && $v.listBox.$each[activeIndex].boxSize.id.$invalid' style='text-align: center')
+                  .input-errors(
+                    v-if='listBox[activeIndex] && $v.listBox.$each[activeIndex].boxSize.id.$dirty && $v.listBox.$each[activeIndex].boxSize.id.$invalid'
+                    style='text-align: center')
                     .error-message Please enter select box size Fee!
             .col-12.border__right.pt-4.pb-4(class='md:col-6 lg:col-4')
               .grid
@@ -145,7 +147,9 @@
                   )
                   span.font-semibold.text-base.ml-3 / day
               .input-errors()
-                .error-message(v-if='$v.listBox.$each[activeIndex].inventoryFee.$dirty && $v.listBox.$each[activeIndex].inventoryFee.$invalid' style='text-align: center') Please enter Inventory Fee!
+                .error-message(
+                  v-if='$v.listBox.$each[activeIndex].inventoryFee.$dirty && $v.listBox.$each[activeIndex].inventoryFee.$invalid'
+                  style='text-align: center') Please enter Inventory Fee!
             .col-12.pt-4.pb-4.content-center(class='md:col-6 lg:col-3')
               span.font-semibold.text-base.mr-2.ml-2 Barcode
               InputText.box-input.mr-2(

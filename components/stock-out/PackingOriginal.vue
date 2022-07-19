@@ -1,7 +1,10 @@
 <template lang="pug">
 .packing__common--table.bg-white.border-round.w-full(:class='isPackingDetail ? "packing-detail" : isMergeBox ? "transfer" : ""')
   Toast
-  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(v-if='!isOriginal  && !isPackingDetail' @click="handleAddTab" :disabled="disableEditQty") + Add
+  Button.bg-white.text-primary.border-0.btn-add-tab.font-semibold(
+    v-if='!isOriginal  && !isPackingDetail'
+    @click="handleAddTab"
+    :disabled="disableEditQty") + Add
   span.p-input-icon-right.absolute.scan__boxcode(v-if='isOriginal && !isPackingDetail')
     .icon--small.icon--right.icon-scan.surface-900.icon--absolute
     InputText.inputSearchCode.w-full.input-border(
@@ -12,7 +15,7 @@
       :disabled="disableEditQty"
     )
   Button.btn-print.font-semibold.btn.btn-primary(label="Print" v-if='isPackingDetail && listBox.length > 0' @click='isShowLabel = true')
-  TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange" 
+  TabView.h-full.flex.flex-column(:activeIndex="activeIndex" :scrollable="true" @tab-change="tabChange"
     :class='classTabView'
   )
     TabPanel(:disabled="true")
@@ -81,7 +84,7 @@
                 currency='USD',
                 locale='en-US'
                 :disabled="disableEditQty"
-              ) 
+              )
               span.ml-1 / day
         .col.py-3.flex.justify-content-end.align-items-center
           span.mr-1 Barcode:
@@ -206,7 +209,7 @@ class PackingOriginal extends Vue {
       const index = _.findIndex(this.listBox, { boxCode })
       if(index >= 0){
         const itemsBox = _.get(this.listBox[this.activeIndex - 1], 'items')
-        if((!_.size(_.partition(itemsBox, ({ outGoingQuantity, actualOutGoing }) => outGoingQuantity === actualOutGoing)[1]) || !itemsBox) && !this.isMergeBox) {
+        if((!_.size(_.partition(itemsBox, ({ out, actual }) => out === actual)[1]) || !itemsBox) && !this.isMergeBox) {
           this.activeIndex = index + 1
           this.$emit('selectedTab', index)
         } else if((!_.size(_.partition(itemsBox, ['quantity', 0])[1]) || !itemsBox) && this.isMergeBox) {
@@ -373,7 +376,7 @@ class PackingOriginal extends Vue {
       location: e.query
     })
   }
-  
+
   setShowLabel(value: any) {
     this.isShowLabel = value
   }

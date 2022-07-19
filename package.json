@@ -58,6 +58,7 @@
     "query-string": "^4.3.4",
     "sass": "~1.32.12",
     "sass-loader": "10",
+    "vue-template-babel-compiler": "^1.2.0",
     "vuex-module-decorators": "^1.0.1"
   },
   "lint-staged": {

@@ -82,7 +82,10 @@
                     :src="data.imagePath | getThumbnailUrl" alt='' width='100%' style="object-fit: cover;")
           Column(header='Name' field='name' :sortable="true" sortField="_name")
             template(#body='{ data }')
-              NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(:to="`/stock/${data.id}`" class="no-underline hover:underline") {{ data.name }}
+              NuxtLink.stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(
+                :to="`/stock/${data.id}`"
+                class="no-underline hover:underline"
+              ) {{ data.name }}
           Column(header='Barcode' field='barCode' :sortable="true" sortField="_barCode" headerClass="grid-header-right")
             template(#body='{ data }')
               .stock__table-barcode.grid-cell-right {{ data.barCode }}

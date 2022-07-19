@@ -67,7 +67,12 @@
                   Column(field="approvedQuantity" header="APPROVE QTY" className="red-text text-center")
                     template(#body="{data}")
                       span( v-if="isApproved" ) {{data.approvedQuantity }}
-                      InputNumber.w-7rem(v-else inputClass="w-full" v-model='data.approvedQuantity' @input='changeQuantity(data)' :useGrouping="false" mode="decimal")
+                      InputNumber.w-7rem(
+                        v-else
+                        inputClass="w-full"
+                        v-model='data.approvedQuantity'
+                        @input='changeQuantity(data)'
+                        :useGrouping="false" mode="decimal")
                   Column(field="approveVariant" header="APPROVE VARIANT" className="text-center")
                     template(#body="{data}")
                       span(v-if='data.approvedQuantity !== null') {{data.approvedQuantity - data.inventoryQuantity}}

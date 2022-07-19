@@ -77,7 +77,14 @@
                         span {{ data.inventoryQuantity }}
                   Column(field="countedQuantity" header="COUNTED Q.TY" :styles="{'width': '5%'}")
                     template(#body="{ data }")
-                      InputNumber.w-7rem(:disabled='isCheck || isComplete || data.isChecking' :min="0" v-model='data.countedQuantity' inputClass="w-full" ref='inputQuantity' @input='changeQuantity(data)' :useGrouping="false" mode="decimal")
+                      InputNumber.w-7rem(
+                        :disabled='isCheck || isComplete || data.isChecking'
+                        :min="0" v-model='data.countedQuantity'
+                        inputClass="w-full"
+                        ref='inputQuantity'
+                        @input='changeQuantity(data)'
+                        :useGrouping="false"
+                        mode="decimal")
                   Column(field="discrepancy" header=" VARIANT"  :styles="{'width': '80%'}" sortable)
                     template(#body="{ data }")
                       span(v-if='data.countedQuantity !== null') {{data.countedQuantity - data.inventoryQuantity}}
