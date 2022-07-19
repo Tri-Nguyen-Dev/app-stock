@@ -10,7 +10,7 @@
     h3.uppercase.inline-block.m-1 id: {{ deliveryOrderDetail.id }}
     div
       h5.uppercase.inline-block(style='color :#979AA4') Created time:&nbsp;
-      span.uppercase.font-bold {{ convertDate(deliveryOrderDetail.createdAt)}}
+      span.uppercase.font-bold {{ deliveryOrderDetail.createdAt | dateMonthLetter }}
     TabView
       TabPanel.p-3(header='Delivery')
         StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4(:sellerInfo='deliveryOrderDetail')
@@ -26,7 +26,6 @@
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import DeliveryDriverInfo from '~/components/stock-out/driver/DriverInfor.vue'
 import { DeliveryConstants, ORDER_STATUS } from '~/utils'
-const dayjs = require('dayjs')
 @Component({
   components: {
     DeliveryDriverInfo
@@ -75,10 +74,6 @@ class PackingInformationDetail extends Vue {
       ]
     }
 
-  }
-
-  convertDate(value) {
-    return dayjs(new Date(value)).format('MMMM D YYYY HH:mm')
   }
 }
 export default PackingInformationDetail

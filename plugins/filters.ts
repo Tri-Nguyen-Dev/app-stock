@@ -34,6 +34,11 @@ Vue.filter('dateMonthYear', (value) => {
   return dayjs(new Date(value)).format('DD/MM/YYYY')
 })
 
+// -- [ Format date  month ] ------------------------------------------------
+Vue.filter('dateMonthLetter', (value) => {
+  return dayjs(new Date(value)).format('MMMM D YYYY HH:mm')
+})
+
 // -- [ AWS ] ------------------------------------------------
 Vue.filter('getImageUrl', (imagePath) => {
   if (!imagePath) return null
