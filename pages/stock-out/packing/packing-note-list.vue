@@ -81,7 +81,7 @@
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.font-bold {{ data.id }}
         Column(header='Created time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
-            div {{ data.createTime | dateTimeHour24 }}
+            div {{ data.createTime | dateTime }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.sellerEmail }}

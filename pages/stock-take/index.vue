@@ -117,9 +117,9 @@
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(field='id' header='NOTE ID' headerClass="grid-header-center" sortable sortField="_id")
           Column(header='Created Time' field='createdAt' sortable sortField="_createdAt")
-            template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}
+            template(#body='{ data }') {{ data.createdAt | dateTime }}
           Column(header='UPDATE time' field='updatedAt' sortable sortField="_updatedAt")
-            template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}
+            template(#body='{ data }') {{ data.createdAt | dateTime }}
           Column(header='Creator ID' field='creatorId' sortable sortField="_createdBy.staffId")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.createdBy.staffId }}

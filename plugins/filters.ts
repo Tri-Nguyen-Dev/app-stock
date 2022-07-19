@@ -19,24 +19,13 @@ Vue.filter('statusBoxHistory', (value) => {
   return FilterConstants.STATUS_HISTORY_MAP.get(value) || ''
 })
 
-// -- [ Format date time 12hour type] ------------------------------------------------
-Vue.filter('dateTimeHour12', (value) => {
-  return dayjs(new Date(value)).format('DD-MM-YYYY hh:mm A')
-})
-
-// -- [ Format date time type] ------------------------------------------------
-Vue.filter('dateMonthYear', (value) => {
-  return dayjs(new Date(value)).format('DD, MMMM, YYYY')
-})
-
-// -- [ Format date  type] ------------------------------------------------
-Vue.filter('dateMonthYear', (value) => {
-  return dayjs(new Date(value)).format('DD/MM/YYYY')
-})
-
-// -- [ Format date  month ] ------------------------------------------------
-Vue.filter('dateMonthLetter', (value) => {
-  return dayjs(new Date(value)).format('MMMM D YYYY HH:mm')
+// -- [ Format date time] ------------------------------------------------
+Vue.filter('dateTime', (value, format) => {
+  try {
+    return format ? dayjs(new Date(value)).format(format) : dayjs(new Date(value)).format('MM/DD/YYYY HH:mm')
+  } catch (error) {
+    return ''
+  }
 })
 
 // -- [ AWS ] ------------------------------------------------
@@ -52,11 +41,6 @@ Vue.filter('getThumbnailUrl', (imagePath) => {
 // --  [ has tag check ] -------------------------------------------------
 Vue.filter('checkHasTag', (value) => {
   return value ? 'Yes' : 'No'
-})
-
-// -- [ Format date time 24hour type] ------------------------------------------------
-Vue.filter('dateTimeHour24', (value) => {
-  return dayjs(new Date(value)).format('MM/DD/YYYY HH:mm')
 })
 
 // --  [ Format capacity ] -------------------------------------------------

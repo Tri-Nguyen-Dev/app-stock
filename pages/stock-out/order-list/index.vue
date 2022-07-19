@@ -167,7 +167,7 @@
             .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.creator.staffId }}
         Column(header='Created time' field='createTime' sortable  sortField="_createdAt" )
           template(#body='{ data }')
-            div {{ data.createTime | dateTimeHour24 }}
+            div {{ data.createTime | dateTime }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" )
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.seller.email }}
@@ -176,13 +176,13 @@
             div.grid-cell-fix-width {{ data.receiverAddress }}
         Column(header='DUE DELIVERY' sortable field='dueDeliveryDate' sortField="_dueDeliveryDate" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.dueDeliveryDate | dateMonthYear }}
+            div.grid-cell-right {{ data.dueDeliveryDate | dateTime('DD/MM/YYYY') }}
         Column( header='EDT' sortable field='estimatedDeliveryTime' sortField="_estimatedDeliveryTime" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.estimatedDeliveryTime }} {{(data.estimatedDeliveryTime) < 2 ? 'day' : 'days'}}
         Column( header='Latest Update' sortable field='lastedUpdateTime' sortField="_updatedAt" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.lastedUpdateTime | dateTimeHour24 }}
+            div.grid-cell-right {{ data.lastedUpdateTime | dateTime }}
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.assignee?.staffId || 'N/A' }}
