@@ -24,7 +24,7 @@
       .grid
         .col-6
           h5.mb-1.required__title Quantity
-          InputNumber(
+          InputText(
             :min="1" v-model='stockInformation.quantity'
             :class="{'quantity--error' : $v.stockInformation.quantity.$error}"
           ).w-full
@@ -50,7 +50,7 @@
           h5.mb-1.required__title Price
           .p-input-icon-right.w-full
             .icon.icon--right $
-            InputNumber(type="number" :min="1" 
+            InputText(type="number" :min="1" 
               v-model='stockInformation.value' 
               mode="currency"
               currency="USD"
@@ -129,7 +129,7 @@ class AddNewStock extends Vue {
   stockInformation: any = {
     barCode: '',
     sku: '',
-    value: '',
+    value: null,
     name: '',
     category: '',
     quantity: 1,

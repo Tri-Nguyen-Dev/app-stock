@@ -24,7 +24,7 @@
         .col
           .filter__item.item--disabled
             .filter__title Created time
-            .filter__text(v-if='generalInfo.createdAt') {{ generalInfo.createdAt | dateTimeHour24 }}
+            .filter__text(v-if='generalInfo.createdAt') {{ generalInfo.createdAt | dateTime }}
             .filter__text(v-else)
               i.filter__title auto generate...
         .col
@@ -488,7 +488,7 @@ class CreateOrUpdateReceipt extends Vue {
         },
         box: '',
         amount: stockInformation.quantity,
-        value: stockInformation.value,
+        value: +stockInformation.value,
         sku: stockInformation.sku,
         itemStatus: ''
       }

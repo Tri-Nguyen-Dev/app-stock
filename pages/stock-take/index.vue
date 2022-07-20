@@ -117,9 +117,9 @@
               span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
           Column(field='id' header='NOTE ID' headerClass="grid-header-center" sortable sortField="_id")
           Column(header='Created Time' field='createdAt' sortable sortField="_createdAt")
-            template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}
+            template(#body='{ data }') {{ data.createdAt | dateTime }}
           Column(header='UPDATE time' field='updatedAt' sortable sortField="_updatedAt")
-            template(#body='{ data }') {{ data.createdAt | dateTimeHour24 }}
+            template(#body='{ data }') {{ data.createdAt | dateTime }}
           Column(header='Creator ID' field='creatorId' sortable sortField="_createdBy.staffId")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.createdBy.staffId }}
@@ -134,9 +134,9 @@
                   span.stock-take-result.result-ng(v-if="data.finalResultStatus === 'NG'") NG
                   span.stock-take-result.result-ok(v-if="data.finalResultStatus === 'OK'") OK
                   span.stock-take-result.result-waiting(v-if="data.finalResultStatus === 'WAITING'") N/A
-          Column(header='nOTE' sortable field='note' sortField="_note" headerClass="grid-header-right")
+          Column(header='nOTE' sortable field='note' sortField="_note")
               template(#body='{ data }')
-                div.grid-cell-right {{  data.approveNote || data.submitNote || data.note }}
+                div.text-break(v-tooltip.bottom="data.approveNote || data.submitNote || data.note") {{  data.approveNote || data.submitNote || data.note }}
           Column(field='status' sortable header="Status" sortField="_status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
@@ -553,4 +553,9 @@ export default StockTake
       color: $text-color-status
     &.result-waiting
       color: $primary
+  .text-break
+    text-overflow: ellipsis
+    white-space: nowrap
+    overflow: hidden
+    max-width: 200px
 </style>

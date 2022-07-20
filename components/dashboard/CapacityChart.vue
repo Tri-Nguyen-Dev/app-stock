@@ -62,6 +62,9 @@ class CapacityChart extends Vue {
     plugins: {
       legend: {
         display: false
+      },
+      labels: {
+        render: 'value'
       }
     }
   }
