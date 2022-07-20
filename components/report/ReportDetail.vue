@@ -9,9 +9,6 @@ div
         .info-item
           span.info-title Created time:
           span.info-content {{ reportDetail.createdAt | dateTime }}
-        .info-item
-          span.info-title PIC ID: 
-          span.info-content(v-if="reportDetail.createdBy") {{ reportDetail.createdBy.staffId }}
     .info-box
       .info-box-item.py-3
         DataTable.w-full(
