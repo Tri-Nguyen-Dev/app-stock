@@ -1,6 +1,7 @@
 <template lang="pug">
 Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
   .modal
+    p {{airtagInformation}}
     .text-heading.modal-header {{modalHeader}} 
     .formgrid.grid
         .field.col-12(class='md:col-6')
@@ -9,10 +10,14 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
         .field.col-12(class='md:col-6')
           label(for='Barcode') Barcode :
           InputText#Barcode.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.barCode')
-        .field.col-12()
+        .field.col-12(v-if="modalHeader === 'Create Category'")
+          label.required__title(for='id') AirTagAttribute id:
+          InputText#id.appearance-none.outline-none.w-full(type='number' v-model='airtagInformation.airTagAttribute.id' :class="{'id--error' : $v.airtagInformation.airTagAttribute.id.$error}")
+          .error-message(v-if='$v.airtagInformation.airTagAttribute.id.$dirty && !$v.airtagInformation.airTagAttribute.id.required') Name cannot be empty!
+        .field.col-12(v-if="modalHeader === 'Update Category'")
           label(for='attribute') AirTagAttribute :
-          Dropdown.w-full( v-model='isNull' :options='hasAttribute' optionLabel='name' optionValue='value')
-        .div.col-12(v-if="isShowInputs")
+          Dropdown.w-full(@change='changeIsNull' v-model='isNull' :options='hasAttribute' optionLabel='name' optionValue='value')
+        .div.col-12(v-if="isShowInputs && modalHeader === 'Update Category'")
           .w-full.attribute-input
             label(for='model') model :
             InputText#model.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.model')
@@ -58,26 +63,28 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
         .field.col-12.modal-btn(class='md:col-12')
           Button.btn.btn-outline(@click="handleCancle")
             span Cancel
-          Button.btn.btn-primary(v-if="modalHeader === 'Create Category'" )
+          Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Create Category'" )
             span Create Category 
-          Button.btn.btn-primary(v-if="modalHeader === 'Update Category'")
+          Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Update Category'")
             span Update Category
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Watch , namespace } from 'nuxt-property-decorator'
 import { required } from 'vuelidate/lib/validators'
 import {
   AirtagConstants
 } from '~/utils'
+const nsAirtag= namespace('airtag/Airtag')
 
 @Component({
   validations: {
     airtagInformation: {
-      barCode : {
-        required
-      },
+      barCode : {},
       Status: {},
-      airTagAttribute: {
+      airTagAttribute:{
+        id : {
+          required
+        },
         model: {},
         productionBatch: {},
         costPrice: {},
@@ -93,7 +100,7 @@ import {
         systemRequirement: {},
         brandName: {},
         manufacturingDate: {}
-      }
+      } 
     }
   }
 })
@@ -106,47 +113,63 @@ class CreateOrUpdate extends Vue {
   isShowInputs: any = false
   airtagInformation: any = {
     airTagAttribute: {
-      model: '',
-      productionBatch: '',
-      costPrice: 0,
-      retailPrice: 0,
-      size: 0,
-      color: '',
-      connectivity: '',
-      speaker: '',
-      batteryLife: '',
-      sensorTechnology: '',
-      accelerometer: '',
-      accessibility: '',
-      systemRequirement: '',
-      brandName: '',
-      manufacturingDate: null
+      id : ''
     },
-    status: '',
+    status: 'AIRTAG_STATUS_AVAILABLE',
     barCode: ''
   }
 
-  isNull: any = false
-  
+  isNull: any = true
   hasAttribute: any = [
     { name: 'null' , value: true },
     { name: 'not null' , value: false }
   ]
 
+  @nsAirtag.State
+  airtagList!: any
+
+  @nsAirtag.Action
+  actAirtagList!: () => Promise<void>
+
+  @nsAirtag.Action
+  actUpdateAirtag!: (param: any) => Promise<any>
+
+  @nsAirtag.Action
+  actCreateNewAirtag!: (param: any) => Promise<any>
+  
   @Watch('airtagData')
   updateData() {
-    if(this.airtagData.airTagAttribute) {
-      this.isShowInputs = true
-    }
-    this.airtagInformation.id = this.airtagData.id
-    this.airtagInformation.barCode = this.airtagData.barCode
-    this.airtagInformation.status = this.airtagData.status
-    this.airtagInformation.airTagAttribute = this.airtagData.airTagAttribute
+    if(this.modalHeader === 'Update Category'){
+      this.airtagInformation.id = this.airtagData.id
+      this.airtagInformation.barCode = this.airtagData.barCode
+      this.airtagInformation.status = this.airtagData.status
+      this.airtagInformation.airTagAttribute = {
+        id: this.airtagData.airTagAttribute.id,
+        model: this.airtagData.airTagAttribute.model,
+        productionBatch: this.airtagData.airTagAttribute.productionBatch,
+        costPrice: this.airtagData.airTagAttribute.costPrice,
+        retailPrice: this.airtagData.airTagAttribute.retailPrice,
+        size: this.airtagData.airTagAttribute.size,
+        color: this.airtagData.airTagAttribute.color,
+        connectivity: this.airtagData.airTagAttribute.connectivity,
+        speaker: this.airtagData.airTagAttribute.speaker,
+        batteryLife: this.airtagData.airTagAttribute.batteryLife,
+        sensorTechnology: this.airtagData.airTagAttribute.sensorTechnology,
+        accelerometer: this.airtagData.airTagAttribute.accelerometer,
+        accessibility: this.airtagData.airTagAttribute.accessibility,
+        systemRequirement: this.airtagData.airTagAttribute.systemRequirement,
+        brandName: this.airtagData.airTagAttribute.brandName,
+        manufacturingDate: this.airtagData.airTagAttribute.manufacturingDate
+      }
+      if(this.airtagInformation.airTagAttribute) {
+        this.isNull = false
+        this.isShowInputs = true
+      }
+    } 
   }
 
-  @Watch('isNull')
-  changeIsNull(value) {
-    if(value) {
+  changeIsNull() {
+    if(this.isNull) {
       this.isShowInputs = false
       this.airtagInformation.airTagAttribute = null
     }
@@ -162,7 +185,96 @@ class CreateOrUpdate extends Vue {
 
   handleCancle() {
     this.$emit('close-modal')
+    this.airtagInformation = {
+      airTagAttribute: {
+        id: ''
+      },
+      status: 'AIRTAG_STATUS_AVAILABLE',
+      barCode: ''
+    }
   }
+
+  async createOrUpdateItem() {
+    if(this.modalHeader === 'Update Category'){
+      const result = await this.actUpdateAirtag({
+        id: this.airtagInformation.id,
+        barCode: this.airtagInformation.barCode,
+        airTagAttribute:{
+          model: this.airtagInformation.airTagAttribute.model,
+          productionBatch: this.airtagInformation.airTagAttribute.productionBatch,
+          costPrice: this.airtagInformation.airTagAttribute.costPrice,
+          retailPrice: this.airtagInformation.airTagAttribute.retailPrice,
+          size: this.airtagInformation.airTagAttribute.size,
+          color: this.airtagInformation.airTagAttribute.color,
+          connectivity: this.airtagInformation.airTagAttribute.connectivity,
+          speaker: this.airtagInformation.airTagAttribute.speaker,
+          batteryLife: this.airtagInformation.airTagAttribute.batteryLife,
+          sensorTechnology: this.airtagInformation.airTagAttribute.sensorTechnology,
+          accelerometer: this.airtagInformation.airTagAttribute.accelerometer,
+          accessibility: this.airtagInformation.airTagAttribute.accessibility,
+          systemRequirement: this.airtagInformation.airTagAttribute.systemRequirement,
+          brandName: this.airtagInformation.airTagAttribute.brandName,
+          manufacturingDate: this.airtagInformation.airTagAttribute.manufacturingDate
+        } 
+      })
+      if (result) {
+        await this.actAirtagList()
+        this.$emit('close-modal', this.airtagInformation)
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Successfully update airtag',
+          life: 3000
+        })
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Update airtag failed!',
+          life: 3000
+        })
+      }
+    }
+    else {
+      this.$v.airtagInformation.airTagAttribute?.id?.$touch()
+      if (this.$v.$invalid) {
+        return
+      }
+      const result = await this.actCreateNewAirtag({
+        status: this.airtagInformation.status,
+        barCode: this.airtagInformation.barCode,
+        airTagAttribute:{
+          id: this.airtagInformation.airTagAttribute.id
+        } 
+      })
+      if (result) {
+        await this.actAirtagList()
+        this.$emit('close-modal', this.airtagInformation)
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success Message',
+          detail: 'Successfully create airtag',
+          life: 3000
+        })
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error Message',
+          detail: 'Create airtag failed!',
+          life: 3000
+        })
+      }
+    }
+    this.airtagInformation = {
+      airTagAttribute: {
+        id: ''
+      },
+      status: 'AIRTAG_STATUS_AVAILABLE',
+      barCode: ''
+    }
+    
+  }
+
 }
 export default CreateOrUpdate
 </script>
