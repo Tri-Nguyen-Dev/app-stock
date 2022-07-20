@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { roundingPercent } from '~/utils'
+import { numRounding } from '~/utils'
 const nsStoreDashboard = namespace('dashboard/data-chart')
 
 @Component
@@ -36,6 +36,8 @@ class CapacityChart extends Vue {
       dataChart.push(value)
       labels.push(sizeName)
     })
+    const total = sumFreeSpace + sumSpace
+    const freeSpacePercent = (total && `${numRounding(sumFreeSpace / total * 100)}%`) || '-'
     return  {
       labels,
       datasets: [
@@ -45,7 +47,7 @@ class CapacityChart extends Vue {
           hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#00A469', '#00CFCE', '#7E57C2']
         }
       ],
-      freeSpacePercent: roundingPercent(sumFreeSpace / (sumFreeSpace + sumSpace) * 100),
+      freeSpacePercent,
       freeSpace
     } 
   }

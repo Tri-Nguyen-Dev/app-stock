@@ -40,8 +40,7 @@ export function getTotalQuantityLabel(quantity: number, itemName, messages) {
   return _.template(messages)({ quantity: `${quantity} ${isPlural}` })
 }
 
-export function roundingPercent(num: number, noDecimals: any = 2) {
-  if(!num || !Number.isFinite(num)) return '-'
-  const numberPow = Math.pow(10, noDecimals)
-  return `${Math.round((num + Number.EPSILON) * numberPow) / numberPow}%`
+export function numRounding(num: number, decimalPadding: number = 2) {
+  const powNum = Math.pow(10, decimalPadding)
+  return Math.round((num + Number.EPSILON) * powNum) / powNum
 }

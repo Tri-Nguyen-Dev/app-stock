@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { Component, namespace, Vue } from 'nuxt-property-decorator'
-import { roundingPercent } from '~/utils'
+import { numRounding } from '~/utils'
 const nsStoreDashboard = namespace('dashboard/data-chart')
 
 @Component
@@ -26,7 +26,8 @@ class CategoryChart extends Vue {
       const totalCategory = _.sumBy(this.category, function(o) { return o.value })
       const top3 = this.category.slice(0, 3)
       return _.map(top3, (o) => {
-        return { ...o, value: roundingPercent(o.value / totalCategory * 100) }
+        const value = (totalCategory && `${numRounding(o.value / totalCategory * 100)}%`) || '-'
+        return { ...o, value }
       })
     }
   }
