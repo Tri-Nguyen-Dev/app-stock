@@ -39,3 +39,8 @@ export function getTotalQuantityLabel(quantity: number, itemName, messages) {
   const isPlural = quantity > 1 ? `${itemName}s` : itemName
   return _.template(messages)({ quantity: `${quantity} ${isPlural}` })
 }
+
+export function numRounding(num: number, decimalPadding: number = 2) {
+  const powNum = Math.pow(10, decimalPadding)
+  return Math.round((num + Number.EPSILON) * powNum) / powNum
+}

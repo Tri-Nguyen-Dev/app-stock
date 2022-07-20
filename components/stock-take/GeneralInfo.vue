@@ -27,9 +27,9 @@
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.approveId')
           StockUnit(title="APPROVER ID" :value="info.approveId" icon="icon-user-octagon")
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-          StockUnit(title="Warehouse" :value='info.wareHouse  || "N/A"' icon="icon-warehouse-info")
+          StockUnit(title="Warehouse" :value='info.wareHouse  || "N/A"' icon="icon-warehouse-info" :link="info.wareHouse")
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-          StockUnit(title="Total box" :value="info.totalBox" icon="icon-total-inventory")
+          StockUnit(title="Total box(es)" :value="info.totalBox" icon="icon-total-inventory")
         slot(name='note')
 </template>
 

@@ -39,14 +39,14 @@
                     .icon.icon-arrow-up-right.bg-primary.bg-white-active
             div(v-if="!isCheckAssignee")
               Column(field='inventoryQuantity' header='INVENTORY Q.TY' className="text-center")
-              Column(field='countedQuantity' header='COUNTED Q.TY' className="text-center")
-                template.text-center(#body='{data}' class="text-center")
+              Column(field='countedQuantity' header='COUNTED Q.TY')
+                template(#body='{data}')
                   .text-center
                     span( v-if="!isDetail || data.isChecking " ) {{data.countedQuantity }}
-                    InputNumber.w-7rem( v-else   v-model="data.countedQuantity" :min="0" mode="decimal"
+                    InputNumber.w-7rem(v-else v-model="data.countedQuantity" :min="0" mode="decimal"
                       inputClass="w-full" @input='handleDeliveryChange(data)' :useGrouping="false"
                     )
-              Column(field='discrepancy'  header='VARIANT' className="text-center" )
+              Column(field='discrepancy' header='VARIANT')
                 template(#body='{data}')
                   .text-center(v-if="data.countedQuantity !== null")
                     span {{data.countedQuantity - data.inventoryQuantity}}
@@ -185,7 +185,12 @@ class stockTakeItemsDetail extends Vue {
         },
         { title: 'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
         !this.isCheckAssignee ? { title: 'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' } : null,
-        { title: 'Warehouse', value: createdBy?.warehouse?.name, icon: 'icon-warehouse' },
+        {
+          title: 'Warehouse',
+          value: this.boxStockTakeDetail?.warehouse?.name,
+          icon: 'icon-warehouse',
+          link: this.boxStockTakeDetail?.warehouse?.id
+        },
         { title: 'Items', value: this.total, icon: 'icon-frame' }
       ],
       sellerInfo: [

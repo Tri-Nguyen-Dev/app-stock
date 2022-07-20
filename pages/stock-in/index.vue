@@ -14,7 +14,7 @@
             .icon.icon-rotate-left.bg-white
         .btn.btn-primary(@click='createStockIn')
             .icon.icon-add-items.surface-900.bg-white
-            span.text-900.text-white.mr-3 Add recepit note
+            span.text-900.text-white.mr-3 Add receipt note
         .btn__filter(class='active' @click="handleExportReceipt")
           .btn.btn-toggle.bg-white
             .icon-download.icon--large.bg-primary
