@@ -124,7 +124,12 @@ class stockTakeItemsDetail extends Vue {
         { title:'Creator ID', value: createdBy?.staffId, icon: 'icon-tag-user' },
         { title:'PIC ID', value: assignee?.staffId, icon: 'icon-tag-user' },
         { title:'APPROVER ID', value: approver?.staffId, icon: 'icon-tag-user' },
-        { title:'Warehouse', value: createdBy?.warehouse?.name, icon: 'icon-warehouse' },
+        {
+          title:'Warehouse',
+          value: this.boxStockTakeDetail?.warehouse?.name,
+          icon: 'icon-warehouse',
+          link: this.boxStockTakeDetail?.warehouse?.id
+        },
         { title:'Items', value: this.total, icon: 'icon-frame' }
       ],
       sellerInfo: [

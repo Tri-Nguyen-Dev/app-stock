@@ -2,14 +2,14 @@
   .grid.flex.grid-nogutter.stock
     StockTakeNoteInfo(:info='noteDetailInfo' :homeItem='homeItem' :breadcrumbItem='breadcrumbItem')
       template(#note v-if='boxStockTakeDetail.note || boxStockTakeDetail.submitNote')
-        .col-12.flex.align-items-center(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+        .col-12.flex.align-items-center(class='lg:col-12 md:col-12 sm:col-12 py-2 px-0')
           .icon.icon-note.icon.bg-primary.mr-2
           span.font-bold.text-800.uppercase Note
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.note')
+        .col-12(class='lg:col-12 md:col-12 sm:col-12 py-2 px-0' v-if='boxStockTakeDetail.note')
           .grid.grid-nogutter.wapprer-note.m-0
             .col-12.font-semibold  Creator: {{boxStockTakeDetail.createdBy.staffId}}
             .col-12 Note: {{ boxStockTakeDetail.note }}
-        .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='boxStockTakeDetail.submitNote && isComplete')
+        .col-12(class='lg:col-12 md:col-12 sm:col-12 py-2 px-0' v-if='boxStockTakeDetail.submitNote && isComplete')
           .grid.grid-nogutter.wapprer-note.m-0
             .col-12.font-semibold  PIC: {{boxStockTakeDetail.assignee.staffId}}
             .col-12 Note: {{ boxStockTakeDetail.submitNote }}
@@ -70,8 +70,8 @@
                 )
                   Column(field='no' header='NO' bodyClass='font-semibold')
                     template(#body='slotProps') {{ slotProps.index + 1 }}
-                  Column(field="barCode" header="Barcode" sortable)
-                  Column(field="inventoryQuantity" header="INVENTORY Q.TY" bodyClass='font-semibold')
+                  Column(field="barCode" header="Barcode" sortable bodyClass='font-semibold')
+                  Column(field="inventoryQuantity" header="INVENTORY Q.TY")
                     template(#body="{ data }")
                       div.text-center
                         span {{ data.inventoryQuantity }}

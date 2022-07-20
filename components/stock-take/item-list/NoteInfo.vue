@@ -18,7 +18,7 @@
       .grid.m-0.mt-2.w-full
         .col-12.px-0.stock--info.p-2.m-0
           .col-12.px-0(v-for="creator of noteInfor.creatorInfo" v-if="creator")
-            StockUnit.m-0(:title="creator.title" :value='creator.value || "N/A"' :icon='creator.icon')
+            StockUnit.m-0(:title="creator.title" :value='creator.value || "N/A"' :icon='creator.icon' :link="creator.link ? creator.link : ''")
         .col-12.px-0.stock--contact.p-2.m-0(v-if="noteInfor.sellerInfo")
           .col.border-top-1.border-gray-300
           .col-12.px-0.flex.align-items-center
