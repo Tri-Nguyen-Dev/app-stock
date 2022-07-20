@@ -95,7 +95,7 @@
       CreateOrUpdate(
         :isShow="showModal"
         :modalHeader ='modalHeader'
-        :categoryData='airtagData'
+        :airtagData='airtagData'
         @close-modal='showModal = false',
       )
 </template>
