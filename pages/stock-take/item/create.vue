@@ -117,7 +117,12 @@ class StockTakeItems extends Vue {
       status: 'NEW',
       creatorInfo: [
         { title:'Creator ID', value: this.user.staffId, icon: 'icon-tag-user' },
-        { title:'Warehouse', value: _.get(this.listStockSelected[0], 'box.request.warehouse.name', null), icon: 'icon-warehouse' },
+        { 
+          title:'Warehouse', 
+          value: _.get(this.listStockSelected[0], 'box.request.warehouse.name', null), 
+          icon: 'icon-warehouse',
+          link: _.get(this.listStockSelected[0], 'box.request.warehouse.id', null)
+        },
         { title:'Items', value: this.totalItem || '0', icon: 'icon-frame' }
       ],
       sellerInfo: [
