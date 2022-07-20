@@ -181,7 +181,7 @@
 						.col-3.flex.align-items-center.justify-content-end
 							img(src='~/assets/icons/box-border.svg')
 						.col-9
-							span.font-semibold.text-base.mr-1 Total boxs:
+							span.font-semibold.text-base.mr-1 Total box(es):
 							br
 							span.font-semibold.text-primary {{ listBox.length }}
 				.d-flex.col-6(class='md:col-2 lg:col-2')
