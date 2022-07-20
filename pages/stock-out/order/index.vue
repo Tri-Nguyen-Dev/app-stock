@@ -85,7 +85,7 @@
       .inventory__header
         div
           h1.text-heading Item list
-          span.text-subheading {{ listItemsAddSize }} product found
+          span.text-subheading {{ listItemsAddSize }} items found
         .inventory__header--action.flex
           .btn.btn-primary(@click='createStockOut')
             .icon.icon-add-items.surface-900.bg-white

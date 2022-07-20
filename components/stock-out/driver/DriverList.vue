@@ -6,7 +6,7 @@
           title="Driver Phone"
           :value="filter.phone"
           placeholder="Enter Phone"
-          name="receiptId"
+          name="driverPhone"
           :searchText="true"
           @updateFilter="handleFilter"
         )
@@ -15,7 +15,7 @@
           title="Driver Email"
           :value="filter.email"
           placeholder="Enter Email"
-          name="barCode"
+          name="driverEmail"
           :searchText="true"
           @updateFilter="handleFilter"
         )
@@ -24,7 +24,7 @@
           title="Driver Name"
           :value="filter.name"
           placeholder="Enter Name"
-          name="sku"
+          name="driverName"
           :searchText="true"
           @updateFilter="handleFilter"
         )
@@ -32,11 +32,13 @@
         FilterTable(title="Warehouse" name="Warehouse" :value="filter.warehouse"  @updateFilter="handleFilter")
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(
-              v-model='filter.warehouse'
+              v-model='warehouse'
               :options='warehouseList'
               optionLabel="name"
               placeholder='Select'
               :filter='true'
+              @change="handleChangeFilter"
+              display="chip"
             )
     .inventory__content
       DataTable(
@@ -119,12 +121,11 @@ class DriverList extends Vue {
   selectedDriver: any = []
   paging: Paging.Model = { pageNumber:0, pageSize:10, first: 0 }
   sellerEmail: string = ''
-  warehouse: any = null
+  warehouse: any[] = []
   filter: any = {
-    phone: null,
-    name: null,
-    email: null,
-    warehouse: null
+    driverPhone: null,
+    driverName: null,
+    driverEmail: null
   }
 
   get total() {
@@ -168,11 +169,13 @@ class DriverList extends Vue {
 
   handleFilter(e: any, name: string){
     this.filter[name] = e
+    this.getDriverList()
   }
 
-  onPage(event: any) {
+  async onPage(event: any) {
     this.paging.pageSize = event.rows
     this.paging.pageNumber = event.page
+    await this.getDriverList()
   }
 
   refreshFilter() {
@@ -209,9 +212,8 @@ class DriverList extends Vue {
   }
 
   async getDriverList(){
-    const warehouseId = this.filter.warehouseId
-      ? this.filter.warehouseId.map((item: any) => item?.id).toString()
-      : null
+    
+    const warehouseId = this.warehouse.length>0? this.warehouse.map((item: any) => {return item?.id} ).toString(): undefined
     await this.actDriverList({
       ...this.filter,
       warehouseId,
@@ -237,6 +239,10 @@ class DriverList extends Vue {
 
   onRowCollapse(){
 
+  }
+
+  handleChangeFilter() {
+    this.getDriverList()
   }
 }
 export default DriverList

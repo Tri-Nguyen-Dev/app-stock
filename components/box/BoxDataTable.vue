@@ -3,7 +3,7 @@
   .inventory__header
     div
       h1.text-heading Box list
-      span.text-subheading {{ totalBoxRecords }} product found
+      span.text-subheading {{ totalBoxRecords }} boxes found
     .header__action.flex
       Button.btn.btn-primary.border-0.mr-2(
         @click='handleApplyFilter'
