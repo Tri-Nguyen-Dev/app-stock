@@ -186,13 +186,13 @@
         Column(header='PIC' sortable field='assigneeId' sortField="_assignee.displayName" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.assignee?.staffId || 'N/A' }}
-        Column(:hidden='activeTab !== 1'
-          header='Driver' sortable field='driverPhone' sortField="_driver.phoneNumber" headerClass="grid-header-right")
-          template(#body='{ data }')
-            div.grid-cell-right {{ data.driver?.phoneNumber || 'N/A' }}
         Column(:hidden='activeTab !== 2'
           header='Receipt Date' sortable field='receiptDate' sortField="_receiptDate" headerClass="grid-header-right")
           template(#body='{ data }')
+        Column(:hidden='activeTab !== 1 && activeTab !== 2' field='driver'
+         header="Driver" sortable sortField="_driver.phoneNumber" headerClass="grid-header-right")
+          template(#body='{ data }')
+            div.grid-cell-right {{ data.driver?.phoneNumber || 'N/A' }}
         Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
