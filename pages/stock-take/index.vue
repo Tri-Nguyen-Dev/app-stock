@@ -48,6 +48,7 @@
                     dateFormat="dd-mm-yy"
                     :showIcon="true"
                     @updateFilter="handleFilter"
+                    :maxDate="filter.dateTo"
                   )
               .col.ml-1
                   FilterCalendar(
