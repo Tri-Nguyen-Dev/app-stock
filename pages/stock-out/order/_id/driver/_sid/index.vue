@@ -20,7 +20,7 @@
           div.wrap-unit.px-4
             StockUnit(title="Citizen ID Number"  :value="driverDetail.citizenNumber" icon="icon-receipt-note")
           div.wrap-unit.px-4
-            StockUnit(title="DOB" :value="driverDetail.dateOfBirth | dateMonthYear"  icon="icon-tag-user")
+            StockUnit(title="DOB" :value="driverDetail.dateOfBirth | dateTime('DD/MM/YYYY')"  icon="icon-tag-user")
           div.wrap-unit.px-4
             StockUnit(title="Native Place"  :value="driverDetail.driverEmail" icon="icon-warehouse")
           div.wrap-unit.px-4
@@ -124,7 +124,7 @@
               Column(field='receiverAddress' header='Receiver Address' :sortable='true' bodyClass='font-semibold' sortField='_receiverAddress')
               Column(field='completeTime' header='Complete time' :sortable='true' className="text-right" sortField='_receivedDate')
                 template(#body='{data}')
-                  span {{data.completeTime | dateTimeHour24 }}
+                  span {{data.completeTime | dateTime }}
               Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_warehouse.id')
                 template(#body='{data}')
                   span.text-primary {{data.warehouse.name}}

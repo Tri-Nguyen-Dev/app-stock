@@ -92,7 +92,7 @@
               Column(field='receiverAddress' header='Receiver Address' )
               Column(field='completeTime' header='Complete time' className="text-right" )
                 template(#body='{ data }')
-                  div.grid-cell-right {{ data.completeTime | dateTimeHour24 }}
+                  div.grid-cell-right {{ data.completeTime | dateTime }}
               Column(field='warehouse.name' header='Warehouse' className="text-right" )
                 template(#body='{data}')
                   span {{data.warehouse.name}}

@@ -12,7 +12,7 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
       span.font-bold  {{ (paging.pageNumber) * paging.pageSize + slotProps.index +1 }}
   Column(field="createdAt" header="CHANGE TIME" sortable bodyClass="font-semibold"  :styles="{width: '900px'}"  )
     template(#body='{data}')
-      span.font-bold {{ data.createdAt | dateTimeHour24 }}
+      span.font-bold {{ data.createdAt | dateTime }}
   Column(field="endBoxId" header="Box Code" className="text-right" sortable)
     template(#body="{data}")
       div(v-if='data.endBoxId')
