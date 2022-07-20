@@ -77,7 +77,8 @@ class MenuSidebar extends Vue {
           return o !== item.id && o !== subParent?.id
         })
       }
-    } else {
+    } 
+    if(item.to) {
       this.selectedItem = item
     }
     // handle specific actions
