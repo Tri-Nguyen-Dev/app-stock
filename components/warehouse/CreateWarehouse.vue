@@ -1,65 +1,69 @@
 <template lang="pug">
 Dialog.item-list-dialog(:visible.sync='showModal', :showHeader='false' :modal='true' :contentStyle='{"overflow-y": "none !important"}')
-  .text-heading.confirm-dialog__title Add new Warehouse
-  .card.card-container
-    .formgrid.grid(v-if= "!warehouseData")
-      .field.col-12
-        label.required__title(for='name') Name :
-        InputText#name.w-full(
-          v-model='warehouseInformation.name'
-          type='text'
-          class='focus:border-primary'
-          :class="{'name--error' : $v.warehouseInformation.name.$error}")
-        .error-message(v-if='$v.warehouseInformation.name.$dirty && !$v.warehouseInformation.name.required') Name cannot be empty!
-      .field.col-12
-        label.required__title(for='icon') Address :
-        InputText#icon.w-full(
-          v-model='warehouseInformation.address'
-          type='text'
-          :class="{'address--error' : $v.warehouseInformation.address.$error}")
-        .error-message(
-          v-if='$v.warehouseInformation.address.$dirty && !$v.warehouseInformation.address.required'
-        ) Address cannot be empty!
-      .field.col-12
-        label.required__title(for='email') Email:
-        InputText#email.w-full(
-          v-model='warehouseInformation.email'
-          type='text'
-          :class="{'email--error' : $v.warehouseInformation.email.$error}")
-        .error-message(v-if='$v.warehouseInformation.email.$dirty && !$v.warehouseInformation.email.required') Email cannot be empty!
-      .field.col-12(class='lg:col-12')
-        label(for='description') Description :
-        InputText#description.w-full(v-model='warehouseInformation.description' type='text')
-      .field.col-12(class='md:col-6')
-        label.required__title(for='phone') Phone :
-        InputText#phone.w-full(
-          v-model='warehouseInformation.phone'
-          type='text'
-          :class="{'phone--error' : $v.warehouseInformation.phone.$error}")
-        .error-message(v-if='$v.warehouseInformation.phone.$dirty && !$v.warehouseInformation.phone.required') Phone cannot be empty!
-      .field.col-12(class='md:col-6')
-        label(for='maxNumberRack') MaxNumberRack :
-        InputText#maxNumberRack.w-full(v-model='warehouseInformation.maxNumberRack' type='number')
-      .field.col-12.modal-btn(class='md:col-9')
-    .formgrid.grid(v-if= " warehouseData && warehouseData.id")
-      .field.col-12
-        label.required__title(for='name') Name :
-        InputText#name.w-full(v-model='warehouseData.name' type='text' class='focus:border-primary')
-      .field.col-12
-        label.required__title(for='icon') Address :
-        InputText#icon.w-full(v-model='warehouseData.address' type='text')
-      .field.col-12
-        label.required__title(for='email') Email:
-        InputText#email.w-full(v-model='warehouseData.email' type='text' )
-      .field.col-12(class='lg:col-12')
-        label(for='description') Description :
-        InputText#description.w-full(v-model='warehouseData.description' type='text')
-      .field.col-12(class='md:col-6')
-        label.required__title(for='phone') Phone :
-        InputText#phone.w-full(v-model='warehouseData.phone' type='text' )
-      .field.col-12(class='md:col-6')
-        label(for='maxNumberRack') MaxNumberRack :
-        InputText#maxNumberRack.w-full(v-model='warehouseData.maxNumberRack' type='number')
+  .add-warehouse(v-if= "!warehouseData")
+    .text-heading.confirm-dialog__title Add new Warehouse
+    .card.card-container
+      .formgrid.grid
+        .field.col-12
+          label.required__title(for='name') Name
+          InputText#name.w-full(
+            v-model='warehouseInformation.name'
+            type='text'
+            class='focus:border-primary'
+            :class="{'name--error' : $v.warehouseInformation.name.$error}")
+          .error-message(v-if='$v.warehouseInformation.name.$dirty && !$v.warehouseInformation.name.required') Name cannot be empty!
+        .field.col-12
+          label.required__title(for='icon') Address
+          InputText#icon.w-full(
+            v-model='warehouseInformation.address'
+            type='text'
+            :class="{'address--error' : $v.warehouseInformation.address.$error}")
+          .error-message(
+            v-if='$v.warehouseInformation.address.$dirty && !$v.warehouseInformation.address.required'
+          ) Address cannot be empty!
+        .field.col-12
+          label.required__title(for='email') Email
+          InputText#email.w-full(
+            v-model='warehouseInformation.email'
+            type='text'
+            :class="{'email--error' : $v.warehouseInformation.email.$error}")
+          .error-message(v-if='$v.warehouseInformation.email.$dirty && !$v.warehouseInformation.email.required') Email cannot be empty!
+        .field.col-12(class='lg:col-12')
+          label(for='description') Description
+          InputText#description.w-full(v-model='warehouseInformation.description' type='text')
+        .field.col-12(class='md:col-6')
+          label.required__title(for='phone') Phone
+          InputText#phone.w-full(
+            v-model='warehouseInformation.phone'
+            type='text'
+            :class="{'phone--error' : $v.warehouseInformation.phone.$error}")
+          .error-message(v-if='$v.warehouseInformation.phone.$dirty && !$v.warehouseInformation.phone.required') Phone cannot be empty!
+        .field.col-12(class='md:col-6')
+          label(for='maxNumberRack') Max Number of Rack
+          InputText#maxNumberRack.w-full(v-model='warehouseInformation.maxNumberRack' type='number')
+        .field.col-12.modal-btn(class='md:col-9')
+  .edit-warehouse(v-if= " warehouseData && warehouseData.id ")
+    .text-heading.confirm-dialog__title Edit Warehouse
+    .card.card-container
+      .formgrid.grid
+        .field.col-12
+          label.required__title(for='name') Name
+          InputText#name.w-full(v-model='warehouseData.name' type='text' class='focus:border-primary')
+        .field.col-12
+          label.required__title(for='icon') Address
+          InputText#icon.w-full(v-model='warehouseData.address' type='text')
+        .field.col-12
+          label.required__title(for='email') Email
+          InputText#email.w-full(v-model='warehouseData.email' type='text' )
+        .field.col-12(class='lg:col-12')
+          label(for='description') Description
+          InputText#description.w-full(v-model='warehouseData.description' type='text')
+        .field.col-12(class='md:col-6')
+          label.required__title(for='phone') Phone
+          InputText#phone.w-full(v-model='warehouseData.phone' type='text' )
+        .field.col-12(class='md:col-6')
+          label(for='maxNumberRack') Max Number of Rack
+          InputText#maxNumberRack.w-full(v-model='warehouseData.maxNumberRack' type='number')
   template(#footer)
     .field.col-12.modal-btn(class='md:col-9')
       Button.btn.btn-cancel(@click="$emit('close-modal')") Cancel
