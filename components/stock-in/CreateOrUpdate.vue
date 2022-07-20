@@ -440,7 +440,9 @@ class CreateOrUpdateReceipt extends Vue {
         email : event.email,
         phoneNumber: event.phoneNumber,
         displayName: `${event.firstName} ${event.lastName}`,
-        id: event.id
+        id: event.id,
+        firstName: event.firstName,
+        lastName: event.lastName
       }
     }
 
@@ -488,7 +490,7 @@ class CreateOrUpdateReceipt extends Vue {
         },
         box: '',
         amount: stockInformation.quantity,
-        value: +stockInformation.value,
+        value: stockInformation.value,
         sku: stockInformation.sku,
         itemStatus: ''
       }
@@ -684,7 +686,8 @@ class CreateOrUpdateReceipt extends Vue {
             width: stock.width,
             height: stock.height,
             imagePath: stock.imagePath,
-            id: stock.id
+            id: stock.id,
+            value: null
           }
           this.addItem(stockInformation)
           this.activeInputSku = stockInformation.barCode
@@ -699,7 +702,9 @@ class CreateOrUpdateReceipt extends Vue {
 
   async searchLocation(e) {
     await this.actLocationList({
-      location: e.query
+      location: e.query,
+      pageSize:20,
+      pageNumber:0
     })
   }
 

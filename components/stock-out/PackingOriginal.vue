@@ -373,7 +373,9 @@ class PackingOriginal extends Vue {
 
   async searchLocation(e) {
     await this.actLocationList({
-      location: e.query
+      location: e.query,
+      pageSize:20,
+      pageNumber:0
     })
   }
 

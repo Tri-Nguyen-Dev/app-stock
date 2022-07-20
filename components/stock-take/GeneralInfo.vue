@@ -29,7 +29,7 @@
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
           StockUnit(title="Warehouse" :value='info.wareHouse  || "N/A"' icon="icon-warehouse-info")
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
-          StockUnit(title="Total box" :value="info.totalBox" icon="icon-total-inventory")
+          StockUnit(title="Total boxes" :value="info.totalBox" icon="icon-total-inventory")
         slot(name='note')
 </template>
 

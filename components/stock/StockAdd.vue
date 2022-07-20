@@ -199,6 +199,8 @@ class AddNewStock extends Vue {
     })
     if (this.newStockDetail) {
       this.stockInformation.id = this.newStockDetail.id
+      this.stockInformation.value = +this.stockInformation.value
+      this.stockInformation.quantity = +this.stockInformation.quantity
       this.$emit('addItem', this.stockInformation)
     } else {
       this.$toast.add({
