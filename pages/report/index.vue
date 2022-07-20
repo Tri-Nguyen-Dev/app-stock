@@ -125,6 +125,7 @@
                 Column(selectionMode="multiple"
                   :styles="{width: '3rem'}"
                   :selection='selectedShowBox[slotProps.index]'
+                  :hidden='slotProps.data.reportStatus !== "NEW" '
                 )
                 Column(field="box.id" header="BOX CODE" :styles="{width: '7rem'}" bodyClass="font-semibold")
                 Column(field="box.request.seller.email" :styles="{width: '15rem'}" header="SELLER EMAIL")
@@ -184,7 +185,7 @@
       :contentStyle='{"background-color": "#E8EAEF;", "width": "80vw", "padding-bottom":"5px"}'
       @hide='hideDialog()')
       template(#header)
-        h1.text-heading Report detail
+        h1.text-heading Add report
       BoxDataTable(@selectBox='createSelectBox($event)' :box='boxShow' v-if='!isConfirm')
       .confirm.grid(v-if='isConfirm')
         .col-12

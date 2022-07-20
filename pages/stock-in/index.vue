@@ -3,7 +3,7 @@
     .receipt__header
       div
         h1.text-heading Receipt note list
-        span.text-subheading {{ total }} products found
+        span.text-subheading {{ total }} receipts found
       .header__action
         .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
