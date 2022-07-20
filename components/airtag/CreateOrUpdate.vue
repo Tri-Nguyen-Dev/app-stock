@@ -1,7 +1,6 @@
 <template lang="pug">
 Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
   .modal
-    p {{airtagInformation}}
     .text-heading.modal-header {{modalHeader}} 
     .formgrid.grid
         .field.col-12(class='md:col-6')
@@ -12,7 +11,7 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
           InputText#Barcode.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.barCode')
         .field.col-12()
           label(for='attribute') AirTagAttribute :
-          Dropdown.w-full(@change='showAtributeInput()' v-model='airtagInformation.airTagAttribute' :options='hasAttribute' optionLabel='name' optionValue='value')
+          Dropdown.w-full( v-model='isNull' :options='hasAttribute' optionLabel='name' optionValue='value')
         .div.col-12(v-if="isShowInputs")
           .w-full.attribute-input
             label(for='model') model :
@@ -126,28 +125,35 @@ class CreateOrUpdate extends Vue {
     status: '',
     barCode: ''
   }
+
+  isNull: any = false
   
   hasAttribute: any = [
-    { name: 'null' , value: 'null' },
-    { name: 'not null' , value: this.airtagInformation.airTagAttribute }
+    { name: 'null' , value: true },
+    { name: 'not null' , value: false }
   ]
 
   @Watch('airtagData')
-  showAtributeInput(){
-    if(this.airtagInformation.airTagAttribute !==  'null'){
+  updateData() {
+    if(this.airtagData.airTagAttribute) {
       this.isShowInputs = true
     }
-    else {
-      this.isShowInputs = false
-    }
-  }
-
-  @Watch('airtagData')
-  updateData() {
     this.airtagInformation.id = this.airtagData.id
     this.airtagInformation.barCode = this.airtagData.barCode
     this.airtagInformation.status = this.airtagData.status
     this.airtagInformation.airTagAttribute = this.airtagData.airTagAttribute
+  }
+
+  @Watch('isNull')
+  changeIsNull(value) {
+    if(value) {
+      this.isShowInputs = false
+      this.airtagInformation.airTagAttribute = null
+    }
+    else {
+      this.isShowInputs = true
+      this.airtagInformation.airTagAttribute = this.airtagData.airTagAttribute
+    }
   }
 
   get visibleVue() {
