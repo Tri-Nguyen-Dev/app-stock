@@ -130,10 +130,12 @@
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden(v-else) N/A
           Column(header='Result' sortable field='result' sortField="_resultStatus" headerClass="grid-header-right")
               template(#body='{ data }')
-                div.grid-cell-right
+                div.grid-cell-right(v-if="data.status === 'COMPLETED'")
                   span.stock-take-result.result-ng(v-if="data.finalResultStatus === 'NG'") NG
                   span.stock-take-result.result-ok(v-if="data.finalResultStatus === 'OK'") OK
                   span.stock-take-result.result-waiting(v-if="data.finalResultStatus === 'WAITING'") N/A
+                div.grid-cell-right(v-else)
+                  span.stock-take-result.result-waiting N/A
           Column(header='nOTE' sortable field='note' sortField="_note")
               template(#body='{ data }')
                 div.text-break(v-tooltip.bottom="data.approveNote || data.submitNote || data.note") {{  data.approveNote || data.submitNote || data.note }}
