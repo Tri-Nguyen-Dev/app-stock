@@ -106,6 +106,7 @@
               span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERING'") Delivering
               span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERED' ") Delivered
               span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
+              span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_PENDING' ") Pending
         template(#footer)
           Pagination(
             title="Cancel"
@@ -152,7 +153,15 @@ class PackingNoteList extends Vue {
   loadingSubmit: boolean = false
   isFilter: boolean = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
-  statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS
+  statusList =  [
+    { name: 'Cancelled', value: DeliveryConstants.StatusDelivery.CANCELLED },
+    { name: 'Ready', value: DeliveryConstants.StatusDelivery.READY },
+    { name: 'Delivering', value: DeliveryConstants.StatusDelivery.DELIVERING },
+    { name: 'Delivered', value: DeliveryConstants.StatusDelivery.DELIVERED },
+    { name: 'Returned', value: DeliveryConstants.StatusDelivery.RETURNED },
+    { name: 'Setted', value: DeliveryConstants.StatusDelivery.SETTED },
+    { name: 'Accepted', value: DeliveryConstants.StatusDelivery.ACCEPTED }]
+
   limitOptions = LIMIT_PAGE_OPTIONS
   filter: any = {
     id: null,

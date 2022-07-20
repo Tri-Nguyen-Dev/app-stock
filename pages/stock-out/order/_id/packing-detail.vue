@@ -32,7 +32,7 @@
             .col-3.flex
               img(src='~/assets/icons/box-border.svg')
             .col-fixed
-              span.text-base.mr-1 Total boxes:
+              span.text-base.mr-1 Total box(es):
               .font-semibold.text-primary {{ listOutGoingBox.length }}
         .col-2.p-1
           .grid.justify-content-center

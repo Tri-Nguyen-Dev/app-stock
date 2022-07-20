@@ -63,7 +63,7 @@
             .col-3
               img(src='~/assets/icons/box-border.svg')
             .col
-              span.font-semibold.text-base.mr-1 Total boxes:
+              span.font-semibold.text-base.mr-1 Total box(es):
               .font-semibold.text-primary {{ listOutGoingBox.length }}
         .col-2.border-right-1.border-gray-300.p-1
           .grid.align-items-center
