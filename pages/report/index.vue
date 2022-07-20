@@ -3,7 +3,7 @@
     .box__header
       div
         h1.text-heading Report list
-        span.text-subheading(v-if="reportList") {{ totalReportRecords }} products found
+        span.text-subheading(v-if="reportList") {{ totalReportRecords }} reports found
       .header__action
         .header__search
           .icon.icon--left.icon-search
@@ -106,8 +106,8 @@
         className="text-center"
         :styles="{width: '9rem'}")
         template(#body="{data}")
-          .table__action(:class="{'action-disabled': checkDisabledAction(data)}" style= 'justify-content: center')
-            span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click="showModalDelete([data])")
+          .table__action(v-if=" checkShow(data)" style= 'justify-content: center')
+            span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click.stop="showModalDelete([data])")
               .icon.icon-btn-delete
       template(#expansion="slotProps")
         div.orders-subtable
@@ -121,6 +121,7 @@
                 :selection.sync="selectedShowBox[slotProps.index]"
                 @row-select="rowChirldSelect($event,slotProps.index)"
                 @row-unselect="rowChirldUnselect($event,slotProps.index)"
+                :rowClass="rowClassChirld"
               )
                 Column(selectionMode="multiple"
                   :styles="{width: '3rem'}"
@@ -417,6 +418,14 @@ class ReportList extends Vue {
     }
   }
 
+  rowClassChirld(data){
+    if (data.stockTakeId || data.status === REPORT_STATUS.CANCELED) {
+      return 'row-disable'
+    } else {
+      return ''
+    }
+  }
+
   validateText = _.debounce(this.handleFilter, 500)
 
   async sortData(e: any) {
@@ -463,6 +472,7 @@ class ReportList extends Vue {
   }
 
   rowSelectAll({ data }) {
+    // data=_.filter(data,{'reportStatus':REPORT_STATUS.NEW})
     this.selectedReportes = _.unionWith(this.selectedReportes, data, _.isEqual)
     this.selectedReportes.forEach((element, index) => {
       this.boxSelected[index].push(...element.boxNote)
@@ -474,7 +484,7 @@ class ReportList extends Vue {
   rowUnSelectAll() {
     this.selectedReportes = []
     this.selectedShowBox = []
-    this.boxSelected = []
+    this.changeReportList()
     this.setReportSelected(-1)
   }
 
@@ -594,8 +604,8 @@ class ReportList extends Vue {
     this.isConfirm = false
   }
 
-  checkDisabledAction(data) {
-    return !data
+  checkShow(data) {
+    return data.reportStatus === REPORT_STATUS.NEW
   }
 
   createStockTakeFromDatail(data) {
@@ -657,7 +667,6 @@ class ReportList extends Vue {
     this.isDeleteReport = this.selectedReportes.length > 0
     this.isStockTake = this.stockTakeItem.length > 0
   }
-
 }
 
 export default ReportList
@@ -745,15 +754,16 @@ export default ReportList
     .p-datatable-tbody
       & > tr
         height: 3.5rem !important
-
+::v-deep.p-column-header-content
+  .p-checkbox
+    display: none !important
 .orders-subtable
   ::v-deep.p-column-header-content
     .p-checkbox
       display: none !important
-
   ::v-deep.p-datatable
     .p-datatable-tbody
       & > tr:not(.p-highlight):hover
-        background-color: #fcfcfc !important
+        background-color: #EFFBFA !important
 
 </style>
