@@ -7,7 +7,7 @@
       .header__action
         .header__search
           .icon.icon--left.icon-search
-          InputText(type='text' placeholder='Search')
+          InputText(type='text' placeholder='Search name box-size')
         Button.btn.btn-primary(@click='isCreateBoxSize = true; boxSizeData = null')
           .icon.icon-add-items
           span Add Box Size
@@ -20,7 +20,6 @@
           :value='dataRenderItems'
           :selection.sync='selectedItem'
           @row-select='selectRow()'
-
         )
           Column(
             selectionMode='multiple'
