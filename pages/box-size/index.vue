@@ -5,9 +5,6 @@
         h1.text-heading Box Size
         span.text-subheading {{ total }} types found
       .header__action
-        .header__search
-          .icon.icon--left.icon-search
-          InputText(type='text' placeholder='Search name box-size')
         Button.btn.btn-primary(@click='isCreateBoxSize = true; boxSizeData = null')
           .icon.icon-add-items
           span Add Box Size

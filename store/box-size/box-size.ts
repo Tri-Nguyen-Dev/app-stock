@@ -63,8 +63,6 @@ export default class BoxSize extends VuexModule {
 
     @Action ({ rawError: true })
     async actDeletedBoxSizeByIds( ids?: string[] ): Promise<string | undefined> {
-      // eslint-disable-next-line no-console
-      console.log(ids)
       const url = PathBind.transform(
         this.context, 
         BoxSize.STATE_URL.DELETE_BOX_SIZE

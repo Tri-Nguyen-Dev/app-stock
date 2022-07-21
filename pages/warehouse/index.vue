@@ -56,8 +56,6 @@
               .table__action(:class="{'action-disabled': data.stockStatus === 'STOCK_STATUS_DISABLE'}")
                 span.action-item(@click.stop="handleEditWarehouse([data])")
                   .icon.icon-edit-btn
-                span.action-item(@click.stop="handleSetBoxSize([data])")
-                  .icon.icon-size
                 span.action-item(@click.stop="showModalDelete([data])" )
                   .icon.icon-btn-delete
           template(#footer)
@@ -92,17 +90,12 @@
       :isShowCreateWarehouse="isShowCreateWarehouse"
       @close-modal="isShowCreateWarehouse = false"
       :warehouseData="warehouseData")
-    SetBoxSize(
-      :isShowSetBoxSize="isShowSetBoxSize"
-      @close-modal="isShowSetBoxSize = false"
-    )
 </template>
 
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import CreateWarehouse from '~/components/warehouse/CreateWarehouse.vue'
-import SetBoxSize from '~/components/warehouse/SetBoxSize.vue'
 import { Warehouse as WarehouseModel } from '~/models/Warehouse'
 import {
   LIMIT_PAGE_OPTIONS,
@@ -117,8 +110,7 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
   components: {
     ConfirmDialogCustom,
     Pagination,
-    CreateWarehouse,
-    SetBoxSize
+    CreateWarehouse
   }
 })
 class Warehouse extends Vue {
@@ -127,7 +119,6 @@ class Warehouse extends Vue {
   loading: boolean = false
   isModalDelete: boolean = false
   isShowCreateWarehouse: boolean = false
-  isShowSetBoxSize: boolean = false
   onEventDeleteList: WarehouseModel.Model[] = []
   onEventCreateOrUpdateWarehouse: WarehouseModel.CreateOrUpdateWarehouse[] = []
   loadingSubmit: boolean = false
@@ -135,7 +126,6 @@ class Warehouse extends Vue {
   limitOptions = LIMIT_PAGE_OPTIONS
   enablePack = false
   warehouseData: any = null
-  warehouseDataSetBoxSize: any = null
   id: string
   selectedItem: any[] = []
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
@@ -273,11 +263,6 @@ class Warehouse extends Vue {
   handleEditWarehouse(data) {
     this.warehouseData = _.cloneDeep(data[0])
     this.isShowCreateWarehouse = true
-  }
-
-  handleSetBoxSize(data) {
-    this.warehouseDataSetBoxSize = _.cloneDeep(data[0])
-    this.isShowSetBoxSize = true
   }
 
   debounceSearchName = _.debounce((value) => {

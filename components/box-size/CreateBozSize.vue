@@ -1,69 +1,72 @@
 <template lang="pug">
 Dialog.item-list-dialog(:visible.sync='showModal', :showHeader='false' :modal='true' :contentStyle='{"overflow-y": "none !important"}')
-  .text-heading.confirm-dialog__title Add New BoxSize
-  .card.card-container
-    .formgrid.grid(v-if= "!boxSizeData")
-      .field.col-12(class='md:col-6')
-        label.required__title(for='name') Name :
-        InputText#name.w-full(
-          v-model='boxSizeInform.name' 
-          type='text' class='focus:border-primary' 
-          :class="{'name--error' : $v.boxSizeInform.name.$error}"
-        )
-        .error-message(v-if='$v.boxSizeInform.name.$dirty && !$v.boxSizeInform.name.required') Name cannot be empty!
-      .field.col-12(class='md:col-6')
-        label.required__title(for='height') Height :
-        InputText#height.w-full(
-          v-model='boxSizeInform.height' 
-          type='text' 
-          :class="{'height--error' : $v.boxSizeInform.height.$error}"
-        
-        )
-        .error-message(v-if='$v.boxSizeInform.height.$dirty && !$v.boxSizeInform.height.required') Height cannot be empty!
-      .field.col-12(class='md:col-6')
-        label.required__title(for='width') Width :
-        InputText#width.w-full(
-          v-model='boxSizeInform.width' 
-          type='text' 
-          :class="{'width--error' : $v.boxSizeInform.width.$error}"
-        )
-        .error-message(v-if='$v.boxSizeInform.width.$dirty && !$v.boxSizeInform.width.required') Width cannot be empty!
-      .field.col-12(class='md:col-6')
-        label.required__title(for='length') Length :
-        InputText#length.w-full(
-          v-model='boxSizeInform.length' 
-          type='text' 
-          :class="{'length--error' : $v.boxSizeInform.length.$error}"
-        )
-        .error-message(v-if='$v.boxSizeInform.length.$dirty && !$v.boxSizeInform.length.required') Length cannot be empty!
-      .field.col-12.modal-btn(class='md:col-9')
-    .formgrid.grid(v-if= " boxSizeData && boxSizeData.id")
-      .field.col-12(class='md:col-6')
-        label.required__title(for='name') Name :
-        InputText#name.w-full(
-          v-model='boxSizeData.name' 
-          type='text' 
-          class='focus:border-primary'
-        )
-      .field.col-12(class='md:col-6')
-        label.required__title(for='height') Height :
-        InputText#height.w-full(
-          v-model='boxSizeData.height' 
-          type='text'
-        )
-      .field.col-12(class='md:col-6')
-        label.required__title(for='width') Width :
-        InputText#width.w-full(
-          v-model='boxSizeData.width' 
-          type='text'
-        )
-      .field.col-12(class='md:col-6')
-        label.required__title(for='length') Length :
-        InputText#length.w-full(
-          v-model='boxSizeData.length' 
-          type='text'
-        )
-      .field.col-12.modal-btn(class='md:col-9')
+  .add-boxsize(v-if= "!boxSizeData")
+    .text-heading.confirm-dialog__title Add New BoxSize
+    .card.card-container
+      .formgrid.grid
+        .field.col-12(class='md:col-6')
+          label.required__title(for='name') Name :
+          InputText#name.w-full(
+            v-model='boxSizeInform.name' 
+            type='text' class='focus:border-primary' 
+            :class="{'name--error' : $v.boxSizeInform.name.$error}"
+          )
+          .error-message(v-if='$v.boxSizeInform.name.$dirty && !$v.boxSizeInform.name.required') Name cannot be empty!
+        .field.col-12(class='md:col-6')
+          label.required__title(for='height') Height :
+          InputText#height.w-full(
+            v-model='boxSizeInform.height' 
+            type='text' 
+            :class="{'height--error' : $v.boxSizeInform.height.$error}"
+          )
+          .error-message(v-if='$v.boxSizeInform.height.$dirty && !$v.boxSizeInform.height.required') Height cannot be empty!
+        .field.col-12(class='md:col-6')
+          label.required__title(for='width') Width :
+          InputText#width.w-full(
+            v-model='boxSizeInform.width' 
+            type='text' 
+            :class="{'width--error' : $v.boxSizeInform.width.$error}"
+          )
+          .error-message(v-if='$v.boxSizeInform.width.$dirty && !$v.boxSizeInform.width.required') Width cannot be empty!
+        .field.col-12(class='md:col-6')
+          label.required__title(for='length') Length :
+          InputText#length.w-full(
+            v-model='boxSizeInform.length' 
+            type='text' 
+            :class="{'length--error' : $v.boxSizeInform.length.$error}"
+          )
+          .error-message(v-if='$v.boxSizeInform.length.$dirty && !$v.boxSizeInform.length.required') Length cannot be empty!
+        .field.col-12.modal-btn(class='md:col-9')
+  .edit-boxsize(v-if= " boxSizeData && boxSizeData.id")
+    .text-heading.confirm-dialog__title Edit BoxSize
+    .card.card-container
+      .formgrid.grid
+        .field.col-12(class='md:col-6')
+          label.required__title(for='name') Name :
+          InputText#name.w-full(
+            v-model='boxSizeData.name' 
+            type='text' 
+            class='focus:border-primary'
+          )
+        .field.col-12(class='md:col-6')
+          label.required__title(for='height') Height :
+          InputText#height.w-full(
+            v-model='boxSizeData.height' 
+            type='text'
+          )
+        .field.col-12(class='md:col-6')
+          label.required__title(for='width') Width :
+          InputText#width.w-full(
+            v-model='boxSizeData.width' 
+            type='text'
+          )
+        .field.col-12(class='md:col-6')
+          label.required__title(for='length') Length :
+          InputText#length.w-full(
+            v-model='boxSizeData.length' 
+            type='text'
+          )
+        .field.col-12.modal-btn(class='md:col-9')
   template(#footer)
     .field.col-12.modal-btn(class='md:col-9')
       Button.btn.btn-cancel(@click="$emit('close-modal')") Cancel
