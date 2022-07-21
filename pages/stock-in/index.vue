@@ -122,7 +122,7 @@
           className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorName }}
-          Column(header='STATUS' field=' data.status' :sortable="true" sortField="_status")
+          Column(header='STATUS' field=' data.status' :sortable="true" sortField="_status" className="text-right")
             template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
                 :class=" data.status === 'REQUEST_STATUS_SAVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")
@@ -337,7 +337,7 @@ class StockIn extends Vue {
   }
 
   get isFilter(){
-    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize', 'warehouseId'])
+    const params = _.omit(this.getParamApi().params, ['pageNumber', 'pageSize', 'warehouseId'])
     return Object.values(params).some((item) => item)
   }
 

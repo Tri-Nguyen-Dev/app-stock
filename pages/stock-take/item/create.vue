@@ -127,7 +127,7 @@ class StockTakeItems extends Vue {
           icon: 'icon-warehouse',
           link: this.warehouseSelected?.id
         },
-        { title:'Total box(es)', value: this.totalItem || '0', icon: 'icon-frame' }
+        { title:'Total item(s)', value: this.totalItem || '0', icon: 'icon-frame' }
       ],
       sellerInfo: [
         { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },

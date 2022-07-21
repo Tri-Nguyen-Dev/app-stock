@@ -213,7 +213,6 @@ class StockTake extends Vue {
     id: null,
     dateFrom: null,
     dateTo: null,
-    warehouse: null,
     status: null,
     result: null,
     checkType: null

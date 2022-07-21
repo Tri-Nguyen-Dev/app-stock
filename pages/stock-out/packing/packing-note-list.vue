@@ -4,9 +4,6 @@
       div
         h1.text-heading Packing note list
       .header__action
-        //- .header__search
-        //-   .icon.icon--left.icon-search
-        //-   InputText(type='text' placeholder='Search' v-model="filter.name" v-on:input="debounceSearchName")
         .btn__filter(:class="{'active': true}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
             .icon.icon-filter(v-if="!isShowFilter")
@@ -19,7 +16,7 @@
             .icon-download.icon--large.bg-primary
             span.text-900.text-primary EXPORT FILE
     .grid.header__filter.mt-1(:class='{ "active": isShowFilter }' )
-      div(class='col-12 md:col-6 lg:col-4 xl:col-4')
+      div(class='col-12 md:col-6')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -43,15 +40,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      div(class='col-12 md:col-3 lg:col-3 xl:col-3')
-        FilterTable(
-          title="Warehouse"
-          :value="filter.warehouseId"
-          :options="warehouseList"
-          name="warehouseId"
-          @updateFilter="handleFilter"
-        )
-      div(class='col-12 md:col-3 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-3')
         FilterTable(
           title="Seller email"
           placeholder="Search"
@@ -60,7 +49,7 @@
           name="sellerEmail"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 lg:col-2 xl:col-2')
+      div(class='col-12 md:col-3')
         FilterTable(
           title="Status"
           :value="filter.status"
@@ -191,8 +180,7 @@ class PackingNoteList extends Vue {
     status: null,
     sortBy: null,
     desc: null,
-    sellerEmail: null,
-    warehouseId: null
+    sellerEmail: null
   }
 
   @nsStoreDelivery.State
@@ -208,10 +196,7 @@ class PackingNoteList extends Vue {
   actDeleteDeliveryByIds!: (ids: string[]) => Promise<any>
 
   @nsStoreWarehouse.State
-  warehouseList!: any
-
-  @nsStoreWarehouse.Action
-  actWarehouseList!: () => Promise<void>
+  warehouseSelected!: any
 
   @nsStoreExportReceipt.Action
   actGetReceiptLable!: (params: any) => Promise<string>
@@ -242,8 +227,9 @@ class PackingNoteList extends Vue {
   }
 
   mounted() {
-    this.getProductList()
-    this.actWarehouseList()
+    if(this.warehouseSelected) {
+      this.getProductList()
+    }
   }
 
   handleFilter(e: any, name: string) {
@@ -260,7 +246,7 @@ class PackingNoteList extends Vue {
       sortBy: this.filter.sortBy || null,
       desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
-      warehouseId: this.filter.warehouseId?.id,
+      warehouseId: this.warehouseSelected?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       status: this.filter.status?.value,
