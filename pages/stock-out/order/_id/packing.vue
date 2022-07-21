@@ -23,8 +23,7 @@
       template(v-slot:content)
         h3.text-left.text-900 NOTE:
         Textarea.text-left.w-full(v-model="valueReportNote" rows="4" placeholder="Please note here for your report if necessary")
-    .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
-      StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
+    StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
       .flex.flex-column.flex-1.overflow-hidden
         StockOutPackingOriginal.mb-2(
@@ -412,12 +411,6 @@ export default DeliveryOrderPacking
   height: calc(100vh - 32px)
   .packing-wapper
     overflow-y: hidden
-  .packing__detail--left
-    height: calc( 100% - 32px) !important
-  .sub-tab
-    height: calc(100vh - 32px)
-    max-width: 21.5rem
-    overflow: hidden
   .packing__detail--footer
     height: 82px
     padding: 0 12px
