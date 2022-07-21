@@ -42,7 +42,7 @@
     column( field='weight', header='WEIGHT(KG)', :show-filter-match-modes='false' className="text-right" )
       template(#body='{ data }')
         span.font-bold {{data.weight}}
-    Column( field='category.name', header='CATEGORY', sortable='', :show-filter-match-modes='false' className="text-right" )
+    column( field='category.name', header='CATEGORY', sortable='', :show-filter-match-modes='false' className="text-right" )
       template(#body='{ data }')
         span.font-bold {{ data.category.name }}
     template(#footer)
