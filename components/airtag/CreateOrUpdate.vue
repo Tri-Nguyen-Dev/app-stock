@@ -11,7 +11,9 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
           InputText#Barcode.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.barCode')
         .field.col-12(v-if="modalHeader === 'Create Category'")
           label.required__title(for='id') AirTagAttribute id:
-          InputText#id.appearance-none.outline-none.w-full(type='number' v-model='airtagInformation.airTagAttribute.id' :class="{'id--error' : $v.airtagInformation.airTagAttribute.id.$error}")
+          InputText#id.appearance-none.outline-none.w-full(type='number' 
+            v-model='airtagInformation.airTagAttribute.id' 
+            :class="{'id--error' : $v.airtagInformation.airTagAttribute.id.$error}")
           .error-message(v-if='$v.airtagInformation.airTagAttribute.id.$dirty && !$v.airtagInformation.airTagAttribute.id.required') Name cannot be empty!
         .field.col-12(v-if="modalHeader === 'Update Category'")
           label(for='attribute') AirTagAttribute :

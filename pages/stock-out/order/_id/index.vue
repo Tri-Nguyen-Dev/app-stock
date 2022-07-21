@@ -61,6 +61,7 @@
       :isModalDriverList='isModalDriverList',
       @hideDialog='hideDialog($event)',
       @assigned='assignedDriver($event)'
+      :orderIds='[]'
     )
 </template>
 

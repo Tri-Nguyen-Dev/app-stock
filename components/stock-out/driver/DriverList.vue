@@ -58,12 +58,12 @@
         Column(selectionMode='multiple')
         Column(field='no' header='NO' :styles="{'width': '3rem'}" )
           template(#body='slotProps') {{ (paging.pageNumber) * paging.pageSize + slotProps.index + 1 }}
-        Column(field='driverPhone' header='Driver Phone' :sortable='true' sortField='_stock.barCode')
-        Column(field='driverEmail' header='Driver Email' :sortable='true' sortField='_sku')
-        Column(field='driverName' header='Driver Name' :sortable='true' bodyClass='font-semibold' sortField='_box.id')
-        Column(field='totalDelivered' header='Total Delivered D/0' :sortable='true' className="text-right" sortField='_box.request.id')
-        Column(field='totalDelivering' header='Total Delivering D/0' :sortable='true' className="text-right" sortField='_stock.createdAt')
-        Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_box.request.id')
+        Column(field='driverPhone' header='Driver Phone' :sortable='true' sortField='_driver.phoneNumber')
+        Column(field='driverEmail' header='Driver Email' :sortable='true' sortField='_driver.email')
+        Column(field='driverName' header='Driver Name' :sortable='true' bodyClass='font-semibold' sortField='_driver.displayName')
+        Column(field='totalDelivered' header='Total Delivered D/0' :sortable='true' className="text-right" sortField='_totalDelivered')
+        Column(field='totalDelivering' header='Total Delivering D/0' :sortable='true' className="text-right" sortField='_totalDelivering')
+        Column(field='warehouse.name' header='Warehouse' :sortable='true' className="text-right" sortField='_warehouse.name')
           template(#body='{data}')
             span {{data.warehouse.name}}
         template(#footer)
@@ -75,9 +75,7 @@
         template(#empty)
           div.flex.align-items-center.justify-content-center.flex-column
             img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`")
-            p.text-900.font-bold.mt-3 List is empty!, Click
-              span.text-primary.underline.cursor-pointer &nbsp;here
-              span &nbsp;to add item.
+            p.text-900.font-bold.mt-3 Driver not found!
         template(#expansion="slotProps")
           div.orders-subtable.pb-2
             h5.mt-1.mb-2 Driver history
@@ -182,7 +180,7 @@ class DriverList extends Vue {
     refreshAllFilter(this.filter)
   }
 
-  sortData(e: any) {
+  async sortData(e: any) {
     const { sortField, sortOrder } = e
     if (sortOrder) {
       this.filter.desc = sortOrder !== 1
@@ -191,6 +189,7 @@ class DriverList extends Vue {
       this.filter.desc = null
       this.filter.sortBy = null
     }
+    await this.getDriverList()
   }
 
   rowSelect({ data }) {
