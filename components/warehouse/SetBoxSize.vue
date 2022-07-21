@@ -31,7 +31,7 @@ Dialog.item-list-dialog(:visible.sync='showModal', :showHeader='false' :modal='t
         Column(header='Set BoxSize'  field='setBoxSize' headerClass="grid-header-center")
           template(#body='{ data }')
             div.grid-cell-right 
-              InputNumber.number-input(v-model='value20' mode='decimal' showbuttons='' :min='0' :max='100')
+              InputNumber.number-input( mode='decimal' showbuttons='' :min='0' :max='100')
         template(#footer)
           Pagination(
             type="items selected"
@@ -144,6 +144,7 @@ export default SetBoxSize
       background-color: $text-color-500
 .dataTable-container
   width: 100%
+  height: 700px !important
 .btn
   cursor: pointer
   border: none
