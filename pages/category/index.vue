@@ -52,7 +52,7 @@
             img(:srcset='`${require("~/assets/images/table-empty.png")} 2x`')
             p.empty__text List is empty!, Click
               span &nbsp;here
-              span(@click='showModalCreate = true') &nbsp;to add item.
+              span(@click='handleCreate') &nbsp;to add item.
 
   ConfirmDialogCustom(
     title='Confirm delete',
