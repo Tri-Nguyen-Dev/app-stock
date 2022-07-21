@@ -1,98 +1,94 @@
 <template lang="pug">
-  .grid.grid-nogutter.w-full
-    div(class='col-12 lg:col-3')
-      .sub-tab.bg-white.border-round-top
-        .col.flex.align-items-center.p-3
-          Button(@click='backToBox').p-button-link
-            .icon-arrow-left.icon.bg-primary.align-items-center
-          Breadcrumb(:home="homeItem" :model="breadcrumbItem")
-        .border-bottom-1.border-gray-300.grid-nogutter
-        .grid.flex.my-4.p-3.grid-nogutter
+  .grid.grid-nogutter.flex
+    CommonTabDetail(:homeItem="homeItem" :breadcrumbItem="breadcrumbItem" :isBack="true")
+      template(v-slot:title)
+        .grid.flex.my-3.grid-nogutter
           .col.flex.align-items-center
             .icon-box-info.icon.bg-primary.mr-2
             span.font-bold.text-700 Box Detail
           .col-fixed
-              Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" v-if='!isEditBox' )
-                .icon-edit-btn.icon
-        div
-          .col.px-3
-            div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
-                span.p-2.table__status.table__status--available(
-                  v-if="boxDetail.status === 'BOX_STATUS_AVAILABLE'"
+            Button.border-0.p-0.h-2rem.w-2rem.justify-content-center.surface-200.shadow-none( @click="btnEdit" v-if='!isEditBox' )
+              .icon-edit-btn.icon
+        .col.px-0
+          div( v-if='boxDetail.status' :class='isEditBox? "opacity-40" : "opacity-100"')
+              span.p-2.table__status.table__status--available(
+                v-if="boxDetail.status === 'BOX_STATUS_AVAILABLE'"
+              ) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--disable(
+                v-else-if="boxDetail.status === 'BOX_STATUS_DISABLE'"
+              ) {{ boxDetail.status | boxStatus }}
+              span.p-2.table__status.table__status--draft(
+                v-else-if="boxDetail.status === 'BOX_STATUS_DRAFT'"
                 ) {{ boxDetail.status | boxStatus }}
-                span.p-2.table__status.table__status--disable(
-                  v-else-if="boxDetail.status === 'BOX_STATUS_DISABLE'"
-                ) {{ boxDetail.status | boxStatus }}
-                span.p-2.table__status.table__status--draft(
-                  v-else-if="boxDetail.status === 'BOX_STATUS_DRAFT'"
-                  ) {{ boxDetail.status | boxStatus }}
-                span.p-2.table__status.table__status--outgoing(v-else) {{ boxDetail.status | boxStatus }}
-            .font-bold.my-3
-              div(:class='isEditBox? "opacity-40" : "opacity-100"')
-                span Box Code:
-                  span.text-primary.uppercase.ml-2 {{ boxDetail.id }}
-        div.sub--scroll
-            div.wrap-unit.px-4
-              StockUnit(title="Receipt ID"  :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
-            div.wrap-unit.px-4(v-if='boxDetail.createdBy')
-              StockUnit(title="Creator ID" :value="boxDetail.createdBy.staffId" :isEdit="isEditBox" icon="icon-tag-user")
-            div.wrap-unit.px-4
-              StockUnit(title="Warehouse"  :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
-            div.wrap-unit.px-4
-              StockUnit(title="Location" icon="icon-location-2")
-                template(v-slot:auto-complete)
-                  .mt-1.flex.align-items-center
-                    AutoComplete.edit-location(
-                      v-model="isLocation"
-                      field='name'
-                      :suggestions='locationList'
-                      forceSelection :readOnly='!isEditBox'
-                      :placeholder='boxLocation'
-                      @complete="searchLocation($event)"  )
-                      template(#item="slotProps")
-                        .grid.align-items-center.grid-nogutter
-                          span.font-bold.text-lg {{ slotProps.item.name }}
-                          .icon-arrow-up-right.icon
-            div.wrap-unit.px-4
-              StockUnit(title="CreateD Time" :value="boxDetail.createdAt | dateTime" :isEdit="isEditBox" icon="icon-calendar")
-            div.wrap-unit.px-4(v-if='boxDetail.listStockWithAmount')
-              StockUnit(title="Box Items" :value="boxDetail.listStockWithAmount.length" :isEdit="isEditBox" icon="icon-frame")
-            div.wrap-unit.px-4
-              StockUnit(title="Storage fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
-            div.wrap-unit.px-4(v-if="boxDetail.boxSize" :class='isEditBox ? "opacity-40" : "opacity-100"')
-              StockUnit(
-                title="Box size:"
-                type ="size"
-                :height="boxDetail.boxSize.height"
-                :length="boxDetail.boxSize.length"
-                :width="boxDetail.boxSize.width"
-                icon="icon-size")
-                template(v-slot:size)
-                  span.font-bold.text-lg.mt-1.uppercase
-                    | {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
-                template(v-slot:button-size='')
-                  span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(
-                    :class='boxDetail.boxSize.name ? "p-1" : ""') {{ boxDetail.boxSize.name }}
-            div.col-12(:class='isEditBox? "opacity-40" : "opacity-100"')
-              .col.border-bottom-1.border-gray-300
-              .col.flex.my-3.mx-1
-                .col.flex.align-items-center
-                  .icon-sender-info.icon.bg-primary.mr-2
-                  span.font-bold.text-800.uppercase Seller Information
-            .wrap-unit.px-4
-              StockUnit(title="Sender" :value="boxSellerInfor.displayName" :isEdit="isEditBox" icon="icon-sender-name")
-            .wrap-unit.px-4
-              StockUnit(title="Email Address" :value="boxSellerInfor.email" :isEdit="isEditBox" icon="icon-sender-email")
-            .wrap-unit.px-4
-              StockUnit(title="Phone number" :value="boxSellerInfor.phoneNumber" :isEdit="isEditBox" icon="icon-sender-phone")
-            .grid.m-1(v-if='isEditBox')
-              div(class='lg:col-6 col-3')
-                Button.btn.btn-outline.h-3rem.w-full(@click='btnEdit')
-                  span.uppercase.font-semibold cancel
-              div(class='lg:col-6 col-3')
-                Button.btn.btn-primary.h-3rem.w-full( @click='handleUpdateData' )
-                  span.uppercase save
-    .py-0(class="xl:pl-5 lg:pl-2 col-12 lg:col-9 md:col-12")
+              span.p-2.table__status.table__status--outgoing(v-else) {{ boxDetail.status | boxStatus }}
+          .font-bold.mt-3
+            div(:class='isEditBox? "opacity-40" : "opacity-100"')
+              span Box Code:
+                span.text-primary.uppercase.ml-2 {{ boxDetail.id }}
+        .col-12.py-0.mb-3(:class='isEditBox? "opacity-40" : "opacity-100"')
+          .col.border-bottom-1.border-gray-300
+      template(v-slot:content)
+        .grid.m-0.mt-2.w-full
+          .col-12
+            StockUnit(title="Receipt ID"  :value="receiptNoteId" :isEdit="isEditBox" icon="icon-receipt-note")
+          .col-12(v-if='boxDetail.createdBy')
+            StockUnit(title="Creator ID" :value="boxDetail.createdBy.staffId" :isEdit="isEditBox" icon="icon-tag-user")
+          .col-12
+            StockUnit(title="Warehouse"  :value="boxWarehouse" :isEdit="isEditBox" icon="icon-warehouse")
+          .col-12
+            StockUnit(title="Location" icon="icon-location-2")
+              template(v-slot:auto-complete)
+                .mt-1.flex.align-items-center
+                  AutoComplete.edit-location(
+                    v-model="isLocation"
+                    field='name'
+                    :suggestions='locationList'
+                    forceSelection :readOnly='!isEditBox'
+                    :placeholder='boxLocation'
+                    @complete="searchLocation($event)"  )
+                    template(#item="slotProps")
+                      .grid.align-items-center.grid-nogutter
+                        span.font-bold.text-lg {{ slotProps.item.name }}
+                        .icon-arrow-up-right.icon
+          .col-12
+            StockUnit(title="CreateD Time" :value="boxDetail.createdAt | dateTime" :isEdit="isEditBox" icon="icon-calendar")
+          .col-12(v-if='boxDetail.listStockWithAmount')
+            StockUnit(title="Box Items" :value="boxDetail.listStockWithAmount.length" :isEdit="isEditBox" icon="icon-frame")
+          .col-12
+            StockUnit(title="Storage fee" :value="boxDetail.inventoryFee" :isEdit="isEditBox" icon="icon-price")
+          .col-12(v-if="boxDetail.boxSize" :class='isEditBox ? "opacity-40" : "opacity-100"')
+            StockUnit(
+              title="Box size:"
+              type ="size"
+              :height="boxDetail.boxSize.height"
+              :length="boxDetail.boxSize.length"
+              :width="boxDetail.boxSize.width"
+              icon="icon-size")
+              template(v-slot:size)
+                span.font-bold.text-lg.mt-1.uppercase
+                  | {{ boxDetail.boxSize.length }}*{{ boxDetail.boxSize.width }}*{{ boxDetail.boxSize.height }}
+              template(v-slot:button-size='')
+                span.font-bold.text-micro.text-600.bg-primary.ml-1.border-round(
+                  :class='boxDetail.boxSize.name ? "p-1" : ""') {{ boxDetail.boxSize.name }}
+          .col-12(:class='isEditBox? "opacity-40" : "opacity-100"')
+            .col.border-bottom-1.border-gray-300
+          .col-12.flex.align-items-center
+            .icon-sender-info.icon.bg-primary.mr-2
+            span.font-bold.text-800.uppercase Seller Info
+          .col-12
+            StockUnit(title="Sender" :value="boxSellerInfor.displayName" :isEdit="isEditBox" icon="icon-sender-name")
+          .col-12
+            StockUnit(title="Email Address" :value="boxSellerInfor.email" :isEdit="isEditBox" icon="icon-sender-email")
+          .col-12
+            StockUnit(title="Phone number" :value="boxSellerInfor.phoneNumber" :isEdit="isEditBox" icon="icon-sender-phone")
+          .col-12.flex.justify-content-around(v-if='isEditBox')
+            div(class='col-6 md:col-3 lg:col-6')
+              Button.btn.btn-outline.h-3rem.w-full(@click='btnEdit')
+                span.uppercase.font-semibold cancel
+            div(class='col-6 md:col-3 lg:col-6')
+              Button.btn.btn-primary.h-3rem.w-full( @click='handleUpdateData' )
+                span.uppercase save
+    .py-0.flex-1(class="xl:pl-5 lg:pl-2 col-12 lg:col-5 md:col-12")
       div(class="box-page mt-4 lg:mt-0")
         .grid.justify-content-between
           .col-fixed.mb-2
@@ -119,13 +115,13 @@
                   .icon.icon--left.icon-search
                   InputText(type="text" placeholder="Search" v-model="filterParams.name" )
               div
-              .btn__filter(:class="{'active': isFilter}")
-                .btn-toggle(@click="isFilter = !isFilter")
-                  .icon.icon-filter(v-if="!isFilter")
-                  .icon.icon-chevron-up.bg-primary(v-else)
-                  span Filter
-                .btn-refresh(@click="refreshFilter")
-                  .icon.icon-rotate-left.bg-white
+                .btn__filter(:class="{'active': isFilter}")
+                  .btn-toggle(@click="isFilter = !isFilter")
+                    .icon.icon-filter(v-if="!isFilter")
+                    .icon.icon-chevron-up.bg-primary(v-else)
+                    span Filter
+                  .btn-refresh(@click="refreshFilter")
+                    .icon.icon-rotate-left.bg-white
           .grid.my-2.w-full(v-if="isFilter")
               div(class="col-12 md:col-4")
                 .bg-white.border-round
@@ -364,17 +360,6 @@ export default BoxDetail
     top: -0.5rem
     right: 0
 
-.sub-tab
-  @include desktop
-    max-width: 100%
-    height: calc(100vh - 32px)
-    overflow: auto!important
-.sub--scroll
-  width: 100%
-  @include desktop
-    max-width: 100%
-    overflow: auto
-
 .right__information--stock
   ::v-deep.p-tabview-panel
     display: flex
@@ -429,9 +414,6 @@ export default BoxDetail
   background-color: #979AA4
 .p-disabled, .p-component:disabled
   opacity: 1
-.wrap-unit
-  width: 100%
-  margin-bottom: 16px
 .header__action
     margin-top: 12px
     display: flex
