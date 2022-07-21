@@ -18,9 +18,9 @@ prep:
     paths:
       - node_modules
   only:
-    - staging
+    - develop
 
-build staging:
+build develop:
   stage: build
   script:
     - echo "BASE_IMAGE_URL=$BASE_IMAGE_URL" >> .env
@@ -37,11 +37,11 @@ build staging:
       - node_modules
       - dist
   only:
-    - staging
+    - develop
 
-deploy to staging:
+deploy to develop:
   stage: deploy
-  environment: staging
+  environment: develop
   image:
     name: amazon/aws-cli
     entrypoint: [""]
@@ -56,4 +56,4 @@ deploy to staging:
     - aws cloudfront create-invalidation --distribution-id EGR9SY7RO24RK --paths "/*"
   only:
     variables:
-      - $CI_COMMIT_BRANCH == 'staging'
+      - $CI_COMMIT_BRANCH == 'develop'
