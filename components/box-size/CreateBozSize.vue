@@ -69,12 +69,8 @@ Dialog.item-list-dialog(:visible.sync='showModal', :showHeader='false' :modal='t
         .field.col-12.modal-btn(class='md:col-9')
   template(#footer)
     .field.col-12.modal-btn(class='md:col-9')
-      Button.btn.btn-cancel(@click="$emit('close-modal')") Cancel
-        span
-      Button.btn.btn-primary(v-if="!boxSizeData" @click="addItem()")
-        span Save
-      Button.btn.btn-primary(v-if="boxSizeData" @click="UpdateItem()")
-        span Save
+      Button.btn.btn-cancel(label="Cancel" @click="$emit('close-modal')")
+      Button.btn.btn-primary(label="Save" @click="handleClickSubmit()")
 </template>
 
 <script lang="ts">
@@ -143,6 +139,10 @@ class AddNewBoxSize extends Vue {
     await Promise.all([this.actBoxSizeList()])
   }
 
+  handleClickSubmit() {
+    return !this.boxSizeData ? this.addItem() : this.updateItem()
+  }
+
   clearInform(){
     this.boxSizeInform.name = ''
     this.boxSizeInform.height =''
@@ -187,7 +187,7 @@ class AddNewBoxSize extends Vue {
     }
   }
 
-  async UpdateItem(){
+  async updateItem(){
     const result = await this.actUpdateBoxSize({
       id: this.boxSizeData.id,
       name: this.boxSizeData.name,
@@ -241,7 +241,6 @@ export default AddNewBoxSize
 .btn-cancel
   background-color: #5a6268
   color: $color-white
-  padding-right: 0
 .btn-cancel :hover
   background-color: $primary
   color: $text-color-100
