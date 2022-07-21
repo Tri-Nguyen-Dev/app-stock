@@ -311,7 +311,7 @@ class NoteBoxDetail extends Vue {
         })
       })
     )
-    submitData = { stockTakeItem: [...submitData] , submitNote: this.stockTakeInfo.note }
+    submitData = { stockTakeItem: [...submitData] , submitNote: this.stockTakeInfo.note.trim() }
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: true,

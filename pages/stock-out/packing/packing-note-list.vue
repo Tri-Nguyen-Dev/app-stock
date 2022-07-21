@@ -99,19 +99,14 @@
             div {{ data.createTime | dateTime }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.sellerEmail }}
+            div.grid-cell-right {{ data.seller.email }}
             div.grid-cell-right {{ data.receiptDate }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" )
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.receiverAddress }}
-        //- Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
-        //-   template(#body='{ data }')
-        //-     .flex.align-items-center.cursor-pointer.justify-content-end
-        //-       span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
-        //-       .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.creatorId }}
+            div.grid-cell-right(v-if="data.assignee") {{ data.assignee.displayName }}
         Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right

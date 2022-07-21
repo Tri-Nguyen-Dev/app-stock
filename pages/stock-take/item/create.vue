@@ -139,7 +139,7 @@ class StockTakeItems extends Vue {
 
   async handleSubmit(){
     const data = {
-      note: this.noteText,
+      note: this.noteText.trim(),
       checkType: 'ITEM',
       stockTakeItem: _.map(this.listStockSelected, ({ id }) => ({ stockBoxId: id })),
       warehouse: { id: _.get(this.listStockSelected[0], 'box.request.warehouse.id', null) }
