@@ -8,57 +8,56 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
           Dropdown.w-full(v-model='airtagInfo.status' :options="statusList" optionLabel="name" optionValue='value')
         .field.col-12(class='md:col-6')
           label(for='Barcode') Barcode :
-          InputText#Barcode.appearance-none.outline-none.w-full(type='text' v-model='airtagInfo.barCode')
+          InputText#Barcode.w-full(type='text' v-model='airtagInfo.barCode')
         .field.col-12(v-if="modalHeader === 'Create Category'")
           label.required__title(for='id') AirTagAttribute id:
-          InputText#id.appearance-none.outline-none.w-full(
-            type='number' v-model='TagAttribute.id' 
-            :class="{'id--error' : $v.TagAttribute.id.$error}"
-            )
-          .error-message(v-if='$v.TagAttribute.id.$dirty && !$v.TagAttribute.id.required') Name cannot be empty!
+          InputText#id.w-full(
+            type='number' v-model='TagAttribute.id'
+            :class="{'id--error' : $v.TagAttribute.id.$error}")
+          .error-message(v-if='$v.TagAttribute.id.$dirty && !$v.TagAttribute.id.required') id cannot be empty!
         .div.col-12(v-if="modalHeader === 'Update Category'")
           .w-full.attribute-input
-            label(for='model') model :
-            InputText#model.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.model')
+            label(for='model') model : 
+            InputText#model.w-full(type='text' v-model='TagAttribute.model')
           .w-full.attribute-input
             label(for='productionBatch') productionBatch :
-            InputText#productionBatch.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.productionBatch')
+            InputText#productionBatch.w-full(type='text' v-model='TagAttribute.productionBatch')
           .w-full.attribute-input
             label(for='costPrice') costPrice :
-            InputText#costPrice.appearance-none.outline-none.w-full(type='number' v-model='TagAttribute.costPrice')
+            InputText#costPrice.w-full(type='number' v-model='TagAttribute.costPrice')
           .w-full.attribute-input
             label(for='retailPrice') retailPrice :
-            InputText#retailPrice.appearance-none.outline-none.w-full(type='number' v-model='TagAttribute.retailPrice')
+            InputText#retailPrice.w-full(type='number' v-model='TagAttribute.retailPrice')
           .w-full.attribute-input
             label(for='size') size :
-            InputText#size.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.size')
+            InputText#size.w-full(type='text' v-model='TagAttribute.size')
           .w-full.attribute-input
             label(for='color') color :
-            InputText#color.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.color')
+            InputText#color.w-full(type='text' v-model='TagAttribute.color')
           .w-full.attribute-input
             label(for='connectivity') connectivity :
-            InputText#connectivity.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.connectivity')
+            InputText#connectivity.w-full(type='text' v-model='TagAttribute.connectivity')
           .w-full.attribute-input
             label(for='speaker') speaker :
-            InputText#speaker.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.speaker')
+            InputText#speaker.w-full(type='text' v-model='TagAttribute.speaker')
           .w-full.attribute-input
             label(for='batteryLife') batteryLife :
-            InputText#batteryLife.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.batteryLife')
+            InputText#batteryLife.w-full(type='text' v-model='TagAttribute.batteryLife')
           .w-full.attribute-input
             label(for='sensorTechnology') sensorTechnology :
-            InputText#sensorTechnology.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.sensorTechnology')
+            InputText#sensorTechnology.w-full(type='text' v-model='TagAttribute.sensorTechnology')
           .w-full.attribute-input
             label(for='accelerometer') accelerometer :
-            InputText#accelerometer.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.accelerometer')
+            InputText#accelerometer.w-full(type='text' v-model='TagAttribute.accelerometer')
           .w-full.attribute-input
             label(for='accessibility') accessibility :
-            InputText#accessibility.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.accessibility')
+            InputText#accessibility.w-full(type='text' v-model='TagAttribute.accessibility')
           .w-full.attribute-input
             label(for='brandName') brandName :
-            InputText#brandName.appearance-none.outline-none.w-full(type='text' v-model='TagAttribute.brandName')
+            InputText#brandName.w-full(type='text' v-model='TagAttribute.brandName')
           .w-full.attribute-input
             label(for='manufacturingDate') manufacturingDate :
-            InputText#manufacturingDate.appearance-none.outline-none.w-full(type='date' v-model='TagAttribute.manufacturingDate')
+            InputText#manufacturingDate.w-full(type='date' v-model='TagAttribute.manufacturingDate')
         .field.col-12.modal-btn(class='md:col-12')
           Button.btn.btn-outline(@click="handleCancle")
             span Cancel
@@ -98,6 +97,9 @@ const nsAirtag = namespace('airtag/Airtag')
         brandName: {},
         manufacturingDate: {}
       }
+    },
+    TagAttribute: {
+      id: { required }
     }
   }
 })
@@ -164,11 +166,11 @@ class CreateOrUpdate extends Vue {
   handleCancle() {
     this.$emit('close-modal')
     this.airtagInfo = {
-      airTagAttribute: {
-        id: ''
-      },
       status: 'AIRTAG_STATUS_AVAILABLE',
       barCode: ''
+    }
+    this.TagAttribute = {
+      id:''
     }
   }
 
@@ -216,7 +218,7 @@ class CreateOrUpdate extends Vue {
         })
       }
     } else {
-      this.$v.TagAttribute?.id?.$touch()
+      this.$v.TagAttribute.id?.$touch()
       if (this.$v.$invalid) {
         return
       }
@@ -245,11 +247,11 @@ class CreateOrUpdate extends Vue {
       }
     }
     this.airtagInfo = {
-      airTagAttribute: {
-        id: ''
-      },
       status: 'AIRTAG_STATUS_AVAILABLE',
       barCode: ''
+    }
+    this.TagAttribute = {
+      id:''
     }
     this.$emit('reloadList')
   }
