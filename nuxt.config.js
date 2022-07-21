@@ -105,7 +105,7 @@ export default {
           property: 'access_token',
           type: 'Bearer',
           name: 'Authorization',
-          maxAge: 300
+          maxAge: 3600
         },
         refreshToken: {
           property: 'refresh_token',
@@ -122,7 +122,7 @@ export default {
     redirect: {
       login: '/',
       logout: '/login',
-      home: '/stock'
+      home: '/dashboard'
     }
   },
 
