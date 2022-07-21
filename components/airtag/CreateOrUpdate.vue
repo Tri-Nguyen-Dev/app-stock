@@ -14,7 +14,7 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
           InputText#id.w-full(
             type='number' v-model='TagAttribute.id'
             :class="{'id--error' : $v.TagAttribute.id.$error}")
-          .error-message(v-if='$v.TagAttribute.id.$dirty && !$v.TagAttribute.id.required') id cannot be empty!
+          .error-message(v-if='$v.TagAttribute.id.$dirty && $v.TagAttribute.id.$invalid') id cannot be empty!
         .div.col-12(v-if="modalHeader === 'Update Category'")
           .w-full.attribute-input
             label(for='model') model : 
@@ -79,9 +79,7 @@ const nsAirtag = namespace('airtag/Airtag')
       barCode: {},
       Status: {},
       airTagAttribute: {
-        id: {
-          required
-        },
+        id: {},
         model: {},
         productionBatch: {},
         costPrice: {},
@@ -119,7 +117,7 @@ class CreateOrUpdate extends Vue {
     barCode: ''
   }
 
-  TagAttribute: any ={}
+  TagAttribute: any = {}
 
   @nsAirtag.State
   airtagList!: any
@@ -132,30 +130,31 @@ class CreateOrUpdate extends Vue {
 
   @nsAirtag.Action
   actCreateNewAirtag!: (param: any) => Promise<any>
-  
+
   @Watch('airtagData')
   updateData() {
     if (this.modalHeader === 'Update Category') {
       this.airtagInfo.id = this.airtagData.id
       this.airtagInfo.barCode = this.airtagData.barCode
       this.airtagInfo.status = this.airtagData.status
+      const propsAtribute = this.airtagData.airTagAttribute
       this.TagAttribute = {
-        id: this.airtagData.airTagAttribute.id,
-        model: this.airtagData.airTagAttribute.model,
-        productionBatch: this.airtagData.airTagAttribute.productionBatch,
-        costPrice: this.airtagData.airTagAttribute.costPrice,
-        retailPrice: this.airtagData.airTagAttribute.retailPrice,
-        size: this.airtagData.airTagAttribute.size,
-        color: this.airtagData.airTagAttribute.color,
-        connectivity: this.airtagData.airTagAttribute.connectivity,
-        speaker: this.airtagData.airTagAttribute.speaker,
-        batteryLife: this.airtagData.airTagAttribute.batteryLife,
-        sensorTechnology: this.airtagData.airTagAttribute.sensorTechnology,
-        accelerometer: this.airtagData.airTagAttribute.accelerometer,
-        accessibility: this.airtagData.airTagAttribute.accessibility,
-        systemRequirement: this.airtagData.airTagAttribute.systemRequirement,
-        brandName: this.airtagData.airTagAttribute.brandName,
-        manufacturingDate: this.airtagData.airTagAttribute.manufacturingDate
+        id: propsAtribute.id,
+        model: propsAtribute.model,
+        productionBatch: propsAtribute.productionBatch,
+        costPrice: propsAtribute.costPrice,
+        retailPrice: propsAtribute.retailPrice,
+        size: propsAtribute.size,
+        color: propsAtribute.color,
+        connectivity: propsAtribute.connectivity,
+        speaker: propsAtribute.speaker,
+        batteryLife: propsAtribute.batteryLife,
+        sensorTechnology: propsAtribute.sensorTechnology,
+        accelerometer: propsAtribute.accelerometer,
+        accessibility: propsAtribute.accessibility,
+        systemRequirement: propsAtribute.systemRequirement,
+        brandName: propsAtribute.brandName,
+        manufacturingDate: propsAtribute.manufacturingDate
       }
     }
   }
@@ -171,7 +170,7 @@ class CreateOrUpdate extends Vue {
       barCode: ''
     }
     this.TagAttribute = {
-      id:''
+      id: ''
     }
   }
 
@@ -182,8 +181,7 @@ class CreateOrUpdate extends Vue {
         barCode: this.airtagInfo.barCode,
         airTagAttribute: {
           model: this.TagAttribute.model,
-          productionBatch:
-            this.TagAttribute.productionBatch,
+          productionBatch: this.TagAttribute.productionBatch,
           costPrice: this.TagAttribute.costPrice,
           retailPrice: this.TagAttribute.retailPrice,
           size: this.TagAttribute.size,
@@ -191,15 +189,12 @@ class CreateOrUpdate extends Vue {
           connectivity: this.TagAttribute.connectivity,
           speaker: this.TagAttribute.speaker,
           batteryLife: this.TagAttribute.batteryLife,
-          sensorTechnology:
-            this.TagAttribute.sensorTechnology,
+          sensorTechnology: this.TagAttribute.sensorTechnology,
           accelerometer: this.TagAttribute.accelerometer,
           accessibility: this.TagAttribute.accessibility,
-          systemRequirement:
-            this.TagAttribute.systemRequirement,
+          systemRequirement: this.TagAttribute.systemRequirement,
           brandName: this.TagAttribute.brandName,
-          manufacturingDate:
-            this.TagAttribute.manufacturingDate
+          manufacturingDate: this.TagAttribute.manufacturingDate
         }
       })
       if (result) {
@@ -252,7 +247,7 @@ class CreateOrUpdate extends Vue {
       barCode: ''
     }
     this.TagAttribute = {
-      id:''
+      id: ''
     }
     this.$emit('reloadList')
   }
