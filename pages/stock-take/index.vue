@@ -301,10 +301,8 @@ class StockTake extends Vue {
     if(data.status === 'APPROVED') {
       this.$router.push(`/stock-take/${type}/${data.id}/approve`)
     }
-    else if(data.status === 'APPROVING') {
-      if(data.approver && data.approver?.staffId === this.user?.staffId) {
-        this.$router.push(`/stock-take/${type}/${data.id}/approve`)
-      }
+    else if(data.status === 'APPROVING' && data.approver && data.approver?.staffId === this.user?.staffId) {
+      this.$router.push(`/stock-take/${type}/${data.id}/approve`)
     }
     else if(data.status === 'NEW' || data.status === 'COMPLETED') {
       this.$router.push(`/stock-take/${type}/${data.id}/note-detail`)
