@@ -1,17 +1,24 @@
 <template lang="pug">
   .stock
-    .stock__header.grid.mt-3
-      div(class='col-12 md:col-12 lg:col-9 xl:col-9')
+    .stock__header.mb-3
+      div
         h1.text-heading Packing note list
-      div(class='col-12 md:col-12 lg:col-3 xl:col-3 btn-center')
-        ThemeButtonExport.mr-1.w-half(:click='handleExportReceipt')
-        Button.p-button-outlined.p-button-primary.bg-white.w-half(
-          type='button',
-          label='Refresh',
-          icon='pi pi-refresh'
-          @click='handleRefreshFilter'
-        )
-    .grid.header__filter(:class='{ "active": true }')
+      .header__action
+        //- .header__search
+        //-   .icon.icon--left.icon-search
+        //-   InputText(type='text' placeholder='Search' v-model="filter.name" v-on:input="debounceSearchName")
+        .btn__filter(:class="{'active': true}")
+          .btn-toggle(@click="isShowFilter = !isShowFilter")
+            .icon.icon-filter(v-if="!isShowFilter")
+            .icon.icon-chevron-up.bg-primary(v-else)
+            span Filter
+          .btn-refresh(@click="handleRefreshFilter")
+            .icon.icon-rotate-left.bg-white
+        .btn__filter(class='active' @click="handleExportReceipt")
+          .btn.btn-toggle.bg-white
+            .icon-download.icon--large.bg-primary
+            span.text-900.text-primary EXPORT FILE
+    .grid.header__filter.mt-1(:class='{ "active": isShowFilter }' )
       div(class='col-12 md:col-6 lg:col-4 xl:col-4')
         .grid.grid-nogutter
           .col
@@ -71,7 +78,16 @@
         :rows='10'
         :rowHover='true'
         @row-click='rowClick'
+        @row-select-all="rowSelectAll"
+        @row-unselect-all="rowUnSelectAll"
+        @row-select="rowSelect"
+        @row-unselect="rowUnselect"
       )
+        Column(
+          selectionMode='multiple'
+          :styles="{'width': '1%'}"
+          :exportable="false"
+        )
         Column(field='no' header='NO' :styles="{'width': '1%'}" )
           template(#body='{ index }')
             span.grid-cell-center.stock__table-no.text-white-active.text-900.font-bold {{ getIndexPaginate(index) }}
@@ -103,9 +119,11 @@
               span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_IN_PROGRESS'") In Progress
               span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_CANCELLED'") Cancelled
               span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_READY'") Ready
+              span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_SETTED'") Setted
               span.table__status.table__status--draft(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERING'") Delivering
               span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_DELIVERED' ") Delivered
               span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_RETURNED' ") Returned
+              span.table__status.table__status--disable(v-if="data.status === 'DELIVERY_ORDER_STATUS_PENDING' ") Pending
         template(#footer)
           Pagination(
             title="Cancel"
@@ -119,6 +137,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import dayjs from 'dayjs'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { DeliveryList } from '~/models/Delivery'
 
@@ -152,7 +171,15 @@ class PackingNoteList extends Vue {
   loadingSubmit: boolean = false
   isFilter: boolean = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
-  statusList = DeliveryConstants.DELIVERY_STATUS_OPTIONS
+  statusList =  [
+    { name: 'Cancelled', value: DeliveryConstants.StatusDelivery.CANCELLED },
+    { name: 'Ready', value: DeliveryConstants.StatusDelivery.READY },
+    { name: 'Delivering', value: DeliveryConstants.StatusDelivery.DELIVERING },
+    { name: 'Delivered', value: DeliveryConstants.StatusDelivery.DELIVERED },
+    { name: 'Returned', value: DeliveryConstants.StatusDelivery.RETURNED },
+    { name: 'Setted', value: DeliveryConstants.StatusDelivery.SETTED },
+    { name: 'Accepted', value: DeliveryConstants.StatusDelivery.ACCEPTED }]
+
   limitOptions = LIMIT_PAGE_OPTIONS
   filter: any = {
     id: null,
@@ -226,10 +253,18 @@ class PackingNoteList extends Vue {
 
   async getProductList() {
     await this.getDeliveryList({
-      ...this.filter,
+      id: this.filter.id || null,
+      assigneeId: this.filter.assigneeId || null,
+      createTimeFrom: this.filter.createTimeFrom ? dayjs(this.filter.createTimeFrom).format('YYYY-MM-DD') : null,
+      createTimeTo: this.filter.createTimeTo ? dayjs(this.filter.createTimeTo).format('YYYY-MM-DD') : null,
+      sortBy: this.filter.sortBy || null,
+      desc: this.filter.desc,
+      sellerEmail: this.filter.sellerEmail || null,
       warehouseId: this.filter.warehouseId?.id,
       pageSize: this.paging.pageSize,
-      pageNumber: this.paging.pageNumber
+      pageNumber: this.paging.pageNumber,
+      status: this.filter.status?.value,
+      isPackingList : true
     })
   }
 
@@ -274,6 +309,30 @@ class PackingNoteList extends Vue {
       warehouseId: null
     }
     this.getProductList()
+  }
+
+  rowSelectAll({ data }) {
+    this.selectedDelivery = _.union(this.selectedDelivery, data)
+  }
+
+  rowUnSelectAll() {
+    this.selectedDelivery = _.differenceWith(
+      this.selectedDelivery,
+      this.deliveryList,
+      _.isEqual
+    )
+  }
+
+  rowSelect({ data }) {
+    this.selectedDelivery.push(data)
+  }
+
+  rowUnselect({ originalEvent, data }) {
+    originalEvent.originalEvent.stopPropagation()
+    this.selectedDelivery = _.filter(
+      this.selectedDelivery,
+      (stock: any) => stock.id !== data.id
+    )
   }
 
 }

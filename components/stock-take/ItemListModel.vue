@@ -160,7 +160,6 @@ import { Component, Vue, namespace, Prop, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Stock as StockModel } from '~/models/Stock'
 import {
-  PAGINATE_DEFAULT,
   calculateIndex,
   StockTakeConstants,
   getTotalQuantityLabel
@@ -182,7 +181,12 @@ class ItemListModel extends Vue {
   selectedStock: StockModel.Model[] = []
   isShowFilter: boolean = false
   isFilter: boolean = false
-  paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
+  paging: Paging.Model = { 
+    pageNumber: 0,
+    pageSize: 10,
+    first: 0 
+  }
+
   statusList = StockTakeConstants.RESULT_ITEM_STOCK_OPTIONS
   warehouseOption: any = []
   filter: any = {

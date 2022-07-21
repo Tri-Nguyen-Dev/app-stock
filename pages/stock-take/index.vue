@@ -48,6 +48,7 @@
                     dateFormat="dd-mm-yy"
                     :showIcon="true"
                     @updateFilter="handleFilter"
+                    :maxDate="filter.dateTo"
                   )
               .col.ml-1
                   FilterCalendar(
@@ -132,8 +133,8 @@
               template(#body='{ data }')
                 div.grid-cell-right
                   span.stock-take-result.result-ng(v-if="data.finalResultStatus === 'NG'") NG
-                  span.stock-take-result.result-ok(v-if="data.finalResultStatus === 'OK'") OK
-                  span.stock-take-result.result-waiting(v-if="data.finalResultStatus === 'WAITING'") N/A
+                  span.stock-take-result.result-ok(v-else-if="data.finalResultStatus === 'OK'") OK
+                  span.stock-take-result.result-waiting(v-else) N/A
           Column(header='nOTE' sortable field='note' sortField="_note")
               template(#body='{ data }')
                 div.text-break(v-tooltip.bottom="data.approveNote || data.submitNote || data.note") {{  data.approveNote || data.submitNote || data.note }}
