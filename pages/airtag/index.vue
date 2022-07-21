@@ -75,6 +75,8 @@
             :paging='paging',
             :total='Number(airtagTotal)',
             @onPage='onPage'
+            :deleted-list="selectedAirtagFilter"
+            @onDelete="showModalDelete"
           )
         template(#empty)
           .table__empty
@@ -97,11 +99,12 @@
         :modalHeader ='modalHeader'
         :airtagData='airtagData'
         @close-modal='showModal = false',
+        @reloadList='reLoadList = !reLoadList'
       )
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
@@ -133,6 +136,7 @@ class Airtag extends Vue {
   selectedAirtag: AirtagModel.Model[] = []
   statusList = AirtagConstants.AIRTAG_STATUS_OPTIONS
   modalHeader: string = ''
+  reLoadList: boolean = false
   filter: any = {
     name: null,
     barCode: null,
@@ -150,12 +154,18 @@ class Airtag extends Vue {
   actAirtagList!: (params: any) => Promise<void>
 
   @nsAirtagList.Action
-  actDeleteairtagByIds!: (params: any) => Promise<any>
+  actDeleteAirtag!: (params: any) => Promise<any>
 
   get checkAirtagDisable() {
     return this.airtagList.every(
       (item) => item.status === 'AIRTAG_STATUS_DISABLE'
     )
+  }
+
+  get selectedAirtagFilter() {
+    return  _.filter(this.selectedAirtag, () => {
+      return this.filter.status !== 'AIRTAG_STATUS_DISABLE'
+    })
   }
 
   getParamAPi() {
@@ -170,6 +180,12 @@ class Airtag extends Vue {
 
   async getAirtagList() {
     await this.actAirtagList(
+      this.getParamAPi() )
+  }
+  
+  @Watch('reLoadList')
+  reload(){
+    this.actAirtagList(
       this.getParamAPi() )
   }
 
@@ -253,7 +269,7 @@ class Airtag extends Vue {
   }
 
   showModalDelete(data?: any) {
-    this.onEventDeleteList = data
+    this.onEventDeleteList = data || this.selectedAirtagFilter
     this.isModalDelete = true
   }
 
@@ -262,8 +278,8 @@ class Airtag extends Vue {
   }
 
   async handleDeleteAirtag() {
-    const id = _.map(this.onEventDeleteList, 'id')
-    const result = await this.actDeleteairtagByIds(id[0])
+    const ids = _.map(this.onEventDeleteList, 'id')
+    const result = await this.actDeleteAirtag(ids)
     if (result) {
       this.isModalDelete = false
       this.$toast.add({
@@ -272,12 +288,7 @@ class Airtag extends Vue {
         detail: 'Successfully deleted box',
         life: 3000
       })
-      this.paging.first = 0
-      this.paging.pageNumber = 0
-      await this.actAirtagList({
-        pageNumber: this.paging.pageNumber,
-        pageSize: this.paging.pageSize
-      })
+      await this.getAirtagList()
     }
   }
 

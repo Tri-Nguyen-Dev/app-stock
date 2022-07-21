@@ -1,7 +1,6 @@
 <template lang="pug">
 Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
   .modal
-    p {{airtagInformation}}
     .text-heading.modal-header {{modalHeader}} 
     .formgrid.grid
         .field.col-12(class='md:col-6')
@@ -218,7 +217,6 @@ class CreateOrUpdate extends Vue {
         } 
       })
       if (result) {
-        await this.actAirtagList()
         this.$emit('close-modal', this.airtagInformation)
         this.$toast.add({
           severity: 'success',
@@ -248,7 +246,6 @@ class CreateOrUpdate extends Vue {
         } 
       })
       if (result) {
-        await this.actAirtagList()
         this.$emit('close-modal', this.airtagInformation)
         this.$toast.add({
           severity: 'success',
@@ -272,7 +269,7 @@ class CreateOrUpdate extends Vue {
       status: 'AIRTAG_STATUS_AVAILABLE',
       barCode: ''
     }
-    
+    this.$emit('reloadList')
   }
 
 }

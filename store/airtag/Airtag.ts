@@ -41,10 +41,9 @@ export default class Airtag extends VuexModule {
   async actDeleteAirtag(params?: any): Promise<string | undefined> {
     const url = PathBind.transform(
       this.context,
-      Airtag.STATE_URL. DELETE_AIRTAG,
-      params
+      Airtag.STATE_URL.DELETE_AIRTAG
     )
-    const response: any = await $api.post(url)
+    const response: any = await $api.post(url, params)
     return response.data
   }
 
