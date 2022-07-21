@@ -137,23 +137,24 @@ class CreateOrUpdate extends Vue {
       this.airtagInfo.id = this.airtagData.id
       this.airtagInfo.barCode = this.airtagData.barCode
       this.airtagInfo.status = this.airtagData.status
+      const propsAtribute = this.airtagData.airTagAttribute
       this.TagAttribute = {
-        id: this.airtagData.airTagAttribute.id,
-        model: this.airtagData.airTagAttribute.model,
-        productionBatch: this.airtagData.airTagAttribute.productionBatch,
-        costPrice: this.airtagData.airTagAttribute.costPrice,
-        retailPrice: this.airtagData.airTagAttribute.retailPrice,
-        size: this.airtagData.airTagAttribute.size,
-        color: this.airtagData.airTagAttribute.color,
-        connectivity: this.airtagData.airTagAttribute.connectivity,
-        speaker: this.airtagData.airTagAttribute.speaker,
-        batteryLife: this.airtagData.airTagAttribute.batteryLife,
-        sensorTechnology: this.airtagData.airTagAttribute.sensorTechnology,
-        accelerometer: this.airtagData.airTagAttribute.accelerometer,
-        accessibility: this.airtagData.airTagAttribute.accessibility,
-        systemRequirement: this.airtagData.airTagAttribute.systemRequirement,
-        brandName: this.airtagData.airTagAttribute.brandName,
-        manufacturingDate: this.airtagData.airTagAttribute.manufacturingDate
+        id: propsAtribute.id,
+        model: propsAtribute.model,
+        productionBatch: propsAtribute.productionBatch,
+        costPrice: propsAtribute.costPrice,
+        retailPrice: propsAtribute.retailPrice,
+        size: propsAtribute.size,
+        color: propsAtribute.color,
+        connectivity: propsAtribute.connectivity,
+        speaker: propsAtribute.speaker,
+        batteryLife: propsAtribute.batteryLife,
+        sensorTechnology: propsAtribute.sensorTechnology,
+        accelerometer: propsAtribute.accelerometer,
+        accessibility: propsAtribute.accessibility,
+        systemRequirement: propsAtribute.systemRequirement,
+        brandName: propsAtribute.brandName,
+        manufacturingDate: propsAtribute.manufacturingDate
       }
     }
   }
