@@ -1,6 +1,8 @@
 <template lang="pug">
-  .bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-4 xl:col-3')
+  .bg-white.border-round-top.sub-tab(class='col-12 md:col-12 lg:col-3')
     .border-bottom-1.border-gray-300.flex
+      Button(v-if="isBack" @click='backToStockList').p-button-link.pr-0
+        .icon.icon-btn-back.bg-blue-700
       Breadcrumb(:home='homeItem', :model='breadcrumbItem')
     .border-bottom-1.border-gray-300
     .sub-title.px-3
@@ -17,6 +19,11 @@ class TabDetail extends Vue {
   @Prop({ default: null }) noteInfor: any
   @Prop({ default: null }) homeItem: any
   @Prop({ default: null }) breadcrumbItem: any
+  @Prop({ default: false }) isBack!: boolean
+
+  backToStockList() {
+    this.$router.go(-1)
+  }
 }
 
 export default TabDetail
@@ -46,7 +53,6 @@ export default TabDetail
       flex-direction: row
       justify-content: center
       align-items: baseline
-      overflow: hidden
       
   .p-menuitem-link
     display: flex !important
