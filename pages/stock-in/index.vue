@@ -29,10 +29,10 @@
             template(#header)
               .icon.icon-horiz.mr-2.surface-600
               span Transferring
-    .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
-      div(class="col-12 lg:col-12 xl:col-4")
+    .grid.header__filter(:class='{ "active": isShowFilter }')
+      div(class="col-12 lg:col-12 xl:col-6")
         .grid
-          div(class="col-12 md:col-3")
+          div(class="col-12 md:col-4")
             FilterTable(
               title="ID"
               :value="filter.id"
@@ -40,38 +40,28 @@
               name="id" :searchText="true"
               @updateFilter="handleFilter"
               :isShowFilter="isShowFilter")
-          div(class="col-12 md:col-9")
+          div(class="col-12 md:col-8")
             .grid.grid-nogutter
               .col
-                  FilterCalendar(
-                    title="From"
-                    border="left"
-                    :value="filter.dateFrom"
-                    name="dateFrom"
-                    inputClass="border-0"
-                    dateFormat="dd-mm-yy"
-                    :showIcon="true"
-                    @updateFilter="handleFilter")
-              .col.ml-1
-                  FilterCalendar(
-                  title="To"
-                  border="right"
-                  :value="filter.dateTo"
-                  name="dateTo"
+                FilterCalendar(
+                  title="From"
+                  border="left"
+                  :value="filter.dateFrom"
+                  name="dateFrom"
                   inputClass="border-0"
                   dateFormat="dd-mm-yy"
                   :showIcon="true"
                   @updateFilter="handleFilter")
-      div(class="col-12 lg:col-3 xl:col-2")
-        FilterTable(
-          title="Warehouse"
-          :value="filter.warehouse"
-          :options="warehouseOption"
-          name="warehouse"
-          @updateFilter="handleFilter"
-          :isDisabled="user.role !== 'admin'"
-          :isClear="false"
-        )
+              .col.ml-1
+                FilterCalendar(
+                title="To"
+                border="right"
+                :value="filter.dateTo"
+                name="dateTo"
+                inputClass="border-0"
+                dateFormat="dd-mm-yy"
+                :showIcon="true"
+                @updateFilter="handleFilter")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Seller Email"
@@ -121,12 +111,6 @@
             template(#body='{ data }') {{ data.sellerName }}
           Column(header='SELLER EMAIL' field='sellerEmail' :sortable="true" sortField="_seller.email")
             template(#body='{ data }') {{ data.sellerEmail }}
-          Column(field="warehouse" header="WAREHOUSE" :sortable="true" sortField="_warehouse.name" className="text-right")
-            template(#body="{data}")
-              div(v-if='data.warehouse')
-                .flex.align-items-center.cursor-pointer.justify-content-end
-                  span.text-primary.font-bold.text-white-active(v-if='data.warehouse' ) {{ data.warehouse.name }}
-                  .icon.icon-arrow-up-right.bg-primary.bg-white-active
           Column(header='CREATOR ID' field='data.creatorId' :sortable="true" sortField="_createdBy.id" className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorId }}
@@ -184,10 +168,10 @@ import {
 import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
-const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockIn = namespace('stock-in/request-list')
 const nsStoreExportReceipt = namespace('stock-in/export-receipt')
 const nsStoreUser = namespace('user-auth/store-user')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
 
 @Component({
@@ -213,7 +197,6 @@ class StockIn extends Vue {
     id: null,
     dateFrom: null,
     dateTo: null,
-    warehouse: null,
     sellerEmail: null,
     creatorId: null,
     status: null
@@ -227,20 +210,17 @@ class StockIn extends Vue {
   @nsStoreStockIn.State
   total!: number
 
-  @nsWarehouseStock.State
-  warehouseList!: any
-
   @nsStoreExportReceipt.State
   receiptUrl!: any
+
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
 
   @nsStoreStockIn.Action
   actGetStockIn!: (params: any) => Promise<void>
 
   @nsStoreStockIn.Action
   actDeleteStockInByIds!: (params: {ids: string[]}) => Promise<any>
-
-  @nsWarehouseStock.Action
-  actWarehouseList!: () => Promise<void>
 
   @nsStoreExportReceipt.Action
   actGetReceiptLable!: (params: any) => Promise<string>
@@ -260,7 +240,7 @@ class StockIn extends Vue {
         'sortBy': this.sortByColumn || null,
         'desc': this.isDescending,
         'status': this.filter.status?.value,
-        'warehouseId': this.filter.warehouse?.id
+        'warehouseId': this.warehouseSelected?.id
       },
       type: this.activeTab
     }
@@ -312,16 +292,9 @@ class StockIn extends Vue {
   }
 
   async mounted() {
-    const { role, warehouse } = this.user
-    if(role === 'admin') {
-      await this.actWarehouseList()
-      this.warehouseOption = _.cloneDeep(this.warehouseList)
-      this.filter.warehouse = this.warehouseList[0]
-    } else {
-      this.warehouseOption = [warehouse]
-      this.filter.warehouse = warehouse
+    if(this.warehouseSelected) {
+      await this.actGetStockIn(this.getParamApi())
     }
-    await this.actGetStockIn(this.getParamApi())
   }
 
   async refreshFilter() {
@@ -364,7 +337,7 @@ class StockIn extends Vue {
   }
 
   get isFilter(){
-    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
+    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize', 'warehouseId'])
     return Object.values(params).some((item) => item)
   }
 
@@ -433,7 +406,7 @@ export default StockIn
 .receipt__header
   flex-direction: column
   flex-wrap: wrap
-  margin-bottom: 24px
+  margin-bottom: 16px
   @include desktop
     flex-direction: row
     @include flex-center-space-between

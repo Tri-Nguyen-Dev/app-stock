@@ -7,14 +7,15 @@
       .menu-mobile-icon.pi.pi-align-justify( @click="handleToggleMenu")
     .main-container(:style="{ marginLeft: widthScreen > 1024 ? sidebarWidth : 0 }")
       Toast
-      Nuxt
+      Nuxt(v-if="renderMyComponent")
 </template>
 
 <script lang="ts">
-import { Component, namespace, Vue } from 'nuxt-property-decorator'
+import { Component, namespace, Vue, Watch } from 'nuxt-property-decorator'
 import Sidebar from 'primevue/sidebar'
 import MenuSidebar from '~/components/sidebar/Sidebar.vue'
 const nsSidebar = namespace('layout/store-sidebar')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component({
   middleware: 'authenticate',
@@ -22,15 +23,27 @@ const nsSidebar = namespace('layout/store-sidebar')
 })
 class Dashboard extends Vue {
   visibleMenu: boolean = false
+  renderMyComponent: boolean = true
 
   @nsSidebar.Getter('sidebarWidth')
   sidebarWidth!: string
 
   @nsSidebar.State
   widthScreen!: number
+
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
   
   @nsSidebar.Mutation('openSidebar')
   closeSidebar
+
+  @Watch('warehouseSelected')
+  changeWarehouse() {
+    this.renderMyComponent = false
+    this.$nextTick(() => {
+      this.renderMyComponent = true
+    })
+  }
 
   handleToggleMenu() {
     this.visibleMenu = !this.visibleMenu
@@ -56,6 +69,7 @@ export default Dashboard
   @include desktop
     padding: $space-size-32
     height: 100vh
+    overflow: hidden
 .layout-static
   ::v-deep.p-sidebar-header 
     z-index: 1111

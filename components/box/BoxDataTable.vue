@@ -17,19 +17,9 @@
           .icon.icon-rotate-left.bg-white
   div(v-if= 'isShowFilter')
     .grid.mb-1
-      div(class="col-12 md:col-12 xl:col-7")
+      div(class="col-12 md:col-12 xl:col-6")
         .grid
-          div(class='col-12 md:col-3')
-            FilterTable(
-              title="Warehouse"
-              :value="filter.warehouse"
-              :options="warehouseOption"
-              name="warehouse"
-              @updateFilter="handleFilterBox"
-              :isDisabled="user.role !== 'admin'"
-              :isClear="false"
-            )
-          div(class='col-12 md:col-3')
+          div(class='col-12 md:col-4')
             FilterTable(
               title='Box Code',
               :value='filter.barCode',
@@ -39,7 +29,7 @@
               @updateFilter='handleFilterBox'
               :isShowFilter="isShowFilter"
             )
-          div(class='col-12 md:col-3')
+          div(class='col-12 md:col-4')
             FilterTable(
               title='Seller Email',
               placeholder='Enter Seller Email',
@@ -49,7 +39,7 @@
               @updateFilter='handleFilterBox'
               :isShowFilter="isShowFilter"
             )
-          div(class='col-12 md:col-3')
+          div(class='col-12 md:col-4')
             FilterTable(
               title='Location',
               :value='filter.location',
@@ -59,7 +49,7 @@
               @updateFilter='handleFilterBox'
               :isShowFilter="isShowFilter"
             )
-      div(class="col-12 md:col-12 xl:col-5")
+      div(class="col-12 md:col-12 xl:col-6")
         .grid
           div(class='col-12 md:col-8')
             .grid.grid-nogutter
@@ -205,7 +195,6 @@ class BoxDataTable extends Vue {
   warehouseOption: any = []
   filter: any = {
     sellerEmail: '',
-    warehouse: null,
     location: '',
     barCode: '',
     dateFrom: null,
@@ -219,30 +208,20 @@ class BoxDataTable extends Vue {
   @nsStoreBox.State
   totalBoxRecords!: number
 
-  @nsStoreWarehouse.State
-  warehouseList!: any
-
   @nsStoreUser.State
   user: User.Model | any
+
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
 
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
 
-  @nsStoreWarehouse.Action
-  actWarehouseList!: () => Promise<void>
-
   async mounted() {
-    const { role, warehouse } = this.user
-    if(role === 'admin') {
-      await this.actWarehouseList()
-      this.warehouseOption = _.cloneDeep(this.warehouseList)
-      this.filter.warehouse = this.warehouseList[0]
-    } else {
-      this.warehouseOption = [warehouse]
-      this.filter.warehouse = warehouse
+    if(this.warehouseSelected) {
+      await this.actGetBoxList(this.getParamAPi())
+      this.selectedBoxes = [...this.box]
     }
-    await this.actGetBoxList(this.getParamAPi())
-    this.selectedBoxes = [...this.box]
   }
   // -- [ Getters ] -------------------------------------------------------------
 
@@ -253,7 +232,7 @@ class BoxDataTable extends Vue {
       pageSize: this.paging.pageSize,
       sellerEmail: this.filter.sellerEmail || null,
       barCode: this.filter.barCode || null,
-      warehouseId: this.filter?.warehouse?.id,
+      warehouseId: this.warehouseSelected?.id,
       location: this.filter.location || null,
       status: this.filter.status?.value || null,
       from: this.filter.dateFrom
@@ -371,7 +350,7 @@ export default BoxDataTable
       border: none
   &__header
     @include flex-center-space-between
-    margin-bottom: $space-size-24
+    margin-bottom: $space-size-16
     &--action
       @include flex-center
       gap: 0 16px

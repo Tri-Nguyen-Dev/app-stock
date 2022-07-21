@@ -60,6 +60,7 @@ import ItemListModel from '~/components/stock-take/ItemListModel.vue'
 import NoteInfo from '~/components/stock-take/item-list/NoteInfo.vue'
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 const nsStoreUser = namespace('user-auth/store-user')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component({
   components: {
@@ -80,6 +81,9 @@ class StockTakeItems extends Vue {
 
   @nsStoreCreateStockTake.State
   stockTakeCreated!: any
+
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
 
   @nsStoreCreateStockTake.Action
   actCreateStockTake!: (params?: any) => Promise<any>
@@ -119,11 +123,11 @@ class StockTakeItems extends Vue {
         { title:'Creator ID', value: this.user.staffId, icon: 'icon-tag-user' },
         { 
           title:'Warehouse', 
-          value: _.get(this.listStockSelected[0], 'box.request.warehouse.name', null), 
+          value: this.warehouseSelected?.name, 
           icon: 'icon-warehouse',
-          link: _.get(this.listStockSelected[0], 'box.request.warehouse.id', null)
+          link: this.warehouseSelected?.id
         },
-        { title:'Items', value: this.totalItem || '0', icon: 'icon-frame' }
+        { title:'Total box(es)', value: this.totalItem || '0', icon: 'icon-frame' }
       ],
       sellerInfo: [
         { title:'Name', value: this.sellerInfo?.sellerName, icon: 'icon-sender-name' },

@@ -19,7 +19,7 @@
           .icon.icon-add-items
           span Add Stock
     .grid.header__filter(:class='{ "active": isShowFilter }')
-      .div(class="col-12 md:col-3")
+      .div(class="col-12 md:col-4")
         FilterTable(title="Catagory" name="categories" :value="filter.categories"  @updateFilter="handleFilter")
           template(v-slot:multi-select)
             MultiSelect.filter__multiselect(
@@ -30,7 +30,7 @@
               placeholder='Select'
               :filter='true'
             )
-      .div(class="col-12 md:col-3")
+      .div(class="col-12 md:col-4")
         FilterTable(
           title="Barcode"
           placeholder="Search barcode"
@@ -40,16 +40,7 @@
           @updateFilter="handleFilter"
           :isShowFilter="isShowFilter"
         )
-      .div(class="col-12 md:col-3")
-        FilterTable(
-          title="Warehouse"
-          :value="filter.warehouse"
-          :options="warehouseOption"
-          name="warehouse"
-          @updateFilter="handleFilter"
-          :isDisabled="user.role !== 'admin'"
-          :isClear="false")
-      .div(class="col-12 md:col-3")
+      .div(class="col-12 md:col-4")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white
@@ -150,8 +141,9 @@ import { Paging } from '~/models/common/Paging'
 import Pagination from '~/components/common/Pagination.vue'
 const nsCategoryStock = namespace('category/category-list')
 const nsStoreStock = namespace('stock/stock-list')
-const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreUser = namespace('user-auth/store-user')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+
 @Component({
   components: {
     ConfirmDialogCustom,
@@ -173,7 +165,6 @@ class Stock extends Vue {
   filter: any = {
     name: null,
     barCode: null,
-    warehouse: null,
     categories: null,
     status: null,
     sortBy: null,
@@ -189,14 +180,11 @@ class Stock extends Vue {
   @nsCategoryStock.State
   categoryList!: any
 
-  @nsWarehouseStock.State
-  warehouseList!: any
-
   @nsStoreUser.State
   user!: any
 
-  @nsWarehouseStock.Action
-  actWarehouseList!: () => Promise<void>
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
 
   @nsStoreStock.Action
   actGetStockList!: (params?: any) => Promise<void>
@@ -221,7 +209,7 @@ class Stock extends Vue {
   }
 
   get checkIsFilter() {
-    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
+    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize', 'warehouseId'])
     return Object.values(params).some((item) => item)
   }
 
@@ -245,7 +233,7 @@ class Stock extends Vue {
     return {
       name: this.filter.name || null,
       barCode: this.filter.barCode || null,
-      warehouseId: this.filter.warehouse?.id,
+      warehouseId: this.warehouseSelected?.id,
       categoryIds: categoryIds || null,
       stockStatus: this.filter.status?.value,
       sortBy: this.filter.sortBy || null,
@@ -265,18 +253,11 @@ class Stock extends Vue {
     return data.stockStatus === 'STOCK_STATUS_DISABLE' ? 'row-disable' : ''
   }
 
-  async mounted() {
-    const { role, warehouse } = this.user
-    if(role === 'admin') {
-      await this.actWarehouseList()
-      this.warehouseOption = _.cloneDeep(this.warehouseList)
-      this.filter.warehouse = this.warehouseList[0]
-    } else {
-      this.warehouseOption = [warehouse]
-      this.filter.warehouse = warehouse
+  mounted() {
+    if(this.warehouseSelected) {
+      this.getProductList()
+      this.actCategoryList()
     }
-    this.getProductList()
-    this.actCategoryList()
   }
 
   handleFilter(e: any, name: string){
@@ -417,7 +398,7 @@ export default Stock
   &__header
     flex-direction: column
     flex-wrap: wrap
-    margin-bottom: 24px
+    margin-bottom: 16px
     @include desktop
       flex-direction: row
       @include flex-center-space-between
