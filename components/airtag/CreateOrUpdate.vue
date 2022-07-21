@@ -68,20 +68,18 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
             span Update Category
 </template>
 <script lang="ts">
-import { Component, Vue, Prop, Watch , namespace } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Watch, namespace } from 'nuxt-property-decorator'
 import { required } from 'vuelidate/lib/validators'
-import {
-  AirtagConstants
-} from '~/utils'
-const nsAirtag= namespace('airtag/Airtag')
+import { AirtagConstants } from '~/utils'
+const nsAirtag = namespace('airtag/Airtag')
 
 @Component({
   validations: {
     airtagInformation: {
-      barCode : {},
+      barCode: {},
       Status: {},
-      airTagAttribute:{
-        id : {
+      airTagAttribute: {
+        id: {
           required
         },
         model: {},
@@ -99,7 +97,7 @@ const nsAirtag= namespace('airtag/Airtag')
         systemRequirement: {},
         brandName: {},
         manufacturingDate: {}
-      } 
+      }
     }
   }
 })
@@ -108,11 +106,11 @@ class CreateOrUpdate extends Vue {
   @Prop({ default: false }) isShow!: boolean
   @Prop() modalHeader!: any
 
-  statusList:any = AirtagConstants.AIRTAG_STATUS_OPTIONS
+  statusList: any = AirtagConstants.AIRTAG_STATUS_OPTIONS
   isShowInputs: any = false
   airtagInformation: any = {
     airTagAttribute: {
-      id : ''
+      id: ''
     },
     status: 'AIRTAG_STATUS_AVAILABLE',
     barCode: ''
@@ -120,8 +118,8 @@ class CreateOrUpdate extends Vue {
 
   isNull: any = true
   hasAttribute: any = [
-    { name: 'null' , value: true },
-    { name: 'not null' , value: false }
+    { name: 'null', value: true },
+    { name: 'not null', value: false }
   ]
 
   @nsAirtag.State
@@ -135,10 +133,10 @@ class CreateOrUpdate extends Vue {
 
   @nsAirtag.Action
   actCreateNewAirtag!: (param: any) => Promise<any>
-  
+
   @Watch('airtagData')
   updateData() {
-    if(this.modalHeader === 'Update Category'){
+    if (this.modalHeader === 'Update Category') {
       this.airtagInformation.id = this.airtagData.id
       this.airtagInformation.barCode = this.airtagData.barCode
       this.airtagInformation.status = this.airtagData.status
@@ -160,19 +158,18 @@ class CreateOrUpdate extends Vue {
         brandName: this.airtagData.airTagAttribute.brandName,
         manufacturingDate: this.airtagData.airTagAttribute.manufacturingDate
       }
-      if(this.airtagInformation.airTagAttribute) {
+      if (this.airtagInformation.airTagAttribute) {
         this.isNull = false
         this.isShowInputs = true
       }
-    } 
+    }
   }
 
   changeIsNull() {
-    if(this.isNull) {
+    if (this.isNull) {
       this.isShowInputs = false
       this.airtagInformation.airTagAttribute = null
-    }
-    else {
+    } else {
       this.isShowInputs = true
       this.airtagInformation.airTagAttribute = this.airtagData.airTagAttribute
     }
@@ -194,13 +191,14 @@ class CreateOrUpdate extends Vue {
   }
 
   async createOrUpdateItem() {
-    if(this.modalHeader === 'Update Category'){
+    if (this.modalHeader === 'Update Category') {
       const result = await this.actUpdateAirtag({
         id: this.airtagInformation.id,
         barCode: this.airtagInformation.barCode,
-        airTagAttribute:{
+        airTagAttribute: {
           model: this.airtagInformation.airTagAttribute.model,
-          productionBatch: this.airtagInformation.airTagAttribute.productionBatch,
+          productionBatch:
+            this.airtagInformation.airTagAttribute.productionBatch,
           costPrice: this.airtagInformation.airTagAttribute.costPrice,
           retailPrice: this.airtagInformation.airTagAttribute.retailPrice,
           size: this.airtagInformation.airTagAttribute.size,
@@ -208,13 +206,16 @@ class CreateOrUpdate extends Vue {
           connectivity: this.airtagInformation.airTagAttribute.connectivity,
           speaker: this.airtagInformation.airTagAttribute.speaker,
           batteryLife: this.airtagInformation.airTagAttribute.batteryLife,
-          sensorTechnology: this.airtagInformation.airTagAttribute.sensorTechnology,
+          sensorTechnology:
+            this.airtagInformation.airTagAttribute.sensorTechnology,
           accelerometer: this.airtagInformation.airTagAttribute.accelerometer,
           accessibility: this.airtagInformation.airTagAttribute.accessibility,
-          systemRequirement: this.airtagInformation.airTagAttribute.systemRequirement,
+          systemRequirement:
+            this.airtagInformation.airTagAttribute.systemRequirement,
           brandName: this.airtagInformation.airTagAttribute.brandName,
-          manufacturingDate: this.airtagInformation.airTagAttribute.manufacturingDate
-        } 
+          manufacturingDate:
+            this.airtagInformation.airTagAttribute.manufacturingDate
+        }
       })
       if (result) {
         this.$emit('close-modal', this.airtagInformation)
@@ -232,8 +233,7 @@ class CreateOrUpdate extends Vue {
           life: 3000
         })
       }
-    }
-    else {
+    } else {
       this.$v.airtagInformation.airTagAttribute?.id?.$touch()
       if (this.$v.$invalid) {
         return
@@ -241,9 +241,9 @@ class CreateOrUpdate extends Vue {
       const result = await this.actCreateNewAirtag({
         status: this.airtagInformation.status,
         barCode: this.airtagInformation.barCode,
-        airTagAttribute:{
+        airTagAttribute: {
           id: this.airtagInformation.airTagAttribute.id
-        } 
+        }
       })
       if (result) {
         this.$emit('close-modal', this.airtagInformation)
@@ -271,7 +271,6 @@ class CreateOrUpdate extends Vue {
     }
     this.$emit('reloadList')
   }
-
 }
 export default CreateOrUpdate
 </script>
@@ -298,5 +297,4 @@ export default CreateOrUpdate
 
 .attribute-input
   padding-bottom: 10px
-
 </style>

@@ -123,7 +123,7 @@ const nsAirtagList = namespace('airtag/Airtag')
   components: {
     ConfirmDialogCustom,
     Pagination,
-    CreateOrUpdate  
+    CreateOrUpdate
   }
 })
 class Airtag extends Vue {
@@ -163,7 +163,7 @@ class Airtag extends Vue {
   }
 
   get selectedAirtagFilter() {
-    return  _.filter(this.selectedAirtag, () => {
+    return _.filter(this.selectedAirtag, () => {
       return this.filter.status !== 'AIRTAG_STATUS_DISABLE'
     })
   }
@@ -179,14 +179,12 @@ class Airtag extends Vue {
   }
 
   async getAirtagList() {
-    await this.actAirtagList(
-      this.getParamAPi() )
+    await this.actAirtagList(this.getParamAPi())
   }
-  
+
   @Watch('reLoadList')
-  reload(){
-    this.actAirtagList(
-      this.getParamAPi() )
+  reload() {
+    this.actAirtagList(this.getParamAPi())
   }
 
   get classHeaderMuti() {
@@ -229,7 +227,7 @@ class Airtag extends Vue {
     this.getAirtagList()
   }
 
-  handleFilter(e: any, name: string){
+  handleFilter(e: any, name: string) {
     this.filter[name] = e
     this.getAirtagList()
     this.selectedAirtag = []
