@@ -1,26 +1,25 @@
 <template lang="pug">
-.order__packing--detail
-  .packing__detail--header.border-bottom-1.border-gray-300
-    Breadcrumb(:home='homeItem', :model='breadcrumbItem')
-  .packing__detail--content.p-3
-    .my-3.font-bold.flex.align-items-center
-      .icon.icon-info.inline-block
-      span.uppercase.ml-1 order detail
-    span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{status}} &nbsp;
-    h3.uppercase.inline-block.m-1 id: {{ deliveryOrderDetail.id }}
-    div
-      h5.uppercase.inline-block(style='color :#979AA4') Created time:&nbsp;
-      span.uppercase.font-bold {{ deliveryOrderDetail.createdAt | dateTime }}
-    TabView
-      TabPanel.p-3(header='Delivery')
-        StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4(:sellerInfo='deliveryOrderDetail')
-        StockOutPackingReceiverInfo.border-bottom-1.border-gray-300.pb-4.mt-4(:receiverInfro='deliveryOrderDetail')
-        StockOutPackingTimeDelivery.mt-4(:timeDelivery='deliveryOrderDetail')
-        DeliveryDriverInfo.mt-4(v-if='deliveryOrderDetail.driver' :driverInfo='deliveryOrderDetail.driver')
-      TabPanel.p-3(header='Warehouse')
-        StockOutPackingWarehouseInfo(:warehouseInfo='deliveryOrderDetail')
-      TabPanel.p-3(header='Creator')
-        StockOutPackingCreatorInfo(:creatorInfo='deliveryOrderDetail')
+CommonTabDetail.order__packing--detail.w-full(:homeItem="homeItem" :breadcrumbItem="breadcrumbItem")
+  template(v-slot:content)
+    .packing__detail--content
+      .my-3.font-bold.flex.align-items-center
+        .icon.icon-info.inline-block
+        span.uppercase.ml-1 order detail
+      span.uppercase.font-bold.pl-1.mr-1(style='background-color: #00A469; color: #FFFFFF') {{status}} &nbsp;
+      h3.uppercase.inline-block.m-2 id: {{ deliveryOrderDetail.id }}
+      div.mb-2
+        h5.m-1.uppercase.inline-block(style='color :#979AA4') Created time:&nbsp;
+        span.uppercase.font-bold {{ deliveryOrderDetail.createdAt | dateTime }}
+      TabView
+        TabPanel.p-2(header='Delivery')
+          StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4(:sellerInfo='deliveryOrderDetail')
+          StockOutPackingReceiverInfo.border-bottom-1.border-gray-300.pb-4.mt-4(:receiverInfro='deliveryOrderDetail')
+          StockOutPackingTimeDelivery.mt-4(:timeDelivery='deliveryOrderDetail')
+          DeliveryDriverInfo.mt-4(v-if='deliveryOrderDetail.driver' :driverInfo='deliveryOrderDetail.driver')
+        TabPanel.p-2(header='Warehouse')
+          StockOutPackingWarehouseInfo(:warehouseInfo='deliveryOrderDetail')
+        TabPanel.p-2(header='Creator')
+          StockOutPackingCreatorInfo(:creatorInfo='deliveryOrderDetail')
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'

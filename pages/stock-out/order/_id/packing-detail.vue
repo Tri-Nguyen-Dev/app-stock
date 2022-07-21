@@ -1,8 +1,7 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container(v-if='packingDetail')
     Toast
-    .packing__detail--left.col-3.surface-0.border-round.h-full.overflow-y-auto.sub-tab
-      StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
+    StockOutPackingInformationDetail(:deliveryOrderDetail="deliveryOrderDetail")
     .col-9.ml-5.py-0.h-full.overflow-y-auto.overflow-x-hidden.flex-1.relative.flex.flex-column
       .flex.flex-column.flex-1.overflow-hidden
         StockOutPackingOriginal.mb-2(
@@ -118,12 +117,6 @@ export default DeliveryOrderPackingDetail
   height: calc(100vh - 32px)
   .packing-wapper
     overflow-y: hidden
-  .packing__detail--left
-    height: calc( 100% - 32px) !important
-  .sub-tab
-    height: calc(100vh - 32px)
-    max-width: 21.5rem
-    overflow: hidden
   .packing__detail--footer
     height: 82px
     padding: 0 12px

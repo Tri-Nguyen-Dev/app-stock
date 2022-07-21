@@ -109,11 +109,16 @@ export default BoxDetailHistory
     font-weight: 700
     text-transform: uppercase
     letter-spacing: 1px
-.p-datatable
+::v-deep.p-datatable
   .p-datatable-thead
     tr
       th
         background: var(--surface-300)
+  .text-right
+    text-align: right !important
+    .p-column-header-content
+      display: flex
+      justify-content: flex-end
 .p-paginator
   justify-content: end
   .p-paginator-first , .p-paginator-last

@@ -8,7 +8,8 @@
         .header__search
           .icon.icon--left.icon-search
           InputText(type='text' placeholder='Search warehouse name' v-model="filter.name" v-on:input="debounceSearchName")
-        Button.btn.btn-primary(@click='isShowCreateWarehouse = true; warehouseData= null')
+        Button.btn.btn-primary(@click='isShowCreateWarehouse = true; warehouseData= null')         
+          .icon.icon-add-items
           span Add Warehouse
     .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
       .col.h-full.absolute.top-0.left-0.right-0.bg-white

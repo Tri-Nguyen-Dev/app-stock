@@ -1,11 +1,10 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
-    .packing__detail--left.col-3.surface-0.overflow-y-auto.scroll-y-custom(class='col-12 md:col-12 lg:col-3 xl:col-3')
-      PackingInformationDetail#packingInfo(
-        :deliveryOrderDetail='orderDetail',
-        :type='typeTitle'
-      )
-    .col-9.packing__detail--right.pl-4.pr-1(class='col-12 md:col-12 lg:col-9 xl:col-9')
+    PackingInformationDetail#packingInfo(
+      :deliveryOrderDetail='orderDetail',
+      :type='typeTitle'
+    )
+    .col-9.packing__detail--right.pl-4.pr-1.flex-1(class='col-12 md:col-12 lg:col-9 xl:col-9')
       .grid
         .col-4(class='col-12 md:col-12 lg:col-4 xl:col-4')
           h1.text-heading {{ textHeading }}
@@ -61,6 +60,7 @@
       :isModalDriverList='isModalDriverList',
       @hideDialog='hideDialog($event)',
       @assigned='assignedDriver($event)'
+      :orderIds='[]'
     )
 </template>
 
@@ -277,8 +277,6 @@ export default DeliveryOrder
       height: calc(100vh - 32px)
       overflow: hidden
     display: flex
-  &--left
-    height: calc( 100vh - 36px) !important
   &--right
     height: calc( 90vh - 32px) !important
 .w-25
