@@ -5,67 +5,67 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
     .formgrid.grid
         .field.col-12(class='md:col-6')
           label(for='status') Status :
-          Dropdown.w-full(v-model='airtagInformation.status' :options="statusList" optionLabel="name" optionValue='value')
+          Dropdown.w-full(v-model='airtagInfo.status' :options="statusList" optionLabel="name" optionValue='value')
         .field.col-12(class='md:col-6')
           label(for='Barcode') Barcode :
-          InputText#Barcode.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.barCode')
+          InputText#Barcode.w-full(type='text' v-model='airtagInfo.barCode')
         .field.col-12(v-if="modalHeader === 'Create Category'")
           label.required__title(for='id') AirTagAttribute id:
-          InputText#id.appearance-none.outline-none.w-full(type='number' v-model='airtagInformation.airTagAttribute.id' :class="{'id--error' : $v.airtagInformation.airTagAttribute.id.$error}")
-          .error-message(v-if='$v.airtagInformation.airTagAttribute.id.$dirty && !$v.airtagInformation.airTagAttribute.id.required') Name cannot be empty!
-        .field.col-12(v-if="modalHeader === 'Update Category'")
-          label(for='attribute') AirTagAttribute :
-          Dropdown.w-full(@change='changeIsNull' v-model='isNull' :options='hasAttribute' optionLabel='name' optionValue='value')
-        .div.col-12(v-if="isShowInputs && modalHeader === 'Update Category'")
+          InputText#id.w-full(
+            type='number' v-model='TagAttribute.id'
+            :class="{'id--error' : $v.TagAttribute.id.$error}")
+          .error-message(v-if='$v.TagAttribute.id.$dirty && !$v.TagAttribute.id.required') id cannot be empty!
+        .div.col-12(v-if="modalHeader === 'Update Category'")
           .w-full.attribute-input
-            label(for='model') model :
-            InputText#model.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.model')
+            label(for='model') model : 
+            InputText#model.w-full(type='text' v-model='TagAttribute.model')
           .w-full.attribute-input
             label(for='productionBatch') productionBatch :
-            InputText#productionBatch.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.productionBatch')
+            InputText#productionBatch.w-full(type='text' v-model='TagAttribute.productionBatch')
           .w-full.attribute-input
             label(for='costPrice') costPrice :
-            InputText#costPrice.appearance-none.outline-none.w-full(type='number' v-model='airtagInformation.airTagAttribute.costPrice')
+            InputText#costPrice.w-full(type='number' v-model='TagAttribute.costPrice')
           .w-full.attribute-input
             label(for='retailPrice') retailPrice :
-            InputText#retailPrice.appearance-none.outline-none.w-full(type='number' v-model='airtagInformation.airTagAttribute.retailPrice')
+            InputText#retailPrice.w-full(type='number' v-model='TagAttribute.retailPrice')
           .w-full.attribute-input
             label(for='size') size :
-            InputText#size.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.size')
+            InputText#size.w-full(type='text' v-model='TagAttribute.size')
           .w-full.attribute-input
             label(for='color') color :
-            InputText#color.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.color')
+            InputText#color.w-full(type='text' v-model='TagAttribute.color')
           .w-full.attribute-input
             label(for='connectivity') connectivity :
-            InputText#connectivity.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.connectivity')
+            InputText#connectivity.w-full(type='text' v-model='TagAttribute.connectivity')
           .w-full.attribute-input
             label(for='speaker') speaker :
-            InputText#speaker.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.speaker')
+            InputText#speaker.w-full(type='text' v-model='TagAttribute.speaker')
           .w-full.attribute-input
             label(for='batteryLife') batteryLife :
-            InputText#batteryLife.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.batteryLife')
+            InputText#batteryLife.w-full(type='text' v-model='TagAttribute.batteryLife')
           .w-full.attribute-input
             label(for='sensorTechnology') sensorTechnology :
-            InputText#sensorTechnology.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.sensorTechnology')
+            InputText#sensorTechnology.w-full(type='text' v-model='TagAttribute.sensorTechnology')
           .w-full.attribute-input
             label(for='accelerometer') accelerometer :
-            InputText#accelerometer.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.accelerometer')
+            InputText#accelerometer.w-full(type='text' v-model='TagAttribute.accelerometer')
           .w-full.attribute-input
             label(for='accessibility') accessibility :
-            InputText#accessibility.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.accessibility')
+            InputText#accessibility.w-full(type='text' v-model='TagAttribute.accessibility')
           .w-full.attribute-input
             label(for='brandName') brandName :
-            InputText#brandName.appearance-none.outline-none.w-full(type='text' v-model='airtagInformation.airTagAttribute.brandName')
+            InputText#brandName.w-full(type='text' v-model='TagAttribute.brandName')
           .w-full.attribute-input
             label(for='manufacturingDate') manufacturingDate :
-            InputText#manufacturingDate.appearance-none.outline-none.w-full(type='date' v-model='airtagInformation.airTagAttribute.manufacturingDate')
-        .field.col-12.modal-btn(class='md:col-12')
-          Button.btn.btn-outline(@click="handleCancle")
-            span Cancel
-          Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Create Category'" )
-            span Create Category 
-          Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Update Category'")
-            span Update Category
+            InputText#manufacturingDate.w-full(type='date' v-model='TagAttribute.manufacturingDate')
+  template(#footer)    
+    .field.col-12.modal-btn(class='md:col-12')
+      Button.btn.btn-outline(@click="handleCancle")
+        span Cancel
+      Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Create Category'" )
+        span Create Category 
+      Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Update Category'")
+        span Update Category
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, Watch, namespace } from 'nuxt-property-decorator'
@@ -75,7 +75,7 @@ const nsAirtag = namespace('airtag/Airtag')
 
 @Component({
   validations: {
-    airtagInformation: {
+    airtagInfo: {
       barCode: {},
       Status: {},
       airTagAttribute: {
@@ -98,6 +98,9 @@ const nsAirtag = namespace('airtag/Airtag')
         brandName: {},
         manufacturingDate: {}
       }
+    },
+    TagAttribute: {
+      id: { required }
     }
   }
 })
@@ -108,7 +111,7 @@ class CreateOrUpdate extends Vue {
 
   statusList: any = AirtagConstants.AIRTAG_STATUS_OPTIONS
   isShowInputs: any = false
-  airtagInformation: any = {
+  airtagInfo: any = {
     airTagAttribute: {
       id: ''
     },
@@ -116,11 +119,7 @@ class CreateOrUpdate extends Vue {
     barCode: ''
   }
 
-  isNull: any = true
-  hasAttribute: any = [
-    { name: 'null', value: true },
-    { name: 'not null', value: false }
-  ]
+  TagAttribute: any ={}
 
   @nsAirtag.State
   airtagList!: any
@@ -133,14 +132,14 @@ class CreateOrUpdate extends Vue {
 
   @nsAirtag.Action
   actCreateNewAirtag!: (param: any) => Promise<any>
-
+  
   @Watch('airtagData')
   updateData() {
     if (this.modalHeader === 'Update Category') {
-      this.airtagInformation.id = this.airtagData.id
-      this.airtagInformation.barCode = this.airtagData.barCode
-      this.airtagInformation.status = this.airtagData.status
-      this.airtagInformation.airTagAttribute = {
+      this.airtagInfo.id = this.airtagData.id
+      this.airtagInfo.barCode = this.airtagData.barCode
+      this.airtagInfo.status = this.airtagData.status
+      this.TagAttribute = {
         id: this.airtagData.airTagAttribute.id,
         model: this.airtagData.airTagAttribute.model,
         productionBatch: this.airtagData.airTagAttribute.productionBatch,
@@ -158,20 +157,6 @@ class CreateOrUpdate extends Vue {
         brandName: this.airtagData.airTagAttribute.brandName,
         manufacturingDate: this.airtagData.airTagAttribute.manufacturingDate
       }
-      if (this.airtagInformation.airTagAttribute) {
-        this.isNull = false
-        this.isShowInputs = true
-      }
-    }
-  }
-
-  changeIsNull() {
-    if (this.isNull) {
-      this.isShowInputs = false
-      this.airtagInformation.airTagAttribute = null
-    } else {
-      this.isShowInputs = true
-      this.airtagInformation.airTagAttribute = this.airtagData.airTagAttribute
     }
   }
 
@@ -181,44 +166,44 @@ class CreateOrUpdate extends Vue {
 
   handleCancle() {
     this.$emit('close-modal')
-    this.airtagInformation = {
-      airTagAttribute: {
-        id: ''
-      },
+    this.airtagInfo = {
       status: 'AIRTAG_STATUS_AVAILABLE',
       barCode: ''
+    }
+    this.TagAttribute = {
+      id:''
     }
   }
 
   async createOrUpdateItem() {
     if (this.modalHeader === 'Update Category') {
       const result = await this.actUpdateAirtag({
-        id: this.airtagInformation.id,
-        barCode: this.airtagInformation.barCode,
+        id: this.airtagInfo.id,
+        barCode: this.airtagInfo.barCode,
         airTagAttribute: {
-          model: this.airtagInformation.airTagAttribute.model,
+          model: this.TagAttribute.model,
           productionBatch:
-            this.airtagInformation.airTagAttribute.productionBatch,
-          costPrice: this.airtagInformation.airTagAttribute.costPrice,
-          retailPrice: this.airtagInformation.airTagAttribute.retailPrice,
-          size: this.airtagInformation.airTagAttribute.size,
-          color: this.airtagInformation.airTagAttribute.color,
-          connectivity: this.airtagInformation.airTagAttribute.connectivity,
-          speaker: this.airtagInformation.airTagAttribute.speaker,
-          batteryLife: this.airtagInformation.airTagAttribute.batteryLife,
+            this.TagAttribute.productionBatch,
+          costPrice: this.TagAttribute.costPrice,
+          retailPrice: this.TagAttribute.retailPrice,
+          size: this.TagAttribute.size,
+          color: this.TagAttribute.color,
+          connectivity: this.TagAttribute.connectivity,
+          speaker: this.TagAttribute.speaker,
+          batteryLife: this.TagAttribute.batteryLife,
           sensorTechnology:
-            this.airtagInformation.airTagAttribute.sensorTechnology,
-          accelerometer: this.airtagInformation.airTagAttribute.accelerometer,
-          accessibility: this.airtagInformation.airTagAttribute.accessibility,
+            this.TagAttribute.sensorTechnology,
+          accelerometer: this.TagAttribute.accelerometer,
+          accessibility: this.TagAttribute.accessibility,
           systemRequirement:
-            this.airtagInformation.airTagAttribute.systemRequirement,
-          brandName: this.airtagInformation.airTagAttribute.brandName,
+            this.TagAttribute.systemRequirement,
+          brandName: this.TagAttribute.brandName,
           manufacturingDate:
-            this.airtagInformation.airTagAttribute.manufacturingDate
+            this.TagAttribute.manufacturingDate
         }
       })
       if (result) {
-        this.$emit('close-modal', this.airtagInformation)
+        this.$emit('close-modal', this.airtagInfo)
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',
@@ -234,19 +219,19 @@ class CreateOrUpdate extends Vue {
         })
       }
     } else {
-      this.$v.airtagInformation.airTagAttribute?.id?.$touch()
+      this.$v.TagAttribute.id?.$touch()
       if (this.$v.$invalid) {
         return
       }
       const result = await this.actCreateNewAirtag({
-        status: this.airtagInformation.status,
-        barCode: this.airtagInformation.barCode,
+        status: this.airtagInfo.status,
+        barCode: this.airtagInfo.barCode,
         airTagAttribute: {
-          id: this.airtagInformation.airTagAttribute.id
+          id: this.TagAttribute.id
         }
       })
       if (result) {
-        this.$emit('close-modal', this.airtagInformation)
+        this.$emit('close-modal', this.airtagInfo)
         this.$toast.add({
           severity: 'success',
           summary: 'Success Message',
@@ -262,12 +247,12 @@ class CreateOrUpdate extends Vue {
         })
       }
     }
-    this.airtagInformation = {
-      airTagAttribute: {
-        id: ''
-      },
+    this.airtagInfo = {
       status: 'AIRTAG_STATUS_AVAILABLE',
       barCode: ''
+    }
+    this.TagAttribute = {
+      id:''
     }
     this.$emit('reloadList')
   }
