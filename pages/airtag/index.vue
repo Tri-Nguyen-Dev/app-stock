@@ -16,8 +16,7 @@
         .icon.icon-add-items
         span Add Airtag
   .grid.header__filter(:class='{ "active": isShowFilter }')
-    .div(class="col-0 md:col-6")
-    .div(class="col-12 md:col-3")
+    .div(class="col-12 md:col-6")
       FilterTable(
         title="Barcode"
         placeholder="Search barcode"
@@ -27,7 +26,7 @@
         @updateFilter="handleFilter"
         :isShowFilter="isShowFilter"
       )
-    .div(class="col-12 md:col-3")
+    .div(class="col-12 md:col-6")
         FilterTable(title="Status" :value="filter.status" :options="statusList" name="status" @updateFilter="handleFilter")
 
   .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
