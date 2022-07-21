@@ -52,7 +52,7 @@
                 .flex.align-items-center.cursor-pointer
                   span.text-primary.font-bold.font-sm {{data.location}}
                   .icon--small.icon-arrow-up-right.bg-primary(v-if='data.location')
-            Column(field="action" header="ACTION" :hidden='isComplete || isCheck')
+            Column(field="action" header="ACTION" :hidden='isComplete || isCheck || noteDetailInfo.status == "CANCELLED" ')
               template(#body="{data}")
                 Button(@click='reportTakeNote(data)' :disabled="data.isChecking || isComplete")
                   span.uppercase report
