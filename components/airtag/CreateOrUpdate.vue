@@ -58,13 +58,14 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
           .w-full.attribute-input
             label(for='manufacturingDate') manufacturingDate :
             InputText#manufacturingDate.w-full(type='date' v-model='TagAttribute.manufacturingDate')
-        .field.col-12.modal-btn(class='md:col-12')
-          Button.btn.btn-outline(@click="handleCancle")
-            span Cancel
-          Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Create Category'" )
-            span Create Category 
-          Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Update Category'")
-            span Update Category
+  template(#footer)    
+    .field.col-12.modal-btn(class='md:col-12')
+      Button.btn.btn-outline(@click="handleCancle")
+        span Cancel
+      Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Create Category'" )
+        span Create Category 
+      Button.btn.btn-primary(@click='createOrUpdateItem' v-if="modalHeader === 'Update Category'")
+        span Update Category
 </template>
 <script lang="ts">
 import { Component, Vue, Prop, Watch, namespace } from 'nuxt-property-decorator'
