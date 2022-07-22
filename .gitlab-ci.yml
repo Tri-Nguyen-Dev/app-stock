@@ -23,15 +23,14 @@ prep:
 build develop:
   stage: build
   script:
-    - echo "BASE_IMAGE_URL=$BASE_IMAGE_URL" >> .env
-    - echo "BE_API_URL=$BE_API_URL" >> .env
-    - echo "HOME_URL=$HOME_URL" >> .env
-    - echo "KEYCLOAK_API_URL=$KEYCLOAK_API_URL" >> .env
-    - echo "MOCK_API_PORT=$MOCK_API_PORT" >> .env
-    - echo "SERVER_PORT=$SERVER_PORT" >> .env
+    # - echo "BASE_IMAGE_URL=$BASE_IMAGE_URL" >> .env
+    # - echo "BE_API_URL=$BE_API_URL" >> .env
+    # - echo "HOME_URL=$HOME_URL" >> .env
+    # - echo "KEYCLOAK_API_URL=$KEYCLOAK_API_URL" >> .env
+    # - echo "MOCK_API_PORT=$MOCK_API_PORT" >> .env
+    # - echo "SERVER_PORT=$SERVER_PORT" >> .env
     - yarn build
     - yarn generate
-    - cat .env
   cache:
     paths:
       - node_modules
