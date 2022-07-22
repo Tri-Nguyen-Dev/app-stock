@@ -754,8 +754,10 @@ export default ReportList
     .p-datatable-tbody
       & > tr
         height: 3.5rem !important
-::v-deep.p-column-header-content.p-checkbox
-    display: none !important
+::v-deep.p-datatable
+  .p-column-header-content
+    .p-checkbox
+      display: none !important
 .orders-subtable
   ::v-deep.p-column-header-content
     .p-checkbox
