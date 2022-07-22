@@ -475,8 +475,7 @@ class DeliveryOrderList extends Vue {
   }
 
   handleRefreshFilter() {
-    const adminFilter = _.omit(_.cloneDeep(this.filter), 'warehouseId')
-    for (const items in adminFilter) this.filter[items] = null
+    for (const items in this.filter) this.filter[items] = null
     this.getProductList()
   }
 
@@ -623,7 +622,7 @@ export default DeliveryOrderList
 
   &__header
     @include flex-center-space-between
-    margin-bottom: 24px
+    margin-bottom: 16px
 
     ::v-deep.p-tabview .p-tabview-nav li:not(.p-highlight):not(.p-disabled)
       &:hover

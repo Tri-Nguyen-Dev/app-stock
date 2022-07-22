@@ -142,7 +142,6 @@ import Pagination from '~/components/common/Pagination.vue'
 const nsCategoryStock = namespace('category/category-list')
 const nsStoreStock = namespace('stock/stock-list')
 const nsStoreUser = namespace('user-auth/store-user')
-const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component({
   components: {
@@ -161,7 +160,6 @@ class Stock extends Vue {
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList = StockConstants.STOCK_STATUS_OPTIONS
   limitOptions = LIMIT_PAGE_OPTIONS
-  warehouseOption: any = []
   filter: any = {
     name: null,
     barCode: null,
@@ -182,9 +180,6 @@ class Stock extends Vue {
 
   @nsStoreUser.State
   user!: any
-
-  @nsStoreWarehouse.State
-  warehouseSelected!: any
 
   @nsStoreStock.Action
   actGetStockList!: (params?: any) => Promise<void>
@@ -209,7 +204,7 @@ class Stock extends Vue {
   }
 
   get checkIsFilter() {
-    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize', 'warehouseId'])
+    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
     return Object.values(params).some((item) => item)
   }
 
@@ -233,7 +228,6 @@ class Stock extends Vue {
     return {
       name: this.filter.name || null,
       barCode: this.filter.barCode || null,
-      warehouseId: this.warehouseSelected?.id,
       categoryIds: categoryIds || null,
       stockStatus: this.filter.status?.value,
       sortBy: this.filter.sortBy || null,
@@ -254,10 +248,8 @@ class Stock extends Vue {
   }
 
   mounted() {
-    if(this.warehouseSelected) {
-      this.getProductList()
-      this.actCategoryList()
-    }
+    this.getProductList()
+    this.actCategoryList()
   }
 
   handleFilter(e: any, name: string){
@@ -347,8 +339,7 @@ class Stock extends Vue {
   }, 500)
 
   handleRefreshFilter() {
-    const adminFilter = _.omit(_.cloneDeep(this.filter), 'warehouse')
-    for (const items in adminFilter) this.filter[items] = null
+    for (const items in this.filter) this.filter[items] = null
     this.getProductList()
   }
 

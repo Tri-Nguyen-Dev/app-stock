@@ -715,7 +715,7 @@ export default ReportList
 .box__header
   flex-direction: column
   flex-wrap: wrap
-  margin-bottom: 24px
+  margin-bottom: 16px
   @include desktop
     flex-direction: row
     @include flex-center-space-between

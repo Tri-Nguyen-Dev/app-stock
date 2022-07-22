@@ -320,14 +320,8 @@ class createOrder extends Vue {
     }
     this.handleUser()
 
-    // if(this.user.role === 'staff'){
-    //   this.warehouseByStaff()
-    // }
-    // else {
-    //   this.actWarehouseList()
-    // }
     if(this.warehouseSelected) {
-      this.information.warehouse[0].value = this.warehouseSelected?.name
+      this.information.warehouse[0].value = this.warehouseSelected
       this.information.warehouse[0].warehouseId = this.warehouseSelected?.id
       this.information.warehouse[1].value = this.warehouseSelected?.email
       this.information.warehouse[2].value = this.warehouseSelected?.phone
@@ -480,16 +474,6 @@ class createOrder extends Vue {
       })
     })
   }
-
-  // warehouseByStaff(){
-  //   const warehouseByUser = this.user.warehouse
-  //   const InfoWarehouse = this.information.warehouse
-  //   this.actSellerByWarehouse( { id: warehouseByUser?.id })
-  //   InfoWarehouse[0].warehouseId =  warehouseByUser?.id
-  //   InfoWarehouse[0].value =  warehouseByUser?.name
-  //   InfoWarehouse[1].value =  warehouseByUser?.email
-  //   InfoWarehouse[2].value = warehouseByUser?.phone
-  // }
 
   handleWarehouse(event: any) {
     const InfoWarehouse = this.information.warehouse
