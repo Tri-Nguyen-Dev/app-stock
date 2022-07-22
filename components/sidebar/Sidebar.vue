@@ -3,7 +3,7 @@
     .menu-section.sidebar-head
       .flex
         template(v-if="!collapsed")
-          img.user-avatar(:src="user.avatarUrl | getThumbnailUrl")
+          img.user-avatar(:src="user?.avatarUrl | getThumbnailUrl")
           .user-info
             span.user-name {{ userDisplayName }}
             span.user-role {{ userRole }}
@@ -91,9 +91,9 @@ class MenuSidebar extends Vue {
   }
 
   onSelectMenu(item) {
-    if(this.collapsed) return
-    if(!item.parentId || !item.to) {
-      if(!_.includes(this.selectParent, item.id)) {
+    if (this.collapsed) return
+    if (!item.parentId || !item.to) {
+      if (!_.includes(this.selectParent, item.id)) {
         this.selectParent.push(item.id)
       } else {
         const subParent = _.find(this.pageMenu, (obj) => (obj.parentId === item.id && !obj.to))
@@ -101,8 +101,8 @@ class MenuSidebar extends Vue {
           return o !== item.id && o !== subParent?.id
         })
       }
-    } 
-    if(item.to) {
+    }
+    if (item.to) {
       this.selectedItem = item
     }
     // handle specific actions
@@ -118,13 +118,13 @@ class MenuSidebar extends Vue {
 
   @Watch('$route.path', { immediate: true, deep: true })
   handleSelect(path) {
-    if(!this.collapsed) return
+    if (!this.collapsed) return
     const rootRoute = _.trim(path, '/').split('/')[0]
     if (rootRoute) {
       const itemPath = this.pageMenu.find(item => {
         return item.to === path
       })
-      if(itemPath) {
+      if (itemPath) {
         this.selectedItem = itemPath
       }
     }
@@ -147,10 +147,10 @@ class MenuSidebar extends Vue {
       this.selectedItem = this.pageMenu.find(item => {
         return item.to === path
       })
-      if(!this.selectedItem) {
+      if (!this.selectedItem) {
         this.selectedItem = this.pageMenu.find(item => {
           const isPackingDetail = path.includes('/packing-detail')
-          if(isPackingDetail) {
+          if (isPackingDetail) {
             return item.to === '/stock-out/packing/packing-note-list'
           }
           const menuRoute = _.trim(item.to, '/').split('/')[0]
@@ -159,7 +159,7 @@ class MenuSidebar extends Vue {
       }
       const subParentId = this.selectedItem?.parentId
       const subParent = _.find(this.pageMenu, (o) => (o.id === subParentId))
-      if(!_.includes(this.selectParent, subParentId)) {
+      if (!_.includes(this.selectParent, subParentId)) {
         this.selectParent.push(subParent?.parentId)
         this.selectParent.push(subParentId)
       }
@@ -184,7 +184,7 @@ export default MenuSidebar
 ::-webkit-scrollbar-thumb
   border-radius: 20px
   border: 3px solid transparent
-  background-color: rgba(0,0,0,0.3)
+  background-color: rgba(0, 0, 0, 0.3)
   background-clip: content-box
   position: absolute
   top: 0

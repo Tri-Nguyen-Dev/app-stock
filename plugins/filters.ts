@@ -30,11 +30,11 @@ Vue.filter('dateTime', (value, format) => {
 
 // -- [ AWS ] ------------------------------------------------
 Vue.filter('getImageUrl', (imagePath) => {
-  if (!imagePath) return null
+  if (!imagePath) return require('~/assets/images/image-upload.png')
   return `${baseImageUrl}/cdn/${imagePath}`
 })
 Vue.filter('getThumbnailUrl', (imagePath) => {
-  if (!imagePath) return null
+  if (!imagePath) return require('~/assets/images/image-upload.png')
   return `${baseImageUrl}/thumbnail/${imagePath}`
 })
 
