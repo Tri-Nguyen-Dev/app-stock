@@ -103,7 +103,7 @@
             div.grid-cell-right {{ data.receiptDate }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" )
           template(#body='{ data }')
-            div.grid-cell-fix-width {{ data.receiverAddress }}
+            div.grid-cell-fix-width.w-21rem.white-space-normal {{ data.receiverAddress }}
         //- Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
         //-   template(#body='{ data }')
         //-     .flex.align-items-center.cursor-pointer.justify-content-end

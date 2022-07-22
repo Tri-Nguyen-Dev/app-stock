@@ -57,7 +57,16 @@ Dialog(header=`` :visible.sync='visibleVue', :modal='true' :showHeader='false')
             InputText#brandName.w-full(type='text' v-model='TagAttribute.brandName')
           .w-full.attribute-input
             label(for='manufacturingDate') manufacturingDate :
-            InputText#manufacturingDate.w-full(type='date' v-model='TagAttribute.manufacturingDate')
+            FilterCalendar(
+                  border='left'
+                  :value='TagAttribute.manufacturingDate',
+                  name='manufacturingDate',
+                  inputClass='border-0',
+                  dateFormat='dd-mm-yy',
+                  :showIcon='true',
+                  @updateFilter='handleFilterBox'
+            )
+          
   template(#footer)    
     .field.col-12.modal-btn(class='md:col-12')
       Button.btn.btn-outline(@click="handleCancle")
@@ -250,6 +259,10 @@ class CreateOrUpdate extends Vue {
       id: ''
     }
     this.$emit('reloadList')
+  }
+
+  handleFilterBox(e: any, name: string) {
+    this.TagAttribute[name] = e
   }
 }
 export default CreateOrUpdate
