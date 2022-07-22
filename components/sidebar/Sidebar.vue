@@ -12,7 +12,7 @@
           :class="{ 'bg-primary': collapsed }"
           @click="toggleSidebar")
       Dropdown.mt-2.w-full(
-        v-if="isSelectWarehouse"
+        v-if="isSelectWarehouse && !collapsed"
         v-model="selectedWarehouse"
         :options="warehouseOption"
         optionLabel="name"
