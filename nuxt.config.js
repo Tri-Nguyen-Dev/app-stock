@@ -76,6 +76,7 @@ export default {
       'Textarea',
       'Chart',
       'ProgressBar',
+      'ProgressSpinner',
       'Card'
     ],
     directives: ['Tooltip', 'Badge']
@@ -98,7 +99,8 @@ export default {
           userInfo: process.env.KEYCLOAK_API_URL +
                         '/realms/airtag/protocol/openid-connect/userinfo',
           logout: process.env.KEYCLOAK_API_URL +
-                        '/realms/airtag/protocol/openid-connect/logout'
+                        '/realms/airtag/protocol/openid-connect/logout?redirect_uri=' +
+                        encodeURIComponent(process.env.HOME_URL || '/')
         },
         token: {
           property: 'access_token',

@@ -315,7 +315,7 @@ class DeliveryOrderList extends Vue {
   user!: User.Model
 
   get activeStatus() {
-    return DeliveryConstants.MapDeliveryTab.get(this.activeTab)
+    return DeliveryConstants.MapDeliveryTab.get(this.indexTag)
   }
 
   nameStatus(status) {
