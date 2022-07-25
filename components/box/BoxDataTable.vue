@@ -123,8 +123,8 @@
         :sortable='true',
         sortField='_request.seller.email'
       )
-      Column(field='usedCapacity' header='USED CAPACITY' :styles='{ width: "10rem" }' className="text-right")
-        template(#body='{ data }') {{ data.usedCapacity | capacityPercent }}
+      Column(field="createdAt" header="CREATED TIME" :sortable="true" className="text-right" sortField="_createdAt")
+        template(#body="{data}") {{ data.createdAt | dateTime }}
       Column(
         field='location',
         header='LOCATION',
@@ -139,7 +139,6 @@
       Column(
         field='status',
         header='STATUS',
-        :sortable='true',
         className='text-center'
         headerClass="grid-header-center"
         :styles='{ width: "10rem" }'
