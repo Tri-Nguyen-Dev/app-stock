@@ -23,19 +23,23 @@ const auth: Plugin = ({ app, $auth, store }) => {
     }
     return config
   }, (error) => {
+    store.commit('commons/store-common/setViewLoading', false)
     return Promise.reject(error)
   })
 
   axiosInstance.interceptors.response.use((response) => {
+    store.commit('commons/store-common/setViewLoading', false)
     return response
   }, (error) => {
     const errorResponse: ErrorResponse = error.response.data
     if (errorResponse) {
       store.commit('commons/store-error/setError', errorResponse)
     }
+    store.commit('commons/store-common/setViewLoading', false)
     return Promise.reject(error)
   })
 
   initializeAxios(axiosInstance)
 }
+
 export default auth
