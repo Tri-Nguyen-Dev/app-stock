@@ -109,16 +109,7 @@
             div.grid-cell-right {{ data.receiptDate }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" )
           template(#body='{ data }')
-<<<<<<< HEAD
-            div.grid-cell-fix-width.w-21rem.white-space-normal {{ data.receiverAddress }}
-        //- Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
-        //-   template(#body='{ data }')
-        //-     .flex.align-items-center.cursor-pointer.justify-content-end
-        //-       span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
-        //-       .icon.icon-arrow-up-right.bg-primary.bg-white-active
-=======
             div.grid-cell-fix-width {{ data.receiverAddress }}
->>>>>>> 9789812f97561a9bc2c498e8bb634c2daf9b0b6d
         Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right(v-if="data.assignee") {{ data.assignee.displayName }}
