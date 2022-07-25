@@ -123,7 +123,7 @@
         :sortable='true',
         sortField='_request.seller.email'
       )
-      Column(field="createdAt" header="CREATED TIME" :sortable="true" className="text-right" sortField="_createdAt")
+      Column(field="createdAt" header="CREATED TIME" :sortable="true" sortField="_createdAt")
         template(#body="{data}") {{ data.createdAt | dateTime }}
       Column(
         field='location',
@@ -132,10 +132,11 @@
         sortField='_rackLocation.name'
         :styles='{ width: "10rem" }'
       )
-        template(#body='{ data }')
-          div(v-if='data.location')
-            .flex.align-items-center.cursor-pointer.justify-content-end
-              span.font-bold {{ data.location }}
+        template(#body="{data}")
+          div(v-if="data.location")
+            .flex.align-items-center.cursor-pointer.justify-content-start
+              span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
+              .icon.icon-arrow-up-right.bg-primary.bg-white-active
       Column(
         field='status',
         header='STATUS',
@@ -277,7 +278,7 @@ class BoxDataTable extends Vue {
   }
 
   async handleRefreshFilter() {
-    this.filter.email = null
+    this.filter.sellerEmail = null
     this.filter.status = null
     this.filter.barCode = null
     this.filter.location = null
