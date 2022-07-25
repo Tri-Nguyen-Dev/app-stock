@@ -1,7 +1,6 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import { $api, PathBind } from '~/utils'
 import { Receipt as ReceiptModel } from '~/models/Receipt'
-
 @Module({
   stateFactory: true,
   namespaced: true
@@ -27,6 +26,7 @@ export default class StoreCreateReceipt extends VuexModule {
     this.receiptDetail = data
   }
 
+  viewLoading!: boolean
   @Mutation
   setNewReceipt(data:any) {
     this.newReceipt = data
@@ -52,6 +52,7 @@ export default class StoreCreateReceipt extends VuexModule {
   @Action({ commit: 'setNewReceipt', rawError: true })
   async actCreateNewReceipt(params: any): Promise<string | undefined> {
     try{
+      this.context.commit('commons/store-common/setViewLoading', true,{ root: true })
       const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.CREATE_RECEIPT)
       const response = await $api.post(url, params)
       return response.data
@@ -61,7 +62,9 @@ export default class StoreCreateReceipt extends VuexModule {
 
   @Action({ commit: 'setLocationSuggestion', rawError: true })
   async actLocationSuggestion(params: any): Promise<string | undefined> {
+    
     try{
+      this.context.commit('commons/store-common/setViewLoading', true,{ root: true })
       const url = PathBind.transform(this.context, StoreCreateReceipt.STATE_URL.GET_BOX_LOCATION)
       const response = await $api.post(url, params)
       return response.data
@@ -76,4 +79,9 @@ export default class StoreCreateReceipt extends VuexModule {
       return response.data
     } catch (error) {}
   }
+  
+  // setLoading(){
+  //   this.context.commit('commons/store-common/setViewLoading', true,{root: true})
+  // }
 }
+

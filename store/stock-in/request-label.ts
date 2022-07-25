@@ -22,6 +22,7 @@ export default class StoreRequestLabel extends VuexModule {
   async actGetLabel(params: { id: number }): Promise<string | undefined> {
     if(!params.id) return ''
     try {
+      this.context.commit('commons/store-common/setViewLoading', true,{ root: true })
       const url = PathBind.transform(this.context, StoreRequestLabel.STATE_URL.GET_LABEL, params)
       const response: any =  await $api.get(url, { responseType: 'blob' })
       const file = new Blob([response], { type: 'application/pdf' })
