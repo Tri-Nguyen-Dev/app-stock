@@ -107,7 +107,9 @@
         :styles="{width: '9rem'}")
         template(#body="{data}")
           .table__action(v-if=" checkShow(data)" style= 'justify-content: center')
-            span.action-item(:class="{'disable-button': selectedReportFilter.length > 0}" @click.stop="showModalDelete([data])")
+            span.action-item(
+              :class="{'disable-button': selectedReportFilter.length > 0}"
+              @click.stop="selectedReportes.push(data);showModalDelete([data])")
               .icon.icon-btn-delete
       template(#expansion="slotProps")
         div.orders-subtable
@@ -493,7 +495,7 @@ class ReportList extends Vue {
     const index = this.reportList.indexOf(event.data)
     this.boxSelected[index] = event.data.boxNote
     this.selectedShowBox = _.cloneDeep(this.boxSelected)
-    this.setReportSelected(index)
+    this.setReportSelected(-1)
   }
 
   rowUnselect({ originalEvent, data }) {
@@ -514,8 +516,8 @@ class ReportList extends Vue {
   }
 
   rowChirldUnselect({ originalEvent, data }, index) {
-    _.remove(this.boxSelected[index], function (boxNote) {
-      return boxNote.id === data.id
+    _.remove(this.stockTakeItem, function (stockItem) {
+      return stockItem.boxNote.id === data.id
     })
     originalEvent.originalEvent.stopPropagation()
     this.setReportSelected(index)
@@ -573,6 +575,7 @@ class ReportList extends Vue {
       this.showModal = false
       await this.actGetReportList(this.getParamAPi())
       this.resetData()
+      this.changeReportList()     
     }
   }
 
@@ -602,6 +605,8 @@ class ReportList extends Vue {
     this.boxShow = []
     this.boxSelected = []
     this.isConfirm = false
+    this.selectedReportes = []
+    this.stockTakeItem = []
   }
 
   checkShow(data) {
@@ -646,8 +651,7 @@ class ReportList extends Vue {
   }
 
   setReportSelected(reportIndex) {
-    this.stockTakeItem = []
-    if (reportIndex > -1) {
+    if (reportIndex > -1) { 
       this.boxSelected[reportIndex].forEach(element => {
         this.stockTakeItem.push({
           id: this.reportList[reportIndex].id,
@@ -655,6 +659,7 @@ class ReportList extends Vue {
         })
       })
     } else {
+      this.stockTakeItem = []
       this.selectedReportes.forEach(report => {
         report.boxNote.forEach(element => {
           this.stockTakeItem.push({
