@@ -236,7 +236,7 @@ class DeliveryOrder extends Vue {
   }
 
   setDelivery() {
-    this.isModalDriverList = true
+    this.$router.push(`/stock-out/set-delivery/${this.id}`)
   }
 
   hideDialog(event) {
