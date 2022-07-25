@@ -62,7 +62,18 @@ class PackingInformationDetail extends Vue {
           icon: 'pi pi-info-circle'
         }
       ]
-    } else {
+    } 
+    else if(this.type === 'SET_DELIVERY') {
+      return [
+        { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}`, icon: 'pi pi-info-circle' },
+        {
+          label: 'Set delivery',
+          to: `/stock-out/set-delivery/${this.deliveryOrderDetail.id}`,
+          icon: 'pi pi-info-circle'
+        }
+      ]
+    }
+    else {
       return [
         { label: '', to: `/stock-out/order/${this.deliveryOrderDetail.id}?isPick=false`, icon: 'pi pi-info-circle' },
         {

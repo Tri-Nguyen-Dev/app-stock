@@ -13,9 +13,9 @@ div.box-page-container
       template(#body='slotProps')
         span.font-bold {{ slotProps.index + 1 }}
     Column.text-overflow-ellipsis(
-      field='stockBox.stock.barCode',
-      header='pick-up address',
-      :sortable='true',
+      field='stockBox.stock.barCode'
+      header='pick-up address'
+      :sortable='true'
       :show-filter-match-modes='false'
     )
       template(#body='{ data }')

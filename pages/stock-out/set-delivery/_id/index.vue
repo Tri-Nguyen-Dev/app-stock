@@ -11,12 +11,14 @@
           span.text-subheading 10 items found
         .col-8.btn-right.flex.justify-content-end(class='col-12 md:col-12 lg:col-8 xl:col-8')
           Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
-            type='button',
+            type='button'
             label='Back'
+            @click="backDoDetail"
           )
           Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
-            type='button',
+            type='button'
             label='Set Driver'
+            @click="setShowSetDriver"
           )
       .delivery-content
         DeliveryInfo
@@ -28,6 +30,11 @@
         TripList(
           :listItems='item'
         )
+    DriverDialog(
+      :isModalDriverList='isModalDriverList',
+      @hideDialog='hideDialog($event)',
+      @assigned='assignedDriver($event)'
+      :orderIds='[]')
 </template>
 
 <script lang="ts">
@@ -36,6 +43,7 @@ import ItemList from '~/components/stock-out/item/ItemList.vue'
 import TripList from '~/components/stock-out/set-delivery/TripList.vue'
 import PackingInformationDetail from '~/components/stock-out/PackingInformationDetail.vue'
 import DeliveryInfo from '~/components/stock-out/set-delivery/DeliveryInfo.vue'
+import DriverDialog from '~/components/stock-out/driver/DriverDialog.vue'
 import { OrderDetail } from '~/models/OrderDetail'
 const nsStoreOrder = namespace('stock-out/order-detail')
 @Component({
@@ -43,12 +51,14 @@ const nsStoreOrder = namespace('stock-out/order-detail')
     ItemList,
     PackingInformationDetail,
     DeliveryInfo,
-    TripList
+    TripList,
+    DriverDialog
   }
 })
 class DeliveryOrder extends Vue {
-  typeTitle = 'DO_DETAIL'
+  typeTitle = 'SET_DELIVERY'
   item:any = []
+  isModalDriverList = false
 
   @nsStoreOrder.State
   orderDetail!: OrderDetail.Model
@@ -62,6 +72,36 @@ class DeliveryOrder extends Vue {
 
   async mounted() {
     await this.actGetOrderDetail({ id: this.id })
+  }
+
+  backDoDetail() {
+    this.$router.push({
+      path: `/stock-out/order/${this.id}`
+    })
+  }
+
+  assignedDriver(event) {
+    if (event) {
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully set Delivery',
+        life: 3000
+      })
+      const packingInfo = this.$el.querySelector('.packing__detail--left')
+      if (packingInfo) {
+        const scrollHeight = packingInfo.scrollHeight
+        packingInfo.scrollTop = scrollHeight
+      }
+    }
+  }
+
+  setShowSetDriver() {
+    this.isModalDriverList = true
+  }
+
+  hideDialog(event) {
+    this.isModalDriverList = !event
   }
 }
 
