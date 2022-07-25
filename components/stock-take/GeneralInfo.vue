@@ -21,7 +21,11 @@
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.updatedAt')
           StockUnit(title="Approved Time" :value="info.updatedAt | dateTime" icon="icon-calendar")
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2')
+<<<<<<< HEAD
           StockUnit(title="Creator ID" :value="info.user.staffId || `${info.user.firstName} ${info.user.lastName}`" icon="icon-user-octagon")
+=======
+          StockUnit(title="Creator ID" :value="info.user.staffId" icon="icon-user-octagon")
+>>>>>>> 9789812f97561a9bc2c498e8bb634c2daf9b0b6d
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.picId')
           StockUnit(title="PIC ID" :value="info.picId" icon="icon-user-octagon")
         .col-12(className='lg:col-12 md:col-12 sm:col-12 py-3 px-2' v-if='info.approveId')

@@ -20,60 +20,46 @@
       Button.btn.btn-primary(@click='handleTransferBox')
         span Transfer box
   .grid.header__filter(:class='{ "active": isShowFilter }')
-    div(class="md:col-12 lg:col-8 col-12")
-      .grid
-        div(class="col-12 md:col-4")
-          FilterTable(
-            title="Warehouse"
-            :value="filter.warehouse"
-            :options="warehouseOption"
-            name="warehouse"
-            @updateFilter="handleFilterBox"
-            :isDisabled="user.role !== 'admin'"
-            :isClear="false"
-          )
-        div(class="col-12 md:col-4")
-          FilterTable(
-            title="Location"
-            :value="filter.location"
-            placeholder="Enter location"
-            name="location"
-            :searchText="true"
-            @updateFilter="handleFilterBox"
-          )
-        div(class="col-12 md:col-4")
-          FilterTable(
-            title="Box Code"
-            :value="filter.barCode"
-            placeholder="Enter code"
-            name="barCode"
-            :searchText="true"
-            @updateFilter="handleFilterBox"
-            :isShowFilter="isShowFilter"
-          )
-    div(class="col-12 lg:col-4")
-      .grid
-        .col
-          FilterCalendar(
-            title="From"
-            :value="filter.dateFrom"
-            name="dateFrom"
-            inputClass="border-0"
-            dateFormat="dd-mm-yy"
-            :showIcon="true"
-            @updateFilter="handleFilterBox"
-          )
-        .col
-          FilterCalendar(
-            title="To"
-            border="right"
-            :value="filter.dateTo"
-            name="dateTo"
-            inputClass="border-0"
-            dateFormat="dd-mm-yy"
-            :showIcon="true"
-            @updateFilter="handleFilterBox"
-          )
+    div(class="col-12 md:col-3")
+      FilterTable(
+        title="Location"
+        :value="filter.location"
+        placeholder="Enter location"
+        name="location"
+        :searchText="true"
+        @updateFilter="handleFilterBox"
+      )
+    div(class="col-12 md:col-3")
+      FilterTable(
+        title="Box Code"
+        :value="filter.barCode"
+        placeholder="Enter code"
+        name="barCode"
+        :searchText="true"
+        @updateFilter="handleFilterBox"
+        :isShowFilter="isShowFilter"
+      )
+    div(class="col-12 md:col-3")
+      FilterCalendar(
+        title="From"
+        :value="filter.dateFrom"
+        name="dateFrom"
+        inputClass="border-0"
+        dateFormat="dd-mm-yy"
+        :showIcon="true"
+        @updateFilter="handleFilterBox"
+      )
+    div(class="col-12 md:col-3")
+      FilterCalendar(
+        title="To"
+        border="right"
+        :value="filter.dateTo"
+        name="dateTo"
+        inputClass="border-0"
+        dateFormat="dd-mm-yy"
+        :showIcon="true"
+        @updateFilter="handleFilterBox"
+      )
   .grid.grid-nogutter.flex-1.relative.overflow-hidden.m-h-700
     .col.h-full.absolute.top-0.left-0.right-0.bg-white
       DataTable.w-full.table__sort-icon.h-full.flex.flex-column(v-if="boxList" :value="boxList" responsiveLayout="scroll"
@@ -189,7 +175,6 @@ class BoxList extends Vue {
   warehouseOption: any = []
   filter: any = {
     sellerEmail:  '',
-    warehouse: null,
     location: '',
     barCode: '',
     dateFrom: null,
@@ -202,17 +187,14 @@ class BoxList extends Vue {
   @nsStoreBox.State
   totalBoxRecords!: number
 
-  @nsStoreWarehouse.State
-  warehouseList!: any
-
   @nsStoreUser.State
   user: any | undefined
 
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
+
   @nsStoreBox.Action
   actGetBoxList!: (params: any) => Promise<void>
-
-  @nsStoreWarehouse.Action
-  actWarehouseList!: () => Promise<void>
 
   @nsStoreBox.Action
   actDeleteBoxById!: (params: {ids: string[]}) => Promise<any>
@@ -221,25 +203,14 @@ class BoxList extends Vue {
   actAddTransferBox!: (params: {ids: string[]}) => Promise<any>
 
   async mounted() {
-    const { role, warehouse } = this.user
-    if(role === 'admin') {
-      await this.actWarehouseList()
-      this.warehouseOption = _.cloneDeep(this.warehouseList)
-      this.filter.warehouse = this.warehouseList[0]
-    } else {
-      this.warehouseOption = [warehouse]
-      this.filter.warehouse = warehouse
+    if(this.warehouseSelected) {
+      await this.actGetBoxList(this.getParamAPi())
     }
-    await this.actGetBoxList(this.getParamAPi())
   }
 
   // -- [ Getters ] -------------------------------------------------------------
   get isFilter(){
-    const paramsDefault = ['pageNumber', 'pageSize']
-    if(this.user.role === 'staff') {
-      paramsDefault.push('warehouseId')
-    }
-    const params = _.omit(this.getParamAPi(), paramsDefault)
+    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize', 'warehouseId'])
     return Object.values(params).some((item) => item)
   }
 
@@ -270,7 +241,7 @@ class BoxList extends Vue {
       pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
       'sellerEmail': this.filter.sellerEmail || null,
       'barCode': this.filter.barCode || null,
-      'warehouseId': this.filter.warehouse?.id,
+      'warehouseId': this.warehouseSelected?.id,
       'locationName': this.filter.location || null,
       'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
       'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,

@@ -17,19 +17,9 @@
             .btn-refresh(@click="handleRefreshFilter")
               .icon.icon-rotate-left.bg-white
       .grid.header__filter(:class='{ "active": isShowFilter }')
-        div(class="col-12 md:col-12 xl:col-7")
+        div(class="col-12 md:col-12 xl:col-6")
           .grid
-            div(class="col-12 md:col-3")
-              FilterTable(
-                title="Warehouse"
-                :value="filter.warehouse"
-                :options="warehouseOption"
-                name="warehouse"
-                @updateFilter="handleFilter"
-                :isDisabled="user.role !== 'admin'"
-                :isClear="false"
-              )
-            div(class="col-12 md:col-3")
+            div(class="col-12 md:col-4")
               FilterTable(
                 title="Seller"
                 placeholder="Search barcode"
@@ -39,7 +29,7 @@
                 @updateFilter="handleFilter"
                 :isShowFilter="isShowFilter"
               )
-            div(class="col-12 md:col-3")
+            div(class="col-12 md:col-4")
               FilterTable(
                 title="Barcode"
                 placeholder="Search barcode"
@@ -49,7 +39,7 @@
                 @updateFilter="handleFilter"
                 :isShowFilter="isShowFilter"
               )
-            div(class="col-12 md:col-3")
+            div(class="col-12 md:col-4")
               FilterTable(
                 title="Item name"
                 placeholder="Search barcode"
@@ -59,7 +49,7 @@
                 @updateFilter="handleFilter"
                 :isShowFilter="isShowFilter"
               )
-        div(class="col-12 md:col-12 xl:col-5")
+        div(class="col-12 md:col-12 xl:col-6")
           .grid
             div(class='col-12 md:col-8')
               .grid.grid-nogutter
@@ -148,7 +138,8 @@
               div.table__empty
                 img(:srcset="`${require('~/assets/images/table-empty.png')} 2x`" v-if="!checkIsFilter")
                 img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`" v-else)
-                p.text-900.font-bold.mt-3 Order not found!
+                p.empty__text(v-if="!checkIsFilter") List is empty!
+                p.notfound__text(v-else) Item not found!
     template(#footer)
       Button.p-button-secondary(label="Close" icon="pi pi-times" @click="handleClose")
       Button.px-2.p-button-primary(icon="pi pi-check" @click="handleApply" v-if="lableBtnAddStock.length")
@@ -208,11 +199,11 @@ class ItemListModel extends Vue {
   @nsStoreOrder.State
   total!: any
 
-  @nsStoreWarehouse.State
-  warehouseList!: any
-
   @nsStoreUser.State
   user: any | undefined
+
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
 
   // -- [ Action ] ------------------------------------------------------------
   @nsStoreOrder.Action
@@ -228,22 +219,15 @@ class ItemListModel extends Vue {
   async getStockList() {
     if(this.isShow) {
       this.selectedStock = _.cloneDeep(this.itemSelected)
-      const { role, warehouse } = this.user
-      if(role === 'admin') {
-        await this.actWarehouseList()
-        this.warehouseOption = _.cloneDeep(this.warehouseList)
-        this.filter.warehouse = this.warehouseList[0]
-      } else {
-        this.warehouseOption = [warehouse]
-        this.filter.warehouse = warehouse
+      if(this.warehouseSelected) {
+        await this.getProductList()
       }
-      this.getProductList()
     }
   }
 
   // -- [ Getters ] -------------------------------------------------------------
   get checkIsFilter() {
-    const paramsDefault = ['pageNumber', 'pageSize']
+    const paramsDefault = ['pageNumber', 'pageSize', 'warehouseId']
     if(this.user.role === 'staff') {
       paramsDefault.push('warehouseId')
     }
@@ -281,7 +265,7 @@ class ItemListModel extends Vue {
   // -- [ Functions ] ------------------------------------------------------------
   getParamApi() {
     return {
-      warehouseId: this.filter.warehouse?.id,
+      warehouseId: this.warehouseSelected?.id,
       email: this.filter.email || null,
       itemStatus: this.filter.status?.value,
       barCode: this.filter.barCode || null,
@@ -303,6 +287,7 @@ class ItemListModel extends Vue {
 
   handleFilter(e: any, name: string){
     this.filter[name] = e
+    this.getProductList()
   }
 
   async getProductList() {
