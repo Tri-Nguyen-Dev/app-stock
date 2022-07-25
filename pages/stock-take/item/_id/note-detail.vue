@@ -203,8 +203,8 @@ class stockTakeItemsDetail extends Vue {
             return seller.displayName || seller.firstName + ' ' + seller.lastName
           }(seller), icon: 'icon-sender-name'
         },
-        { title: 'Email', value: seller?.email, icon: 'icon-sender-email' },
-        { title: 'Phone', value: seller?.phoneNumber, icon: 'icon-sender-phone' }
+        { title: 'Email Address', value: seller?.email, icon: 'icon-sender-email' },
+        { title: 'Phone Number', value: seller?.phoneNumber, icon: 'icon-sender-phone' }
       ],
       notes
     }
@@ -215,12 +215,13 @@ class stockTakeItemsDetail extends Vue {
   }
 
   async handleSaveDraft() {
+    const note = this.submitNote.trim()
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: true,
       submitData: {
         stockTakeItem: this.saveItems,
-        submitNote: this.submitNote
+        note
       }
     })
     if (result) {
@@ -243,12 +244,13 @@ class stockTakeItemsDetail extends Vue {
   }
 
   async handleSubmit() {
+    const note = this.submitNote.trim()
     const result = await this.actSubmitBoxStockTakeDetail({
       id: this.$route.params.id,
       isDraft: false,
       submitData: {
         stockTakeItem: this.saveItems,
-        submitNote: this.submitNote
+        note
       }
     })
     if (result) {

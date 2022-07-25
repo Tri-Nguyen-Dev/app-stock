@@ -9,7 +9,7 @@
             span.text-subheading All ({{ boxShow.length }})
           .stock-takeItem__header--action.flex
             Button.btn.btn-primary.border-0(@click='addBox') Add Box
-            Button.btn.btn-primary.border-0(@click='saveStockTake') Save
+            Button.btn.btn-primary.border-0(@click='saveStockTake' :disabled="boxShow.length == 0"  ) Save
         .stock-takeItem__content
           DataTable(
           :value='boxShow',
@@ -143,7 +143,7 @@ class DeliveryOrder extends Vue {
       return
     }
     const data = {
-      note: this.note,
+      note: this.note.trim(),
       checkType: 0,
       stockTakeBox: listBox,
       warehouse: { id: warehouse.warehouseId },

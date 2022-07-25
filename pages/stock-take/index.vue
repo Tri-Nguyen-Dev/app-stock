@@ -111,7 +111,7 @@
           Column(header='Created Time' field='createdAt' sortable sortField="_createdAt")
             template(#body='{ data }') {{ data.createdAt | dateTime }}
           Column(header='UPDATE time' field='updatedAt' sortable sortField="_updatedAt")
-            template(#body='{ data }') {{ data.createdAt | dateTime }}
+            template(#body='{ data }') {{ data.updatedAt | dateTime }}
           Column(header='Creator ID' field='creatorId' sortable sortField="_createdBy.staffId")
             template(#body='{ data }')
               .stock__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden {{ data.createdBy.staffId }}
@@ -288,10 +288,8 @@ class StockTake extends Vue {
     if(data.status === 'APPROVED') {
       this.$router.push(`/stock-take/${type}/${data.id}/approve`)
     }
-    else if(data.status === 'APPROVING') {
-      if(data.approver && data.approver?.staffId === this.user?.staffId) {
-        this.$router.push(`/stock-take/${type}/${data.id}/approve`)
-      }
+    else if(data.status === 'APPROVING' && data.approver && data.approver?.staffId === this.user?.staffId) {
+      this.$router.push(`/stock-take/${type}/${data.id}/approve`)
     }
     else if(data.status === 'NEW' || data.status === 'COMPLETED') {
       this.$router.push(`/stock-take/${type}/${data.id}/note-detail`)

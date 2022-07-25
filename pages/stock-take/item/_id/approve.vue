@@ -205,7 +205,7 @@ class stockTakeItemsDetail extends Vue {
   async handleSubmit(){
     const data = {
       stockTakeItem: _.map(this.items, ({ id, approvedQuantity, inventoryQuantity }) => ({ id, approvedQuantity, inventoryQuantity })),
-      approveNote: this.approveNote
+      approveNote: this.approveNote.trim()
     }
     const result = await this.actApproveSubmit({ id: this.$route.params.id, data })
     if(result?.data) {
