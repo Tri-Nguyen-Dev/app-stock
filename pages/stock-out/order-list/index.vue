@@ -183,7 +183,7 @@
          header="Driver" sortable sortField="_driver.phoneNumber" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right {{ data.driver?.phoneNumber || 'N/A' }}
-        Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
+        Column(field='status' header="Status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
               span.table__status.table__status--available {{ nameStatus(data.status) }}

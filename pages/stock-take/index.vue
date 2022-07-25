@@ -129,7 +129,7 @@
           Column(header='nOTE' sortable field='note' sortField="_note")
               template(#body='{ data }')
                 div.text-break(v-tooltip.bottom="data.approveNote || data.submitNote || data.note") {{  data.approveNote || data.submitNote || data.note }}
-          Column(field='status' sortable header="Status" sortField="_status" headerClass="grid-header-right")
+          Column(field='status' header="Status" headerClass="grid-header-right")
             template(#body='{ data }')
               div.grid-cell-right
                 span.table__status.table__status--available(v-if="data.status === 'NEW'") NEW

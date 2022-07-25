@@ -120,7 +120,7 @@
                 .icon--small.icon-arrow-up-right.bg-primary
               .flex.align-items-center.cursor-pointer.justify-content-end(v-else)
                 span N/A
-          Column(field="itemStatus" header="STATUS" sortable className="p-text-right")
+          Column(field="itemStatus" header="STATUS" className="p-text-right")
             template(#body="{data}")
               div
                 Tag(v-show="data.itemStatus === 'ITEM_STATUS_DISABLE'").px-2.surface-200

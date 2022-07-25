@@ -25,7 +25,7 @@ DataTable.w-full.table__sort-icon.h-full.flex.flex-column(
         .flex.align-items-center.cursor-pointer.justify-content-end
           span.text-primary.font-bold.font-sm {{ data.location }}
           .icon.icon-arrow-up-right.bg-primary
-  Column(field="description" header="Status" className="text-right" sortable)
+  Column(field="description" header="Status" className="text-right")
     template(#body="{data}")
       div(v-if='data.description')
         .flex.align-items-center.cursor-pointer.justify-content-end
