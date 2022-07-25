@@ -98,14 +98,13 @@ export default {
           userInfo: process.env.KEYCLOAK_API_URL +
                         '/realms/airtag/protocol/openid-connect/userinfo',
           logout: process.env.KEYCLOAK_API_URL +
-                        '/realms/airtag/protocol/openid-connect/logout?redirect_uri=' +
-                        encodeURIComponent(process.env.HOME_URL || '/')
+                        '/realms/airtag/protocol/openid-connect/logout'
         },
         token: {
           property: 'access_token',
           type: 'Bearer',
           name: 'Authorization',
-          maxAge: 3600
+          maxAge: 300
         },
         refreshToken: {
           property: 'refresh_token',
