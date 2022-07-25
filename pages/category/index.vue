@@ -28,9 +28,7 @@
           sortField='_name'
         )
           template(#body='{ data }')
-            NuxtLink.category__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.no-underline(
-              :to='`/category/${data.id}`',
-              class='hover:underline'
+            span.category__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.no-underline( 
             ) {{ data.name }}
         Column(field='action', header='action', :styles='{ width: "5%" }')
           template(#body='{ data }')

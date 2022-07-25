@@ -5,30 +5,31 @@ Dialog(header="" :visible.sync='visibleVue', :modal='true' :showHeader='false')
     .formgrid.grid
         .field.col-12()
           label.required__title(for='name') Name :
-          InputText#name.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(
-            @change='onChange'
-            v-model='categoryInformation.name'
+          InputText#name.w-full(
+            v-model='categoryInfo.name'
             type='text'
             class='focus:border-primary'
-            :class="{'name--error' : $v.categoryInformation.name.$error}")
+            :class="{'name--error' : $v.categoryInfo.name.$error}")
+          .error-message(v-if='$v.categoryInfo.name.$dirty && $v.categoryInfo.name.$invalid') name cannot be empty!
         .field.col-12(class='md:col-6')
           label(for='icon') Icon :
-          InputText#icon.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(
+          InputText#icon.w-full(
             type='text'
-            v-model='categoryInformation.icon')
+            v-model='categoryInfo.icon')
         .field.col-12(class='md:col-6')
           label(for='displayOrder') DisplayOrder :
           // eslint-disable-next-line max-len
-          InputText#displayOrder.surface-overlay.p-2.border-1.border-solid.surface-border.border-round.appearance-none.outline-none.w-full(
+          InputText#displayOrder.w-full(
             type='number'
-            v-model='categoryInformation.displayOrder')
-        .field.col-12.modal-btn(class='md:col-12')
-          Button.btn.btn-outline(@click="handleCancle")
-            span Cancel
-          Button.btn.btn-primary(v-if="modalHeader === 'Create Category'" @click='addItem')
-            span Create Category
-          Button.btn.btn-primary(v-if="modalHeader === 'Update Category'" @click='UpdateItem')
-            span Update Category
+            v-model='categoryInfo.displayOrder')
+  template(#footer)
+    .field.col-12.modal-btn(class='md:col-12')
+      Button.btn.btn-outline(@click="handleCancle")
+        span Cancel
+      Button.btn.btn-primary(v-if="modalHeader === 'Create Category'" @click='addItem')
+        span Create Category
+      Button.btn.btn-primary(v-if="modalHeader === 'Update Category'" @click='UpdateItem')
+        span Update Category
 </template>
 <script lang="ts">
 import { Component, Vue, namespace, Prop, Watch } from 'nuxt-property-decorator'
@@ -38,13 +39,12 @@ const nsStoreCategory = namespace('category/category-list')
 
 @Component({
   validations: {
-    categoryInformation: {
+    categoryInfo: {
       name: {
         required
       },
       icon: {},
-      displayOrder: {},
-      deleted: Boolean
+      displayOrder: {}
     }
   }
 })
@@ -53,9 +53,7 @@ class UpdateCategory extends Vue {
   @Prop({ default: false }) isShow!: boolean
   @Prop() modalHeader!: any
 
-  categoryName: any = []
-  duplicatedItem: any = []
-  categoryInformation: any = {
+  categoryInfo: any = {
     name: '',
     icon: '',
     displayOrder: ''
@@ -76,142 +74,70 @@ class UpdateCategory extends Vue {
   @nsStoreCategory.Action
   actCreateNewCategory!: (param: any) => Promise<void>
 
-  async getOtherCategoryName() {
-    await this.actCategoryList()
-    this.categoryName = _.cloneDeep(this.categoryList)
-    this.categoryName = this.categoryName.map((item) => {
-      return item.name
-    })
-    this.categoryName = this.categoryName.filter((item) => {
-      return item !== this.categoryData.name
-    })
-    return this.categoryName
-  }
-
-  async checkDuplicate() {
-    await this.getOtherCategoryName()
-    for (const element of this.categoryName) {
-      if (this.categoryInformation.name === element) {
-        this.duplicatedItem.push(this.categoryInformation.name)
-      }
-    }
-    return this.duplicatedItem
-  }
-
-  async onChange() {
-    this.duplicatedItem = []
-    await this.checkDuplicate()
-  }
-
   @Watch('categoryData')
   updateData() {
-    this.categoryInformation.id = this.categoryData.id
-    this.categoryInformation.name = this.categoryData.name
-    this.categoryInformation.icon = this.categoryData.icon
-    this.categoryInformation.displayOrder = this.categoryData.displayOrder
-    this.categoryInformation.deleted = this.categoryData.deleted
+    this.categoryInfo.id = this.categoryData.id
+    this.categoryInfo.name = this.categoryData.name
+    this.categoryInfo.icon = this.categoryData.icon
+    this.categoryInfo.displayOrder = this.categoryData.displayOrder
+    this.categoryInfo.deleted = this.categoryData.deleted
   }
 
   async UpdateItem() {
-    await this.checkDuplicate()
-    if (this.duplicatedItem.length > 0) {
+    const result = await this.actUpdateCategory({
+      id: this.categoryInfo.id,
+      name: this.categoryInfo.name,
+      icon: this.categoryInfo.icon,
+      displayOrder: this.categoryInfo.displayOrder,
+      deleted: this.categoryInfo.deleted
+    })
+    if (result) {
+      await this.actCategoryList()
+      this.$emit('close-modal', this.categoryInfo)
+      this.categoryInfo = []
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully update category',
+        life: 3000
+      })
+    } else {
       this.$toast.add({
         severity: 'error',
         summary: 'Error Message',
-        detail: 'category name dupicated !',
+        detail: 'Update category failed!',
         life: 3000
       })
-    } else if (this.categoryInformation.name === this.categoryData.name) {
-      const result = await this.actUpdateCategory({
-        id: this.categoryInformation.id,
-        icon: this.categoryInformation.icon,
-        displayOrder: this.categoryInformation.displayOrder,
-        deleted: this.categoryInformation.deleted
-      })
-      if (result) {
-        await this.actCategoryList()
-        this.$emit('close-modal', this.categoryInformation)
-        this.categoryInformation = []
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Success Message',
-          detail: 'Successfully update category',
-          life: 3000
-        })
-      } else {
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Error Message',
-          detail: 'Update category failed!',
-          life: 3000
-        })
-      }
-    } else {
-      const result = await this.actUpdateCategory({
-        id: this.categoryInformation.id,
-        name: this.categoryInformation.name,
-        icon: this.categoryInformation.icon,
-        displayOrder: this.categoryInformation.displayOrder,
-        deleted: this.categoryInformation.deleted
-      })
-      if (result) {
-        await this.actCategoryList()
-        this.$emit('close-modal', this.categoryInformation)
-        this.categoryInformation = []
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Success Message',
-          detail: 'Successfully update category',
-          life: 3000
-        })
-      } else {
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Error Message',
-          detail: 'Update category failed!',
-          life: 3000
-        })
-      }
     }
   }
 
   async addItem() {
-    await this.checkDuplicate()
-    if (this.duplicatedItem.length > 0) {
+    this.$v.categoryInfo.name?.$touch()
+    if (this.$v.$invalid) {
+      return
+    }
+    await this.actCreateNewCategory({
+      name: this.categoryInfo.name,
+      icon: this.categoryInfo.icon,
+      displayOrder: this.categoryInfo.displayOrder
+    })
+    await this.actCategoryList()
+    if (this.newCategoryDetail) {
+      this.$emit('close-modal', this.categoryInfo)
+      this.categoryInfo = []
       this.$toast.add({
-        severity: 'error',
-        summary: 'Error Message',
-        detail: 'category name dupicated !',
+        severity: 'success',
+        summary: 'Success Message',
+        detail: 'Successfully create new category',
         life: 3000
       })
     } else {
-      this.$v.categoryInformation.name?.$touch()
-      if (this.$v.$invalid) {
-        return
-      }
-      await this.actCreateNewCategory({
-        name: this.categoryInformation.name,
-        icon: this.categoryInformation.icon,
-        displayOrder: this.categoryInformation.displayOrder
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Error Message',
+        detail: 'Create category failed!',
+        life: 3000
       })
-      await this.actCategoryList()
-      if (this.newCategoryDetail) {
-        this.$emit('close-modal', this.categoryInformation)
-        this.categoryInformation = []
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Success Message',
-          detail: 'Successfully create new category',
-          life: 3000
-        })
-      } else {
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Error Message',
-          detail: 'Create category failed!',
-          life: 3000
-        })
-      }
     }
   }
 
@@ -221,7 +147,7 @@ class UpdateCategory extends Vue {
 
   handleCancle() {
     this.$emit('close-modal')
-    this.categoryInformation = []
+    this.categoryInfo = []
   }
 }
 export default UpdateCategory
