@@ -82,6 +82,8 @@ import StockUnit from '~/components/stock/StockUnit.vue'
 const nsStoreUser = namespace('user-auth/store-user')
 const nsStoreCreateStockTake = namespace('stock-take/create-stock-take')
 const nsStoreReportList = namespace('report/report-list')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
+
 @Component({
   components: {
     ItemList,
@@ -119,6 +121,9 @@ class DeliveryOrder extends Vue {
   @nsStoreReportList.State
   listBoxTakeNote!: any
 
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
+
   @nsStoreReportList.Action
   actResetStockTake
 
@@ -127,7 +132,7 @@ class DeliveryOrder extends Vue {
     this.showModal = true
   }
 
-  async  saveStockTake() {
+  async saveStockTake() {
     const warehouse =  this.boxShow.find((element)=> {return element.warehouseId}  )
     const listBox = this.boxShow.map(element =>{
       return {
@@ -165,14 +170,12 @@ class DeliveryOrder extends Vue {
   hideDialog(){
     this.showModal = false
     this.stockTakeInfo.totalBox = this.boxShow.length
-    this.stockTakeInfo.wareHouse = _.get(this.boxShow[0], 'warehouseName', null)
     this.boxSelected = _.cloneDeep(this.boxShow)
   }
 
   removeBox(data){
     this.boxShow.splice(this.boxShow.indexOf(data),1)
     this.stockTakeInfo.totalBox = this.boxShow.length
-    this.stockTakeInfo.wareHouse = _.get(this.boxShow[0], 'warehouseName', null)
     this.boxSelected = _.cloneDeep(this.boxShow)
   }
 
@@ -199,7 +202,8 @@ class DeliveryOrder extends Vue {
   mounted() {
     this.stockTakeInfo.totalBox = 0
     this.stockTakeInfo.user = this.user
-    if(this.listBoxTakeNote && this.listBoxTakeNote.length>0){
+    this.stockTakeInfo.wareHouse = this.warehouseSelected?.name
+    if(this.listBoxTakeNote && this.listBoxTakeNote.length > 0){
       this.stockTakeInfo.totalBox = this.listBoxTakeNote.length
       this.boxShow = this.listBoxTakeNote.map(element => {
         return {

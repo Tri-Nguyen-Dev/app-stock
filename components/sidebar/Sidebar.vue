@@ -1,15 +1,23 @@
 <template lang="pug">
   .sidebar(:style="{ width: sidebarWidth }" :class="{ 'sidebar-collapsed': !collapsed }")
     .menu-section.sidebar-head
-      template(v-if="!collapsed")
-        img.user-avatar(:src="user?.avatarUrl | getThumbnailUrl")
-        .user-info
-          span.user-name {{ userDisplayName }}
-          span.user-role {{ userRole }}
-      .icon.icon--xlarge.icon-menu-toggle.surface-500(
-        v-if="widthScreen > 1024"
-        :class="{ 'bg-primary': collapsed }"
-        @click="toggleSidebar")
+      .flex
+        template(v-if="!collapsed")
+          img.user-avatar(:src="user?.avatarUrl | getThumbnailUrl")
+          .user-info
+            span.user-name {{ userDisplayName }}
+            span.user-role {{ userRole }}
+        .icon.icon--xlarge.icon-menu-toggle.surface-500(
+          v-if="widthScreen > 1024"
+          :class="{ 'bg-primary': collapsed }"
+          @click="toggleSidebar")
+      Dropdown.mt-2.w-full(
+        v-if="isSelectWarehouse && !collapsed"
+        v-model="selectedWarehouse"
+        :options="warehouseOption"
+        optionLabel="name"
+        @change="changeWarehouse"
+      )
     .sidebar-content
       .menu-section.sidebar-content-menu
         SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)" @toggleMenu="toggleMenu")
@@ -23,6 +31,7 @@ import { User } from '~/models/User'
 import { MENU_ACTION, PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
 const nsUser = namespace('user-auth/store-user')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component
 class MenuSidebar extends Vue {
@@ -42,6 +51,15 @@ class MenuSidebar extends Vue {
   @nsUser.State('user')
   user!: User.Model | undefined
 
+  @nsStoreWarehouse.State
+  warehouseList!: any
+
+  @nsStoreWarehouse.Action
+  actWarehouseList!: () => Promise<void>
+
+  @nsStoreWarehouse.Action
+  actWarehouseSelected!: (warehouse) => Promise<any>
+
   // -- [ Properties ] ----------------------------------------------------------
   @ProvideReactive()
   selectedItem: any = null
@@ -51,7 +69,8 @@ class MenuSidebar extends Vue {
 
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
-
+  warehouseOption: any = []
+  selectedWarehouse: any = null
   // -- [ Getters ] -------------------------------------------------------------
 
   get userDisplayName() {
@@ -62,6 +81,9 @@ class MenuSidebar extends Vue {
     return this.user?.role?.toUpperCase() || ''
   }
 
+  get isSelectWarehouse() {
+    return this.user?.role === 'admin'
+  }
   // -- [ Methods ] ------------------------------------------------------------
 
   toggleMenu() {
@@ -89,6 +111,11 @@ class MenuSidebar extends Vue {
     }
   }
 
+  changeWarehouse({ value }) {
+    this.actWarehouseSelected(value)
+    this.$forceUpdate()
+  }
+
   @Watch('$route.path', { immediate: true, deep: true })
   handleSelect(path) {
     if (!this.collapsed) return
@@ -103,7 +130,17 @@ class MenuSidebar extends Vue {
     }
   }
 
-  mounted() {
+  async mounted() {
+    if(this.isSelectWarehouse) {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.selectedWarehouse = this.warehouseList[0]
+    } else {
+      this.selectedWarehouse = this.user?.warehouse
+    }
+    if(this.selectedWarehouse) {
+      this.actWarehouseSelected(this.selectedWarehouse)
+    }
     const path = this.$route.path
     const rootRoute = _.trim(path, '/').split('/')[0]
     if (rootRoute) {
@@ -172,9 +209,8 @@ export default MenuSidebar
   transition: 0.3s ease
 
   &-head
-    @include flex-center-vert
     border-bottom: 1px solid $text-color-400
-    padding: 0 $space-size-16 $space-size-24
+    padding: 0 $space-size-16 $space-size-16
 
     .user-avatar
       @include size(48px)
@@ -197,7 +233,7 @@ export default MenuSidebar
     position: relative
 
     &-menu
-      padding-top: $space-size-16
+      padding-top: $space-size-8
       margin-bottom: $space-size-16
 
     &-foot

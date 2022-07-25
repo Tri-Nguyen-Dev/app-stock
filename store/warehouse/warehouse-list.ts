@@ -22,6 +22,7 @@ export default class Warehouse extends VuexModule {
   public warehouseDetail: any = {}
   public warehouseBySeller: [] = []
   public newWarehouseDetail: any = {}
+  public warehouseSelected: any = null
 
   @Mutation
   setWarehouseList(data: any) {
@@ -41,6 +42,11 @@ export default class Warehouse extends VuexModule {
   @Mutation
   setWarehouseBySeller(data: any) {
     this.warehouseBySeller = data.items
+  }
+
+  @Mutation
+  setWarehouseSelected(data: any) {
+    this.warehouseSelected = data
   }
 
   @Action({ commit: 'setWarehouseList', rawError: true })
@@ -108,5 +114,10 @@ export default class Warehouse extends VuexModule {
     )
     const response = await $api.get(url, { params })
     return response.data
+  }
+
+  @Action({ commit: 'setWarehouseSelected', rawError: true })
+  actWarehouseSelected(warehouse): Promise<any> {
+    return warehouse
   }
 }

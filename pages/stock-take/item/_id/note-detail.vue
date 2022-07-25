@@ -191,7 +191,7 @@ class stockTakeItemsDetail extends Vue {
           icon: 'icon-warehouse',
           link: this.boxStockTakeDetail?.warehouse?.id
         },
-        { title: 'Total Item(s)', value: this.total, icon: 'icon-frame' }
+        { title: 'Total item(s)', value: this.total, icon: 'icon-frame' }
       ],
       sellerInfo: [
         {

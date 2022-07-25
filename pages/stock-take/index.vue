@@ -24,10 +24,10 @@
           .btn.btn-toggle.bg-white
             .icon-download.icon--large.bg-primary
             span.text-900.text-primary EXPORT FILE
-    .grid.header__filter.mt-1(:class='{ "active": isShowFilter }')
-      div(class="col-12 lg:col-12 xl:col-4")
+    .grid.header__filter(:class='{ "active": isShowFilter }')
+      div(class="col-12 lg:col-12 xl:col-6")
         .grid
-          div(class="col-12 md:col-3")
+          div(class="col-12 md:col-4")
             FilterTable(
               title="Note ID"
               :value="filter.id"
@@ -36,7 +36,7 @@
               :searchText="true"
               @updateFilter="handleFilter"
               :isShowFilter="isShowFilter")
-          div(class="col-12 md:col-9")
+          div(class="col-12 md:col-8")
             .grid.grid-nogutter
               .col
                   FilterCalendar(
@@ -62,15 +62,6 @@
                     @updateFilter="handleFilter"
                     :minDate="filter.dateFrom"
                   )
-      div(class="col-12 lg:col-3 xl:col-2")
-        FilterTable(
-          title="Warehouse"
-          :value="filter.warehouse"
-          :options="warehouseOption"
-          name="warehouse"
-          @updateFilter="handleFilter"
-          :isDisabled="user.role !== 'admin'"
-          :isClear="false")
       div(class="col-12 lg:col-3 xl:col-2")
         FilterTable(
           title="Check Type"
@@ -193,9 +184,9 @@ import {
 import Pagination from '~/components/common/Pagination.vue'
 import ConfirmDialogCustom from '~/components/dialog/ConfirmDialog.vue'
 import { Paging } from '~/models/common/Paging'
-const nsWarehouseStock = namespace('warehouse/warehouse-list')
 const nsStoreStockTake = namespace('stock-take/note-list')
 const nsStoreUser = namespace('user-auth/store-user')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
 
 @Component({
@@ -222,14 +213,10 @@ class StockTake extends Vue {
     id: null,
     dateFrom: null,
     dateTo: null,
-    warehouse: null,
     status: null,
     result: null,
     checkType: null
   }
-
-  @nsWarehouseStock.State
-  warehouseList!: any
 
   @nsStoreStockTake.State
   stockTakeList!: any
@@ -240,8 +227,8 @@ class StockTake extends Vue {
   @nsStoreUser.State
   user!: any
 
-  @nsWarehouseStock.Action
-  actWarehouseList!: () => Promise<void>
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
 
   @nsStoreStockTake.Action
   actGetStockTakeList!: (params: any) => Promise<void>
@@ -278,7 +265,7 @@ class StockTake extends Vue {
   }
 
   get checkIsFilter() {
-    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize'])
+    const params = _.omit(this.getParamApi(), ['pageNumber', 'pageSize', 'warehouseId'])
     return Object.values(params).some((item) => item)
   }
 
@@ -369,7 +356,7 @@ class StockTake extends Vue {
         : null,
       status: this.filter.status?.value,
       checkType: this.filter.checkType?.value,
-      warehouseId: this.filter.warehouse?.id,
+      warehouseId: this.warehouseSelected?.id,
       resultStatus: this.filter.result?.value,
       sortBy: this.sortByColumn || null,
       desc: this.isDescending
@@ -459,16 +446,9 @@ class StockTake extends Vue {
   }
 
   async mounted() {
-    const { role, warehouse } = this.user
-    if(role === 'admin') {
-      await this.actWarehouseList()
-      this.warehouseOption = _.cloneDeep(this.warehouseList)
-      this.filter.warehouse = this.warehouseList[0]
-    } else {
-      this.warehouseOption = [warehouse]
-      this.filter.warehouse = warehouse
+    if(this.warehouseSelected) {
+      await this.getStockTakeList()
     }
-    this.getStockTakeList()
   }
 
   get totalItem() {
@@ -498,7 +478,7 @@ export default StockTake
   &__header
     flex-direction: column
     flex-wrap: wrap
-    margin-bottom: 24px
+    margin-bottom: 16px
     @include desktop
       flex-direction: row
       @include flex-center-space-between

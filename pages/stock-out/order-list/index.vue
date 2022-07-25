@@ -98,17 +98,7 @@
               @updateFilter="handleFilter"
               :minDate="filter.dueDeliveryDateFrom"
             )
-      div(class='col-12 md:col-4 xl:col-3')
-        FilterTable(
-          title="Warehouse"
-          :value="filter.warehouseId"
-          :options="warehouseOption"
-          name="warehouseId"
-          @updateFilter="handleFilter"
-          :isDisabled="user.role !== 'admin'"
-          :isClear="false"
-        )
-      div(class='col-12 md:col-4 xl:col-3')
+      div(class='col-12 md:col-4 xl:col-4')
         FilterTable(
           title="Seller email"
           placeholder="Search"
@@ -117,7 +107,7 @@
           name="sellerEmail"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 xl:col-3')
+      div(class='col-12 md:col-4 xl:col-4')
         FilterTable(
           title="PIC"
           placeholder="Search"
@@ -126,7 +116,7 @@
           name="assigneeId"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 xl:col-3')
+      div(class='col-12 md:col-4 xl:col-4')
         FilterTable(
           title="Status"
           :value="filter.status"
@@ -285,8 +275,7 @@ class DeliveryOrderList extends Vue {
     status: null,
     sortBy: null,
     desc: null,
-    sellerEmail: null,
-    warehouseId: null
+    sellerEmail: null
   }
 
   fullDayTime: number = 24 * 60 * 60
@@ -311,10 +300,7 @@ class DeliveryOrderList extends Vue {
   actDeleteDeliveryByIds!: (ids: string[]) => Promise<any>
 
   @nsStoreWarehouse.State
-  warehouseList!: any
-
-  @nsStoreWarehouse.Action
-  actWarehouseList!: () => Promise<void>
+  warehouseSelected!: any
 
   @nsStoreExportReceipt.Action
   actGetReceiptLable!: (params: any) => Promise<string>
@@ -396,17 +382,10 @@ class DeliveryOrderList extends Vue {
     }
   }
 
-  async mounted() {
-    const { role, warehouse } = this.user
-    if (role === 'admin') {
-      await this.actWarehouseList()
-      this.warehouseOption = _.cloneDeep(this.warehouseList)
-      this.filter.warehouseId = this.warehouseList[0]
-    } else {
-      this.warehouseOption = [warehouse]
-      this.filter.warehouseId = warehouse
+  mounted() {
+    if(this.warehouseSelected) {
+      this.getList()
     }
-    this.getList()
   }
 
   async handleFilter(e: any, name: string) {
@@ -426,7 +405,7 @@ class DeliveryOrderList extends Vue {
       sortBy: this.filter.sortBy || null,
       desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
-      warehouseId: this.filter.warehouseId?.id,
+      warehouseId: this.warehouseSelected?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       status: this.activeStatus?.includes(this.filter.status?.value) ? this.filter.status?.value : this.activeStatus
@@ -496,8 +475,7 @@ class DeliveryOrderList extends Vue {
   }
 
   handleRefreshFilter() {
-    const adminFilter = _.omit(_.cloneDeep(this.filter), 'warehouseId')
-    for (const items in adminFilter) this.filter[items] = null
+    for (const items in this.filter) this.filter[items] = null
     this.getProductList()
   }
 
@@ -547,7 +525,7 @@ class DeliveryOrderList extends Vue {
     })
     this.getDeliveryList({
       ...this.filter,
-      warehouseId: this.filter.warehouseId?.id,
+      warehouseId: this.warehouseSelected?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
       status: this.activeStatus
@@ -644,7 +622,7 @@ export default DeliveryOrderList
 
   &__header
     @include flex-center-space-between
-    margin-bottom: 24px
+    margin-bottom: 16px
 
     ::v-deep.p-tabview .p-tabview-nav li:not(.p-highlight):not(.p-disabled)
       &:hover
