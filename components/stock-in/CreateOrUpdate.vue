@@ -369,6 +369,9 @@ class CreateOrUpdateReceipt extends Vue {
   @nsStoreLocationList.State
   locationList: {}
 
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
+
   @nsStoreStock.Action
   actGetStockByBarcode
 
@@ -613,6 +616,9 @@ class CreateOrUpdateReceipt extends Vue {
   }
 
   async mounted() {
+    if(this.warehouseSelected) {
+      this.warehouse = this.warehouseSelected
+    }
     await this.actWarehouseList()
     await this.actGetBoxSizeList()
     if (this.id) {

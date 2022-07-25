@@ -206,7 +206,7 @@ class ApproveBoxStockTake extends Vue {
 
   async saveApprove() {
     let submitData: any = this.submitDataStock()
-    submitData = { stockTakeItem: [...submitData], approveNote: this.stockTakeInfo.note }
+    submitData = { stockTakeItem: [...submitData], approveNote: this.stockTakeInfo.note.trim() }
     const result = await this.actApproveSubmit({ id: this.$route.params.id , data: submitData })
     if (result) {
       this.$toast.add({

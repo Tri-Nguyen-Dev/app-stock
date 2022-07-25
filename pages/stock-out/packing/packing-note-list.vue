@@ -4,9 +4,6 @@
       div
         h1.text-heading Packing note list
       .header__action
-        //- .header__search
-        //-   .icon.icon--left.icon-search
-        //-   InputText(type='text' placeholder='Search' v-model="filter.name" v-on:input="debounceSearchName")
         .btn__filter(:class="{'active': true}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
             .icon.icon-filter(v-if="!isShowFilter")
@@ -19,7 +16,15 @@
             .icon-download.icon--large.bg-primary
             span.text-900.text-primary EXPORT FILE
     .grid.header__filter.mt-1(:class='{ "active": isShowFilter }' )
-      div(class='col-12 md:col-6 lg:col-4 xl:col-4')
+      div(class='col-12 md:col-2')
+        FilterTable(
+          title=" (DO)ID"
+          name="id"
+          :value="filter.id"
+          :searchText="true"
+          @updateFilter="handleFilter"
+        )
+      div(class='col-12 md:col-4')
         .grid.grid-nogutter
           .col
             FilterCalendar(
@@ -43,15 +48,7 @@
               :showIcon="true"
               @updateFilter="handleFilter"
             )
-      div(class='col-12 md:col-3 lg:col-3 xl:col-3')
-        FilterTable(
-          title="Warehouse"
-          :value="filter.warehouseId"
-          :options="warehouseList"
-          name="warehouseId"
-          @updateFilter="handleFilter"
-        )
-      div(class='col-12 md:col-3 lg:col-3 xl:col-3')
+      div(class='col-12 md:col-2')
         FilterTable(
           title="Seller email"
           placeholder="Search"
@@ -60,7 +57,16 @@
           name="sellerEmail"
           @updateFilter="handleFilter"
         )
-      div(class='col-12 md:col-4 lg:col-2 xl:col-2')
+      div(class='col-12 md:col-2')
+        FilterTable(
+          title="PIC"
+          placeholder="Search"
+          :value="filter.assigneeId"
+          :searchText="true"
+          name="assigneeId"
+          @updateFilter="handleFilter"
+        )
+      div(class='col-12 md:col-2')
         FilterTable(
           title="Status"
           :value="filter.status"
@@ -99,19 +105,14 @@
             div {{ data.createTime | dateTime }}
         Column(header='Seller email' sortable field='sellerEmail' sortField="_seller.email" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.sellerEmail }}
+            div.grid-cell-right {{ data.seller.email }}
             div.grid-cell-right {{ data.receiptDate }}
         Column(header='Receiver Address' sortable field='receiverAddress' sortField="_receiverAddress" )
           template(#body='{ data }')
             div.grid-cell-fix-width {{ data.receiverAddress }}
-        //- Column(header='Warehouse' sortable field='warehouseName' sortField="_warehouse.id" headerClass="grid-header-right")
-        //-   template(#body='{ data }')
-        //-     .flex.align-items-center.cursor-pointer.justify-content-end
-        //-       span.text-primary.font-bold.font-sm.text-white-active {{ data.warehouseName }}
-        //-       .icon.icon-arrow-up-right.bg-primary.bg-white-active
         Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
-            div.grid-cell-right {{ data.creatorId }}
+            div.grid-cell-right(v-if="data.assignee") {{ data.assignee.displayName }}
         Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
@@ -131,8 +132,7 @@
             :total="total"
             @onPage="onPage")
         template(#empty)
-          div.table__empty
-            img(:srcset="`${require('~/assets/images/table-notfound.png')} 2x`")
+          CommonTableEmpty(:isNotFound="isFilter" @addNew="handleAddnew")
     Toast
 </template>
 <script lang="ts">
@@ -169,7 +169,6 @@ class PackingNoteList extends Vue {
   activeTab: number = 0
   loading: boolean = false
   loadingSubmit: boolean = false
-  isFilter: boolean = false
   paging: Paging.Model = { ...PAGINATE_DEFAULT, first: 0 }
   statusList =  [
     { name: 'Cancelled', value: DeliveryConstants.StatusDelivery.CANCELLED },
@@ -191,8 +190,7 @@ class PackingNoteList extends Vue {
     status: null,
     sortBy: null,
     desc: null,
-    sellerEmail: null,
-    warehouseId: null
+    sellerEmail: null
   }
 
   @nsStoreDelivery.State
@@ -208,10 +206,7 @@ class PackingNoteList extends Vue {
   actDeleteDeliveryByIds!: (ids: string[]) => Promise<any>
 
   @nsStoreWarehouse.State
-  warehouseList!: any
-
-  @nsStoreWarehouse.Action
-  actWarehouseList!: () => Promise<void>
+  warehouseSelected!: any
 
   @nsStoreExportReceipt.Action
   actGetReceiptLable!: (params: any) => Promise<string>
@@ -242,8 +237,9 @@ class PackingNoteList extends Vue {
   }
 
   mounted() {
-    this.getProductList()
-    this.actWarehouseList()
+    if(this.warehouseSelected) {
+      this.getProductList()
+    }
   }
 
   handleFilter(e: any, name: string) {
@@ -251,8 +247,8 @@ class PackingNoteList extends Vue {
     this.getProductList()
   }
 
-  async getProductList() {
-    await this.getDeliveryList({
+  getParamAPi() {
+    return {
       id: this.filter.id || null,
       assigneeId: this.filter.assigneeId || null,
       createTimeFrom: this.filter.createTimeFrom ? dayjs(this.filter.createTimeFrom).format('YYYY-MM-DD') : null,
@@ -260,12 +256,15 @@ class PackingNoteList extends Vue {
       sortBy: this.filter.sortBy || null,
       desc: this.filter.desc,
       sellerEmail: this.filter.sellerEmail || null,
-      warehouseId: this.filter.warehouseId?.id,
+      warehouseId: this.warehouseSelected?.id,
       pageSize: this.paging.pageSize,
       pageNumber: this.paging.pageNumber,
-      status: this.filter.status?.value,
-      isPackingList : true
-    })
+      status: this.filter.status?.value
+    }
+  }
+
+  async getProductList() {
+    await this.getDeliveryList({ ...this.getParamAPi(), isPackingList : true })
   }
 
   onPage(event: any) {
@@ -335,6 +334,14 @@ class PackingNoteList extends Vue {
     )
   }
 
+  get isFilter(){
+    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize', 'warehouseId'])
+    return Object.values(params).some((item) => item)
+  }
+
+  handleAddnew() {
+    this.$router.push({ path: '/stock-out/order' })
+  }
 }
 
 export default PackingNoteList
