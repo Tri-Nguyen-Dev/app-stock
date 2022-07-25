@@ -3,7 +3,7 @@
   .category__header
     div
       h1.text-heading Category
-      span.text-subheading Total {{ categoriesTotal }} categories
+      span.text-subheading {{ totalItem }}
     .header__action
       Button.btn.btn-primary(@click='handleCreate')
         .icon.icon-add-items
@@ -81,7 +81,8 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   getDeleteMessage,
-  resetScrollTable
+  resetScrollTable,
+  getTotalQuantityLabel
 } from '~/utils'
 const nsCategoryList = namespace('category/category-list')
 
@@ -113,6 +114,10 @@ class Categories extends Vue {
 
   @nsCategoryList.Action
   actDeleteCategoryByIds!: (params: any) => Promise<any>
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.categoriesTotal, 'result', '<%= quantity%> found')
+  }
 
   getParamAPi() {
     return {
