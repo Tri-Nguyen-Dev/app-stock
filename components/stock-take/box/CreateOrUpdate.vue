@@ -8,8 +8,8 @@
             h1.text-heading Stock-take Note
             span.text-subheading All ({{ boxShow.length }})
           .stock-takeItem__header--action.flex
-            Button.btn.btn-primary.border-0(@click='addBox' v-if='!disabledAddBox' :disabled="boxShow.length == 0" ) Add Box
-            Button.btn.btn-primary.border-0(@click='saveStockTake') Save
+            Button.btn.btn-primary.border-0(@click='addBox' v-if='!disabledAddBox') Add Box
+            Button.btn.btn-primary.border-0(@click='saveStockTake' :disabled="boxShow.length == 0") Save
         .stock-takeItem__content
           DataTable(
           :value='boxShow',
