@@ -113,7 +113,7 @@
         Column(header='PIC' sortable field='creatorId' sortField="_assignee.id" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right(v-if="data.assignee") {{ data.assignee.displayName }}
-        Column(field='status' header="Status" sortable sortField="_status" headerClass="grid-header-right")
+        Column(field='status' header="Status" headerClass="grid-header-right")
           template(#body='{ data }')
             div.grid-cell-right
               span.table__status.table__status--available(v-if="data.status === 'DELIVERY_ORDER_STATUS_NEW'") NEW
