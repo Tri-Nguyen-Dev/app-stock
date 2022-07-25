@@ -3,7 +3,7 @@
   .inventory__header
     div
       h1.text-heading Box list
-      span.text-subheading {{ totalBoxRecords }} boxes found
+      span.text-subheading {{ totalItem }}
     .header__action.flex
       Button.btn.btn-primary.border-0.mr-2(
         @click='handleApplyFilter'
@@ -174,6 +174,7 @@ import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
 import { BOX_STATUS_OPTIONS, BOX_STATUS } from '~/utils/constants/box'
+import { getTotalQuantityLabel } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -224,6 +225,10 @@ class BoxDataTable extends Vue {
     }
   }
   // -- [ Getters ] -------------------------------------------------------------
+  
+  get totalItem() {
+    return getTotalQuantityLabel(this.totalBoxRecords, 'result', '<%= quantity%> found')
+  }
 
   // -- [ Functions ] ------------------------------------------------------------
   getParamAPi() {
