@@ -1,6 +1,6 @@
 <template lang="pug">
   section
-    ProgressSpinner(v-if="hasRouteQuery" strokeWidth="6")
+    ProgressSpinner(v-if="inLoginLoading" strokeWidth="6")
     .surface-0.flex.align-items-center.justify-content-center.min-h-screen.min-w-screen.overflow-hidden.p-2(v-else)
       .grid.justify-content-center.col-12(class='md:col-6 lg:col-4')
         .logo-block.w-full.mb-5.text-center
@@ -20,8 +20,8 @@ class Login extends Vue {
     await this.$auth.loginWith('keycloak')
   }
 
-  get hasRouteQuery() {
-    return !(_.isEmpty(this.$route.query))
+  get inLoginLoading() {
+    return _.has(this.$route.query, 'state') || _.has(this.$route.query, 'session_state')
   }
 }
 
