@@ -130,7 +130,7 @@ class stockTakeItemsDetail extends Vue {
           icon: 'icon-warehouse',
           link: this.boxStockTakeDetail?.warehouse?.id
         },
-        { title:'Items', value: this.total, icon: 'icon-frame' }
+        { title:'Total item(s)', value: this.total, icon: 'icon-frame' }
       ],
       sellerInfo: [
         { title:'Name', value: function(seller) {
@@ -205,7 +205,7 @@ class stockTakeItemsDetail extends Vue {
   async handleSubmit(){
     const data = {
       stockTakeItem: _.map(this.items, ({ id, approvedQuantity, inventoryQuantity }) => ({ id, approvedQuantity, inventoryQuantity })),
-      approveNote: this.approveNote
+      approveNote: this.approveNote.trim()
     }
     const result = await this.actApproveSubmit({ id: this.$route.params.id, data })
     if(result?.data) {

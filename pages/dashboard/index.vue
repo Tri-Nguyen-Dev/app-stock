@@ -1,19 +1,7 @@
 <template lang="pug"> 
   .grid.dashboard-page-container
-    .col-12
+    .col-12.mb-3
       h1.text-heading Dashboard
-    .col-12
-      Card
-        template(#content='')
-          .dashboard-warehouse
-            div Choose warehouse
-            Dropdown.warehouse-select(
-              :value="warehouseSelect"
-              :options="warehouseList"
-              optionLabel="name"
-              placeholder="Select a warehouse"
-              @change="changeWarehouse"
-            )
     .col-12.pb-0
       DashboardTotalCompared
     .col-12.flex-1
@@ -37,10 +25,9 @@ const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component
 class Dashboard extends Vue {
-  warehouseSelect = null
   
   @nsStoreWarehouse.State
-  warehouseList!: any
+  warehouseSelected!: any
 
   @nsStoreWarehouse.Action
   actWarehouseList!: () => Promise<void>
@@ -64,17 +51,13 @@ class Dashboard extends Vue {
   actGetCapacity!: (params: any) => Promise<void>
 
   async mounted() {
-    await this.actWarehouseList()
-    this.warehouseSelect = this.warehouseList[0]
-    this.getDataChart(this.warehouseList[0].id)
+    if(this.warehouseSelected) {
+      await this.getDataChart()
+    }
   }
 
-  async changeWarehouse({ value }) {
-    this.warehouseSelect = value
-    await this.getDataChart(value.id)
-  }
-
-  async getDataChart(warehouseId) {
+  async getDataChart() {
+    const warehouseId = this.warehouseSelected?.id
     await Promise.all([
       this.actGetBoxItem({ warehouseId }),
       this.actGetDelivery({ warehouseId }),

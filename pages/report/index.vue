@@ -291,17 +291,14 @@ class ReportList extends Vue {
   @nsStoreReport.State
   totalReportRecords!: number
 
-  @nsStoreWarehouse.State
-  warehouseList!: any
-
   @nsStoreReportDetail.State
   reportDetail!: any
 
+  @nsStoreWarehouse.State
+  warehouseSelected!: any
+
   @nsStoreReport.Action
   actGetReportList!: (params: any) => Promise<void>
-
-  @nsStoreWarehouse.Action
-  actWarehouseList!: () => Promise<void>
 
   @nsStoreReport.Action
   actDeleteReportById!: (params: { ids: string[] }) => Promise<any>
@@ -322,13 +319,15 @@ class ReportList extends Vue {
   actGetReceiptLable!: (id: any) => Promise<any>
 
   async mounted() {
-    await this.actGetReportList({ pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize })
-    this.expandedRows = this.reportList
+    if(this.warehouseSelected) {
+      await this.actGetReportList(this.getParamAPi())
+      this.expandedRows = this.reportList
+    }
   }
 
   // -- [ Getters ] -------------------------------------------------------------
   get isFilter() {
-    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize'])
+    const params = _.omit(this.getParamAPi(), ['pageNumber', 'pageSize', 'warehouseId'])
     return Object.values(params).some((item) => item)
   }
 
@@ -363,7 +362,7 @@ class ReportList extends Vue {
       pageNumber: this.paging.pageNumber, pageSize: this.paging.pageSize,
       'sellerEmail': this.filter.sellerEmail || null,
       'id': this.filter.id || null,
-      'warehouseId': this.filter.warehouse?.id,
+      'warehouseId': this.warehouseSelected?.id,
       'location': this.filter.location || null,
       'from': this.filter.dateFrom ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD') : null,
       'to': this.filter.dateTo ? dayjs(new Date(this.filter.dateTo)).format('YYYY-MM-DD') : null,
@@ -464,7 +463,6 @@ class ReportList extends Vue {
   }
 
   async handleRefeshFilter() {
-    this.filter.warehouse = null
     this.filter.location = ''
     this.filter.sellerEmail = ''
     this.filter.barCode = ''
@@ -722,7 +720,7 @@ export default ReportList
 .box__header
   flex-direction: column
   flex-wrap: wrap
-  margin-bottom: 24px
+  margin-bottom: 16px
   @include desktop
     flex-direction: row
     @include flex-center-space-between

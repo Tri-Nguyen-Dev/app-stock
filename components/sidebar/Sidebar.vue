@@ -1,15 +1,23 @@
 <template lang="pug">
   .sidebar(:style="{ width: sidebarWidth }" :class="{ 'sidebar-collapsed': !collapsed }")
     .menu-section.sidebar-head
-      template(v-if="!collapsed")
-        img.user-avatar(:src="user.avatarUrl | getThumbnailUrl")
-        .user-info
-          span.user-name {{ userDisplayName }}
-          span.user-role {{ userRole }}
-      .icon.icon--xlarge.icon-menu-toggle.surface-500(
-        v-if="widthScreen > 1024"
-        :class="{ 'bg-primary': collapsed }"
-        @click="toggleSidebar")
+      .flex
+        template(v-if="!collapsed")
+          img.user-avatar(:src="user?.avatarUrl | getThumbnailUrl")
+          .user-info
+            span.user-name {{ userDisplayName }}
+            span.user-role {{ userRole }}
+        .icon.icon--xlarge.icon-menu-toggle.surface-500(
+          v-if="widthScreen > 1024"
+          :class="{ 'bg-primary': collapsed }"
+          @click="toggleSidebar")
+      Dropdown.mt-2.w-full(
+        v-if="isSelectWarehouse && !collapsed"
+        v-model="selectedWarehouse"
+        :options="warehouseOption"
+        optionLabel="name"
+        @change="changeWarehouse"
+      )
     .sidebar-content
       .menu-section.sidebar-content-menu
         SidebarItem(v-for="item in pageMenu" :key="item.id" :item="item" @select="onSelectMenu(item)" @toggleMenu="toggleMenu")
@@ -23,6 +31,7 @@ import { User } from '~/models/User'
 import { MENU_ACTION, PAGE_MENU, SETTING_MENU } from '~/utils'
 const nsSidebar = namespace('layout/store-sidebar')
 const nsUser = namespace('user-auth/store-user')
+const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 
 @Component
 class MenuSidebar extends Vue {
@@ -42,6 +51,15 @@ class MenuSidebar extends Vue {
   @nsUser.State('user')
   user!: User.Model | undefined
 
+  @nsStoreWarehouse.State
+  warehouseList!: any
+
+  @nsStoreWarehouse.Action
+  actWarehouseList!: () => Promise<void>
+
+  @nsStoreWarehouse.Action
+  actWarehouseSelected!: (warehouse) => Promise<any>
+
   // -- [ Properties ] ----------------------------------------------------------
   @ProvideReactive()
   selectedItem: any = null
@@ -51,6 +69,8 @@ class MenuSidebar extends Vue {
 
   pageMenu = PAGE_MENU
   settingMenu = SETTING_MENU
+  warehouseOption: any = []
+  selectedWarehouse: any = null
   // -- [ Getters ] -------------------------------------------------------------
 
   get userDisplayName() {
@@ -60,6 +80,10 @@ class MenuSidebar extends Vue {
   get userRole() {
     return this.user?.role?.toUpperCase() || ''
   }
+
+  get isSelectWarehouse() {
+    return this.user?.role === 'admin'
+  }
   // -- [ Methods ] ------------------------------------------------------------
 
   toggleMenu() {
@@ -67,9 +91,9 @@ class MenuSidebar extends Vue {
   }
 
   onSelectMenu(item) {
-    if(this.collapsed) return
-    if(!item.parentId || !item.to) {
-      if(!_.includes(this.selectParent, item.id)) {
+    if (this.collapsed) return
+    if (!item.parentId || !item.to) {
+      if (!_.includes(this.selectParent, item.id)) {
         this.selectParent.push(item.id)
       } else {
         const subParent = _.find(this.pageMenu, (obj) => (obj.parentId === item.id && !obj.to))
@@ -77,8 +101,8 @@ class MenuSidebar extends Vue {
           return o !== item.id && o !== subParent?.id
         })
       }
-    } 
-    if(item.to) {
+    }
+    if (item.to) {
       this.selectedItem = item
     }
     // handle specific actions
@@ -87,31 +111,46 @@ class MenuSidebar extends Vue {
     }
   }
 
+  changeWarehouse({ value }) {
+    this.actWarehouseSelected(value)
+    this.$forceUpdate()
+  }
+
   @Watch('$route.path', { immediate: true, deep: true })
   handleSelect(path) {
-    if(!this.collapsed) return
+    if (!this.collapsed) return
     const rootRoute = _.trim(path, '/').split('/')[0]
     if (rootRoute) {
       const itemPath = this.pageMenu.find(item => {
         return item.to === path
       })
-      if(itemPath) {
+      if (itemPath) {
         this.selectedItem = itemPath
       }
     }
   }
 
-  mounted() {
+  async mounted() {
+    if(this.isSelectWarehouse) {
+      await this.actWarehouseList()
+      this.warehouseOption = _.cloneDeep(this.warehouseList)
+      this.selectedWarehouse = this.warehouseList[0]
+    } else {
+      this.selectedWarehouse = this.user?.warehouse
+    }
+    if(this.selectedWarehouse) {
+      this.actWarehouseSelected(this.selectedWarehouse)
+    }
     const path = this.$route.path
     const rootRoute = _.trim(path, '/').split('/')[0]
     if (rootRoute) {
       this.selectedItem = this.pageMenu.find(item => {
         return item.to === path
       })
-      if(!this.selectedItem) {
+      if (!this.selectedItem) {
         this.selectedItem = this.pageMenu.find(item => {
           const isPackingDetail = path.includes('/packing-detail')
-          if(isPackingDetail) {
+          if (isPackingDetail) {
             return item.to === '/stock-out/packing/packing-note-list'
           }
           const menuRoute = _.trim(item.to, '/').split('/')[0]
@@ -120,7 +159,7 @@ class MenuSidebar extends Vue {
       }
       const subParentId = this.selectedItem?.parentId
       const subParent = _.find(this.pageMenu, (o) => (o.id === subParentId))
-      if(!_.includes(this.selectParent, subParentId)) {
+      if (!_.includes(this.selectParent, subParentId)) {
         this.selectParent.push(subParent?.parentId)
         this.selectParent.push(subParentId)
       }
@@ -145,7 +184,7 @@ export default MenuSidebar
 ::-webkit-scrollbar-thumb
   border-radius: 20px
   border: 3px solid transparent
-  background-color: rgba(0,0,0,0.3)
+  background-color: rgba(0, 0, 0, 0.3)
   background-clip: content-box
   position: absolute
   top: 0
@@ -170,9 +209,8 @@ export default MenuSidebar
   transition: 0.3s ease
 
   &-head
-    @include flex-center-vert
     border-bottom: 1px solid $text-color-400
-    padding: 0 $space-size-16 $space-size-24
+    padding: 0 $space-size-16 $space-size-16
 
     .user-avatar
       @include size(48px)
@@ -195,7 +233,7 @@ export default MenuSidebar
     position: relative
 
     &-menu
-      padding-top: $space-size-16
+      padding-top: $space-size-8
       margin-bottom: $space-size-16
 
     &-foot

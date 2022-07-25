@@ -7,5 +7,4 @@ const authenticate: Middleware = async ({ store }) => {
     await store.dispatch('user-auth/store-user/actGetUserDetail')
   }
 }
-
 export default authenticate
