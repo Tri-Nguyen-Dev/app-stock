@@ -238,7 +238,7 @@ class BoxDataTable extends Vue {
       sellerEmail: this.filter.sellerEmail || null,
       barCode: this.filter.barCode || null,
       warehouseId: this.warehouseSelected?.id,
-      location: this.filter.location || null,
+      locationName: this.filter.location || null,
       status: this.filter.status?.value || null,
       from: this.filter.dateFrom
         ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD')
