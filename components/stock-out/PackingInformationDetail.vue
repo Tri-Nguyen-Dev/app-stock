@@ -9,7 +9,7 @@ CommonTabDetail.order__packing--detail.w-full(:homeItem="homeItem" :breadcrumbIt
       h3.uppercase.inline-block.m-2 id: {{ deliveryOrderDetail.id }}
       div.mb-2
         h5.m-1.uppercase.inline-block(style='color :#979AA4') Created time:&nbsp;
-        span.uppercase.font-bold {{ deliveryOrderDetail.createdAt | dateTime('MMMM D YYYY HH:mm') }}
+        span.uppercase.font-bold {{ deliveryOrderDetail.createdAt | dateTime }}
       TabView
         TabPanel.p-2(header='Delivery')
           StockOutPackingSellerInfo.border-bottom-1.border-gray-300.pb-4(:sellerInfo='deliveryOrderDetail')
