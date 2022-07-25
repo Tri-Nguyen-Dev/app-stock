@@ -122,7 +122,7 @@ export default {
     redirect: {
       login: '/',
       logout: '/login',
-      home: '/stock'
+      home: '/dashboard'
     }
   },
 

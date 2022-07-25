@@ -1,11 +1,14 @@
 <template lang="pug">
-  h1.text-center AIRTAG MANAGEMENT SYSTEM
+  Loading(:show='true')
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
+import Loading from '~/components/common/Loading.vue'
 
-@Component
+@Component({
+  components: { Loading }
+})
 class Pages extends Vue {}
 
 export default Pages
