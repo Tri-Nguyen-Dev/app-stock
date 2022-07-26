@@ -1,4 +1,4 @@
-<template lang="pug"> 
+<template lang="pug">
   Nuxt
 </template>
 
@@ -6,7 +6,7 @@
 import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
-class Dashboard extends Vue {}
+class PublicLayout extends Vue {}
 
-export default Dashboard
+export default PublicLayout
 </script>

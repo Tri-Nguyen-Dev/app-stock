@@ -3,7 +3,7 @@
   .inventory__header
     div
       h1.text-heading Box list
-      span.text-subheading {{ totalBoxRecords }} boxes found
+      span.text-subheading {{ totalItem }}
     .header__action.flex
       Button.btn.btn-primary.border-0.mr-2(
         @click='handleApplyFilter'
@@ -123,8 +123,8 @@
         :sortable='true',
         sortField='_request.seller.email'
       )
-      Column(field='usedCapacity' header='USED CAPACITY' :styles='{ width: "10rem" }' className="text-right")
-        template(#body='{ data }') {{ data.usedCapacity | capacityPercent }}
+      Column(field="createdAt" header="CREATED TIME" :sortable="true" sortField="_createdAt")
+        template(#body="{data}") {{ data.createdAt | dateTime }}
       Column(
         field='location',
         header='LOCATION',
@@ -132,14 +132,14 @@
         sortField='_rackLocation.name'
         :styles='{ width: "10rem" }'
       )
-        template(#body='{ data }')
-          div(v-if='data.location')
-            .flex.align-items-center.cursor-pointer.justify-content-end
-              span.font-bold {{ data.location }}
+        template(#body="{data}")
+          div(v-if="data.location")
+            .flex.align-items-center.cursor-pointer.justify-content-start
+              span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
+              .icon.icon-arrow-up-right.bg-primary.bg-white-active
       Column(
         field='status',
         header='STATUS',
-        :sortable='true',
         className='text-center'
         headerClass="grid-header-center"
         :styles='{ width: "10rem" }'
@@ -174,6 +174,7 @@ import Pagination from '~/components/common/Pagination.vue'
 import { Paging } from '~/models/common/Paging'
 import { User } from '~/models/User'
 import { BOX_STATUS_OPTIONS, BOX_STATUS } from '~/utils/constants/box'
+import { getTotalQuantityLabel } from '~/utils'
 const nsStoreBox = namespace('box/box-list')
 const nsStoreWarehouse = namespace('warehouse/warehouse-list')
 const dayjs = require('dayjs')
@@ -224,6 +225,10 @@ class BoxDataTable extends Vue {
     }
   }
   // -- [ Getters ] -------------------------------------------------------------
+  
+  get totalItem() {
+    return getTotalQuantityLabel(this.totalBoxRecords, 'result', '<%= quantity%> found')
+  }
 
   // -- [ Functions ] ------------------------------------------------------------
   getParamAPi() {
@@ -233,7 +238,7 @@ class BoxDataTable extends Vue {
       sellerEmail: this.filter.sellerEmail || null,
       barCode: this.filter.barCode || null,
       warehouseId: this.warehouseSelected?.id,
-      location: this.filter.location || null,
+      locationName: this.filter.location || null,
       status: this.filter.status?.value || null,
       from: this.filter.dateFrom
         ? dayjs(new Date(this.filter.dateFrom)).format('YYYY-MM-DD')
@@ -273,7 +278,7 @@ class BoxDataTable extends Vue {
   }
 
   async handleRefreshFilter() {
-    this.filter.email = null
+    this.filter.sellerEmail = null
     this.filter.status = null
     this.filter.barCode = null
     this.filter.location = null

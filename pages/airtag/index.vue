@@ -3,7 +3,7 @@
   .airtag__header
     div
       h1.text-heading Airtag
-      span.text-subheading Total {{ airtagTotal }} Airtags
+      span.text-subheading {{ totalItem }}
     .header__action
       .btn__filter(:class="{'active': isShowFilter}")
           .btn-toggle(@click="isShowFilter = !isShowFilter")
@@ -114,7 +114,8 @@ import {
   calculateIndex,
   resetScrollTable,
   getDeleteMessage,
-  AirtagConstants
+  AirtagConstants,
+  getTotalQuantityLabel
 } from '~/utils'
 const nsAirtagList = namespace('airtag/Airtag')
 
@@ -154,6 +155,10 @@ class Airtag extends Vue {
 
   @nsAirtagList.Action
   actDeleteAirtag!: (params: any) => Promise<any>
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.airtagTotal, 'result', '<%= quantity%> found')
+  }
 
   get checkAirtagDisable() {
     return this.airtagList.every(

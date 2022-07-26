@@ -94,7 +94,7 @@
               .flex.align-items-center.cursor-pointer.justify-content-end
                 span.text-primary.font-bold.font-sm.text-white-active {{ data.location }}
                 .icon.icon-arrow-up-right.bg-primary.bg-white-active
-        Column(field="status" header="STATUS" :sortable="true" className="text-right" sortField="_status")
+        Column(field="status" header="STATUS" className="text-right")
           template(#body="{data}")
             .flex.justify-content-end
               span.table__status.table__status--available(

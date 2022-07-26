@@ -3,7 +3,7 @@
   .category__header
     div
       h1.text-heading Category
-      span.text-subheading Total {{ categoriesTotal }} categories
+      span.text-subheading {{ totalItem }}
     .header__action
       Button.btn.btn-primary(@click='handleCreate')
         .icon.icon-add-items
@@ -28,9 +28,7 @@
           sortField='_name'
         )
           template(#body='{ data }')
-            NuxtLink.category__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.no-underline(
-              :to='`/category/${data.id}`',
-              class='hover:underline'
+            span.category__table-name.text-white-active.text-base.text-900.text-overflow-ellipsis.overflow-hidden.no-underline( 
             ) {{ data.name }}
         Column(field='action', header='action', :styles='{ width: "5%" }')
           template(#body='{ data }')
@@ -83,7 +81,8 @@ import {
   PAGINATE_DEFAULT,
   calculateIndex,
   getDeleteMessage,
-  resetScrollTable
+  resetScrollTable,
+  getTotalQuantityLabel
 } from '~/utils'
 const nsCategoryList = namespace('category/category-list')
 
@@ -115,6 +114,10 @@ class Categories extends Vue {
 
   @nsCategoryList.Action
   actDeleteCategoryByIds!: (params: any) => Promise<any>
+
+  get totalItem() {
+    return getTotalQuantityLabel(this.categoriesTotal, 'result', '<%= quantity%> found')
+  }
 
   getParamAPi() {
     return {

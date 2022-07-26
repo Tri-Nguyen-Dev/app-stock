@@ -1,1 +1,10 @@
-import { Middleware } from '@nuxt/types'const authenticate: Middleware = async ({ store, redirect }) => {  if (!store.$auth.loggedIn) {    await store.$auth.loginWith('keycloak')    redirect('/dashboard')  } else if (!store.state['user-auth']['store-user'].user) {    await store.dispatch('user-auth/store-user/actGetUserDetail')  }}export default authenticate
+import { Middleware } from '@nuxt/types'
+const authenticate: Middleware = async ({ store }) => {
+  if (!store.$auth.loggedIn) {
+    await store.$auth.loginWith('keycloak')
+  } else if (!store.state['user-auth']['store-user'].user) {
+    await store.dispatch('user-auth/store-user/actGetUserDetail')
+  }
+}
+
+export default authenticate

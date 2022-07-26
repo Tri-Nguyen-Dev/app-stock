@@ -122,7 +122,7 @@
           className="text-right")
             template(#body='{ data }')
                   span.text-white-active {{ data.creatorName }}
-          Column(header='STATUS' field=' data.status' :sortable="true" sortField="_status" className="text-right")
+          Column(header='STATUS' field=' data.status' className="text-right")
             template(#body='{ data }')
               span.border-round.py-2.px-3.uppercase.font-bold.font-sm(
                 :class=" data.status === 'REQUEST_STATUS_SAVED' ? 'text-green-400 bg-green-100 ' : 'text-primary bg-blue-100' ")

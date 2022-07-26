@@ -8,8 +8,8 @@
             h1.text-heading Stock-take Note
             span.text-subheading All ({{ boxShow.length }})
           .stock-takeItem__header--action.flex
-            Button.btn.btn-primary.border-0(@click='addBox') Add Box
-            Button.btn.btn-primary.border-0(@click='saveStockTake' :disabled="boxShow.length == 0"  ) Save
+            Button.btn.btn-primary.border-0(@click='addBox' v-if='!disabledAddBox') Add Box
+            Button.btn.btn-primary.border-0(@click='saveStockTake' :disabled="boxShow.length == 0") Save
         .stock-takeItem__content
           DataTable(
           :value='boxShow',
@@ -30,9 +30,9 @@
               sortField='_id'
             )
             Column(
-              field='rackLocation.name',
+              field='location',
               header='LOCATION',
-              sortField='_rackLocation.name'
+              sortField='location'
             )
               template(#body="{data}")
                 div(v-if="data.location")
@@ -209,7 +209,7 @@ class DeliveryOrder extends Vue {
         return {
           id:element.boxNote.box.id,
           sellerEmail: element.boxNote.box.request?.seller.email,
-          rackLocation: element.boxNote.box.rackLocation,
+          location: element.boxNote.box.rackLocation.name,
           warehouseId: element.boxNote.box.request?.warehouse.id
         }
       })
@@ -220,6 +220,7 @@ class DeliveryOrder extends Vue {
       })
       _.uniqBy(this.reportList, 'id')
       this.disabledAddBox = true
+      this.$forceUpdate()
     }
   }
 

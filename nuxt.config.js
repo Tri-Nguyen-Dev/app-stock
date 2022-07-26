@@ -76,6 +76,7 @@ export default {
       'Textarea',
       'Chart',
       'ProgressBar',
+      'ProgressSpinner',
       'Card'
     ],
     directives: ['Tooltip', 'Badge']
@@ -105,7 +106,7 @@ export default {
           property: 'access_token',
           type: 'Bearer',
           name: 'Authorization',
-          maxAge: 3600
+          maxAge: 300
         },
         refreshToken: {
           property: 'refresh_token',
