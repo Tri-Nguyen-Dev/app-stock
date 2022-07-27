@@ -1,10 +1,10 @@
 <template lang="pug">
   .grid.grid-nogutter.packing__detail--container
-    PackingInformationDetail#packingInfo(
+    PackingInformationDetail#packingInfo.col-3(
       :deliveryOrderDetail='orderDetail',
       :type='typeTitle'
     )
-    .col-9.packing__detail--right.pl-4.pr-1.flex-1(class='col-12 md:col-12 lg:col-9 xl:col-9')
+    .col-9.packing__detail--right.pl-4.pr-1.flex-1()
       .grid
         .col-4(class='col-12 md:col-12 lg:col-4 xl:col-4')
           h1.text-heading {{ textHeading }}

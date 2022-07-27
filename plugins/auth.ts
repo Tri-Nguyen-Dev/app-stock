@@ -12,6 +12,7 @@ const auth: Plugin = ({ app, $auth, store }) => {
   const axiosInstance = axios.create()
 
   axiosInstance.interceptors.request.use((config) => {
+    store.commit('commons/store-common/setViewLoading', true)
     const token = app.$cookies.get('auth._token.keycloak')
     if ($auth.loggedIn && token) {
       config.headers.Authorization = token

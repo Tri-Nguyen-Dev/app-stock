@@ -77,7 +77,8 @@ export default {
       'Chart',
       'ProgressBar',
       'ProgressSpinner',
-      'Card'
+      'Card',
+      'Timeline'
     ],
     directives: ['Tooltip', 'Badge']
   },

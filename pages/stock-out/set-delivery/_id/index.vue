@@ -8,51 +8,50 @@
       .grid
         .col-4(class='col-12 md:col-12 lg:col-4 xl:col-4')
           h1.text-heading SET DELIVERY
-          span.text-subheading 10 items found
         .col-8.btn-right.flex.justify-content-end(class='col-12 md:col-12 lg:col-8 xl:col-8')
           Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
             type='button'
             label='Back'
             @click="backDoDetail"
           )
-          Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
+          Button.btn.btn-primary.w-25(
             type='button'
-            label='Set Driver'
-            @click="setShowSetDriver"
+            label='Save'
           )
       .delivery-content
-        DeliveryInfo
-        Button.btn.p-button-outlined.p-button-primary.bg-white.w-25.mb-4(
-          type='button'
-        )
-          .icon.icon-clock.bg-primary
-          span Add  Trip Stops
-        TripList(
-          :listItems='item'
-        )
+        .delivery-header
+          .info-heading
+            .icon.icon-info.bg-primary
+            span.info-title DELIVERY INFORMATION
+          Button.btn.p-button-outlined.p-button-primary.bg-white.w-25(
+            type='button'
+          )
+            .icon.icon-search.bg-primary
+            span Search Route
+        .delivery-main
+          Timeline(:value="events" align="left")
+            template(#content="slotProps")
+              DestinationItem.mt-2
     DriverDialog(
-      :isModalDriverList='isModalDriverList',
-      @hideDialog='hideDialog($event)',
+      :isModalDriverList='isModalDriverList'
+      @hideDialog='hideDialog($event)'
       @assigned='assignedDriver($event)'
-      :orderIds='[]')
+      :orderIds='[]'
+    )
 </template>
 
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import ItemList from '~/components/stock-out/item/ItemList.vue'
-import TripList from '~/components/stock-out/set-delivery/TripList.vue'
 import PackingInformationDetail from '~/components/stock-out/PackingInformationDetail.vue'
-import DeliveryInfo from '~/components/stock-out/set-delivery/DeliveryInfo.vue'
 import DriverDialog from '~/components/stock-out/driver/DriverDialog.vue'
+import DestinationItem from '~/components/stock-out/set-delivery/DestinationItem.vue'
 import { OrderDetail } from '~/models/OrderDetail'
 const nsStoreOrder = namespace('stock-out/order-detail')
 @Component({
   components: {
-    ItemList,
     PackingInformationDetail,
-    DeliveryInfo,
-    TripList,
-    DriverDialog
+    DriverDialog,
+    DestinationItem
   }
 })
 class DeliveryOrder extends Vue {
@@ -65,6 +64,13 @@ class DeliveryOrder extends Vue {
 
   @nsStoreOrder.Action
   actGetOrderDetail
+
+  events: any = [
+    { status: 'Ordered', date: '15/10/2020 10:30', icon: 'pi pi-shopping-cart', color: '#9C27B0', image: 'game-controller.jpg' },
+    { status: 'Processing', date: '15/10/2020 14:00', icon: 'pi pi-cog', color: '#673AB7' },
+    { status: 'Shipped', date: '15/10/2020 16:15', icon: 'pi pi-shopping-cart', color: '#FF9800' },
+    { status: 'Delivered', date: '16/10/2020 10:00', icon: 'pi pi-check', color: '#607D8B' }
+  ]
 
   get id() {
     return this.$route.params.id
@@ -110,7 +116,29 @@ export default DeliveryOrder
 <style lang="sass" scoped>
 .delivery-content
   background-color: $color-white
-  padding: 20px
+  border-radius: 4px
+  margin-top: 24px
+
+  .delivery-header
+    display: flex
+    justify-content: space-between
+    padding: 20px
+    border-bottom: 1.5px solid $bg-body-base
+
+    .info-heading
+      display: flex
+      align-items: center
+      gap: 0 10px
+
+    .info-title
+      color: $text-color-800
+      font-size: $font-size-small
+      font-weight: $font-weight-bold
+      line-height: calc(24 / 12)
+
+  .delivery-main
+    padding: 20px
+
 .btn-right
   height: 70%
   text-align: right
