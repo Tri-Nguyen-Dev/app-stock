@@ -30,9 +30,9 @@ class ApiWrapper {
     return response.data
   }
 
-}
-// eslint-disable-next-line import/no-mutable-exports
+}// eslint-disable-next-line import/no-mutable-exports
 let $api: ApiWrapper
+
 export function initializeAxios(axiosInstance: any) {
 
   $api = new ApiWrapper(axiosInstance)

@@ -1,4 +1,5 @@
 export class DataResponse<T>{
-    data: T
-    time:string
+  data: T
+  time: string
 }
+
